@@ -107,8 +107,6 @@ export const CRMScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header title="CRM" />
-
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
           <Icons.Search size={20} color="#6B7280" />

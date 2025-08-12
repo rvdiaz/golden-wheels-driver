@@ -18,10 +18,8 @@ export const Header: React.FC<HeaderProps> = ({
   rightAction,
   rightText,
 }) => {
-  const insets = useSafeAreaInsets();
-
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="white" />
       <View style={styles.content}>
         <View style={styles.leftSection}>

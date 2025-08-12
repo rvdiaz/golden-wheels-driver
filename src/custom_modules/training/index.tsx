@@ -102,8 +102,6 @@ export const TrainingScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header title="Training" />
-
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <Card style={styles.statsCard}>
           <Text style={styles.statsTitle}>Your Progress</Text>

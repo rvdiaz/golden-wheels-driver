@@ -113,12 +113,12 @@ export default function Navigation() {
         ) : (
           // Public/auth stack
           <>
+            <Stack.Screen name="SignIn" component={SignIn} />
             <Stack.Screen name="ForcePasswordChange" component={ForcePasswordChange} />
             <Stack.Screen name="ConfirmResetPassword" component={ConfirmResetPassword} />
             <Stack.Screen name="ResetPassword" component={ResetPassword} />
             <Stack.Screen name="Mfa" component={MfaAuth} />
             <Stack.Screen name="SignUp" component={SignUp} />
-            <Stack.Screen name="SignIn" component={SignIn} />
           </>
         )}
       </Stack.Navigator>

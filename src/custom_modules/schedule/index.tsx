@@ -100,8 +100,6 @@ export const ScheduleScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header title="Schedule" />
-
       <View style={styles.dateHeader}>
         <Text style={styles.dateText}>Today, March 15</Text>
         <TouchableOpacity style={styles.calendarButton}>

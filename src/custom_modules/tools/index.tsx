@@ -124,8 +124,6 @@ export const ToolsScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header title="Calculator Tools" />
-
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.headerSection}>
           <Text style={styles.headerTitle}>Real Estate Calculators</Text>

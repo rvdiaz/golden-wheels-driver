@@ -94,8 +94,6 @@ export const MortgageCalculatorScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header title="Mortgage Calculator" showBack onBack={() => navigation.goBack()} />
-
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <Card style={styles.formCard}>
           <View style={styles.cardHeader}>

@@ -68,7 +68,6 @@ export const Dashboard: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header title="Dashboard" />
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Stats Cards */}
         <View style={styles.statsContainer}>

@@ -7,8 +7,6 @@ import * as Icons from 'lucide-react-native';
 export const ProfileScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <Header title="Profile" />
-
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <Card style={styles.profileHeader}>
           <View style={styles.avatarContainer}>

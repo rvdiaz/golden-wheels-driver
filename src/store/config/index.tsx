@@ -1,4 +1,4 @@
-import { ITenantModule, IUser } from '../user/interface';
+import { ITenantModule, IUser } from '../interface';
 
 export enum ModuleKeys {
   configuration = 'configuration',

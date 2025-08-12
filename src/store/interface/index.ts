@@ -1,5 +1,5 @@
 import { IImage } from '~/codidge_components/interfaces';
-import { ModuleKeys } from '../../config';
+import { ModuleKeys } from '../config';
 
 export enum ProductModules {
   variants = 'variants',
@@ -41,6 +41,7 @@ export interface ITenantModule {
   metaData: string;
   modules?: IFeatureModule[];
   permissions?: IPermission[];
+  icon?: string;
 }
 
 export enum StatusUser {

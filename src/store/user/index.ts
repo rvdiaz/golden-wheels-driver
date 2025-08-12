@@ -1,6 +1,6 @@
 import { makeVar } from '@apollo/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { IUser } from './interface';
+import { IUser } from '../interface';
 
 const USER_STORAGE_KEY = 'signinUser';
 

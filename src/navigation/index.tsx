@@ -24,8 +24,69 @@ import { ExpiredListingsScreen } from '~/custom_modules/tools/sections/expiredLi
 import { ToolsScreen } from '~/custom_modules/tools';
 import { PrequalifiedLoanScreen } from '~/custom_modules/tools/sections/prequalifiedTools';
 import { PropertyInfoScreen } from '~/custom_modules/tools/sections/propertyDetails';
+import { MortgageCalculatorScreen } from '~/custom_modules/tools/sections/mortgageCalculator';
+import { NotificationButton } from '~/components/NotificationButton';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
+import { NotificationsScreen } from '~/core_modules/notifications';
 
 const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+
+function BottomTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={({ navigation }) => ({
+        headerRight: () => <NotificationButton navigation={navigation} />,
+      })}>
+      <Tab.Screen
+        name="Dashboard"
+        component={Dashboard}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="CRM"
+        component={CRMScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="people-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Schedule"
+        component={ScheduleScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="calendar-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Tools"
+        component={ToolsScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="hammer-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-outline" size={size} color={color} />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
 
 export default function Navigation() {
   const userInfo = useReactiveVar(userData);
@@ -39,20 +100,15 @@ export default function Navigation() {
         {!userInfo ? (
           // Authenticated stack
           <>
-            {/*     {tenantRoutes.map(({ name, component, options }) => (
-              <Stack.Screen key={name} name={name} component={component} options={options} />
-            ))} */}
-            <Stack.Screen name="tools" component={ToolsScreen} />
+            <Stack.Screen name="MainTabs" component={BottomTabs} />
+
+            {/* Tools sub-pages */}
+            <Stack.Screen name="mortdageCalculator" component={MortgageCalculatorScreen} />
             <Stack.Screen name="propertyTools" component={PropertyInfoScreen} />
             <Stack.Screen name="prequalifiedTools" component={PrequalifiedLoanScreen} />
-
             <Stack.Screen name="ExpiredListing" component={ExpiredListingsScreen} />
-            <Stack.Screen name="Schedule" component={ScheduleScreen} />
-            <Stack.Screen name="Profile" component={ProfileScreen} />
-            <Stack.Screen name="Training" component={TrainingScreen} />
-            <Stack.Screen name="Crm" component={CRMScreen} />
-            <Stack.Screen name="Task" component={TasksScreen} />
-            <Stack.Screen name="Dashboard" component={Dashboard} />
+            {/* Notifications */}
+            <Stack.Screen name="Notifications" component={() => <NotificationsScreen />} />
           </>
         ) : (
           // Public/auth stack

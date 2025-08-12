@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
   StyleSheet,
   SafeAreaView,
   ScrollView,
-  TextInput,
   TouchableOpacity,
-  Alert,
+  Linking,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Header } from '../../components/Header';
@@ -16,166 +15,158 @@ import * as Icons from 'lucide-react-native';
 
 export const ToolsScreen: React.FC = () => {
   const navigation = useNavigation();
-  const [loanAmount, setLoanAmount] = useState('');
-  const [interestRate, setInterestRate] = useState('');
-  const [loanTerm, setLoanTerm] = useState('');
-  const [downPayment, setDownPayment] = useState('');
-  const [result, setResult] = useState<any>(null);
 
-  const calculateMortgage = () => {
-    const principal = parseFloat(loanAmount) - parseFloat(downPayment || '0');
-    const monthlyRate = parseFloat(interestRate) / 100 / 12;
-    const numberOfPayments = parseFloat(loanTerm) * 12;
-
-    if (principal > 0 && monthlyRate > 0 && numberOfPayments > 0) {
-      const monthlyPayment =
-        (principal * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
-        (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
-
-      const totalAmount = monthlyPayment * numberOfPayments;
-      const totalInterest = totalAmount - principal;
-
-      setResult({
-        monthlyPayment: monthlyPayment.toFixed(2),
-        totalAmount: totalAmount.toFixed(2),
-        totalInterest: totalInterest.toFixed(2),
-        principal: principal.toFixed(2),
-      });
-    }
+  const openDocumentation = (url: string) => {
+    Linking.openURL(url);
   };
 
-  const calculatorTools = [
+  const tools = [
     {
-      icon: 'Home',
-      title: 'Prequalified Loan',
-      description: 'Calculate loan prequalification',
-      screen: 'PrequalifiedLoan',
-    },
-    {
-      icon: 'MapPin',
-      title: 'Property Information',
-      description: 'Get owner/property info by address',
-      screen: 'PropertyInfo',
-    },
-    {
-      icon: 'Clock',
-      title: 'Expired Listings',
-      description: 'Find expired listings by zip code',
-      screen: 'ExpiredListings',
-    },
-    {
+      id: 'mortgage',
+      title: 'Mortgage Calculator',
+      description: 'Calculate monthly mortgage payments',
       icon: 'Calculator',
-      title: 'Commission Calculator',
-      description: 'Calculate your commission',
-      screen: 'Commission',
+      color: '#2563EB',
+      backgroundColor: '#EEF2FF',
+      route: 'MortgageCalculator',
+    },
+    {
+      id: 'prequalified',
+      title: 'Loan Prequalification',
+      description: 'Calculate how much your client can borrow based on income',
+      icon: 'BadgeCheck',
+      color: '#059669',
+      backgroundColor: '#ECFDF5',
+      route: 'PrequalifiedLoan',
+    },
+    {
+      id: 'property',
+      title: 'Property Information',
+      description: 'Get owner and property details by address',
+      icon: 'Home',
+      color: '#DC2626',
+      backgroundColor: '#FEF2F2',
+      route: 'PropertyInfo',
+    },
+    {
+      id: 'expired',
+      title: 'Expired Listings',
+      description: 'Find expired listings in your target area',
+      icon: 'ClockX',
+      color: '#EA580C',
+      backgroundColor: '#FFF7ED',
+      route: 'ExpiredListings',
     },
   ];
 
-  const handleToolPress = (tool: any) => {
-    if (tool.screen) {
-      navigation.navigate(tool.screen as never);
-    } else {
-      Alert.alert('Coming Soon', `${tool.title} will be available soon!`);
-    }
+  const documentationLinks = [
+    {
+      title: 'Mortgage Basics',
+      description: 'Understanding mortgage calculations and terms',
+      url: 'https://www.consumerfinance.gov/owning-a-home/mortgage-basics/',
+      icon: 'BookOpen',
+    },
+    {
+      title: 'Real Estate Math',
+      description: 'Essential calculations for real estate professionals',
+      url: 'https://www.nar.realtor/education',
+      icon: 'Calculator',
+    },
+    {
+      title: 'Loan Qualification',
+      description: 'Guidelines for loan prequalification',
+      url: 'https://www.fanniemae.com/singlefamily/loan-limits',
+      icon: 'FileText',
+    },
+  ];
+
+  const renderTool = (tool: any) => {
+    const IconComponent = (Icons as any)[tool.icon] || Icons.Calculator;
+
+    return (
+      <TouchableOpacity
+        key={tool.id}
+        style={styles.toolCard}
+        onPress={() => navigation.navigate(tool.route as never)}>
+        <View style={[styles.toolIcon, { backgroundColor: tool.backgroundColor }]}>
+          <IconComponent size={28} color={tool.color} />
+        </View>
+        <View style={styles.toolContent}>
+          <Text style={styles.toolTitle}>{tool.title}</Text>
+          <Text style={styles.toolDescription}>{tool.description}</Text>
+        </View>
+        <View style={styles.toolArrow}>
+          <Icons.ChevronRight size={20} color="#9CA3AF" />
+        </View>
+      </TouchableOpacity>
+    );
   };
+
+  const renderDocLink = (doc: any) => {
+    const IconComponent = (Icons as any)[doc.icon] || Icons.BookOpen;
+
+    return (
+      <TouchableOpacity
+        key={doc.title}
+        style={styles.docCard}
+        onPress={() => openDocumentation(doc.url)}>
+        <View style={styles.docIcon}>
+          <IconComponent size={20} color="#6B7280" />
+        </View>
+        <View style={styles.docContent}>
+          <Text style={styles.docTitle}>{doc.title}</Text>
+          <Text style={styles.docDescription}>{doc.description}</Text>
+        </View>
+        <Icons.ExternalLink size={16} color="#9CA3AF" />
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Header title="Calculator Tools" />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <Card style={styles.mortgageCard}>
-          <Text style={styles.cardTitle}>Mortgage Calculator</Text>
+        <View style={styles.headerSection}>
+          <Text style={styles.headerTitle}>Real Estate Calculators</Text>
+          <Text style={styles.headerSubtitle}>
+            Professional tools to help you serve your clients better
+          </Text>
+        </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Loan Amount ($)</Text>
-            <TextInput
-              style={styles.input}
-              value={loanAmount}
-              onChangeText={setLoanAmount}
-              placeholder="400,000"
-              keyboardType="numeric"
-            />
+        <View style={styles.toolsGrid}>{tools.map(renderTool)}</View>
+
+        <Card style={styles.featuredCard}>
+          <View style={styles.featuredHeader}>
+            <Icons.Lightbulb size={24} color="#F59E0B" />
+            <Text style={styles.featuredTitle}>Pro Tip</Text>
           </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Down Payment ($)</Text>
-            <TextInput
-              style={styles.input}
-              value={downPayment}
-              onChangeText={setDownPayment}
-              placeholder="80,000"
-              keyboardType="numeric"
-            />
-          </View>
-
-          <View style={styles.inputRow}>
-            <View style={[styles.inputGroup, { flex: 1, marginRight: 8 }]}>
-              <Text style={styles.inputLabel}>Interest Rate (%)</Text>
-              <TextInput
-                style={styles.input}
-                value={interestRate}
-                onChangeText={setInterestRate}
-                placeholder="3.5"
-                keyboardType="numeric"
-              />
-            </View>
-
-            <View style={[styles.inputGroup, { flex: 1, marginLeft: 8 }]}>
-              <Text style={styles.inputLabel}>Term (Years)</Text>
-              <TextInput
-                style={styles.input}
-                value={loanTerm}
-                onChangeText={setLoanTerm}
-                placeholder="30"
-                keyboardType="numeric"
-              />
-            </View>
-          </View>
-
-          <TouchableOpacity style={styles.calculateButton} onPress={calculateMortgage}>
-            <Text style={styles.calculateButtonText}>Calculate</Text>
-          </TouchableOpacity>
-
-          {result && (
-            <View style={styles.resultContainer}>
-              <Text style={styles.resultTitle}>Results</Text>
-              <View style={styles.resultRow}>
-                <Text style={styles.resultLabel}>Monthly Payment:</Text>
-                <Text style={styles.resultValue}>${result.monthlyPayment}</Text>
-              </View>
-              <View style={styles.resultRow}>
-                <Text style={styles.resultLabel}>Total Amount:</Text>
-                <Text style={styles.resultValue}>${result.totalAmount}</Text>
-              </View>
-              <View style={styles.resultRow}>
-                <Text style={styles.resultLabel}>Total Interest:</Text>
-                <Text style={styles.resultValue}>${result.totalInterest}</Text>
-              </View>
-              <View style={styles.resultRow}>
-                <Text style={styles.resultLabel}>Principal:</Text>
-                <Text style={styles.resultValue}>${result.principal}</Text>
-              </View>
-            </View>
-          )}
+          <Text style={styles.featuredText}>
+            Use these calculators during client meetings to provide instant, professional estimates.
+            Always recommend clients get pre-approved with a lender for accurate qualification.
+          </Text>
         </Card>
 
-        <Text style={styles.sectionTitle}>Other Tools</Text>
-        <View style={styles.toolsGrid}>
-          {calculatorTools.map((tool, index) => {
-            const IconComponent = (Icons as any)[tool.icon] || Icons.Calculator;
-            return (
-              <Card key={index} style={styles.toolCard}>
-                <TouchableOpacity style={styles.toolContent} onPress={() => handleToolPress(tool)}>
-                  <View style={styles.toolIcon}>
-                    <IconComponent size={24} color="#2563EB" />
-                  </View>
-                  <Text style={styles.toolTitle}>{tool.title}</Text>
-                  <Text style={styles.toolDescription}>{tool.description}</Text>
-                </TouchableOpacity>
-              </Card>
-            );
-          })}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Documentation & Resources</Text>
+          <Text style={styles.sectionSubtitle}>
+            Learn more about real estate calculations and industry standards
+          </Text>
         </View>
+
+        <View style={styles.docSection}>{documentationLinks.map(renderDocLink)}</View>
+
+        <Card style={styles.disclaimerCard}>
+          <View style={styles.disclaimerHeader}>
+            <Icons.AlertTriangle size={20} color="#F59E0B" />
+            <Text style={styles.disclaimerTitle}>Important Notice</Text>
+          </View>
+          <Text style={styles.disclaimerText}>
+            These calculators provide estimates only. Actual loan terms, payments, and
+            qualifications may vary based on lender requirements, credit scores, and other factors.
+            Always consult with qualified mortgage professionals for accurate information.
+          </Text>
+        </Card>
       </ScrollView>
     </SafeAreaView>
   );
@@ -190,114 +181,154 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  mortgageCard: {
+  headerSection: {
+    marginBottom: 24,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1F2937',
+    marginBottom: 8,
+  },
+  headerSubtitle: {
+    fontSize: 16,
+    color: '#6B7280',
+    lineHeight: 24,
+  },
+  toolsGrid: {
+    marginBottom: 24,
+  },
+  toolCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
+  },
+  toolIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  toolContent: {
+    flex: 1,
+  },
+  toolTitle: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#1F2937',
+    marginBottom: 6,
+  },
+  toolDescription: {
+    fontSize: 14,
+    color: '#6B7280',
+    lineHeight: 18,
+  },
+  toolArrow: {
+    marginLeft: 8,
+  },
+  featuredCard: {
+    backgroundColor: '#FFFBEB',
+    borderWidth: 1,
+    borderColor: '#FED7AA',
     padding: 20,
     marginBottom: 24,
   },
-  cardTitle: {
+  featuredHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  featuredTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#92400E',
+    marginLeft: 8,
+  },
+  featuredText: {
+    fontSize: 14,
+    color: '#A16207',
+    lineHeight: 20,
+  },
+  sectionHeader: {
+    marginBottom: 16,
+  },
+  sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: '#1F2937',
-    marginBottom: 20,
-  },
-  inputGroup: {
-    marginBottom: 16,
-  },
-  inputRow: {
-    flexDirection: 'row',
-  },
-  inputLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#374151',
-    marginBottom: 8,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
-    backgroundColor: 'white',
-  },
-  calculateButton: {
-    backgroundColor: '#2563EB',
-    paddingVertical: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  calculateButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  resultContainer: {
-    marginTop: 20,
-    padding: 16,
-    backgroundColor: '#F8FAFC',
-    borderRadius: 8,
-  },
-  resultTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1F2937',
-    marginBottom: 16,
-  },
-  resultRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  resultLabel: {
-    fontSize: 14,
-    color: '#6B7280',
-  },
-  resultValue: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1F2937',
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1F2937',
-    marginBottom: 16,
-  },
-  toolsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginHorizontal: -6,
-  },
-  toolCard: {
-    width: '50%',
-    paddingHorizontal: 6,
-    marginBottom: 12,
-  },
-  toolContent: {
-    padding: 16,
-    alignItems: 'center',
-  },
-  toolIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#EEF2FF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  toolTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1F2937',
-    textAlign: 'center',
     marginBottom: 4,
   },
-  toolDescription: {
+  sectionSubtitle: {
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  docSection: {
+    marginBottom: 24,
+  },
+  docCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  docIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    backgroundColor: '#F9FAFB',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  docContent: {
+    flex: 1,
+  },
+  docTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1F2937',
+    marginBottom: 2,
+  },
+  docDescription: {
     fontSize: 12,
     color: '#6B7280',
-    textAlign: 'center',
+  },
+  disclaimerCard: {
+    backgroundColor: '#FFFBEB',
+    borderWidth: 1,
+    borderColor: '#FED7AA',
+    padding: 16,
+  },
+  disclaimerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  disclaimerTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#92400E',
+    marginLeft: 8,
+  },
+  disclaimerText: {
+    fontSize: 12,
+    color: '#A16207',
+    lineHeight: 16,
   },
 });

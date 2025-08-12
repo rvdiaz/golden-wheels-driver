@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "my-own-boss",
+    "slug": "my-own-boss",
+    "version": "1.0.0",
+
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+
+    "experiments": {
+      "tsconfigPaths": true
+    },
+
+    "plugins": [],
+
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+
+    "userInterfaceStyle": "light",
+
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "extra": {
+      "GRAPHQL_ENDPOINT": "http://localhost:4000/graphql",
+      "COGNITO_USERPOOL_ID": "us-east-1_lPwx7GtgO",
+      "COGNITO_CLIENT_ID": "2m2cdpj0sdbpdgbd56s796uekr"
+    }
+  }
+}

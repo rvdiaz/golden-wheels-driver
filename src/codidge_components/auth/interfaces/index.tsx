@@ -1,0 +1,48 @@
+export interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  isEmailVerified: boolean;
+  isMfaEnabled: boolean;
+  mustChangePassword: boolean;
+}
+
+export interface LoginFormData {
+  email: string;
+  password: string;
+  rememberMe?: boolean;
+}
+
+export interface RegisterFormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  password: string;
+  confirmPassword: string;
+  agreeToTerms: boolean;
+}
+
+export interface ResetPasswordFormData {
+  email: string;
+}
+
+export interface ChangePasswordFormData {
+  currentPassword?: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface MfaFormData {
+  code: string;
+}
+
+export interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  requiresMfa: boolean;
+  requiresPasswordChange: boolean;
+}

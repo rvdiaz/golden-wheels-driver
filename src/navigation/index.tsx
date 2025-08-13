@@ -27,6 +27,7 @@ import { TasksScreen } from '~/custom_modules/task';
 import { Dashboard } from '~/custom_modules/dashboard';
 import { TopBar } from './topBarNavigation';
 import { CRMScreen } from '~/custom_modules/crm';
+import { CourseDetailsScreen } from '~/custom_modules/training/sections/CourseDetailsScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -96,12 +97,14 @@ export default function Navigation() {
             <Stack.Screen name="MainTabs" component={BottomTabs} />
 
             {/* Tools sub-pages */}
-            <Stack.Screen name="mortdageCalculator" component={MortgageCalculatorScreen} />
+            <Stack.Screen name="mortgageCalculator" component={MortgageCalculatorScreen} />
             <Stack.Screen name="propertyTools" component={PropertyInfoScreen} />
             <Stack.Screen name="prequalifiedTools" component={PrequalifiedLoanScreen} />
-            <Stack.Screen name="ExpiredListing" component={ExpiredListingsScreen} />
+            <Stack.Screen name="expiredListing" component={ExpiredListingsScreen} />
             {/* Notifications */}
-            <Stack.Screen name="Notifications" component={() => <NotificationsScreen />} />
+            <Stack.Screen name="notifications" component={() => <NotificationsScreen />} />
+            {/* Training */}
+            <Stack.Screen name="trainingDetailPage" component={CourseDetailsScreen} />
           </>
         ) : (
           // Public/auth stack

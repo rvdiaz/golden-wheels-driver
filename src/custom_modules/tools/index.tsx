@@ -22,7 +22,7 @@ export const ToolsScreen: React.FC = () => {
 
   const tools = [
     {
-      id: 'mortgage',
+      id: 'mortgageCalculator',
       title: 'Mortgage Calculator',
       description: 'Calculate monthly mortgage payments',
       icon: 'Calculator',
@@ -31,7 +31,7 @@ export const ToolsScreen: React.FC = () => {
       route: 'MortgageCalculator',
     },
     {
-      id: 'prequalified',
+      id: 'prequalifiedTools',
       title: 'Loan Prequalification',
       description: 'Calculate how much your client can borrow based on income',
       icon: 'BadgeCheck',
@@ -40,7 +40,7 @@ export const ToolsScreen: React.FC = () => {
       route: 'PrequalifiedLoan',
     },
     {
-      id: 'property',
+      id: 'propertyTools',
       title: 'Property Information',
       description: 'Get owner and property details by address',
       icon: 'Home',
@@ -49,7 +49,7 @@ export const ToolsScreen: React.FC = () => {
       route: 'PropertyInfo',
     },
     {
-      id: 'expired',
+      id: 'expiredListing',
       title: 'Expired Listings',
       description: 'Find expired listings in your target area',
       icon: 'ClockX',
@@ -84,7 +84,12 @@ export const ToolsScreen: React.FC = () => {
     const IconComponent = (Icons as any)[tool.icon] || Icons.Calculator;
 
     return (
-      <TouchableOpacity key={tool.id} style={styles.toolCard} onPress={() => {}}>
+      <TouchableOpacity
+        key={tool.id}
+        style={styles.toolCard}
+        onPress={() => {
+          navigation.navigate(tool.id as never);
+        }}>
         <View style={[styles.toolIcon, { backgroundColor: tool.backgroundColor }]}>
           <IconComponent size={28} color={tool.color} />
         </View>

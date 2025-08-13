@@ -13,7 +13,7 @@ import * as Icons from 'lucide-react-native';
 import { Header } from '~/components/Header';
 import { Card } from '~/components/Card';
 
-export const VideoPlayerScreen: React.FC = () => {
+export const VideoPlayerScreen = ({ onDispose }: { onDispose: () => void }) => {
   const navigation = useNavigation();
   const route = useRoute();
   const { video, course } = {
@@ -54,7 +54,13 @@ export const VideoPlayerScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header title={video.title} showBack onBack={() => navigation.goBack()} />
+      <Header
+        title={video.title}
+        rightText="Close"
+        rightAction={() => {
+          onDispose();
+        }}
+      />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Video Player Placeholder */}

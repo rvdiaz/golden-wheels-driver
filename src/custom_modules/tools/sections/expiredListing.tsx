@@ -165,6 +165,13 @@ export const ExpiredListingsScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Header
+        title="Find Expired Listing"
+        showBack={true}
+        onBack={() => {
+          navigation.goBack();
+        }}
+      />
       <View style={styles.content}>
         <Card style={styles.searchCard}>
           <Text style={styles.cardTitle}>Find Expired Listings</Text>

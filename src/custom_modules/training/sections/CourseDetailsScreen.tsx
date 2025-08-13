@@ -1,10 +1,19 @@
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  TouchableOpacity,
+  Modal,
+} from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 import * as Icons from 'lucide-react-native';
 import { Card } from '~/components/Card';
 import { Header } from '~/components/Header';
+import { VideoPlayerScreen } from './VideoPlayerScreen';
 
 interface Video {
   id: string;
@@ -41,8 +50,11 @@ const mockVideos: Video[] = [
 ];
 
 export const CourseDetailsScreen: React.FC = () => {
-  const navigation = useNavigation();
   const route = useRoute();
+  const params = route.params;
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const navigation = useNavigation();
   const course = {
     id: '1',
     title: 'Real Estate Fundamentals',
@@ -59,7 +71,11 @@ export const CourseDetailsScreen: React.FC = () => {
 
   const renderVideo = (video: Video) => (
     <Card key={video.id} style={styles.videoCard}>
-      <TouchableOpacity onPress={() => {}} style={styles.videoContent}>
+      <TouchableOpacity
+        onPress={() => {
+          setModalVisible(true);
+        }}
+        style={styles.videoContent}>
         <View style={styles.videoIcon}>
           {video.completed ? (
             <Icons.CheckCircle2 size={24} color="#10B981" />
@@ -77,6 +93,19 @@ export const CourseDetailsScreen: React.FC = () => {
 
         <Icons.ChevronRight size={20} color="#9CA3AF" />
       </TouchableOpacity>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(false);
+        }}>
+        <VideoPlayerScreen
+          onDispose={() => {
+            setModalVisible(false);
+          }}
+        />
+      </Modal>
     </Card>
   );
 

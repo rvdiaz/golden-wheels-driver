@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Header } from '../../components/Header';
 import { Card } from '../../components/Card';
 import * as Icons from 'lucide-react-native';
 
@@ -63,7 +62,9 @@ export const TrainingScreen: React.FC = () => {
 
   const renderCourse = (course: Course) => (
     <Card key={course.id} style={styles.courseCard}>
-      <TouchableOpacity onPress={() => {}} style={styles.courseContent}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('trainingDetailPage', { course })}
+        style={styles.courseContent}>
         <View style={styles.courseHeader}>
           <View style={styles.courseInfo}>
             <Text style={styles.courseTitle}>{course.title}</Text>

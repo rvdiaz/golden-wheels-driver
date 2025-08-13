@@ -1,6 +1,6 @@
 import { ProfileScreen } from '~/core_modules/profile';
 import { CRMScreen } from '~/custom_modules/crm';
-import { ContactDetailsScreen } from '~/custom_modules/crm/sections/addContactForm';
+import { ContactDetailsScreen } from '~/custom_modules/crm/sections/contactDetail';
 import { Dashboard } from '~/custom_modules/dashboard';
 import { ScheduleScreen } from '~/custom_modules/schedule';
 import { TasksScreen } from '~/custom_modules/task';

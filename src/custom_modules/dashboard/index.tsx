@@ -74,8 +74,6 @@ export const Dashboard: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Header Banner */}
-
         <QuoteWidget />
 
         <ShortCutsButtons />

@@ -9,12 +9,16 @@ import {
   TextInput,
   ScrollView,
   Dimensions,
+  Modal,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Header } from '../../components/Header';
 import { Card } from '../../components/Card';
 import * as Icons from 'lucide-react-native';
 import { FloatingMenu } from '~/components/FloatingMenu';
+import { ContactDetailsScreen } from './sections/contactDetail';
+import { AddContactForm } from './sections/addContactForm';
+import ContactForm from './sections/addContact';
 
 interface Contact {
   id: string;
@@ -313,6 +317,12 @@ export const CRMScreen: React.FC = () => {
     );
   };
 
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const disposeModalHandler = () => {
+    setModalVisible(false);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -425,8 +435,19 @@ export const CRMScreen: React.FC = () => {
       <FloatingMenu
         title="Add Contact"
         icon="Plus"
-        onPress={() => console.log('Add Task pressed')}
+        onPress={() => {
+          setModalVisible(true);
+        }}
       />
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={disposeModalHandler}>
+        <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <ContactForm disposeModalHandler={disposeModalHandler} />
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };

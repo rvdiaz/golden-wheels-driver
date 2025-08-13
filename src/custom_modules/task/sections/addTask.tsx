@@ -24,7 +24,7 @@ interface TaskFormValues {
   priority: Priority;
 }
 
-export const AddTaskScreen: React.FC = () => {
+export const AddTaskScreen = ({ disposeModalHandler }: { disposeModalHandler: () => void }) => {
   const navigation = useNavigation();
   const {
     control,
@@ -55,6 +55,7 @@ export const AddTaskScreen: React.FC = () => {
     Alert.alert('Success', 'Task added successfully', [
       { text: 'OK', onPress: () => navigation.goBack() },
     ]);
+    disposeModalHandler();
   };
 
   const getPriorityColor = (selectedPriority: string) => {
@@ -75,7 +76,7 @@ export const AddTaskScreen: React.FC = () => {
       <Header
         title="Add Task"
         showBack
-        onBack={() => navigation.goBack()}
+        onBack={disposeModalHandler}
         rightAction={handleSubmit(onSubmit)}
         rightText="Save"
       />

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { StyleSheet, FlatList, TouchableOpacity, SafeAreaView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { StyleSheet, FlatList, Modal, SafeAreaView, View } from 'react-native';
 import { TaskItem } from './widgets/taskItem';
 import { ITask } from './interfaces';
 import { TaskManagementHeader } from './widgets/taskManagementHeader';
 import { FloatingMenu } from '~/components/FloatingMenu';
+import { AddTaskScreen } from './sections/addTask';
 
 const allTasks: ITask[] = [
   {
@@ -61,6 +61,7 @@ const allTasks: ITask[] = [
 
 export const TasksScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'daily' | 'custom'>('daily');
+  const [modalVisible, setModalVisible] = useState(false);
   const [tasks, setTasks] = useState<ITask[]>(allTasks);
 
   const toggleTask = (id: string) => {
@@ -70,6 +71,10 @@ export const TasksScreen: React.FC = () => {
   };
 
   const renderTask = ({ item }: { item: ITask }) => <TaskItem task={item} onToggle={toggleTask} />;
+
+  const disposeModalHandler = () => {
+    setModalVisible(false);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -82,7 +87,22 @@ export const TasksScreen: React.FC = () => {
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
       />
-      <FloatingMenu title="Add Task" icon="Plus" onPress={() => console.log('Add Task pressed')} />
+      <FloatingMenu
+        title="Add Task"
+        icon="Plus"
+        onPress={() => {
+          setModalVisible(true);
+        }}
+      />
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={disposeModalHandler}>
+        <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <AddTaskScreen disposeModalHandler={disposeModalHandler} />
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };

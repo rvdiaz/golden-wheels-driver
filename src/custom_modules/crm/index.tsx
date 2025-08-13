@@ -12,6 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Header } from '../../components/Header';
 import { Card } from '../../components/Card';
 import * as Icons from 'lucide-react-native';
+import { FloatingMenu } from '~/components/FloatingMenu';
 
 interface Contact {
   id: string;
@@ -141,6 +142,7 @@ export const CRMScreen: React.FC = () => {
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
       />
+      <FloatingMenu title="Add Task" icon="Plus" onPress={() => console.log('Add Task pressed')} />
     </SafeAreaView>
   );
 };

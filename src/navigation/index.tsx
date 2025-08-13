@@ -14,12 +14,6 @@ import { SignUp } from '~/codidge_components/auth/sign_up';
 // App modules screens
 import { userData } from '~/store/user';
 import { getTenantRoutes } from '~/store/config';
-import { TasksScreen } from '~/custom_modules/task';
-import { CRMScreen } from '~/custom_modules/crm';
-import { Dashboard } from '~/custom_modules/dashboard';
-import { TrainingScreen } from '~/custom_modules/training';
-import { ProfileScreen } from '~/core_modules/profile';
-import { ScheduleScreen } from '~/custom_modules/schedule';
 import { ExpiredListingsScreen } from '~/custom_modules/tools/sections/expiredListing';
 import { ToolsScreen } from '~/custom_modules/tools';
 import { PrequalifiedLoanScreen } from '~/custom_modules/tools/sections/prequalifiedTools';
@@ -29,16 +23,20 @@ import { NotificationButton } from '~/components/NotificationButton';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { NotificationsScreen } from '~/core_modules/notifications';
+import { CRMV2Screen } from '~/custom_modules/crm/figmaPluginCrm';
+import { TasksV2Screen } from '~/custom_modules/task/figmaPluginTranslator';
+import { TrainingScreen } from '~/custom_modules/training';
+import { TasksScreen } from '~/custom_modules/task';
+import { FloatingMenu } from '~/components/FloatingMenu';
+import { Dashboard } from '~/custom_modules/dashboard';
+import { TopBar } from './topBarNavigation';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function BottomTabs() {
   return (
-    <Tab.Navigator
-      screenOptions={({ navigation }) => ({
-        headerRight: () => <NotificationButton navigation={navigation} />,
-      })}>
+    <Tab.Navigator screenOptions={TopBar}>
       <Tab.Screen
         name="Dashboard"
         component={Dashboard}
@@ -49,20 +47,20 @@ function BottomTabs() {
         }}
       />
       <Tab.Screen
-        name="CRM"
-        component={CRMScreen}
+        name="Tasks"
+        component={TasksScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="people-outline" size={size} color={color} />
+            <Ionicons name="calendar-outline" size={size} color={color} />
           ),
         }}
       />
       <Tab.Screen
-        name="Schedule"
-        component={ScheduleScreen}
+        name="CRM"
+        component={CRMV2Screen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="calendar-outline" size={size} color={color} />
+            <Ionicons name="people-outline" size={size} color={color} />
           ),
         }}
       />
@@ -76,12 +74,10 @@ function BottomTabs() {
         }}
       />
       <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
+        name="Training"
+        component={TrainingScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <Ionicons name="school" size={size} color={color} />,
         }}
       />
     </Tab.Navigator>

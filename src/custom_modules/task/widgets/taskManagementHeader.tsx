@@ -1,40 +1,32 @@
-import { Feather } from '@expo/vector-icons';
+import { CheckSquare, Clock } from 'lucide-react-native';
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-  Modal,
-  Dimensions,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 export const TaskManagementHeader = () => {
-  const [filterLabel, setFilterLabel] = useState('Priority');
+  const [activeTab, setActiveTab] = useState<'daily' | 'custom'>('daily');
 
   return (
     <View style={styles.header}>
       <View style={styles.headerButtons}>
-        {/* Filter Button */}
-        {/*   <TouchableOpacity style={styles.outlineButton} onPress={() => {}}>
-          <Feather name="filter" size={16} color="#374151" />
-          <Text style={styles.outlineButtonText}>{filterLabel}</Text>
-          <Feather name="chevron-down" size={16} color="#374151" />
-        </TouchableOpacity>
- */}
-        {/* Schedule Button */}
-        <TouchableOpacity style={styles.outlineButton} onPress={() => {}}>
-          <Feather name="menu" size={16} color="#374151" />
-          <Text style={styles.outlineButtonText}>Schedule</Text>
-          <Feather name="chevron-down" size={16} color="#374151" />
-        </TouchableOpacity>
+        <View style={styles.tabContainer}>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'daily' && styles.activeTab]}
+            onPress={() => setActiveTab('daily')}>
+            <Clock size={20} color={activeTab === 'daily' ? '#2563EB' : '#6b7280'} />
+            <Text style={[styles.tabText, activeTab === 'daily' && styles.activeTabText]}>
+              Daily Schedule
+            </Text>
+          </TouchableOpacity>
 
-        {/* New Task Button */}
-        <TouchableOpacity style={styles.primaryButton}>
-          <Text style={styles.primaryButtonText}>New Task</Text>
-          <Feather name="plus" size={16} color="white" />
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'custom' && styles.activeTab]}
+            onPress={() => setActiveTab('custom')}>
+            <CheckSquare size={20} color={activeTab === 'custom' ? '#2563EB' : '#6b7280'} />
+            <Text style={[styles.tabText, activeTab === 'custom' && styles.activeTabText]}>
+              Custom Tasks
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -45,7 +37,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 24,
+    paddingHorizontal: 24,
+    paddingTop: 24,
   },
   title: {
     fontSize: 24,
@@ -58,39 +51,32 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 8,
   },
-  outlineButton: {
+  tabContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#f3f4f6',
+    borderRadius: 12,
+    padding: 4,
+    marginBottom: 24,
+  },
+  tab: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderWidth: 2,
-    borderColor: '#E5E7EB',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     borderRadius: 8,
-    backgroundColor: '#FFFFFF',
-    gap: 4,
   },
-  outlineButtonText: {
+  activeTab: {
+    backgroundColor: '#ffffff',
+  },
+  tabText: {
     fontSize: 14,
-    color: '#374151',
-    marginHorizontal: 4,
-    flex: 1,
+    fontWeight: '600',
+    color: '#9ca3af',
+    marginLeft: 8,
   },
-  primaryButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: '#2563EB',
-    borderRadius: 8,
-    gap: 4,
-  },
-  primaryButtonText: {
-    flex: 1,
-    fontSize: 14,
-    color: '#FFFFFF',
-    fontWeight: '500',
-    marginLeft: 4,
+  activeTabText: {
+    color: '#2563EB',
   },
 });

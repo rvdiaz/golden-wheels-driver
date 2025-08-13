@@ -83,8 +83,6 @@ export const Dashboard: React.FC = () => {
         <TaskMetricsStats completedTasks={completedTasks} />
 
         <TaskList tasks={tasks} onToggle={toggleTask} />
-
-        <WeeklyActivityChart />
       </ScrollView>
     </SafeAreaView>
   );

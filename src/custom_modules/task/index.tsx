@@ -60,7 +60,7 @@ const allTasks: ITask[] = [
 ];
 
 export const TasksScreen: React.FC = () => {
-  const navigation = useNavigation();
+  const [activeTab, setActiveTab] = useState<'daily' | 'custom'>('daily');
   const [tasks, setTasks] = useState<ITask[]>(allTasks);
 
   const toggleTask = (id: string) => {
@@ -70,9 +70,6 @@ export const TasksScreen: React.FC = () => {
   };
 
   const renderTask = ({ item }: { item: ITask }) => <TaskItem task={item} onToggle={toggleTask} />;
-
-  const activeTasks = tasks.filter((task) => !task.completed);
-  const completedTasks = tasks.filter((task) => task.completed);
 
   return (
     <SafeAreaView style={styles.container}>

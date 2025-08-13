@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Feather } from '@expo/vector-icons';
+import { View, Text, StyleSheet, Animated } from 'react-native';
 import { Card } from '~/components/Card';
 import { TrendingUp } from 'lucide-react-native';
 

@@ -63,19 +63,19 @@ export const ToolsScreen: React.FC = () => {
     {
       title: 'Mortgage Basics',
       description: 'Understanding mortgage calculations and terms',
-      url: 'https://www.consumerfinance.gov/owning-a-home/mortgage-basics/',
+      url: '',
       icon: 'BookOpen',
     },
     {
       title: 'Real Estate Math',
       description: 'Essential calculations for real estate professionals',
-      url: 'https://www.nar.realtor/education',
+      url: '',
       icon: 'Calculator',
     },
     {
       title: 'Loan Qualification',
       description: 'Guidelines for loan prequalification',
-      url: 'https://www.fanniemae.com/singlefamily/loan-limits',
+      url: '',
       icon: 'FileText',
     },
   ];
@@ -84,10 +84,7 @@ export const ToolsScreen: React.FC = () => {
     const IconComponent = (Icons as any)[tool.icon] || Icons.Calculator;
 
     return (
-      <TouchableOpacity
-        key={tool.id}
-        style={styles.toolCard}
-        onPress={() => navigation.navigate(tool.route as never)}>
+      <TouchableOpacity key={tool.id} style={styles.toolCard} onPress={() => {}}>
         <View style={[styles.toolIcon, { backgroundColor: tool.backgroundColor }]}>
           <IconComponent size={28} color={tool.color} />
         </View>
@@ -106,10 +103,7 @@ export const ToolsScreen: React.FC = () => {
     const IconComponent = (Icons as any)[doc.icon] || Icons.BookOpen;
 
     return (
-      <TouchableOpacity
-        key={doc.title}
-        style={styles.docCard}
-        onPress={() => openDocumentation(doc.url)}>
+      <TouchableOpacity key={doc.title} style={styles.docCard} onPress={() => {}}>
         <View style={styles.docIcon}>
           <IconComponent size={20} color="#6B7280" />
         </View>

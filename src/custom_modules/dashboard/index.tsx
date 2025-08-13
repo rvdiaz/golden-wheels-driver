@@ -2,12 +2,9 @@ import React, { useState } from 'react';
 import { StyleSheet, ScrollView, SafeAreaView, Dimensions } from 'react-native';
 import { TaskList } from '../task/widgets/taskList';
 import { ITask } from '../task/interfaces';
-import { HeaderBanner } from './widgets/headerBanner';
 import { ShortCutsButtons } from './widgets/shortCutsButtons';
-import { WeeklyActivityChart } from './widgets/weekActivity';
 import { TaskMetricsStats } from './widgets/metricsStats';
 import { QuoteWidget } from './widgets/quoteHeader';
-import AllQuotes from './widgets/quoteHeader2';
 
 export const Dashboard: React.FC = () => {
   const [tasks, setTasks] = useState<ITask[]>([

@@ -19,17 +19,14 @@ import { ToolsScreen } from '~/custom_modules/tools';
 import { PrequalifiedLoanScreen } from '~/custom_modules/tools/sections/prequalifiedTools';
 import { PropertyInfoScreen } from '~/custom_modules/tools/sections/propertyDetails';
 import { MortgageCalculatorScreen } from '~/custom_modules/tools/sections/mortgageCalculator';
-import { NotificationButton } from '~/components/NotificationButton';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { NotificationsScreen } from '~/core_modules/notifications';
-import { CRMV2Screen } from '~/custom_modules/crm/figmaPluginCrm';
-import { TasksV2Screen } from '~/custom_modules/task/figmaPluginTranslator';
 import { TrainingScreen } from '~/custom_modules/training';
 import { TasksScreen } from '~/custom_modules/task';
-import { FloatingMenu } from '~/components/FloatingMenu';
 import { Dashboard } from '~/custom_modules/dashboard';
 import { TopBar } from './topBarNavigation';
+import { CRMScreen } from '~/custom_modules/crm';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -57,7 +54,7 @@ function BottomTabs() {
       />
       <Tab.Screen
         name="CRM"
-        component={CRMV2Screen}
+        component={CRMScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="people-outline" size={size} color={color} />

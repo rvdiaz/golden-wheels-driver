@@ -21,8 +21,8 @@ export const FloatingMenu: React.FC<FloatingMenuProps> = ({
   return (
     <TouchableOpacity style={styles.fab} onPress={onPress} activeOpacity={0.8}>
       <View style={styles.content}>
-        <IconComponent size={24} color="white" />
         {title ? <Text style={styles.label}>{title}</Text> : null}
+        <IconComponent size={24} color="white" />
       </View>
     </TouchableOpacity>
   );
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     bottom: 20,
     right: 20,
     paddingHorizontal: 16,
-    height: 56,
+    paddingVertical: 12,
     borderRadius: 28,
     backgroundColor: '#2563EB',
     justifyContent: 'center',

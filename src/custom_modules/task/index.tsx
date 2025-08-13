@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, FlatList, TouchableOpacity, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import * as Icons from 'lucide-react-native';
 import { TaskItem } from './widgets/taskItem';
 import { ITask } from './interfaces';
 import { TaskManagementHeader } from './widgets/taskManagementHeader';
@@ -86,11 +85,7 @@ export const TasksScreen: React.FC = () => {
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
       />
-      <FloatingMenu
-        title="Add Task"
-        icon="ClipboardPlus"
-        onPress={() => console.log('Add Task pressed')}
-      />
+      <FloatingMenu title="Add Task" icon="Plus" onPress={() => console.log('Add Task pressed')} />
     </SafeAreaView>
   );
 };

@@ -70,15 +70,13 @@ const styles = StyleSheet.create({
   metricsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginBottom: 24,
+    marginBottom: 10,
     marginHorizontal: -8,
   },
   metricCard: {
     width: (screenWidth - 48) / 2,
     marginHorizontal: 8,
     marginBottom: 16,
-    borderWidth: 2,
-    borderColor: '#F3F4F6',
   },
   metricContent: {
     flexDirection: 'row',

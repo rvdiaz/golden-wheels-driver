@@ -5,11 +5,7 @@ import { Header } from '../../../components/Header';
 import { Card } from '../../../components/Card';
 import * as Icons from 'lucide-react-native';
 
-export const ContactDetailsScreen = ({
-  disposeModalHandler,
-}: {
-  disposeModalHandler: () => void;
-}) => {
+export const ContactDetailsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
 
@@ -21,7 +17,7 @@ export const ContactDetailsScreen = ({
         title="Contact Details"
         showBack
         onBack={() => {
-          disposeModalHandler();
+          navigation.goBack();
         }}
       />
 

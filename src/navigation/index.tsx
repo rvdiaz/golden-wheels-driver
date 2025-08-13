@@ -28,6 +28,7 @@ import { Dashboard } from '~/custom_modules/dashboard';
 import { TopBar } from './topBarNavigation';
 import { CRMScreen } from '~/custom_modules/crm';
 import { CourseDetailsScreen } from '~/custom_modules/training/sections/CourseDetailsScreen';
+import { ContactDetailsScreen } from '~/custom_modules/crm/sections/contactDetail';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -102,9 +103,11 @@ export default function Navigation() {
             <Stack.Screen name="prequalifiedTools" component={PrequalifiedLoanScreen} />
             <Stack.Screen name="expiredListing" component={ExpiredListingsScreen} />
             {/* Notifications */}
-            <Stack.Screen name="notifications" component={() => <NotificationsScreen />} />
+            <Stack.Screen name="notifications" component={NotificationsScreen} />
             {/* Training */}
             <Stack.Screen name="trainingDetailPage" component={CourseDetailsScreen} />
+            {/* Training */}
+            <Stack.Screen name="contactDetals" component={ContactDetailsScreen} />
           </>
         ) : (
           // Public/auth stack

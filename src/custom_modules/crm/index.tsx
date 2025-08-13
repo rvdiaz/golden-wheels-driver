@@ -12,12 +12,9 @@ import {
   Modal,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Header } from '../../components/Header';
 import { Card } from '../../components/Card';
 import * as Icons from 'lucide-react-native';
 import { FloatingMenu } from '~/components/FloatingMenu';
-import { ContactDetailsScreen } from './sections/contactDetail';
-import { AddContactForm } from './sections/addContactForm';
 import ContactForm from './sections/addContact';
 
 interface Contact {
@@ -249,7 +246,11 @@ export const CRMScreen: React.FC = () => {
     const typeColors = getTypeColor(item.type);
 
     return (
-      <TouchableOpacity onPress={() => {}} style={styles.contactCard}>
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate('contactDetals', { contact: item });
+        }}
+        style={styles.contactCard}>
         <View style={styles.contactRow}>
           <View style={styles.avatarContainer}>
             <Icons.User size={24} color="#6B7280" />

@@ -81,24 +81,29 @@ export function QuoteWidget() {
   const currentQuote = realEstateQuotes[currentQuoteIndex];
 
   return (
-    <Card style={styles.bannerCard}>
-      <TrendingUp size={32} style={styles.quoteIcon} />
-      <Animated.View style={[styles.bannerText, { opacity: fadeAnim }]}>
-        <Text style={styles.quoteText}>"{currentQuote.text}"</Text>
-        <View style={styles.authorContainer}>
-          <View style={styles.authorLine} />
-          <Text style={styles.authorText}>— {currentQuote.author}</Text>
+    <View style={styles.bannerCard}>
+      <Card>
+        <View style={styles.cardContainer}>
+          <TrendingUp size={32} style={styles.quoteIcon} />
+          <Animated.View style={[styles.bannerText, { opacity: fadeAnim }]}>
+            <Text style={styles.quoteText}>"{currentQuote.text}"</Text>
+            <View style={styles.authorContainer}>
+              <View style={styles.authorLine} />
+              <Text style={styles.authorText}>— {currentQuote.author}</Text>
+            </View>
+          </Animated.View>
         </View>
-      </Animated.View>
-    </Card>
+      </Card>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   bannerCard: {
     marginBottom: 24,
-    padding: 24,
-    overflow: 'hidden',
+  },
+  cardContainer: {
+    padding: 20,
   },
   bannerText: {
     flex: 1,

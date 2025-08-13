@@ -30,8 +30,6 @@ export const TaskList = ({
 const styles = StyleSheet.create({
   tasksCard: {
     flex: 2,
-    borderWidth: 2,
-    borderColor: '#F3F4F6',
   },
   tasksHeader: {
     flexDirection: 'row',

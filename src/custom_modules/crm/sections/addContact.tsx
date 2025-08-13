@@ -62,10 +62,10 @@ export default function ContactForm({ disposeModalHandler }: { disposeModalHandl
     <SafeAreaView style={styles.container}>
       <Header
         title="New Contact"
-        showBack
-        onBack={() => {
+        rightAction={() => {
           disposeModalHandler();
         }}
+        rightText="Close"
       />
 
       <ScrollView

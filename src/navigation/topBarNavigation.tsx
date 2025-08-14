@@ -5,6 +5,8 @@ import type { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import type { RouteProp, ParamListBase } from '@react-navigation/native';
 import { NotificationButton } from '~/components/NotificationButton';
+import { ModuleKeys } from '~/store/interface';
+import { Ionicons } from '@expo/vector-icons';
 
 type ScreenOptionsProps = {
   navigation: BottomTabNavigationProp<ParamListBase, string>;
@@ -32,7 +34,7 @@ export const TopBar = ({ navigation, route }: ScreenOptionsProps): BottomTabNavi
         <View style={styles.headerRight}>
           <NotificationButton navigation={navigation} />
           <TouchableOpacity
-            onPress={() => navigation.navigate('Profile')}
+            onPress={() => navigation.navigate(ModuleKeys.profile)}
             style={styles.profileButton}>
             <IconProfile size={24} color="#000" />
           </TouchableOpacity>

@@ -3,8 +3,9 @@ import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } fr
 import { useNavigation } from '@react-navigation/native';
 import { Card } from '../../components/Card';
 import * as Icons from 'lucide-react-native';
+import { ModuleKeys } from '~/store/interface';
 
-interface Course {
+export interface ICourse {
   id: string;
   title: string;
   description: string;
@@ -14,7 +15,7 @@ interface Course {
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
 }
 
-const mockCourses: Course[] = [
+const mockCourses: ICourse[] = [
   {
     id: '1',
     title: 'Real Estate Fundamentals',
@@ -60,10 +61,10 @@ export const TrainingScreen: React.FC = () => {
     }
   };
 
-  const renderCourse = (course: Course) => (
+  const renderCourse = (course: ICourse) => (
     <Card key={course.id} style={styles.courseCard}>
       <TouchableOpacity
-        onPress={() => navigation.navigate('trainingDetailPage', { course })}
+        onPress={() => navigation.navigate(ModuleKeys.trainingDetailPage, { course })}
         style={styles.courseContent}>
         <View style={styles.courseHeader}>
           <View style={styles.courseInfo}>

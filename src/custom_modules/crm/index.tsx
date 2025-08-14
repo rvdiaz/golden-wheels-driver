@@ -16,6 +16,8 @@ import { Card } from '../../components/Card';
 import * as Icons from 'lucide-react-native';
 import { FloatingMenu } from '~/components/FloatingMenu';
 import ContactForm from './sections/addContact';
+import { moduleScreens } from '~/store/config';
+import { ModuleKeys } from '~/store/interface';
 
 interface Contact {
   id: string;
@@ -248,7 +250,7 @@ export const CRMScreen: React.FC = () => {
     return (
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate('contactDetals', { contact: item });
+          navigation.navigate(ModuleKeys.contactDetals as never, { contact: item } as never);
         }}
         style={styles.contactCard}>
         <View style={styles.contactRow}>

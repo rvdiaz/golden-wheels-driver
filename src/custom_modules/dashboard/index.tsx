@@ -73,7 +73,7 @@ export const Dashboard: React.FC = () => {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <QuoteWidget />
 
-        <ShortCutsButtons />
+        {/*  <ShortCutsButtons /> */}
 
         <TaskMetricsStats completedTasks={completedTasks} />
 

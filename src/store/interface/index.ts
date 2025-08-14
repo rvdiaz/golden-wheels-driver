@@ -1,15 +1,25 @@
 import { IImage } from '~/codidge_components/interfaces';
-import { ModuleKeys } from '../config';
 
-export enum ProductModules {
-  variants = 'variants',
-  pricing = 'pricing',
-  metafields = 'metafields',
+export enum ModuleKeys {
+  dashboard = 'Dashboard',
+  tasks = 'Tasks',
+  crm = 'CRM',
+  tools = 'Tools',
+  training = 'Training',
+  mortgageCalculator = 'MortgageCalculator',
+  propertyTools = 'PropertyTools',
+  prequalifiedTools = 'PrequalifiedTools',
+  expiredListing = 'ExpiredListing',
+  notifications = 'Notifications',
+  trainingDetailPage = 'TrainingDetailPage',
+  contactDetals = 'ContactDetals',
+  profile = 'Profile',
+  /*   contentGallery = "contentGallery", */
 }
 
 export interface IFeatureModule {
   label?: string;
-  moduleKey: ProductModules;
+  moduleKey: ModuleKeys;
   metaData: { [key: string]: any };
 }
 
@@ -34,7 +44,7 @@ export interface BusinessHour {
 }
 
 export interface ITenantModule {
-  label?: string;
+  label: string;
   moduleKey: ModuleKeys;
   path: string;
   type?: string;
@@ -42,6 +52,7 @@ export interface ITenantModule {
   modules?: IFeatureModule[];
   permissions?: IPermission[];
   icon?: string;
+  isBottomBar?: boolean;
 }
 
 export enum StatusUser {

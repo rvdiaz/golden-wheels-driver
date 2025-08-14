@@ -110,6 +110,7 @@ const mockNotifications: Notification[] = [
 export const NotificationsScreen: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
   const [filter, setFilter] = useState<'all' | 'unread' | 'high'>('all');
+  const navigation = useNavigation();
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -264,7 +265,13 @@ export const NotificationsScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header title="Notifications" rightAction={markAllAsRead} rightText="Mark All Read" />
+      <Header
+        title="Notifications"
+        showBack
+        onBack={() => navigation.goBack()}
+        rightAction={markAllAsRead}
+        rightText="Mark All Read"
+      />
 
       <View style={styles.content}>
         {/* Stats Row */}

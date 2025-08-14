@@ -3,10 +3,14 @@ import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } fr
 import { Header } from '../../components/Header';
 import { Card } from '../../components/Card';
 import * as Icons from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
 
 export const ProfileScreen: React.FC = () => {
+  const navigation = useNavigation();
+
   return (
     <SafeAreaView style={styles.container}>
+      <Header title="Profile" showBack onBack={() => navigation.goBack()} />
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <Card style={styles.profileHeader}>
           <View style={styles.avatarContainer}>

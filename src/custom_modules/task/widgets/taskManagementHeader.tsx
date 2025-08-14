@@ -17,7 +17,6 @@ export const TaskManagementHeader = () => {
               Daily Schedule
             </Text>
           </TouchableOpacity>
-
           <TouchableOpacity
             style={[styles.tab, activeTab === 'custom' && styles.activeTab]}
             onPress={() => setActiveTab('custom')}>

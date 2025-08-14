@@ -12,6 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Header } from '../../components/Header';
 import { Card } from '../../components/Card';
 import * as Icons from 'lucide-react-native';
+import { ModuleKeys } from '~/store/interface';
 
 export const ToolsScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -22,7 +23,7 @@ export const ToolsScreen: React.FC = () => {
 
   const tools = [
     {
-      id: 'mortgageCalculator',
+      id: ModuleKeys.mortgageCalculator,
       title: 'Mortgage Calculator',
       description: 'Calculate monthly mortgage payments',
       icon: 'Calculator',
@@ -31,7 +32,7 @@ export const ToolsScreen: React.FC = () => {
       route: 'MortgageCalculator',
     },
     {
-      id: 'prequalifiedTools',
+      id: ModuleKeys.prequalifiedTools,
       title: 'Loan Prequalification',
       description: 'Calculate how much your client can borrow based on income',
       icon: 'BadgeCheck',
@@ -40,7 +41,7 @@ export const ToolsScreen: React.FC = () => {
       route: 'PrequalifiedLoan',
     },
     {
-      id: 'propertyTools',
+      id: ModuleKeys.propertyTools,
       title: 'Property Information',
       description: 'Get owner and property details by address',
       icon: 'Home',
@@ -49,7 +50,7 @@ export const ToolsScreen: React.FC = () => {
       route: 'PropertyInfo',
     },
     {
-      id: 'expiredListing',
+      id: ModuleKeys.expiredListing,
       title: 'Expired Listings',
       description: 'Find expired listings in your target area',
       icon: 'ClockX',

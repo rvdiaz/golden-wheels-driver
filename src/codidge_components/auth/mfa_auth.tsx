@@ -13,13 +13,12 @@ import {
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
 import { Card } from '../../components/Card';
-import { MfaFormData } from './interfaces';
+import { IAuthModuleKeys, MfaFormData } from './interfaces';
+import { useAuthContext } from './context';
 
-interface MfaScreenProps {
-  navigation: any;
-}
+export const MfaAuth = () => {
+  const { setCurrentView } = useAuthContext();
 
-export const MfaAuth: React.FC<MfaScreenProps> = ({ navigation }) => {
   const [countdown, setCountdown] = useState(30);
   const [canResend, setCanResend] = useState(false);
   const inputRefs = useRef<TextInput[]>([]);
@@ -155,7 +154,11 @@ export const MfaAuth: React.FC<MfaScreenProps> = ({ navigation }) => {
             <Text style={styles.helpText}>Having trouble? Contact support for assistance</Text>
           </View>
 
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => {
+              setCurrentView(IAuthModuleKeys.signIn);
+            }}>
             <Icons.ArrowLeft size={20} color="#6B7280" />
             <Text style={styles.backButtonText}>Back to Sign In</Text>
           </TouchableOpacity>

@@ -13,13 +13,16 @@ import {
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
 import { Card } from '../../components/Card';
-import { ResetPasswordFormData } from './interfaces';
+import { IAuthModuleKeys, ResetPasswordFormData } from './interfaces';
+import { useAuthContext } from './context';
 
-interface ResetPasswordScreenProps {
-  navigation: any;
-}
+export const ResetPassword = ({
+  onSignUpSuccess,
+}: {
+  onSignUpSuccess: (userId: string, formData: any) => void;
+}) => {
+  const { setCurrentView } = useAuthContext();
 
-export const ResetPassword: React.FC<ResetPasswordScreenProps> = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
 
@@ -65,7 +68,11 @@ export const ResetPassword: React.FC<ResetPasswordScreenProps> = ({ navigation }
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.content}>
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => {
+              setCurrentView(IAuthModuleKeys.signIn);
+            }}>
             <Icons.ArrowLeft size={24} color="#374151" />
           </TouchableOpacity>
 
@@ -90,7 +97,9 @@ export const ResetPassword: React.FC<ResetPasswordScreenProps> = ({ navigation }
 
             <TouchableOpacity
               style={styles.backToLoginButton}
-              onPress={() => navigation.navigate('Login')}>
+              onPress={() => {
+                setCurrentView(IAuthModuleKeys.signIn);
+              }}>
               <Text style={styles.backToLoginText}>Back to Sign In</Text>
             </TouchableOpacity>
           </View>
@@ -105,7 +114,11 @@ export const ResetPassword: React.FC<ResetPasswordScreenProps> = ({ navigation }
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}>
         <View style={styles.content}>
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => {
+              setCurrentView(IAuthModuleKeys.signIn);
+            }}>
             <Icons.ArrowLeft size={24} color="#374151" />
           </TouchableOpacity>
 
@@ -160,7 +173,10 @@ export const ResetPassword: React.FC<ResetPasswordScreenProps> = ({ navigation }
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>Remember your password? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <TouchableOpacity
+              onPress={() => {
+                setCurrentView(IAuthModuleKeys.signIn);
+              }}>
               <Text style={styles.signInLink}>Sign In</Text>
             </TouchableOpacity>
           </View>

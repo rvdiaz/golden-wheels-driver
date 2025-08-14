@@ -14,13 +14,12 @@ import {
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
 import { Card } from '../../components/Card';
-import { LoginFormData } from './interfaces';
+import { IAuthModuleKeys, LoginFormData } from './interfaces';
+import { useAuthContext } from './context';
 
-interface LoginScreenProps {
-  navigation: any;
-}
+export const SignIn = ({ onLoginSuccess }: { onLoginSuccess: (userId: string) => void }) => {
+  const { setCurrentView } = useAuthContext();
 
-export const SignIn: React.FC<LoginScreenProps> = ({ navigation }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const isLoading = true;
@@ -133,7 +132,10 @@ export const SignIn: React.FC<LoginScreenProps> = ({ navigation }) => {
                   )}
                 />
 
-                <TouchableOpacity onPress={() => navigation.navigate('ResetPassword')}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setCurrentView(IAuthModuleKeys.forcePasswordChange);
+                  }}>
                   <Text style={styles.forgotPassword}>Forgot Password?</Text>
                 </TouchableOpacity>
               </View>
@@ -153,7 +155,10 @@ export const SignIn: React.FC<LoginScreenProps> = ({ navigation }) => {
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>Don't have an account? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+            <TouchableOpacity
+              onPress={() => {
+                setCurrentView(IAuthModuleKeys.signUp);
+              }}>
               <Text style={styles.signUpLink}>Sign Up</Text>
             </TouchableOpacity>
           </View>

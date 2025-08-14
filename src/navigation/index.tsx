@@ -21,6 +21,8 @@ import {
   createTabNavigationBottomBar,
   getTenantRoutes,
 } from '~/store/helpers';
+import { AuthFormWrapper } from '~/core_modules/auth';
+import { AuthProvider } from '~/codidge_components/auth/context';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -42,7 +44,7 @@ export default function Navigation() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {!userInfo ? (
+        {userInfo ? (
           // Authenticated stack
           <>
             {/* <Stack.Screen name="MainTabs" component={() => BottomTabs(tenantModules)} /> */}
@@ -54,12 +56,20 @@ export default function Navigation() {
         ) : (
           // Public/auth stack
           <>
-            <Stack.Screen name="SignIn" component={SignIn} />
-            <Stack.Screen name="ForcePasswordChange" component={ForcePasswordChange} />
-            <Stack.Screen name="ConfirmResetPassword" component={ConfirmResetPassword} />
+            <Stack.Screen
+              name="Auth"
+              component={() => (
+                <AuthProvider>
+                  <AuthFormWrapper />
+                </AuthProvider>
+              )}
+            />
+            {/*             <Stack.Screen name="SignIn" component={SignIn} /> */}
+            {/*    <Stack.Screen name="ForcePasswordChange" component={ForcePasswordChange} /> */}
+            {/*     <Stack.Screen name="ConfirmResetPassword" component={ConfirmResetPassword} />
             <Stack.Screen name="ResetPassword" component={ResetPassword} />
             <Stack.Screen name="Mfa" component={MfaAuth} />
-            <Stack.Screen name="SignUp" component={SignUp} />
+            <Stack.Screen name="SignUp" component={SignUp} /> */}
           </>
         )}
       </Stack.Navigator>

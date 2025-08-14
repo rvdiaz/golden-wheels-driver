@@ -14,13 +14,16 @@ import {
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
 import { Card } from '../../components/Card';
-import { ChangePasswordFormData } from './interfaces';
+import { ChangePasswordFormData, IAuthModuleKeys } from './interfaces';
+import { useAuthContext } from './context';
 
-interface ChangePasswordScreenProps {
-  navigation: any;
-}
+export const ForcePasswordChange = ({
+  onSignUpSuccess,
+}: {
+  onSignUpSuccess: (userId: string, formData: any) => void;
+}) => {
+  const { setCurrentView } = useAuthContext();
 
-export const ForcePasswordChange: React.FC<ChangePasswordScreenProps> = ({ navigation }) => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -79,6 +82,13 @@ export const ForcePasswordChange: React.FC<ChangePasswordScreenProps> = ({ navig
 
   return (
     <SafeAreaView style={styles.container}>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => {
+          setCurrentView(IAuthModuleKeys.signIn);
+        }}>
+        <Icons.ArrowLeft size={24} color="#374151" />
+      </TouchableOpacity>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}>
@@ -302,6 +312,13 @@ const styles = StyleSheet.create({
   },
   keyboardView: {
     flex: 1,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 60,
+    left: 20,
+    padding: 8,
+    zIndex: 1,
   },
   scrollContent: {
     flexGrow: 1,

@@ -1,3 +1,13 @@
+export enum IAuthModuleKeys {
+  signIn = 'SignIn',
+  signUp = 'SignUp',
+  forcePasswordChange = 'ForcePasswordChange',
+  confirmResetPassword = 'ConfirmResetPassword',
+  resetPassword = 'ResetPassword',
+  verifyEmail = 'VerifyEmail',
+  mfa = 'Mfa',
+}
+
 export interface User {
   id: string;
   email: string;

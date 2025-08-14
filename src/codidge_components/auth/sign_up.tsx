@@ -14,13 +14,16 @@ import {
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
 import { Card } from '../../components/Card';
-import { RegisterFormData } from './interfaces';
+import { IAuthModuleKeys, RegisterFormData } from './interfaces';
+import { useAuthContext } from './context';
 
-interface RegisterScreenProps {
-  navigation: any;
-}
+export const SignUp = ({
+  onSignUpSuccess,
+}: {
+  onSignUpSuccess: (userId: string, formData: any) => void;
+}) => {
+  const { setCurrentView } = useAuthContext();
 
-export const SignUp: React.FC<RegisterScreenProps> = ({ navigation }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -57,7 +60,11 @@ export const SignUp: React.FC<RegisterScreenProps> = ({ navigation }) => {
         style={styles.keyboardView}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.header}>
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => {
+                setCurrentView(IAuthModuleKeys.signIn);
+              }}>
               <Icons.ArrowLeft size={24} color="#374151" />
             </TouchableOpacity>
             <Text style={styles.title}>Create Account</Text>
@@ -263,7 +270,10 @@ export const SignUp: React.FC<RegisterScreenProps> = ({ navigation }) => {
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>Already have an account? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <TouchableOpacity
+              onPress={() => {
+                setCurrentView(IAuthModuleKeys.signIn);
+              }}>
               <Text style={styles.signInLink}>Sign In</Text>
             </TouchableOpacity>
           </View>

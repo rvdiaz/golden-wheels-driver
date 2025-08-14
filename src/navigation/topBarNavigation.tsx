@@ -7,6 +7,7 @@ import type { RouteProp, ParamListBase } from '@react-navigation/native';
 import { NotificationButton } from '~/components/NotificationButton';
 import { ModuleKeys } from '~/store/interface';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 type ScreenOptionsProps = {
   navigation: BottomTabNavigationProp<ParamListBase, string>;
@@ -19,45 +20,56 @@ export const TopBar = ({ navigation, route }: ScreenOptionsProps): BottomTabNavi
   const IconProfile = Icons.UserCircle;
 
   return {
-    headerTitle: isDashboard ? '' : route.name, // center empty
+    headerTitle: isDashboard ? '' : route.name,
+    headerTitleAlign: 'center',
+
     headerLeft: () =>
       isDashboard && (
         <View style={styles.headerLeft}>
           <Text style={styles.leftText} numberOfLines={1}>
-            {isDashboard ? 'Welcome, John' : route.name}
+            Welcome, John
           </Text>
         </View>
       ),
-
-    headerRight: () =>
-      isDashboard && (
-        <View style={styles.headerRight}>
-          <NotificationButton navigation={navigation} />
-          <TouchableOpacity
-            onPress={() => navigation.navigate(ModuleKeys.profile)}
-            style={styles.profileButton}>
-            <IconProfile size={24} color="#000" />
-          </TouchableOpacity>
-        </View>
-      ),
-    headerTitleAlign: 'center',
+    headerRight: () => (
+      <View style={styles.headerRight}>
+        <NotificationButton navigation={navigation} />
+        <TouchableOpacity
+          onPress={() => navigation.navigate(ModuleKeys.profile)}
+          style={styles.profileButton}>
+          <LinearGradient colors={['#4facfe', '#00f2fe']} style={styles.gradientCircle}>
+            <IconProfile size={26} color="#fff" />
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
+    ),
   };
 };
 
 const styles = StyleSheet.create({
   headerLeft: {
-    paddingLeft: 16, // matches app padding
+    marginLeft: 16,
   },
   leftText: {
-    fontSize: 16,
-    fontWeight: '500',
+    color: '#000',
+    fontSize: 18,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    fontFamily: 'HelveticaNeue-Medium',
   },
   headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
     marginRight: 16,
+    gap: 12,
   },
   profileButton: {
-    marginLeft: 20,
+    borderRadius: 50,
+    overflow: 'hidden',
+  },
+  gradientCircle: {
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

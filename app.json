@@ -30,8 +30,8 @@
     },
     "extra": {
       "GRAPHQL_ENDPOINT": "http://localhost:4000/graphql",
-      "COGNITO_USERPOOL_ID": "us-east-1_lPwx7GtgO",
-      "COGNITO_CLIENT_ID": "2m2cdpj0sdbpdgbd56s796uekr",
+      "COGNITO_USERPOOL_ID": "us-east-2_atzU5iCQW",
+      "COGNITO_CLIENT_ID": "66ee5np2qnvoar3bh5h8gklf59",
       "eas": {
         "projectId": "777406c6-4dff-46d3-a876-88315ae37291"
       }

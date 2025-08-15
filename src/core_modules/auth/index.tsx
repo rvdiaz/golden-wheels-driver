@@ -1,28 +1,77 @@
-import React, { useState } from 'react';
-import { ConfirmResetPassword } from '~/codidge_components/auth/confirm_reset_password';
+import React from 'react';
+import { ConfirmResetPassword } from '~/codidge_components/auth/forms/confirm_reset_password';
 import { useAuthContext } from '~/codidge_components/auth/context';
-import { ForcePasswordChange } from '~/codidge_components/auth/force_password_change';
+import Constants from 'expo-constants';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { addCustomerMutation } from './graphql/mutations';
+import { updateUser } from '~/store/user';
+import { IUser } from '~/store/interface';
+import { signOut } from 'aws-amplify/auth/cognito';
+import { getCustomerQuery } from './graphql/queries';
 import { IAuthModuleKeys } from '~/codidge_components/auth/interfaces';
-import { MfaAuth } from '~/codidge_components/auth/mfa_auth';
-import { ResetPassword } from '~/codidge_components/auth/reset_password';
-import { SignIn } from '~/codidge_components/auth/sign_in';
-import { SignUp } from '~/codidge_components/auth/sign_up';
+import { SignUpForm } from '~/codidge_components/auth/forms/sign_up';
+import { ForcePasswordChange } from '~/codidge_components/auth/forms/force_password_change';
+import { ResetPassword } from '~/codidge_components/auth/forms/reset_password';
+import { VerifyEmail } from '~/codidge_components/auth/forms/verify_email';
+import { SignInForm } from '~/codidge_components/auth/forms/sign_in';
 
-interface IAuthWrapperEvents {
-  onLoginSuccess: (userId: string) => void;
-  onSignUpSuccess: (userId: string, formData: any) => void;
-}
+const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const AuthFormWrapper = () => {
   const { currentView } = useAuthContext();
+  const [addCustomerFn] = useMutation<{ addCustomer: IUser }>(addCustomerMutation);
+  const [getCustomerFn] = useLazyQuery<{ getCustomer: IUser }>(getCustomerQuery);
 
-  const handleLoginSuccess = async (userId: string) => {};
+  const handleLoginSuccess = async (userId: string) => {
+    try {
+      const customer = await getCustomerFn({
+        variables: {
+          tenant: {
+            tenantId: tenantId,
+          },
+          customerId: userId,
+        },
+      });
 
-  const handleRegisterSuccess = async (userId: string, formData: any) => {};
+      if (!customer.data?.getCustomer) {
+        throw Error('Error getting user');
+      }
+
+      updateUser(customer.data?.getCustomer);
+    } catch (error) {
+      console.log('::::error getting uustome', error);
+      await signOut();
+    }
+  };
+
+  const handleRegisterSuccess = async (userId: string, formData: any) => {
+    try {
+      const customerData = await addCustomerFn({
+        variables: {
+          tenant: {
+            tenantId: tenantId,
+          },
+          customer: {
+            ...formData,
+            id: userId,
+          },
+        },
+      });
+
+      if (!customerData.data?.addCustomer) {
+        throw Error('Error getting user');
+      }
+
+      updateUser(customerData.data?.addCustomer);
+    } catch (error) {
+      await signOut();
+      console.log(':::error', error);
+    }
+  };
 
   switch (currentView) {
     case IAuthModuleKeys.signUp:
-      return <SignUp onSignUpSuccess={handleRegisterSuccess} />;
+      return <SignUpForm onSignUpSuccess={handleRegisterSuccess} />;
 
     case IAuthModuleKeys.forcePasswordChange:
       return <ForcePasswordChange onSignUpSuccess={handleRegisterSuccess} />;
@@ -34,9 +83,9 @@ export const AuthFormWrapper = () => {
       return <ConfirmResetPassword />;
 
     case IAuthModuleKeys.verifyEmail:
-      return <MfaAuth />;
-      return;
+      return <VerifyEmail onSignUpSuccess={handleRegisterSuccess} />;
+
     default:
-      return <SignIn onLoginSuccess={handleLoginSuccess} />;
+      return <SignInForm onLoginSuccess={handleLoginSuccess} />;
   }
 };

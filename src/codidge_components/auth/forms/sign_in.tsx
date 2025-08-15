@@ -12,35 +12,63 @@ import {
   ScrollView,
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import * as Icons from 'lucide-react-native';
-import { Card } from '../../components/Card';
-import { IAuthModuleKeys, LoginFormData } from './interfaces';
-import { useAuthContext } from './context';
+import { fetchUserAttributes, signIn, signOut } from 'aws-amplify/auth/cognito';
+import { useAuthContext } from '../context';
+import { IAuthModuleKeys, LoginFormData } from '../interfaces';
+import { Card } from '~/components/Card';
 
-export const SignIn = ({ onLoginSuccess }: { onLoginSuccess: (userId: string) => void }) => {
+const schema = yup.object({
+  email: yup.string().email('Please enter a valid email').required('Email is required'),
+  password: yup
+    .string()
+    .min(6, 'Password must be at least 6 characters')
+    .required('Password is required'),
+});
+
+export const SignInForm = ({ onLoginSuccess }: { onLoginSuccess: (userId: string) => void }) => {
   const { setCurrentView } = useAuthContext();
 
+  const [loading, setloading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
-  const isLoading = true;
 
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormData>({
+    resolver: yupResolver(schema),
     defaultValues: {
       email: '',
       password: '',
-      rememberMe: false,
     },
   });
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      //await login(data.email, data.password);
-    } catch (error) {
+      setloading(true);
+      const user = await signIn({
+        username: data.email,
+        password: data.password,
+        options: {
+          authFlowType: 'USER_PASSWORD_AUTH',
+        },
+      });
+
+      if (user.isSignedIn) {
+        const att = await fetchUserAttributes();
+
+        const userId = att?.['sub'] || '';
+
+        await onLoginSuccess(userId);
+        setloading(false);
+      }
+    } catch (error: any) {
+      setloading(false);
       Alert.alert('Login Failed', 'Invalid email or password');
+      await signOut();
     }
   };
 
@@ -117,21 +145,6 @@ export const SignIn = ({ onLoginSuccess }: { onLoginSuccess: (userId: string) =>
               </View>
 
               <View style={styles.optionsRow}>
-                <Controller
-                  control={control}
-                  name="rememberMe"
-                  render={({ field: { onChange, value } }) => (
-                    <TouchableOpacity
-                      style={styles.checkboxContainer}
-                      onPress={() => onChange(!value)}>
-                      <View style={[styles.checkbox, value && styles.checkboxChecked]}>
-                        {value && <Icons.Check size={16} color="white" />}
-                      </View>
-                      <Text style={styles.checkboxLabel}>Remember me</Text>
-                    </TouchableOpacity>
-                  )}
-                />
-
                 <TouchableOpacity
                   onPress={() => {
                     setCurrentView(IAuthModuleKeys.forcePasswordChange);
@@ -141,10 +154,10 @@ export const SignIn = ({ onLoginSuccess }: { onLoginSuccess: (userId: string) =>
               </View>
 
               <TouchableOpacity
-                style={[styles.loginButton, isLoading && styles.loginButtonDisabled]}
+                style={[styles.loginButton, loading && styles.loginButtonDisabled]}
                 onPress={handleSubmit(onSubmit)}
-                disabled={isLoading}>
-                {isLoading ? (
+                disabled={loading}>
+                {loading ? (
                   <Text style={styles.loginButtonText}>Signing In...</Text>
                 ) : (
                   <Text style={styles.loginButtonText}>Sign In</Text>
@@ -258,7 +271,7 @@ const styles = StyleSheet.create({
   },
   optionsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     marginBottom: 24,
   },

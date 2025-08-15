@@ -22,12 +22,10 @@ export interface User {
 export interface LoginFormData {
   email: string;
   password: string;
-  rememberMe?: boolean;
 }
 
 export interface RegisterFormData {
-  firstName: string;
-  lastName: string;
+  name: string;
   email: string;
   phone: string;
   password: string;

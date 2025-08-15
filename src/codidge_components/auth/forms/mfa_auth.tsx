@@ -12,9 +12,9 @@ import {
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
-import { Card } from '../../components/Card';
-import { IAuthModuleKeys, MfaFormData } from './interfaces';
-import { useAuthContext } from './context';
+import { useAuthContext } from '../context';
+import { IAuthModuleKeys, MfaFormData } from '../interfaces';
+import { Card } from '~/components/Card';
 
 export const MfaAuth = () => {
   const { setCurrentView } = useAuthContext();

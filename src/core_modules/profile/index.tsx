@@ -4,6 +4,7 @@ import { Header } from '../../components/Header';
 import { Card } from '../../components/Card';
 import * as Icons from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
+import { LogoutButton } from '~/codidge_components/auth/widgets/logoutButton';
 
 export const ProfileScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -76,11 +77,7 @@ export const ProfileScreen: React.FC = () => {
             <Icons.ChevronRight size={20} color="#9CA3AF" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.menuItem, { borderBottomWidth: 0 }]}>
-            <Icons.LogOut size={20} color="#EF4444" />
-            <Text style={[styles.menuText, { color: '#EF4444' }]}>Sign Out</Text>
-            <Icons.ChevronRight size={20} color="#9CA3AF" />
-          </TouchableOpacity>
+          <LogoutButton />
         </Card>
       </ScrollView>
     </SafeAreaView>

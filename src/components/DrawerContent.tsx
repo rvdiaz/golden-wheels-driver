@@ -2,15 +2,15 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
 import * as Icons from 'lucide-react-native';
-import { ITenantModule } from '~/store/interface';
+import { IModule } from '~/store/interface';
 
 interface DrawerContentProps {
   navigation: any;
-  modules: ITenantModule[];
+  modules: IModule[];
 }
 
 export const DrawerContent: React.FC<DrawerContentProps> = ({ navigation, modules }) => {
-  const renderDrawerItem = (module: ITenantModule) => {
+  const renderDrawerItem = (module: IModule) => {
     const IconComponent = (Icons as any)[module.icon ?? ''] || Icons.Home;
 
     return (

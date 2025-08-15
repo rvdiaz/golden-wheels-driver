@@ -12,9 +12,9 @@ import {
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
-import { Card } from '../../components/Card';
-import { IAuthModuleKeys, ResetPasswordFormData } from './interfaces';
-import { useAuthContext } from './context';
+import { useAuthContext } from '../context';
+import { IAuthModuleKeys, ResetPasswordFormData } from '../interfaces';
+import { Card } from '~/components/Card';
 
 export const ResetPassword = ({
   onSignUpSuccess,
@@ -172,6 +172,8 @@ export const ResetPassword = ({
           </Card>
 
           <View style={styles.footer}>
+            {' '}
+            vald
             <Text style={styles.footerText}>Remember your password? </Text>
             <TouchableOpacity
               onPress={() => {

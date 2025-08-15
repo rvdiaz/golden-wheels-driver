@@ -2,11 +2,9 @@ import { ApolloClient, ApolloLink, ApolloProvider, HttpLink, InMemoryCache } fro
 import { setContext } from '@apollo/client/link/context';
 import Constants from 'expo-constants';
 import Navigation from './src/navigation';
-import { DefaultTheme } from '@react-navigation/native';
-import { useColorScheme } from 'react-native';
-import { useMemo } from 'react';
 import { Amplify } from 'aws-amplify';
 import { cognitoUserPoolsTokenProvider } from 'aws-amplify/auth/cognito';
+
 
 const httpLink = new HttpLink({
   uri: Constants.expoConfig?.extra?.GRAPHQL_ENDPOINT,
@@ -20,6 +18,7 @@ Amplify.configure({
       loginWith: {
         email: true,
       },
+      
     },
   },
 });
@@ -63,8 +62,6 @@ const client = new ApolloClient({
 });
 
 export default function App() {
-  const colorScheme = useColorScheme();
-  const theme = useMemo(() => DefaultTheme, [colorScheme]);
 
   return (
     <ApolloProvider client={client}>

@@ -1,12 +1,12 @@
 import { TypedNavigator } from '@react-navigation/native';
-import { ITenantModule, IUser, ModuleKeys } from '../interface';
+import { IModule, IUser, ModuleKeys } from '../interface';
 import { Ionicons } from '@expo/vector-icons';
 import { moduleScreens } from '../config';
 
 export const getTenantRoutes = (user: IUser | null) => {
   //  const modules = user?.tenantModules ?? [];
 
-  const modules: ITenantModule[] = [
+  const modules: IModule[] = [
     {
       label: 'Dashboard',
       moduleKey: ModuleKeys.dashboard,
@@ -109,10 +109,7 @@ export const getTenantRoutes = (user: IUser | null) => {
   return modules;
 };
 
-export const createNestedNavigationScreens = (
-  modules: ITenantModule[],
-  stack: TypedNavigator<any>
-) => {
+export const createNestedNavigationScreens = (modules: IModule[], stack: TypedNavigator<any>) => {
   return modules.flatMap((mod) => {
     const screens: React.ReactNode[] = [];
 
@@ -152,14 +149,11 @@ export const createNestedNavigationScreens = (
   });
 };
 
-export const createTabNavigationBottomBar = (
-  tab: TypedNavigator<any>,
-  modules: ITenantModule[]
-) => {
+export const createTabNavigationBottomBar = (tab: TypedNavigator<any>, modules: IModule[]) => {
   return modules.map((mod) => mod.isBottomBar && createTabNavigationItem(tab, mod));
 };
 
-export const createTabNavigationItem = (tab: TypedNavigator<any>, module: ITenantModule) => {
+export const createTabNavigationItem = (tab: TypedNavigator<any>, module: IModule) => {
   return (
     <tab.Screen
       key={module.moduleKey}

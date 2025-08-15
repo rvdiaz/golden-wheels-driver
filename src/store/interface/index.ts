@@ -20,7 +20,7 @@ export enum ModuleKeys {
 export interface IFeatureModule {
   label?: string;
   moduleKey: ModuleKeys;
-  metaData: { [key: string]: any };
+  metaData: any;
 }
 
 export interface ITenantTheme {
@@ -43,14 +43,13 @@ export interface BusinessHour {
   isClosed: boolean;
 }
 
-export interface ITenantModule {
+export interface IModule {
   label: string;
   moduleKey: ModuleKeys;
   path: string;
   type?: string;
-  metaData: string;
+  metaData: any;
   modules?: IFeatureModule[];
-  permissions?: IPermission[];
   icon?: string;
   isBottomBar?: boolean;
 }
@@ -62,25 +61,11 @@ export enum StatusUser {
   bloqueado,
 }
 
-export interface IPermission {
-  slug: string;
-  label: string;
-}
-
-export enum UserRoles {
-  admin = 'ADMIN',
-  manager = 'MANAGER',
-}
-
 export interface IUser {
   email: string;
-  loading?: boolean;
   phone: string;
   id: string;
   name: string;
-  status: StatusUser | string;
-  role: UserRoles | 'OWNER';
   metaData: any;
-  permissions?: IPermission[];
-  tenantModules: ITenantModule[];
+  modules: IModule[];
 }

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Constants from 'expo-constants';
 import {
   View,
   Text,
@@ -13,30 +14,59 @@ import {
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
-import { Card } from '../../components/Card';
-import { IAuthModuleKeys, RegisterFormData } from './interfaces';
-import { useAuthContext } from './context';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { signUp } from 'aws-amplify/auth/cognito';
+import { useAuthContext } from '../context';
+import { IAuthModuleKeys, RegisterFormData } from '../interfaces';
+import { Card } from '~/components/Card';
 
-export const SignUp = ({
+const schema = yup.object({
+  name: yup
+    .string()
+    .required('Full name is required')
+    .min(2, 'Full name must be at least 2 characters'),
+  email: yup.string().email('Please enter a valid email').required('Email is required'),
+  phone: yup
+    .string()
+    .required('Phone number is required')
+    .matches(/^\+?[\d\s\-\(\)]+$/, 'Please enter a valid phone number'),
+  password: yup
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .matches(/\d/, 'Password must contain at least one number')
+    .required('Password is required'),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref('password')], 'Passwords must match')
+    .required('Please confirm your password'),
+  agreeToTerms: yup
+    .boolean()
+    .required('You must agree to the terms and conditions')
+    .oneOf([true], 'You must agree to the terms and conditions'),
+});
+
+export const SignUpForm = ({
   onSignUpSuccess,
 }: {
   onSignUpSuccess: (userId: string, formData: any) => void;
 }) => {
-  const { setCurrentView } = useAuthContext();
+  const { setCurrentView, setTempData } = useAuthContext();
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const isLoading = false;
+  const [loading, setloading] = useState(false);
 
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<RegisterFormData>({
+    resolver: yupResolver(schema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
+      name: '',
       email: '',
       phone: '',
       password: '',
@@ -47,8 +77,46 @@ export const SignUp = ({
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      //await register(data);
+      const tenantId = Constants.expoConfig?.extra?.TENANTID;
+      setloading(true);
+      const result = await signUp({
+        username: data.email,
+        password: data.password,
+        options: {
+          userAttributes: {
+            email: data.email,
+            phone_number: `+1${data.phone}`,
+            'custom:user_type': 'customer',
+            'custom:role': 'admin',
+            'custom:tenantId': tenantId,
+          },
+        },
+      });
+
+      const needsVerification = result.nextStep.signUpStep === 'CONFIRM_SIGN_UP';
+      if (needsVerification) {
+        setTempData({
+          email: data.email,
+          password: data.password,
+          name: data.name,
+        });
+        setCurrentView(IAuthModuleKeys.verifyEmail);
+
+        return;
+      }
+
+      if (!result.userId) {
+        throw Error('Error sign up');
+      }
+
+      await onSignUpSuccess('userhwreee', {
+        email: data.email,
+        name: data.name,
+        phone: data.phone,
+      });
+      setloading(false);
     } catch (error) {
+      setloading(false);
       Alert.alert('Registration Failed', 'Please try again');
     }
   };
@@ -73,54 +141,26 @@ export const SignUp = ({
 
           <Card style={styles.formCard}>
             <View style={styles.form}>
-              <View style={styles.nameRow}>
-                <View style={[styles.inputGroup, { flex: 1, marginRight: 8 }]}>
-                  <Text style={styles.label}>First Name</Text>
-                  <Controller
-                    control={control}
-                    name="firstName"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <View style={styles.inputContainer}>
-                        <Icons.User size={20} color="#6B7280" style={styles.inputIcon} />
-                        <TextInput
-                          style={[styles.input, errors.firstName && styles.inputError]}
-                          placeholder="First name"
-                          value={value}
-                          onChangeText={onChange}
-                          onBlur={onBlur}
-                          autoCapitalize="words"
-                        />
-                      </View>
-                    )}
-                  />
-                  {errors.firstName && (
-                    <Text style={styles.errorText}>{errors.firstName.message}</Text>
+              <View style={[styles.inputGroup, { flex: 1 }]}>
+                <Text style={styles.label}>Full Name</Text>
+                <Controller
+                  control={control}
+                  name="name"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <View style={styles.inputContainer}>
+                      <Icons.User size={20} color="#6B7280" style={styles.inputIcon} />
+                      <TextInput
+                        style={[styles.input, errors.name && styles.inputError]}
+                        placeholder="Full name"
+                        value={value}
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                        autoCapitalize="words"
+                      />
+                    </View>
                   )}
-                </View>
-
-                <View style={[styles.inputGroup, { flex: 1, marginLeft: 8 }]}>
-                  <Text style={styles.label}>Last Name</Text>
-                  <Controller
-                    control={control}
-                    name="lastName"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <View style={styles.inputContainer}>
-                        <Icons.User size={20} color="#6B7280" style={styles.inputIcon} />
-                        <TextInput
-                          style={[styles.input, errors.lastName && styles.inputError]}
-                          placeholder="Last name"
-                          value={value}
-                          onChangeText={onChange}
-                          onBlur={onBlur}
-                          autoCapitalize="words"
-                        />
-                      </View>
-                    )}
-                  />
-                  {errors.lastName && (
-                    <Text style={styles.errorText}>{errors.lastName.message}</Text>
-                  )}
-                </View>
+                />
+                {errors.name && <Text style={styles.errorText}>{errors.name.message}</Text>}
               </View>
 
               <View style={styles.inputGroup}>
@@ -256,10 +296,10 @@ export const SignUp = ({
               />
 
               <TouchableOpacity
-                style={[styles.registerButton, isLoading && styles.registerButtonDisabled]}
+                style={[styles.registerButton, loading && styles.registerButtonDisabled]}
                 onPress={handleSubmit(onSubmit)}
-                disabled={isLoading}>
-                {isLoading ? (
+                disabled={loading}>
+                {loading ? (
                   <Text style={styles.registerButtonText}>Creating Account...</Text>
                 ) : (
                   <Text style={styles.registerButtonText}>Create Account</Text>
@@ -322,9 +362,6 @@ const styles = StyleSheet.create({
   },
   form: {
     padding: 24,
-  },
-  nameRow: {
-    flexDirection: 'row',
   },
   inputGroup: {
     marginBottom: 20,

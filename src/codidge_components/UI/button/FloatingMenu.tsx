@@ -14,14 +14,18 @@ export const FloatingMenu: React.FC<FloatingMenuProps> = ({
   icon = 'Plus',
   onPress = () => {},
 }) => {
-  const IconComponent = Icons[icon] ?? Icons.Plus;
+  const IconComponent = (Icons[icon] ?? Icons.Plus) as React.ComponentType<{
+    size: number;
+    color: string;
+  }>;
 
   return (
     <PrimaryButton
+      onPress={onPress}
       title={title}
       size={ButtonSize.LARGE}
       style={styles.fab}
-      rightWidget={(<IconComponent size={20} color="#fff" />) as ReactNode}
+      rightWidget={<IconComponent size={20} color="#fff" />}
     />
   );
 };

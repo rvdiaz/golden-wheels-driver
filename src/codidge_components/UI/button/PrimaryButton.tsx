@@ -8,6 +8,7 @@ import {
   TextStyle,
   View,
 } from 'react-native';
+import { LoadingSpinner } from '../loading/loadingSpinner';
 
 export enum ButtonSize {
   SMALL = 'sm',
@@ -62,7 +63,7 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
         style,
       ]}>
       {loading ? (
-        <ActivityIndicator color="#fff" />
+        <LoadingSpinner />
       ) : (
         <View style={styles.buttonBody}>
           {leftWidget && leftWidget}

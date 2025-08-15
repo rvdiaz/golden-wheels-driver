@@ -4,7 +4,7 @@ import { TouchableOpacity, StyleSheet, ActivityIndicator, ViewStyle } from 'reac
 interface IconButtonProps {
   loading?: boolean;
   icon: ReactNode;
-  variant?: 'primary' | 'secondary' | 'danger';
+  variant?: 'primary' | 'secondary' | 'danger' | 'plain';
   disabled?: boolean;
   onPress?: () => void;
   style?: ViewStyle;
@@ -22,6 +22,10 @@ const variantStyles = {
   danger: {
     backgroundColor: '#FEE2E2', // red-100
     color: '#DC2626', // red-600
+  },
+  plain: {
+    backgroundColor: '#fff', // red-100
+    color: '#4B5563', // red-600
   },
 };
 
@@ -48,7 +52,7 @@ const IconButton: React.FC<IconButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    padding: 8,
+    padding: 6,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',

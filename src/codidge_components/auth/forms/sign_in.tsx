@@ -21,6 +21,7 @@ import { IAuthModuleKeys, LoginFormData } from '../interfaces';
 import { Card } from '~/codidge_components/UI/card';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import TextButton from '~/codidge_components/UI/button/TextButton';
+import InputField from '~/codidge_components/UI/form/inputs/inputField';
 
 const schema = yup.object({
   email: yup.string().email('Please enter a valid email').required('Email is required'),
@@ -90,47 +91,41 @@ export const SignInForm = ({ onLoginSuccess }: { onLoginSuccess: (userId: string
 
           <Card style={styles.formCard}>
             <View style={styles.form}>
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Email</Text>
-                <Controller
-                  control={control}
-                  name="email"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <View style={styles.inputContainer}>
-                      <Icons.Mail size={20} color="#6B7280" style={styles.inputIcon} />
-                      <TextInput
-                        style={[styles.input, errors.email && styles.inputError]}
-                        placeholder="Enter your email"
-                        value={value}
-                        onChangeText={onChange}
-                        onBlur={onBlur}
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                        autoComplete="email"
-                      />
-                    </View>
-                  )}
-                />
-                {errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
-              </View>
+              <Controller
+                control={control}
+                name="email"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    label="Email"
+                    placeholder="Enter your email"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    keyboardType="email-address"
+                    error={!!errors.email}
+                    errorMessage={errors.email?.message}
+                    autoCapitalize="none"
+                    autoComplete="email"
+                  />
+                )}
+              />
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Password</Text>
-                <Controller
-                  control={control}
-                  name="password"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <View style={styles.inputContainer}>
-                      <Icons.Lock size={20} color="#6B7280" style={styles.inputIcon} />
-                      <TextInput
-                        style={[styles.input, errors.password && styles.inputError]}
-                        placeholder="Enter your password"
-                        value={value}
-                        onChangeText={onChange}
-                        onBlur={onBlur}
-                        secureTextEntry={!showPassword}
-                        autoComplete="password"
-                      />
+              <Controller
+                control={control}
+                name="password"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    leftIcon={<Icons.Lock size={20} color="#6B7280" style={styles.inputIcon} />}
+                    label="Password"
+                    placeholder="Enter your password"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    secureTextEntry={!showPassword}
+                    error={!!errors.password}
+                    errorMessage={errors.password?.message}
+                    autoComplete="password"
+                    rightIcon={
                       <TouchableOpacity
                         onPress={() => setShowPassword(!showPassword)}
                         style={styles.eyeIcon}>
@@ -140,11 +135,10 @@ export const SignInForm = ({ onLoginSuccess }: { onLoginSuccess: (userId: string
                           <Icons.Eye size={20} color="#6B7280" />
                         )}
                       </TouchableOpacity>
-                    </View>
-                  )}
-                />
-                {errors.password && <Text style={styles.errorText}>{errors.password.message}</Text>}
-              </View>
+                    }
+                  />
+                )}
+              />
 
               <View style={styles.optionsRow}>
                 <TextButton
@@ -257,7 +251,7 @@ const styles = StyleSheet.create({
     borderColor: '#EF4444',
   },
   eyeIcon: {
-    padding: 16,
+    paddingHorizontal: 10,
   },
   errorText: {
     fontSize: 14,

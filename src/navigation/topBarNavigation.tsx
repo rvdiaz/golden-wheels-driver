@@ -8,6 +8,7 @@ import { NotificationButton } from '~/components/NotificationButton';
 import { ModuleKeys } from '~/store/interface';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import IconButton from '~/codidge_components/UI/button/IconButton';
 
 type ScreenOptionsProps = {
   navigation: BottomTabNavigationProp<ParamListBase, string>;
@@ -34,13 +35,12 @@ export const TopBar = ({ navigation, route }: ScreenOptionsProps): BottomTabNavi
     headerRight: () => (
       <View style={styles.headerRight}>
         <NotificationButton navigation={navigation} />
-        <TouchableOpacity
+        <IconButton
           onPress={() => navigation.navigate(ModuleKeys.profile)}
-          style={styles.profileButton}>
-          <LinearGradient colors={['#4facfe', '#00f2fe']} style={styles.gradientCircle}>
-            <IconProfile size={26} color="#fff" />
-          </LinearGradient>
-        </TouchableOpacity>
+          variant="plain"
+          style={styles.profileButton}
+          icon={<IconProfile size={26} />}
+        />
       </View>
     ),
   };
@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
   profileButton: {
     borderRadius: 50,
     overflow: 'hidden',
+    backgroundColor: '#fff',
   },
   gradientCircle: {
     borderRadius: 20,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Card } from '~/components/Card';
+import { Card } from '~/codidge_components/UI/card';
 import { ITask } from '../interfaces';
 import { TaskItem } from './taskItem';
 

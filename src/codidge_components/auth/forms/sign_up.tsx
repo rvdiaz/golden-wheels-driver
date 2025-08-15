@@ -19,7 +19,9 @@ import * as yup from 'yup';
 import { signUp } from 'aws-amplify/auth/cognito';
 import { useAuthContext } from '../context';
 import { IAuthModuleKeys, RegisterFormData } from '../interfaces';
-import { Card } from '~/components/Card';
+import { Card } from '~/codidge_components/UI/card';
+import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import TextButton from '~/codidge_components/UI/button/TextButton';
 
 const schema = yup.object({
   name: yup
@@ -295,27 +297,25 @@ export const SignUpForm = ({
                 )}
               />
 
-              <TouchableOpacity
-                style={[styles.registerButton, loading && styles.registerButtonDisabled]}
+              <PrimaryButton
                 onPress={handleSubmit(onSubmit)}
-                disabled={loading}>
-                {loading ? (
-                  <Text style={styles.registerButtonText}>Creating Account...</Text>
-                ) : (
-                  <Text style={styles.registerButtonText}>Create Account</Text>
-                )}
-              </TouchableOpacity>
+                title="Create Account"
+                loading={loading}
+                size={ButtonSize.LARGE}
+              />
             </View>
           </Card>
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>Already have an account? </Text>
-            <TouchableOpacity
+            <TextButton
+              textStyle={styles.signInLink}
+              title="Sign In"
+              size={ButtonSize.SMALL}
               onPress={() => {
                 setCurrentView(IAuthModuleKeys.signIn);
-              }}>
-              <Text style={styles.signInLink}>Sign In</Text>
-            </TouchableOpacity>
+              }}
+            />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

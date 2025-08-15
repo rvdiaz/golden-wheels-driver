@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
-import { Header } from '../../components/Header';
-import { Card } from '../../components/Card';
+import { Header } from '../../codidge_components/UI/header';
+import { Card } from '../../codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
 
 interface ScheduleItem {

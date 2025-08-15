@@ -11,8 +11,8 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 import * as Icons from 'lucide-react-native';
-import { Card } from '~/components/Card';
-import { Header } from '~/components/Header';
+import { Card } from '~/codidge_components/UI/card';
+import { Header } from '~/codidge_components/UI/header';
 import { VideoPlayerScreen } from './VideoPlayerScreen';
 
 interface Video {

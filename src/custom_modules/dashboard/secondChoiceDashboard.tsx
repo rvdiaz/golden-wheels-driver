@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, Dimensions } from 'react-native';
 import { LineChart, PieChart } from 'react-native-chart-kit';
-import { Card } from '../../components/Card';
-import { Header } from '../../components/Header';
+import { Card } from '../../codidge_components/UI/card';
+import { Header } from '../../codidge_components/UI/header';
 import * as Icons from 'lucide-react-native';
-import { FloatingMenu } from '~/components/FloatingMenu';
+import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 
 const screenWidth = Dimensions.get('window').width;
 

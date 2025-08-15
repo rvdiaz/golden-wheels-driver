@@ -18,7 +18,9 @@ import * as Icons from 'lucide-react-native';
 import { fetchUserAttributes, signIn, signOut } from 'aws-amplify/auth/cognito';
 import { useAuthContext } from '../context';
 import { IAuthModuleKeys, LoginFormData } from '../interfaces';
-import { Card } from '~/components/Card';
+import { Card } from '~/codidge_components/UI/card';
+import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import TextButton from '~/codidge_components/UI/button/TextButton';
 
 const schema = yup.object({
   email: yup.string().email('Please enter a valid email').required('Email is required'),
@@ -145,42 +147,35 @@ export const SignInForm = ({ onLoginSuccess }: { onLoginSuccess: (userId: string
               </View>
 
               <View style={styles.optionsRow}>
-                <TouchableOpacity
+                <TextButton
+                  textStyle={styles.forgotPassword}
+                  title="Forgot Password?"
                   onPress={() => {
                     setCurrentView(IAuthModuleKeys.forcePasswordChange);
-                  }}>
-                  <Text style={styles.forgotPassword}>Forgot Password?</Text>
-                </TouchableOpacity>
+                  }}
+                />
               </View>
 
-              <TouchableOpacity
-                style={[styles.loginButton, loading && styles.loginButtonDisabled]}
+              <PrimaryButton
                 onPress={handleSubmit(onSubmit)}
-                disabled={loading}>
-                {loading ? (
-                  <Text style={styles.loginButtonText}>Signing In...</Text>
-                ) : (
-                  <Text style={styles.loginButtonText}>Sign In</Text>
-                )}
-              </TouchableOpacity>
+                title="Sign In"
+                loading={loading}
+                size={ButtonSize.LARGE}
+              />
             </View>
           </Card>
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>Don't have an account? </Text>
-            <TouchableOpacity
+
+            <TextButton
+              textStyle={styles.signUpLink}
+              title="Sign Up"
+              size={ButtonSize.SMALL}
               onPress={() => {
                 setCurrentView(IAuthModuleKeys.signUp);
-              }}>
-              <Text style={styles.signUpLink}>Sign Up</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.testCredentials}>
-            <Text style={styles.testTitle}>Test Credentials:</Text>
-            <Text style={styles.testText}>MFA Flow: mfa@test.com / password</Text>
-            <Text style={styles.testText}>Password Change: change@test.com / password</Text>
-            <Text style={styles.testText}>Normal Login: any other email / password</Text>
+              }}
+            />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

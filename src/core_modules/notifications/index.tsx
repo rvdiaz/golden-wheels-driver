@@ -9,8 +9,8 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Header } from '../../components/Header';
-import { Card } from '../../components/Card';
+import { Header } from '../../codidge_components/UI/header';
+import { Card } from '../../codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
 
 interface Notification {

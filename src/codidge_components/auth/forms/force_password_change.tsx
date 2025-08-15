@@ -15,7 +15,8 @@ import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
 import { useAuthContext } from '../context';
 import { ChangePasswordFormData, IAuthModuleKeys } from '../interfaces';
-import { Card } from '~/components/Card';
+import { Card } from '~/codidge_components/UI/card';
+import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 
 export const ForcePasswordChange = ({
   onSignUpSuccess,
@@ -287,16 +288,13 @@ export const ForcePasswordChange = ({
                 </View>
               </View>
 
-              <TouchableOpacity
-                style={[styles.changeButton, isLoading && styles.changeButtonDisabled]}
+              <PrimaryButton
                 onPress={handleSubmit(onSubmit)}
-                disabled={isLoading}>
-                {isLoading ? (
-                  <Text style={styles.changeButtonText}>Changing Password...</Text>
-                ) : (
-                  <Text style={styles.changeButtonText}>Change Password</Text>
-                )}
-              </TouchableOpacity>
+                title="Change Password"
+                loading={isLoading}
+                style={styles.changeButton}
+                size={ButtonSize.LARGE}
+              />
             </View>
           </Card>
         </ScrollView>
@@ -438,16 +436,8 @@ const styles = StyleSheet.create({
   },
   changeButton: {
     backgroundColor: '#F59E0B',
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
   },
   changeButtonDisabled: {
     opacity: 0.6,
-  },
-  changeButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
   },
 });

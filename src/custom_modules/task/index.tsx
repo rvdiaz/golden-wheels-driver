@@ -3,7 +3,7 @@ import { StyleSheet, FlatList, Modal, SafeAreaView, View } from 'react-native';
 import { TaskItem } from './widgets/taskItem';
 import { ITask } from './interfaces';
 import { TaskManagementHeader } from './widgets/taskManagementHeader';
-import { FloatingMenu } from '~/components/FloatingMenu';
+import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 import { AddTaskScreen } from './sections/addTask';
 
 const allTasks: ITask[] = [

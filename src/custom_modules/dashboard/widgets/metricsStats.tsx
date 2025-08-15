@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import { Card } from '~/components/Card';
+import { Card } from '~/codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
 import { ITask } from '~/custom_modules/task/interfaces';
 

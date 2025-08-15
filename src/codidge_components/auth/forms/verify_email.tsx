@@ -15,7 +15,7 @@ import * as Icons from 'lucide-react-native';
 import { confirmSignUp, fetchUserAttributes, signIn, signOut } from 'aws-amplify/auth/cognito';
 import { useAuthContext } from '../context';
 import { IAuthModuleKeys, MfaFormData } from '../interfaces';
-import { Card } from '~/components/Card';
+import { Card } from '~/codidge_components/UI/card';
 
 export const VerifyEmail = ({
   onSignUpSuccess,

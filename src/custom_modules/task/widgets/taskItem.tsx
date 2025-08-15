@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { ITask } from '../interfaces';
 import * as Icons from 'lucide-react-native';
-import { Badge } from '~/components/Badge';
+import { Badge } from '~/codidge_components/UI/badge';
 
 const getCategoryColor = (category: string) => {
   switch (category) {

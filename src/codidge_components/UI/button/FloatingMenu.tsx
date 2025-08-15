@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 import * as Icons from 'lucide-react-native';
+import PrimaryButton, { ButtonSize } from './PrimaryButton';
 
 interface FloatingMenuProps {
   title?: string;
@@ -13,18 +14,15 @@ export const FloatingMenu: React.FC<FloatingMenuProps> = ({
   icon = 'Plus',
   onPress = () => {},
 }) => {
-  const IconComponent = (Icons[icon] ?? Icons.Plus) as React.ComponentType<{
-    size?: number;
-    color?: string;
-  }>;
+  const IconComponent = Icons[icon] ?? Icons.Plus;
 
   return (
-    <TouchableOpacity style={styles.fab} onPress={onPress} activeOpacity={0.8}>
-      <View style={styles.content}>
-        {title ? <Text style={styles.label}>{title}</Text> : null}
-        <IconComponent size={24} color="white" />
-      </View>
-    </TouchableOpacity>
+    <PrimaryButton
+      title={title}
+      size={ButtonSize.LARGE}
+      style={styles.fab}
+      rightWidget={(<IconComponent size={20} color="#fff" />) as ReactNode}
+    />
   );
 };
 
@@ -33,10 +31,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     right: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 28,
-    backgroundColor: '#2563EB',
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',

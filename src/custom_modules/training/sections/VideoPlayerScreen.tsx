@@ -10,8 +10,8 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import * as Icons from 'lucide-react-native';
-import { Header } from '~/components/Header';
-import { Card } from '~/components/Card';
+import { Header } from '~/codidge_components/UI/header';
+import { Card } from '~/codidge_components/UI/card';
 
 export const VideoPlayerScreen = ({ onDispose }: { onDispose: () => void }) => {
   const navigation = useNavigation();

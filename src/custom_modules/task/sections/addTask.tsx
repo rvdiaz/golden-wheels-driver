@@ -12,8 +12,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useForm, Controller } from 'react-hook-form';
 
 import * as Icons from 'lucide-react-native';
-import { Card } from '~/components/Card';
-import { Header } from '~/components/Header';
+import { Card } from '~/codidge_components/UI/card';
+import { Header } from '~/codidge_components/UI/header';
 
 type Priority = 'high' | 'medium' | 'low';
 

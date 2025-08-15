@@ -14,7 +14,7 @@ import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
 import { useAuthContext } from '../context';
 import { IAuthModuleKeys, ResetPasswordFormData } from '../interfaces';
-import { Card } from '~/components/Card';
+import { Card } from '~/codidge_components/UI/card';
 
 export const ResetPassword = ({
   onSignUpSuccess,

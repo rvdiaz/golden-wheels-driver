@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { UserPlus, User, Phone, Mail, MapPin, FileText, Tag } from 'lucide-react-native';
-import { Header } from '~/components/Header';
+import { Header } from '~/codidge_components/UI/header';
 
 interface Contact {
   name: string;

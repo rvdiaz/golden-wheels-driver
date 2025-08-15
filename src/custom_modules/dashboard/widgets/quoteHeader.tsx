@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
-import { Card } from '~/components/Card';
+import { Card } from '~/codidge_components/UI/card';
 import { TrendingUp } from 'lucide-react-native';
 
 export function QuoteWidget() {

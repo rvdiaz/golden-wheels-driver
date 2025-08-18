@@ -121,25 +121,25 @@ const styles = StyleSheet.create({
   clearButton: {
     position: 'absolute',
     right: 8,
-    top: '45%',
+    top: '50%',
     transform: [{ translateY: -8 }],
   },
   loading: {
     position: 'absolute',
     right: 8,
-    top: '45%',
+    top: '50%',
     transform: [{ translateY: -8 }],
   },
   leftIcon: {
     position: 'absolute',
     left: 2,
-    top: '45%',
+    top: '50%',
     transform: [{ translateY: -8 }],
   },
   rightIcon: {
     position: 'absolute',
     right: 2,
-    top: '45%',
+    top: '50%',
     transform: [{ translateY: -8 }],
   },
   hint: {

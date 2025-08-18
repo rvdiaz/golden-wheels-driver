@@ -22,6 +22,7 @@ import { IAuthModuleKeys, RegisterFormData } from '../interfaces';
 import { Card } from '~/codidge_components/UI/card';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import TextButton from '~/codidge_components/UI/button/TextButton';
+import InputField from '~/codidge_components/UI/form/inputs/inputField';
 
 const schema = yup.object({
   name: yup
@@ -143,89 +144,75 @@ export const SignUpForm = ({
 
           <Card style={styles.formCard}>
             <View style={styles.form}>
-              <View style={[styles.inputGroup, { flex: 1 }]}>
-                <Text style={styles.label}>Full Name</Text>
-                <Controller
-                  control={control}
-                  name="name"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <View style={styles.inputContainer}>
-                      <Icons.User size={20} color="#6B7280" style={styles.inputIcon} />
-                      <TextInput
-                        style={[styles.input, errors.name && styles.inputError]}
-                        placeholder="Full name"
-                        value={value}
-                        onChangeText={onChange}
-                        onBlur={onBlur}
-                        autoCapitalize="words"
-                      />
-                    </View>
-                  )}
-                />
-                {errors.name && <Text style={styles.errorText}>{errors.name.message}</Text>}
-              </View>
+              <Controller
+                control={control}
+                name="name"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    leftIcon={<Icons.User size={20} color="#6B7280" style={styles.inputIcon} />}
+                    label="Full name"
+                    placeholder="Full name"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    autoCapitalize="words"
+                    error={!!errors.name}
+                    errorMessage={errors.name?.message}
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name="email"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    leftIcon={<Icons.Mail size={20} color="#6B7280" style={styles.inputIcon} />}
+                    label="Email"
+                    placeholder="Enter your email"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    keyboardType="email-address"
+                    error={!!errors.email}
+                    errorMessage={errors.email?.message}
+                    autoCapitalize="none"
+                  />
+                )}
+              />
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Email</Text>
-                <Controller
-                  control={control}
-                  name="email"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <View style={styles.inputContainer}>
-                      <Icons.Mail size={20} color="#6B7280" style={styles.inputIcon} />
-                      <TextInput
-                        style={[styles.input, errors.email && styles.inputError]}
-                        placeholder="Enter your email"
-                        value={value}
-                        onChangeText={onChange}
-                        onBlur={onBlur}
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                      />
-                    </View>
-                  )}
-                />
-                {errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
-              </View>
+              <Controller
+                control={control}
+                name="phone"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    leftIcon={<Icons.Phone size={20} color="#6B7280" style={styles.inputIcon} />}
+                    label="Phone Number"
+                    placeholder="Enter your phone number"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    keyboardType="phone-pad"
+                    error={!!errors.phone}
+                    errorMessage={errors.phone?.message}
+                  />
+                )}
+              />
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Phone Number</Text>
-                <Controller
-                  control={control}
-                  name="phone"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <View style={styles.inputContainer}>
-                      <Icons.Phone size={20} color="#6B7280" style={styles.inputIcon} />
-                      <TextInput
-                        style={[styles.input, errors.phone && styles.inputError]}
-                        placeholder="Enter your phone number"
-                        value={value}
-                        onChangeText={onChange}
-                        onBlur={onBlur}
-                        keyboardType="phone-pad"
-                      />
-                    </View>
-                  )}
-                />
-                {errors.phone && <Text style={styles.errorText}>{errors.phone.message}</Text>}
-              </View>
-
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Password</Text>
-                <Controller
-                  control={control}
-                  name="password"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <View style={styles.inputContainer}>
-                      <Icons.Lock size={20} color="#6B7280" style={styles.inputIcon} />
-                      <TextInput
-                        style={[styles.input, errors.password && styles.inputError]}
-                        placeholder="Create a password"
-                        value={value}
-                        onChangeText={onChange}
-                        onBlur={onBlur}
-                        secureTextEntry={!showPassword}
-                      />
+              <Controller
+                control={control}
+                name="password"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    leftIcon={<Icons.Lock size={20} color="#6B7280" style={styles.inputIcon} />}
+                    label="Password"
+                    placeholder="Create a password"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    error={!!errors.password}
+                    errorMessage={errors.password?.message}
+                    secureTextEntry={!showPassword}
+                    rightIcon={
                       <TouchableOpacity
                         onPress={() => setShowPassword(!showPassword)}
                         style={styles.eyeIcon}>
@@ -235,28 +222,26 @@ export const SignUpForm = ({
                           <Icons.Eye size={20} color="#6B7280" />
                         )}
                       </TouchableOpacity>
-                    </View>
-                  )}
-                />
-                {errors.password && <Text style={styles.errorText}>{errors.password.message}</Text>}
-              </View>
+                    }
+                  />
+                )}
+              />
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Confirm Password</Text>
-                <Controller
-                  control={control}
-                  name="confirmPassword"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <View style={styles.inputContainer}>
-                      <Icons.Lock size={20} color="#6B7280" style={styles.inputIcon} />
-                      <TextInput
-                        style={[styles.input, errors.confirmPassword && styles.inputError]}
-                        placeholder="Confirm your password"
-                        value={value}
-                        onChangeText={onChange}
-                        onBlur={onBlur}
-                        secureTextEntry={!showConfirmPassword}
-                      />
+              <Controller
+                control={control}
+                name="confirmPassword"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    leftIcon={<Icons.Lock size={20} color="#6B7280" style={styles.inputIcon} />}
+                    label="Confirm Password"
+                    placeholder="Confirm your password"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    error={!!errors.confirmPassword}
+                    errorMessage={errors.confirmPassword?.message}
+                    secureTextEntry={!showConfirmPassword}
+                    rightIcon={
                       <TouchableOpacity
                         onPress={() => setShowConfirmPassword(!showConfirmPassword)}
                         style={styles.eyeIcon}>
@@ -266,13 +251,10 @@ export const SignUpForm = ({
                           <Icons.Eye size={20} color="#6B7280" />
                         )}
                       </TouchableOpacity>
-                    </View>
-                  )}
-                />
-                {errors.confirmPassword && (
-                  <Text style={styles.errorText}>{errors.confirmPassword.message}</Text>
+                    }
+                  />
                 )}
-              </View>
+              />
 
               <Controller
                 control={control}
@@ -362,39 +344,16 @@ const styles = StyleSheet.create({
   },
   form: {
     padding: 24,
-  },
-  inputGroup: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: 8,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 12,
-    backgroundColor: 'white',
+    gap: 12,
   },
   inputIcon: {
     marginLeft: 16,
-  },
-  input: {
-    flex: 1,
-    paddingVertical: 16,
-    paddingHorizontal: 12,
-    fontSize: 16,
-    color: '#1F2937',
   },
   inputError: {
     borderColor: '#EF4444',
   },
   eyeIcon: {
-    padding: 16,
+    paddingHorizontal: 16,
   },
   errorText: {
     fontSize: 14,

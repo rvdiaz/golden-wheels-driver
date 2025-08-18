@@ -219,44 +219,13 @@ const styles = StyleSheet.create({
   },
   form: {
     padding: 24,
-  },
-  inputGroup: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: 8,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 12,
-    backgroundColor: 'white',
+    gap: 12,
   },
   inputIcon: {
     marginLeft: 16,
   },
-  input: {
-    flex: 1,
-    paddingVertical: 16,
-    paddingHorizontal: 12,
-    fontSize: 16,
-    color: '#1F2937',
-  },
-  inputError: {
-    borderColor: '#EF4444',
-  },
   eyeIcon: {
     paddingHorizontal: 10,
-  },
-  errorText: {
-    fontSize: 14,
-    color: '#EF4444',
-    marginTop: 4,
   },
   optionsRow: {
     flexDirection: 'row',

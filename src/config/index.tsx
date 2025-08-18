@@ -7,7 +7,7 @@ import { TasksScreen } from '~/custom_modules/task';
 import { AddTaskScreen } from '~/custom_modules/task/sections/addTask';
 import { ToolsScreen } from '~/custom_modules/tools';
 import { ExpiredListingsScreen } from '~/custom_modules/tools/sections/expiredListing';
-import { MortgageCalculatorScreen } from '~/custom_modules/tools/sections/mortgageCalculator';
+import { MortgageCalculatorScreen } from '~/custom_modules/tools/sections/mortgage_calculator';
 import { PrequalifiedLoanScreen } from '~/custom_modules/tools/sections/prequalifiedTools';
 import { PropertyInfoScreen } from '~/custom_modules/tools/sections/propertyDetails';
 import { TrainingScreen } from '~/custom_modules/training';
@@ -141,3 +141,4 @@ export const modules: ModuleConfig[] = [
     ],
   },
 ];
+

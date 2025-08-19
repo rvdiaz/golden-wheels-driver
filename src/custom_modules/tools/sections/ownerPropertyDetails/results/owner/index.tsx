@@ -1,12 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { Card } from '~/codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
-import { Property } from './property';
-import { IEmail, IOwnerInfo, IPhone, IProperty } from '../interfaces';
-import TextButton from '~/codidge_components/UI/button/TextButton';
-import { InfoItem } from './infoItem';
-import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
+import { IEmail, IOwnerInfo, IPhone } from '../../interfaces';
+import { InfoItem } from '../infoItem';
+import { OwnerContactInfo } from './contactOwner';
 
 export const Owner = ({ ownerInfo }: { ownerInfo: IOwnerInfo }) => {
   return (
@@ -29,32 +27,7 @@ export const Owner = ({ ownerInfo }: { ownerInfo: IOwnerInfo }) => {
         />
       ))}
 
-      <View
-        style={{
-          flexDirection: 'row',
-          marginTop: 5,
-          gap: 10,
-        }}>
-        {ownerInfo?.phones?.length! > 0 && (
-          <OutlineButton
-            style={{
-              flex: 1,
-            }}
-            title="Call Owner"
-            leftWidget={<Icons.PhoneCall size={16} color="#2563EB" />}
-          />
-        )}
-
-        {ownerInfo?.email?.length! > 0 && (
-          <OutlineButton
-            style={{
-              flex: 1,
-            }}
-            title="Send Letter"
-            leftWidget={<Icons.MailCheck size={16} color="#2563EB" />}
-          />
-        )}
-      </View>
+      <OwnerContactInfo emails={ownerInfo?.email ?? []} phones={ownerInfo?.phones ?? []} />
     </Card>
   );
 };

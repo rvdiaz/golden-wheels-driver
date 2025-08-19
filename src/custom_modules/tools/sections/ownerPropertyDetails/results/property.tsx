@@ -5,11 +5,13 @@ import * as Icons from 'lucide-react-native';
 import { IProperty } from '../interfaces';
 import { InfoItem } from './infoItem';
 import { formatCurrency } from '../../mortgage_calculator/helpers';
+import { Badge } from '~/codidge_components/UI/badge';
 
 export const Property = ({ propertyData }: { propertyData: IProperty }) => {
   const { bedrooms, bathrooms } = propertyData.propertyInfo;
   const bathBed = !!bedrooms && !!bathrooms ? `${bedrooms}BR / ${bathrooms}BA` : undefined;
 
+  const isForeclosure = propertyData.foreclosureInfo.length > 0;
   return (
     <Card style={styles.resultCard}>
       <View style={styles.resultHeader}>
@@ -34,6 +36,9 @@ export const Property = ({ propertyData }: { propertyData: IProperty }) => {
         label="Estimated Value"
         value={propertyData.estimatedValue ? formatCurrency(propertyData.estimatedValue) : 0}
       />
+      <Badge type={isForeclosure ? 'success' : 'error'}>
+        {isForeclosure ? 'In Foreclosure' : 'No Foreclosure'}
+      </Badge>
     </Card>
   );
 };

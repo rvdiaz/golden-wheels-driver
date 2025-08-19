@@ -42,7 +42,7 @@ export const ToolsScreen: React.FC = () => {
     },
     {
       id: ModuleKeys.propertyTools,
-      title: 'Property Information',
+      title: 'Property-Owner Information',
       description: 'Get owner and property details by address',
       icon: 'Home',
       color: '#DC2626',
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   toolTitle: {
-    fontSize: 17,
+    fontSize: 15,
     fontWeight: '600',
     color: '#1F2937',
     marginBottom: 6,

@@ -1,19 +1,11 @@
-import { Card } from '~/codidge_components/UI/card';
 import { MortgageFormValues } from '../interfaces';
 import { Controller, useFormContext } from 'react-hook-form';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
-import {
-  Building,
-  DollarSign,
-  Percent,
-  PercentCircle,
-  Shield,
-  TrendingUp,
-} from 'lucide-react-native';
-import { Label } from '~/codidge_components/UI/form/label';
+import { Building, DollarSign, Percent, PercentCircle, TrendingUp } from 'lucide-react-native';
 import { TabHeader } from '~/codidge_components/UI/tabs';
 import LocationAutocomplete from '~/custom_modules/tools/widgets/locationPropertyTax';
+import { AdditionalFields } from './additionalFields';
 
 export const MortgageCalculatorForm = ({
   isDownPaymentPercent,
@@ -111,43 +103,53 @@ export const MortgageCalculatorForm = ({
         />
       </View>
 
-      {/* Interest Term */}
-      <Controller
-        control={control}
-        name="interestRate"
-        rules={{ required: 'Interest Rate is required' }}
-        render={({ field: { value, onChange } }) => (
-          <InputField
-            leftIcon={<PercentCircle size={iconsSize} style={styles.iconStyle} />}
-            label="Interest Rate (Annual %)"
-            placeholder="1.6"
-            keyboardType="decimal-pad"
-            value={value?.toString()}
-            onChangeText={onChange}
-            error={!!errors.interestRate}
-            errorMessage={errors.interestRate?.message}
+      <View
+        style={{
+          flexDirection: 'row',
+          gap: 8, // optional spacing between children (RN 0.71+)
+        }}>
+        {/* Interest Term */}
+        <View style={{ flex: 1 }}>
+          <Controller
+            control={control}
+            name="interestRate"
+            rules={{ required: 'Interest Rate is required' }}
+            render={({ field: { value, onChange } }) => (
+              <InputField
+                leftIcon={<PercentCircle size={iconsSize} style={styles.iconStyle} />}
+                label="Interest Rate (%)"
+                placeholder="1.6"
+                keyboardType="decimal-pad"
+                value={value?.toString()}
+                onChangeText={onChange}
+                error={!!errors.interestRate}
+                errorMessage={errors.interestRate?.message}
+              />
+            )}
           />
-        )}
-      />
+        </View>
 
-      {/* Loan Term */}
-      <Controller
-        control={control}
-        name="loanTerm"
-        rules={{ required: 'Loan Term is required' }}
-        render={({ field: { value, onChange } }) => (
-          <InputField
-            leftIcon={<TrendingUp size={iconsSize} style={styles.iconStyle} />}
-            label="Loan Term (Years)"
-            placeholder="30"
-            keyboardType="numeric"
-            value={value?.toString()}
-            onChangeText={onChange}
-            error={!!errors.loanTerm}
-            errorMessage={errors.loanTerm?.message}
+        {/* Loan Term */}
+        <View style={{ flex: 1 }}>
+          <Controller
+            control={control}
+            name="loanTerm"
+            rules={{ required: 'Loan Term is required' }}
+            render={({ field: { value, onChange } }) => (
+              <InputField
+                leftIcon={<TrendingUp size={iconsSize} style={styles.iconStyle} />}
+                label="Loan Term (Years)"
+                placeholder="30"
+                keyboardType="numeric"
+                value={value?.toString()}
+                onChangeText={onChange}
+                error={!!errors.loanTerm}
+                errorMessage={errors.loanTerm?.message}
+              />
+            )}
           />
-        )}
-      />
+        </View>
+      </View>
 
       <LocationAutocomplete
         onSelection={(propTax) => {
@@ -155,83 +157,7 @@ export const MortgageCalculatorForm = ({
         }}
       />
 
-      {/* Additional Costs */}
-      <View style={styles.formContainer}>
-        <Label label="Additional Monthly Costs" />
-
-        <Controller
-          control={control}
-          name="propertyTaxRate"
-          rules={{ required: 'Property Tax is required' }}
-          render={({ field: { value, onChange } }) => (
-            <InputField
-              leftIcon={<TrendingUp size={iconsSize} style={styles.iconStyle} />}
-              label="Property Tax Rate (Annual %)"
-              placeholder="1.5"
-              keyboardType="decimal-pad"
-              value={value?.toString()}
-              onChangeText={onChange}
-              error={!!errors.propertyTaxRate}
-              errorMessage={errors.propertyTaxRate?.message}
-            />
-          )}
-        />
-
-        {/* Home Insurance */}
-        <Controller
-          control={control}
-          name="homeInsurance"
-          rules={{ required: 'Home Insurance is required' }}
-          render={({ field: { value, onChange } }) => (
-            <InputField
-              leftIcon={<Shield size={iconsSize} style={styles.iconStyle} />}
-              label="Home Insurance (Annual $)"
-              placeholder="150"
-              keyboardType="decimal-pad"
-              value={value?.toString()}
-              onChangeText={onChange}
-              error={!!errors.homeInsurance}
-              errorMessage={errors.homeInsurance?.message}
-            />
-          )}
-        />
-
-        {/* PMI Rate */}
-        <Controller
-          control={control}
-          name="pmiRate"
-          rules={{ required: 'PMI Rate is required' }}
-          render={({ field: { value, onChange } }) => (
-            <InputField
-              label="PMI Rate (Annual %)"
-              placeholder="0.5"
-              keyboardType="decimal-pad"
-              value={value?.toString()}
-              onChangeText={onChange}
-              error={!!errors.pmiRate}
-              errorMessage={errors.pmiRate?.message}
-            />
-          )}
-        />
-
-        {/* HOA Fees */}
-        <Controller
-          control={control}
-          name="hoaFees"
-          rules={{ required: 'HOA Fees is required' }}
-          render={({ field: { value, onChange } }) => (
-            <InputField
-              label="HOA Fees (Monthly $)"
-              placeholder="0"
-              keyboardType="decimal-pad"
-              value={value}
-              onChangeText={onChange}
-              error={!!errors.hoaFees}
-              errorMessage={errors.hoaFees?.message}
-            />
-          )}
-        />
-      </View>
+      <AdditionalFields />
     </View>
   );
 };

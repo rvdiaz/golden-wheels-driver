@@ -8,17 +8,6 @@ export enum IAuthModuleKeys {
   mfa = 'Mfa',
 }
 
-export interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phone?: string;
-  isEmailVerified: boolean;
-  isMfaEnabled: boolean;
-  mustChangePassword: boolean;
-}
-
 export interface LoginFormData {
   email: string;
   password: string;
@@ -45,12 +34,4 @@ export interface ChangePasswordFormData {
 
 export interface MfaFormData {
   code: string;
-}
-
-export interface AuthState {
-  user: User | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  requiresMfa: boolean;
-  requiresPasswordChange: boolean;
 }

@@ -1,5 +1,13 @@
 import React, { forwardRef, ReactNode } from 'react';
-import { View, TextInput, Text, TouchableOpacity, StyleSheet, TextInputProps } from 'react-native';
+import {
+  View,
+  TextInput,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  TextInputProps,
+  TextStyle,
+} from 'react-native';
 import { X } from 'lucide-react-native'; // make sure you have RN version
 import { LoadingSpinner } from '../../loading/loadingSpinner';
 
@@ -13,6 +21,7 @@ interface InputProps extends TextInputProps {
   loading?: boolean;
   rightIcon?: ReactNode;
   leftIcon?: ReactNode;
+  labelStyle?: TextStyle;
 }
 
 const InputField = forwardRef<TextInput, InputProps>(
@@ -30,6 +39,7 @@ const InputField = forwardRef<TextInput, InputProps>(
       value,
       onChangeText,
       style,
+      labelStyle,
       ...rest
     },
     ref
@@ -53,7 +63,7 @@ const InputField = forwardRef<TextInput, InputProps>(
 
     return (
       <View style={{ marginBottom: 12 }}>
-        {label && <Text style={styles.label}>{label}</Text>}
+        {label && <Text style={[styles.label, labelStyle]}>{label}</Text>}
         <View style={styles.container}>
           {leftIcon && <View style={styles.leftIcon}>{leftIcon}</View>}
           <TextInput
@@ -100,10 +110,10 @@ export default InputField;
 
 const styles = StyleSheet.create({
   label: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: '500',
     color: '#374151',
-    marginBottom: 8,
+    marginBottom: 5,
   },
   container: {
     position: 'relative',
@@ -113,10 +123,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     flex: 1,
-    paddingVertical: 16,
+    paddingVertical: 10,
     paddingHorizontal: 16,
     fontSize: 16,
     color: '#1F2937',
+    minHeight: 48,
   },
   clearButton: {
     position: 'absolute',

@@ -1,8 +1,13 @@
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { Text, StyleSheet, TextStyle, StyleProp } from 'react-native';
 
-export const Label = ({ label }: { label: string }) => {
-  return <Text style={styles.label}>{label}</Text>;
+interface LabelProps {
+  label: string;
+  style?: StyleProp<TextStyle>;
+}
+
+export const Label = ({ label, style }: LabelProps) => {
+  return <Text style={[styles.label, style]}>{label}</Text>;
 };
 
 const styles = StyleSheet.create({

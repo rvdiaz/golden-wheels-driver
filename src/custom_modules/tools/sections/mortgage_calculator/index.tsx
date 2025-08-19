@@ -9,6 +9,7 @@ import { MortgageCalculatorForm } from './widgets/basicForm';
 import { MortgageCalculatorResults } from './widgets/mortgageResults';
 import { MortgageCalculation, MortgageFormValues } from './interfaces';
 import { calculateMortgage } from './helpers';
+import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 
 export const MortgageCalculatorScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -43,6 +44,7 @@ export const MortgageCalculatorScreen: React.FC = () => {
 
   // Calculated values
   const [calculation, setCalculation] = useState<MortgageCalculation | null>(null);
+  const [showResults, setshowResults] = useState(false);
 
   // Update down payment when switching between dollar and percentage
   useEffect(() => {
@@ -105,7 +107,13 @@ export const MortgageCalculatorScreen: React.FC = () => {
               isDownPaymentPercent={isDownPaymentPercent}
               setIsDownPaymentPercent={setIsDownPaymentPercent}
             />
-            {calculation && <MortgageCalculatorResults calculation={calculation} />}
+            <PrimaryButton
+              size={ButtonSize.LARGE}
+              title="Show Results"
+              rightWidget={<Icons.ChevronRight color="#FFF" />}
+            />
+
+            {calculation && showResults && <MortgageCalculatorResults calculation={calculation} />}
           </Card>
 
           <Card style={styles.infoCard}>

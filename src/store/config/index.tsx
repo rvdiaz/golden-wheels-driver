@@ -5,7 +5,7 @@ import { CRMScreen } from '~/custom_modules/crm';
 import { ToolsScreen } from '~/custom_modules/tools';
 import { TrainingScreen } from '~/custom_modules/training';
 import { MortgageCalculatorScreen } from '~/custom_modules/tools/sections/mortgage_calculator';
-import { PropertyInfoScreen } from '~/custom_modules/tools/sections/propertyDetails';
+import { PropertyInfoScreen } from '~/custom_modules/tools/sections/ownerPropertyDetails';
 import { PrequalifiedLoanScreen } from '~/custom_modules/tools/sections/prequalifiedTools';
 import { ExpiredListingsScreen } from '~/custom_modules/tools/sections/expiredListing';
 import { NotificationsScreen } from '~/core_modules/notifications';

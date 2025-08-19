@@ -8,7 +8,7 @@ export enum ButtonSize {
   LARGE = 'lg',
 }
 
-interface PrimaryButtonProps {
+interface OutlineButtonProps {
   loading?: boolean;
   size?: ButtonSize;
   disabled?: boolean;
@@ -26,7 +26,7 @@ const sizeStyles = {
   [ButtonSize.LARGE]: { paddingVertical: 12, paddingHorizontal: 20, fontSize: 16 },
 };
 
-const PrimaryButton: React.FC<PrimaryButtonProps> = ({
+const OutlineButton: React.FC<OutlineButtonProps> = ({
   loading = false,
   size = ButtonSize.MEDIUM,
   disabled = false,
@@ -48,7 +48,7 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
       style={[
         styles.button,
         {
-          backgroundColor: disabledAux ? '#D1D5DB' : '#2563EB', // gray-300 or brand-500
+          borderColor: disabledAux ? '#D1D5DB' : '#2563EB', // gray-300 or brand-500
           paddingVertical: sizeStyle.paddingVertical,
           paddingHorizontal: sizeStyle.paddingHorizontal,
         },
@@ -59,7 +59,17 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
       ) : (
         <View style={styles.buttonBody}>
           {leftWidget && leftWidget}
-          <Text style={[styles.text, { fontSize: sizeStyle.fontSize }, textStyle]}>{title}</Text>
+          <Text
+            style={[
+              styles.text,
+              {
+                fontSize: sizeStyle.fontSize,
+                color: disabledAux ? '#9CA3AF' : '#2563EB', // gray-400 or brand-500
+              },
+              textStyle,
+            ]}>
+            {title}
+          </Text>
           {rightWidget && rightWidget}
         </View>
       )}
@@ -69,8 +79,10 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    minWidth: 96, // ~min-w-24
+    minWidth: 96,
     borderRadius: 8,
+    borderWidth: 1,
+    backgroundColor: 'transparent', // no fill
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
@@ -81,9 +93,8 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   text: {
-    color: '#fff',
     fontWeight: '500',
   },
 });
 
-export default PrimaryButton;
+export default OutlineButton;

@@ -27,7 +27,7 @@ export const AuthFormWrapper = () => {
       const customer = await getCustomerFn({
         variables: {
           tenant: {
-            tenantId: tenantId,
+            tenantId,
           },
           customerId: userId,
         },
@@ -39,7 +39,7 @@ export const AuthFormWrapper = () => {
 
       updateUser(customer.data?.getCustomer);
     } catch (error) {
-      console.log('::::error getting uustome', error);
+      console.log('::::error getting customer', error);
       await signOut();
     }
   };

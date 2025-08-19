@@ -8,8 +8,8 @@ import { AddTaskScreen } from '~/custom_modules/task/sections/addTask';
 import { ToolsScreen } from '~/custom_modules/tools';
 import { ExpiredListingsScreen } from '~/custom_modules/tools/sections/expiredListing';
 import { MortgageCalculatorScreen } from '~/custom_modules/tools/sections/mortgage_calculator';
+import { PropertyInfoScreen } from '~/custom_modules/tools/sections/owner_property_details';
 import { PrequalifiedLoanScreen } from '~/custom_modules/tools/sections/prequalifiedTools';
-import { PropertyInfoScreen } from '~/custom_modules/tools/sections/ownerPropertyDetails';
 import { TrainingScreen } from '~/custom_modules/training';
 import { CourseDetailsScreen } from '~/custom_modules/training/sections/CourseDetailsScreen';
 import { VideoPlayerScreen } from '~/custom_modules/training/sections/VideoPlayerScreen';
@@ -141,4 +141,3 @@ export const modules: ModuleConfig[] = [
     ],
   },
 ];
-

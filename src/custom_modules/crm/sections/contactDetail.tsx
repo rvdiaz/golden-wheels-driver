@@ -1,16 +1,28 @@
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+  ScrollView,
+  Modal,
+} from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Header } from '../../../codidge_components/UI/header';
 import { Card } from '../../../codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
 import { IContact } from '../interfaces';
+import ContactForm from './addContact';
 
 export const ContactDetailsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  const { contact: contactRuote } = route.params as { contact: IContact };
 
-  const { contact } = route.params as { contact: IContact };
+  const [contact, setContact] = useState(contactRuote);
+
+  const [modal, setmodal] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -19,6 +31,10 @@ export const ContactDetailsScreen = () => {
         showBack
         onBack={() => {
           navigation.goBack();
+        }}
+        rightText="Edit"
+        rightAction={() => {
+          setmodal(true);
         }}
       />
 
@@ -29,10 +45,10 @@ export const ContactDetailsScreen = () => {
               <Icons.User size={40} color="#6B7280" />
             </View>
             <View style={styles.profileInfo}>
-              <Text style={styles.profileName}>
-                {contact.firstName}
-                {contact.lastName}
-              </Text>
+              <View style={{ flexDirection: 'row', gap: 2 }}>
+                <Text style={styles.profileName}>{contact.firstName}</Text>
+                <Text style={styles.profileName}> {contact.lastName}</Text>
+              </View>
               <Text style={styles.profileStatus}>{contact.category.toUpperCase()}</Text>
             </View>
           </View>
@@ -85,12 +101,27 @@ export const ContactDetailsScreen = () => {
         <Card style={styles.notesCard}>
           <Text style={styles.sectionTitle}>Notes</Text>
           <Text style={styles.notesText}>{contact.notes}</Text>
-          <TouchableOpacity style={styles.editNotesButton}>
-            <Icons.Edit3 size={16} color="#2563EB" />
-            <Text style={styles.editNotesText}>Edit Notes</Text>
-          </TouchableOpacity>
         </Card>
       </ScrollView>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modal}
+        onRequestClose={() => {
+          setmodal(false);
+        }}>
+        <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <ContactForm
+            disposeModalHandler={(contact?: IContact) => {
+              setmodal(false);
+              if (contact) {
+                setContact(contact);
+              }
+            }}
+            contact={contact}
+          />
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };

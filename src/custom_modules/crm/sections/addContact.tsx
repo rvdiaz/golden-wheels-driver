@@ -1,30 +1,28 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  SafeAreaView,
-  Alert,
-} from 'react-native';
+import { View, StyleSheet, ScrollView, SafeAreaView, Alert } from 'react-native';
 import * as Icons from 'lucide-react-native';
 
 import { useForm, Controller } from 'react-hook-form';
-import { UserPlus, User, Phone, Mail, MapPin, FileText, Tag } from 'lucide-react-native';
+import { UserPlus } from 'lucide-react-native';
 import { Header } from '~/codidge_components/UI/header';
 import { IContact } from '../interfaces';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import { useMutation, useReactiveVar } from '@apollo/client';
-import { addContactMutation } from '../graphql/mutations';
+import { addContactMutation, updateContactMutation } from '../graphql/mutations';
 import { userData } from '~/store/user';
 import Constants from 'expo-constants';
 import { getUserContacts } from '../graphql/queries';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
-export default function ContactForm({ disposeModalHandler }: { disposeModalHandler: () => void }) {
+export default function ContactForm({
+  disposeModalHandler,
+  contact,
+}: {
+  disposeModalHandler: (contact?: IContact) => void;
+  contact?: IContact;
+}) {
   const customer = useReactiveVar(userData);
 
   const {
@@ -34,16 +32,16 @@ export default function ContactForm({ disposeModalHandler }: { disposeModalHandl
     formState: { errors, isValid },
   } = useForm<IContact>({
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      phone: '',
-      email: '',
-      address: '',
-      notes: '',
-      category: 'buyer',
-      priority: 'medium',
-      type: 'lead',
-      leadStatus: 'new',
+      firstName: contact?.firstName ?? '',
+      lastName: contact?.lastName ?? '',
+      phone: contact?.phone ?? '',
+      email: contact?.email ?? '',
+      address: contact?.address ?? '',
+      notes: contact?.notes ?? '',
+      category: contact?.category ?? 'buyer',
+      priority: contact?.priority ?? 'medium',
+      type: contact?.type ?? 'lead',
+      leadStatus: contact?.leadStatus ?? 'new',
     },
     mode: 'onChange',
   });
@@ -81,33 +79,101 @@ export default function ContactForm({ disposeModalHandler }: { disposeModalHandl
     }
   );
 
-  const onSubmit = async (data: IContact) => {
-    try {
-      const res = await addContactFn({
+  const [updateContactFn, { data, loading: loadingUpdate }] = useMutation<{
+    updateUserContact: IContact;
+  }>(updateContactMutation, {
+    update(cache, { data }) {
+      if (!data?.updateUserContact) return;
+
+      const updatedContact = data.updateUserContact;
+
+      // Read the existing contacts from cache
+      const existingData = cache.readQuery<{ getUserContacts: IContact[] }>({
+        query: getUserContacts,
         variables: {
-          tenant: {
-            tenantId,
-          },
+          tenant: { tenantId },
           userId: customer?.id,
-          contactData: data,
         },
       });
 
-      Alert.alert('Success', 'Contact was added successfully!');
+      if (existingData?.getUserContacts) {
+        // Replace the updated contact in the array
+        const newContacts = existingData.getUserContacts.map((contact) =>
+          contact.id === updatedContact.id ? updatedContact : contact
+        );
 
-      console.log(':::res', res);
-      reset({
-        firstName: '',
-        lastName: '',
-        phone: '',
-        email: '',
-        address: '',
-        notes: '',
-        category: 'buyer',
-        priority: 'medium',
-        type: 'lead',
-        leadStatus: 'new',
-      });
+        // Write the updated list back to cache
+        cache.writeQuery({
+          query: getUserContacts,
+          variables: {
+            tenant: { tenantId },
+            userId: customer?.id,
+          },
+          data: {
+            getUserContacts: newContacts,
+          },
+        });
+      }
+    },
+  });
+
+  const onSubmit = async (data: IContact) => {
+    try {
+      if (contact?.id) {
+        // Update existing contact
+        const res = await updateContactFn({
+          variables: {
+            tenant: { tenantId },
+            userId: customer?.id,
+            contactId: contact.id,
+            contactData: data,
+          },
+        });
+
+        const updatedContact = res.data?.updateUserContact;
+
+        if (updatedContact) {
+          // Reset form to updated contact values
+          reset({
+            firstName: updatedContact.firstName ?? '',
+            lastName: updatedContact.lastName ?? '',
+            phone: updatedContact.phone ?? '',
+            email: updatedContact.email ?? '',
+            address: updatedContact.address ?? '',
+            notes: updatedContact.notes ?? '',
+            category: updatedContact.category ?? 'buyer',
+            priority: updatedContact.priority ?? 'medium',
+            type: updatedContact.type ?? 'lead',
+            leadStatus: updatedContact.leadStatus ?? 'new',
+          });
+        }
+
+        Alert.alert('Success', 'Contact was updated successfully!');
+      } else {
+        // Add new contact
+        await addContactFn({
+          variables: {
+            tenant: { tenantId },
+            userId: customer?.id,
+            contactData: data,
+          },
+        });
+
+        reset({
+          firstName: '',
+          lastName: '',
+          phone: '',
+          email: '',
+          address: '',
+          notes: '',
+          category: 'buyer',
+          priority: 'medium',
+          type: 'lead',
+          leadStatus: 'new',
+        });
+
+        Alert.alert('Success', 'Contact was added successfully!');
+      }
     } catch (error) {
       Alert.alert('Error', 'Error adding contact!');
       console.log('data', data);
@@ -119,7 +185,12 @@ export default function ContactForm({ disposeModalHandler }: { disposeModalHandl
       <Header
         title="New Contact"
         rightAction={() => {
-          disposeModalHandler();
+          if (contact?.id) {
+            const updatedContact = data?.updateUserContact;
+            disposeModalHandler(updatedContact);
+          } else {
+            disposeModalHandler();
+          }
         }}
         rightText="Close"
       />
@@ -311,7 +382,7 @@ export default function ContactForm({ disposeModalHandler }: { disposeModalHandl
       <View style={styles.bottomBarContainer}>
         {/* Submit Button */}
         <PrimaryButton
-          loading={loading}
+          loading={loading || loadingUpdate}
           onPress={handleSubmit(onSubmit)}
           size={ButtonSize.LARGE}
           disabled={!isValid}

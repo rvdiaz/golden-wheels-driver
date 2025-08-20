@@ -20,3 +20,32 @@ export const addContactMutation = gql`
     }
   }
 `;
+
+export const updateContactMutation = gql`
+  mutation updateContact(
+    $tenant: TenantData!
+    $userId: ID!
+    $contactId: ID!
+    $contactData: ContactUpdateInput!
+  ) {
+    updateUserContact(
+      tenant: $tenant
+      userId: $userId
+      contactId: $contactId
+      contactData: $contactData
+    ) {
+      id
+      firstName
+      lastName
+      email
+      address
+      category
+      priority
+      leadStatus
+      leadStatusHistory
+      notes
+      type
+      convertedAt
+    }
+  }
+`;

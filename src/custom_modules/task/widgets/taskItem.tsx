@@ -40,10 +40,10 @@ export const TaskItem = ({
   return (
     <TouchableOpacity
       key={task.id}
-      style={[styles.taskItem, task.completed && styles.taskCompleted]}
+      style={[styles.taskItem, task.isCompleted && styles.taskCompleted]}
       onPress={() => onToggle(task.id)}>
       <View style={styles.taskCheckbox}>
-        {task.completed ? (
+        {task.isCompleted ? (
           <Icons.CheckCircle2 size={20} color="#059669" />
         ) : (
           <View style={styles.taskCheckboxEmpty} />
@@ -52,12 +52,12 @@ export const TaskItem = ({
 
       <View style={styles.taskContent}>
         <View style={styles.taskHeader}>
-          <Text style={[styles.taskTitle, task.completed && styles.taskTitleCompleted]}>
+          <Text style={[styles.taskTitle, task.isCompleted && styles.taskTitleCompleted]}>
             {task.title}
           </Text>
-          <Text style={styles.taskTime}>{task.dateTime}</Text>
+          <Text style={styles.taskTime}>{task.scheduledTime}</Text>
         </View>
-        <Text style={[styles.taskDescription, task.completed && styles.taskDescriptionCompleted]}>
+        <Text style={[styles.taskDescription, task.isCompleted && styles.taskDescriptionCompleted]}>
           {task.description}
         </Text>
         <View style={styles.taskMeta}>

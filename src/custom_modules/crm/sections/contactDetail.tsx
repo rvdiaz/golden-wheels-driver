@@ -4,12 +4,13 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { Header } from '../../../codidge_components/UI/header';
 import { Card } from '../../../codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
+import { IContact } from '../interfaces';
 
 export const ContactDetailsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
 
-  const { contact } = route.params as any;
+  const { contact } = route.params as { contact: IContact };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -28,8 +29,11 @@ export const ContactDetailsScreen = () => {
               <Icons.User size={40} color="#6B7280" />
             </View>
             <View style={styles.profileInfo}>
-              <Text style={styles.profileName}>{contact.name}</Text>
-              <Text style={styles.profileStatus}>{contact.status.toUpperCase()} LEAD</Text>
+              <Text style={styles.profileName}>
+                {contact.firstName}
+                {contact.lastName}
+              </Text>
+              <Text style={styles.profileStatus}>{contact.category.toUpperCase()}</Text>
             </View>
           </View>
 
@@ -41,10 +45,6 @@ export const ContactDetailsScreen = () => {
             <View style={styles.contactItem}>
               <Icons.Phone size={20} color="#6B7280" />
               <Text style={styles.contactText}>{contact.phone}</Text>
-            </View>
-            <View style={styles.contactItem}>
-              <Icons.Clock size={20} color="#6B7280" />
-              <Text style={styles.contactText}>Last contact: {contact.lastContact}</Text>
             </View>
           </View>
 
@@ -84,10 +84,7 @@ export const ContactDetailsScreen = () => {
 
         <Card style={styles.notesCard}>
           <Text style={styles.sectionTitle}>Notes</Text>
-          <Text style={styles.notesText}>
-            Interested in 3-bedroom properties in downtown area. Budget: $300k-$400k. Prefers modern
-            design and close to schools.
-          </Text>
+          <Text style={styles.notesText}>{contact.notes}</Text>
           <TouchableOpacity style={styles.editNotesButton}>
             <Icons.Edit3 size={16} color="#2563EB" />
             <Text style={styles.editNotesText}>Edit Notes</Text>

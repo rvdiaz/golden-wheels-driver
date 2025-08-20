@@ -1,61 +1,117 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   ScrollView,
-  Alert,
   SafeAreaView,
+  Alert,
 } from 'react-native';
+import * as Icons from 'lucide-react-native';
+
 import { useForm, Controller } from 'react-hook-form';
 import { UserPlus, User, Phone, Mail, MapPin, FileText, Tag } from 'lucide-react-native';
 import { Header } from '~/codidge_components/UI/header';
+import { IContact } from '../interfaces';
+import InputField from '~/codidge_components/UI/form/inputs/inputField';
+import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import { useMutation, useReactiveVar } from '@apollo/client';
+import { addContactMutation } from '../graphql/mutations';
+import { userData } from '~/store/user';
+import Constants from 'expo-constants';
+import { getUserContacts } from '../graphql/queries';
 
-interface Contact {
-  name: string;
-  phone: string;
-  email: string;
-  address: string;
-  notes: string;
-  category: 'lead' | 'follow-up' | 'closed-deal';
-}
-
-const categoryOptions = [
-  { value: 'lead', label: 'Lead', color: '#f59e0b' },
-  { value: 'follow-up', label: 'Follow Up', color: '#3b82f6' },
-  { value: 'Client', label: 'Client', color: '#10b981' },
-];
+const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export default function ContactForm({ disposeModalHandler }: { disposeModalHandler: () => void }) {
+  const customer = useReactiveVar(userData);
+
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors, isValid },
-  } = useForm<Contact>({
+  } = useForm<IContact>({
     defaultValues: {
-      name: '',
+      firstName: '',
+      lastName: '',
       phone: '',
       email: '',
       address: '',
       notes: '',
-      category: 'lead',
+      category: 'buyer',
+      priority: 'medium',
+      type: 'lead',
+      leadStatus: 'new',
     },
     mode: 'onChange',
   });
 
-  const onSubmit = (data: Contact) => {
-    const selectedCategory = categoryOptions.find((c) => c.value === data.category);
+  const [addContactFn, { loading }] = useMutation<{ addUserContact: IContact }>(
+    addContactMutation,
+    {
+      update(cache, { data }) {
+        if (!data?.addUserContact) return;
 
-    Alert.alert('Contact Saved', `${data.name} has been added as a ${selectedCategory?.label}.`, [
-      {
-        text: 'Add Another',
-        onPress: () => reset(),
+        const newContact = data.addUserContact;
+
+        // Read existing contacts from cache
+        const existingData = cache.readQuery<{ getUserContacts: IContact[] }>({
+          query: getUserContacts,
+          variables: {
+            tenant: { tenantId },
+            userId: customer?.id,
+          },
+        });
+
+        if (existingData?.getUserContacts) {
+          cache.writeQuery({
+            query: getUserContacts,
+            variables: {
+              tenant: { tenantId },
+              userId: customer?.id,
+            },
+            data: {
+              getUserContacts: [...existingData.getUserContacts, newContact],
+            },
+          });
+        }
       },
-      { text: 'OK' },
-    ]);
+    }
+  );
+
+  const onSubmit = async (data: IContact) => {
+    try {
+      const res = await addContactFn({
+        variables: {
+          tenant: {
+            tenantId,
+          },
+          userId: customer?.id,
+          contactData: data,
+        },
+      });
+
+      Alert.alert('Success', 'Contact was added successfully!');
+
+      console.log(':::res', res);
+      reset({
+        firstName: '',
+        lastName: '',
+        phone: '',
+        email: '',
+        address: '',
+        notes: '',
+        category: 'buyer',
+        priority: 'medium',
+        type: 'lead',
+        leadStatus: 'new',
+      });
+    } catch (error) {
+      Alert.alert('Error', 'Error adding contact!');
+      console.log('data', data);
+    }
   };
 
   return (
@@ -74,187 +130,194 @@ export default function ContactForm({ disposeModalHandler }: { disposeModalHandl
         contentContainerStyle={styles.formContent}>
         {/* Name Field */}
         <View style={styles.fieldContainer}>
-          <View style={styles.fieldHeader}>
-            <User size={16} color="#6b7280" />
-            <Text style={styles.fieldLabel}>Full Name *</Text>
+          <View
+            style={{
+              flex: 1,
+            }}>
+            <Controller
+              control={control}
+              name="firstName"
+              rules={{
+                required: 'Name is required',
+                minLength: {
+                  value: 2,
+                  message: 'Name must be at least 2 characters',
+                },
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <InputField
+                  leftIcon={<Icons.User size={16} color="#6B7280" style={styles.inputIcon} />}
+                  label="First name"
+                  placeholder="First name"
+                  placeholderTextColor="#9ca3af"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={!!errors.firstName}
+                  errorMessage={errors.firstName?.message}
+                />
+              )}
+            />
           </View>
-          <Controller
-            control={control}
-            name="name"
-            rules={{
-              required: 'Name is required',
-              minLength: {
-                value: 2,
-                message: 'Name must be at least 2 characters',
-              },
-            }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={[styles.textInput, errors.name && styles.textInputError]}
-                placeholder="Enter full name"
-                placeholderTextColor="#9ca3af"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-              />
-            )}
-          />
-          {errors.name && <Text style={styles.errorText}>{errors.name.message}</Text>}
+          <View
+            style={{
+              flex: 1,
+            }}>
+            <Controller
+              control={control}
+              name="lastName"
+              rules={{
+                required: 'Last Name is required',
+                minLength: {
+                  value: 2,
+                  message: 'Name must be at least 2 characters',
+                },
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <InputField
+                  label="Last name"
+                  placeholder="Last name"
+                  placeholderTextColor="#9ca3af"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={!!errors.firstName}
+                  errorMessage={errors.firstName?.message}
+                />
+              )}
+            />
+          </View>
         </View>
 
         {/* Phone Field */}
         <View style={styles.fieldContainer}>
-          <View style={styles.fieldHeader}>
-            <Phone size={16} color="#6b7280" />
-            <Text style={styles.fieldLabel}>Phone Number *</Text>
+          <View
+            style={{
+              flex: 1,
+            }}>
+            <Controller
+              control={control}
+              name="phone"
+              rules={{
+                required: 'Phone number is required',
+                pattern: {
+                  value: /^[\+]?[1-9][\d]{0,15}$/,
+                  message: 'Please enter a valid phone number',
+                },
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <InputField
+                  leftIcon={<Icons.Phone size={16} color="#6B7280" style={styles.inputIcon} />}
+                  label="Phone"
+                  placeholder="(555) 123-4567"
+                  placeholderTextColor="#9ca3af"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  keyboardType="phone-pad"
+                  error={!!errors.phone}
+                  errorMessage={errors.phone?.message}
+                />
+              )}
+            />
           </View>
-          <Controller
-            control={control}
-            name="phone"
-            rules={{
-              required: 'Phone number is required',
-              pattern: {
-                value: /^[\+]?[1-9][\d]{0,15}$/,
-                message: 'Please enter a valid phone number',
-              },
-            }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={[styles.textInput, errors.phone && styles.textInputError]}
-                placeholder="(555) 123-4567"
-                placeholderTextColor="#9ca3af"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                keyboardType="phone-pad"
-              />
-            )}
-          />
-          {errors.phone && <Text style={styles.errorText}>{errors.phone.message}</Text>}
         </View>
-
-        {/* Email Field */}
         <View style={styles.fieldContainer}>
-          <View style={styles.fieldHeader}>
-            <Mail size={16} color="#6b7280" />
-            <Text style={styles.fieldLabel}>Email Address *</Text>
+          <View
+            style={{
+              flex: 1,
+            }}>
+            <Controller
+              control={control}
+              name="email"
+              rules={{
+                required: 'Email is required',
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: 'Please enter a valid email address',
+                },
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <InputField
+                  leftIcon={<Icons.Mail size={16} color="#6B7280" style={styles.inputIcon} />}
+                  label="Email"
+                  placeholder="email@example.com"
+                  placeholderTextColor="#9ca3af"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  error={!!errors.email}
+                  errorMessage={errors.email?.message}
+                />
+              )}
+            />
           </View>
-          <Controller
-            control={control}
-            name="email"
-            rules={{
-              required: 'Email is required',
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: 'Please enter a valid email address',
-              },
-            }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={[styles.textInput, errors.email && styles.textInputError]}
-                placeholder="email@example.com"
-                placeholderTextColor="#9ca3af"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-            )}
-          />
-          {errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
         </View>
 
         {/* Address Field */}
         <View style={styles.fieldContainer}>
-          <View style={styles.fieldHeader}>
-            <MapPin size={16} color="#6b7280" />
-            <Text style={styles.fieldLabel}>Address</Text>
+          <View
+            style={{
+              flex: 1,
+            }}>
+            <Controller
+              control={control}
+              name="address"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <InputField
+                  leftIcon={<Icons.Map size={16} color="#6B7280" style={styles.inputIcon} />}
+                  label="Address"
+                  placeholder="123 Main St, City, State 12345"
+                  placeholderTextColor="#9ca3af"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                />
+              )}
+            />
           </View>
-          <Controller
-            control={control}
-            name="address"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={styles.textInput}
-                placeholder="123 Main St, City, State 12345"
-                placeholderTextColor="#9ca3af"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-              />
-            )}
-          />
         </View>
-
-        {/* Category Selection */}
-        <View style={styles.fieldContainer}>
-          <View style={styles.fieldHeader}>
-            <Tag size={16} color="#6b7280" />
-            <Text style={styles.fieldLabel}>Category</Text>
-          </View>
-          <Controller
-            control={control}
-            name="category"
-            render={({ field: { onChange, value } }) => (
-              <View style={styles.categoryContainer}>
-                {categoryOptions.map((option) => (
-                  <TouchableOpacity
-                    key={option.value}
-                    style={[
-                      styles.categoryOption,
-                      value === option.value && styles.categoryOptionSelected,
-                    ]}
-                    onPress={() => onChange(option.value)}>
-                    <View style={[styles.categoryDot, { backgroundColor: option.color }]} />
-                    <Text
-                      style={[
-                        styles.categoryText,
-                        value === option.value && styles.categoryTextSelected,
-                      ]}>
-                      {option.label}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-          />
-        </View>
-
         {/* Notes Field */}
         <View style={styles.fieldContainer}>
-          <View style={styles.fieldHeader}>
-            <FileText size={16} color="#6b7280" />
-            <Text style={styles.fieldLabel}>Notes</Text>
+          <View
+            style={{
+              flex: 1,
+            }}>
+            <Controller
+              control={control}
+              name="notes"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <InputField
+                  label="Notes"
+                  placeholder="Additional notes"
+                  placeholderTextColor="#9ca3af"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  multiline
+                  numberOfLines={4}
+                  textAlignVertical="top"
+                  style={{
+                    minHeight: 80,
+                  }}
+                />
+              )}
+            />
           </View>
-          <Controller
-            control={control}
-            name="notes"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={[styles.textInput, styles.notesInput]}
-                placeholder="Add any additional notes about this contact..."
-                placeholderTextColor="#9ca3af"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                multiline
-                numberOfLines={4}
-                textAlignVertical="top"
-              />
-            )}
-          />
         </View>
       </ScrollView>
       <View style={styles.bottomBarContainer}>
         {/* Submit Button */}
-        <TouchableOpacity
-          style={[styles.submitButton, !isValid && styles.submitButtonDisabled]}
+        <PrimaryButton
+          loading={loading}
           onPress={handleSubmit(onSubmit)}
-          disabled={!isValid}>
-          <UserPlus size={20} color="#ffffff" />
-          <Text style={styles.submitButtonText}>Save Contact</Text>
-        </TouchableOpacity>
+          size={ButtonSize.LARGE}
+          disabled={!isValid}
+          title="Save Contact"
+          rightWidget={<UserPlus size={20} color="#ffffff" />}
+        />
       </View>
     </SafeAreaView>
   );
@@ -292,98 +355,14 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   fieldContainer: {
-    marginBottom: 24,
-  },
-  fieldHeader: {
+    marginBottom: 10,
+    gap: 10,
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  fieldLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#374151',
-    marginLeft: 8,
-  },
-  textInput: {
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    color: '#374151',
-    backgroundColor: '#ffffff',
-  },
-  textInputError: {
-    borderColor: '#ef4444',
-  },
-  errorText: {
-    fontSize: 12,
-    color: '#ef4444',
-    marginTop: 4,
-  },
-  notesInput: {
-    height: 100,
-    paddingTop: 12,
-  },
-  categoryContainer: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  categoryOption: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderRadius: 8,
-    backgroundColor: '#ffffff',
-  },
-  categoryOptionSelected: {
-    borderColor: '#374151',
-    backgroundColor: '#f9fafb',
-  },
-  categoryDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: 8,
-  },
-  categoryText: {
-    fontSize: 14,
-    color: '#6b7280',
-    fontWeight: '500',
-  },
-  categoryTextSelected: {
-    color: '#374151',
-    fontWeight: '600',
   },
   bottomBarContainer: {
     paddingHorizontal: 20,
   },
-  submitButton: {
-    backgroundColor: '#374151',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-    borderRadius: 8,
-    marginTop: 16,
-  },
-  submitButtonDisabled: {
-    backgroundColor: '#9ca3af',
-  },
-  submitButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
-  },
-  requiredNote: {
-    fontSize: 12,
-    color: '#9ca3af',
-    textAlign: 'center',
-    marginTop: 16,
+  inputIcon: {
+    marginLeft: 16,
   },
 });

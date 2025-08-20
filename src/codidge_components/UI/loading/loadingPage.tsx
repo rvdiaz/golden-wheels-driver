@@ -9,7 +9,7 @@ interface ILoadingPageProps {
 export const PageLoading = ({ style }: ILoadingPageProps) => {
   return (
     <View style={[styles.container, style]}>
-      <LoadingSpinner />
+      <LoadingSpinner color="gray" />
     </View>
   );
 };
@@ -19,5 +19,6 @@ const styles = StyleSheet.create({
     flex: 1, // fill the screen
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#FFF',
   },
 });

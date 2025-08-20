@@ -32,6 +32,13 @@ export const getTenantRoutes = (user: IUser | null) => {
       type: 'main',
       metaData: '{}',
       icon: 'calendar-outline',
+      modules: [
+        {
+          label: 'Income',
+          moduleKey: ModuleKeys.income,
+          metaData: {},
+        },
+      ],
     },
     {
       label: 'Notifications',

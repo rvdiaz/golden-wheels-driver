@@ -14,6 +14,7 @@ export enum ModuleKeys {
   trainingDetailPage = 'TrainingDetailPage',
   contactDetals = 'ContactDetals',
   profile = 'Profile',
+  income = 'Incomes',
   /*   contentGallery = "contentGallery", */
 }
 

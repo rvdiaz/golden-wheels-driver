@@ -5,6 +5,7 @@ import { Card } from '../../codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { LogoutButton } from '~/codidge_components/auth/widgets/logoutButton';
+import { ModuleKeys } from '~/store/interface';
 
 export const ProfileScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -25,6 +26,10 @@ export const ProfileScreen: React.FC = () => {
         <Card style={styles.statsCard}>
           <Text style={styles.sectionTitle}>Performance Stats</Text>
           <View style={styles.statsGrid}>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>47</Text>
+              <Text style={styles.statLabel}>Active Leads</Text>
+            </View>
             <View style={styles.statItem}>
               <Text style={styles.statNumber}>47</Text>
               <Text style={styles.statLabel}>Active Leads</Text>
@@ -51,9 +56,13 @@ export const ProfileScreen: React.FC = () => {
             <Icons.ChevronRight size={20} color="#9CA3AF" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
-            <Icons.Bell size={20} color="#374151" />
-            <Text style={styles.menuText}>Notifications</Text>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate(ModuleKeys.income as never);
+            }}
+            style={styles.menuItem}>
+            <Icons.DollarSign size={20} color="#374151" />
+            <Text style={styles.menuText}>Incomes</Text>
             <Icons.ChevronRight size={20} color="#9CA3AF" />
           </TouchableOpacity>
 

@@ -12,6 +12,7 @@ import { CourseDetailsScreen } from '~/custom_modules/training/sections/CourseDe
 import { ProfileScreen } from '~/core_modules/profile';
 import { PropertyInfoScreen } from '~/custom_modules/tools/sections/owner_property_details';
 import { PrequalifiedLoanScreen } from '~/custom_modules/tools/sections/pre_qualified_tools';
+import { UserIncomes } from '~/core_modules/profile/sections/incomes';
 
 export const moduleScreens: Record<ModuleKeys, React.ComponentType<any>> = {
   Dashboard: Dashboard,
@@ -29,4 +30,5 @@ export const moduleScreens: Record<ModuleKeys, React.ComponentType<any>> = {
   TrainingDetailPage: CourseDetailsScreen,
   ContactDetals: ContactDetailsScreen,
   Profile: ProfileScreen,
+  Incomes: UserIncomes,
 };

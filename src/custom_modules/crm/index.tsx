@@ -3,21 +3,16 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
-  TouchableOpacity,
   SafeAreaView,
   TextInput,
   ScrollView,
   Dimensions,
   Modal,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { Card } from '../../codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
 import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 import ContactForm from './sections/addContact';
-import { moduleScreens } from '~/store/config';
-import { ModuleKeys } from '~/store/interface';
 import { ContactList } from './sections/contactList';
 import { IActivity, IContact, IFollowUp } from './interfaces';
 

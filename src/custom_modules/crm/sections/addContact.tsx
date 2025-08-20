@@ -209,7 +209,7 @@ export default function ContactForm({
               control={control}
               name="firstName"
               rules={{
-                required: 'Name is required',
+                required: 'First name is required',
                 minLength: {
                   value: 2,
                   message: 'Name must be at least 2 characters',
@@ -399,24 +399,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
     paddingHorizontal: 20,
-    paddingTop: 60,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#374151',
-    marginTop: 16,
-    textAlign: 'center',
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#9ca3af',
-    marginTop: 8,
-    textAlign: 'center',
+    paddingTop: 40,
   },
   form: {
     flex: 1,

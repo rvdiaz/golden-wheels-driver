@@ -91,36 +91,22 @@ export default function ContactForm({
   }>(updateContactMutation, {
     update(cache, { data }) {
       if (!data?.updateUserContact) return;
-
       const updatedContact = data.updateUserContact;
 
-      // Read the existing contacts from cache
-      const existingData = cache.readQuery<{ getUserContacts: IContact[] }>({
-        query: getUserContacts,
-        variables: {
-          tenant: { tenantId },
-          userId: customer?.id,
+      cache.modify({
+        fields: {
+          getUserContacts(existingContactsRefs = [], { readField }) {
+            return existingContactsRefs.map((contactRef: any) => {
+              const id = readField('id', contactRef);
+              if (id === updatedContact.id) {
+                // Merge updatedContact directly into cache
+                return { ...contactRef, ...updatedContact };
+              }
+              return contactRef;
+            });
+          },
         },
       });
-
-      if (existingData?.getUserContacts) {
-        // Replace the updated contact in the array
-        const newContacts = existingData.getUserContacts.map((contact) =>
-          contact.id === updatedContact.id ? updatedContact : contact
-        );
-
-        // Write the updated list back to cache
-        cache.writeQuery({
-          query: getUserContacts,
-          variables: {
-            tenant: { tenantId },
-            userId: customer?.id,
-          },
-          data: {
-            getUserContacts: newContacts,
-          },
-        });
-      }
     },
   });
 
@@ -162,7 +148,10 @@ export default function ContactForm({
           variables: {
             tenant: { tenantId },
             userId: customer?.id,
-            contactData: data,
+            contactData: {
+              ...data,
+              followedUp: false,
+            },
           },
         });
 

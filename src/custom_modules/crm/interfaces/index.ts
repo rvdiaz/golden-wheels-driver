@@ -32,6 +32,7 @@ export interface IContact {
   notes: string;
 
   followUp: Date | string;
+  followedUp: boolean;
 
   type?: ContactType; // NEW: Lifecycle type
   leadStatus?: 'new' | 'contacted' | 'qualified' | 'proposal' | 'won' | 'lost'; // NEW: Status for leads
@@ -62,5 +63,7 @@ export interface CrmMetrics {
   value: number;
   icon: string;
   color: string;
-  bgColor: string
+  bgColor: string;
+  onPress: () => void;
+  active: boolean;
 }

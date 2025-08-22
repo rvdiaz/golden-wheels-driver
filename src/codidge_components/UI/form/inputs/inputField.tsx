@@ -153,6 +153,7 @@ const styles = StyleSheet.create({
     left: 2,
     top: '50%',
     transform: [{ translateY: -8 }],
+    marginLeft: 16,
   },
   rightIcon: {
     position: 'absolute',

@@ -3,20 +3,25 @@ import { Card } from '~/codidge_components/UI/card';
 import { CrmMetrics } from '../interfaces';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Icons from 'lucide-react-native';
+import Color from 'color'; // small utility to manipulate colors
 
 const screenWidth = Dimensions.get('window').width;
 
-export const CrmMetricsCard = ({
-  crmMetrics,
-  onPress,
-}: {
-  crmMetrics: CrmMetrics;
-  onPress: () => void;
-}) => {
+export const CrmMetricsCard = ({ crmMetrics }: { crmMetrics: CrmMetrics }) => {
   const IconComponent = (Icons as any)[crmMetrics.icon] || Icons.Users;
+  const isActive = crmMetrics.active;
+
+  // Darken the background color slightly for the border
+  const borderColor = !isActive ? Color(crmMetrics.bgColor).darken(0.2).hex() : 'transparent';
+  const borderWidth = !isActive ? 1 : 0;
+
   return (
-    <TouchableOpacity onPress={onPress}>
-      <Card style={[styles.statCard, { backgroundColor: crmMetrics.bgColor }]}>
+    <TouchableOpacity onPress={crmMetrics.onPress}>
+      <Card
+        style={[
+          styles.statCard,
+          { backgroundColor: crmMetrics.bgColor, borderColor, borderWidth },
+        ]}>
         <View style={styles.statContent}>
           <View style={styles.statInfo}>
             <Text style={styles.statValue}>{crmMetrics.value}</Text>

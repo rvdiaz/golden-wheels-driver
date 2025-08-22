@@ -6,12 +6,10 @@ import { useNavigation } from '@react-navigation/native';
 import { IContact } from '../interfaces';
 import { getStatusColor, getTypeColor } from '../helpers';
 import { useMutation, useReactiveVar } from '@apollo/client';
-import { deleteContactMutation } from '../graphql/mutations';
+import { deleteContactMutation, updateContactMutation } from '../graphql/mutations';
 import Constants from 'expo-constants';
 import { userData } from '~/store/user';
 import { getUserContacts } from '../graphql/queries';
-import TextButton from '~/codidge_components/UI/button/TextButton';
-import { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -22,7 +20,29 @@ export const ContactCard = ({ contact }: { contact: IContact }) => {
   const typeColors = getTypeColor(contact.type);
   const navigation = useNavigation();
 
-  const [deleteIncomeFn] = useMutation<{ deleteUserContact: string }>(deleteContactMutation, {
+  const [updateContact] = useMutation<{ updateUserContact: IContact }>(updateContactMutation, {
+    update(cache, { data }) {
+      if (!data?.updateUserContact) return;
+      const updatedContact = data.updateUserContact;
+
+      cache.modify({
+        fields: {
+          getUserContacts(existingContactsRefs = [], { readField }) {
+            return existingContactsRefs.map((contactRef: any) => {
+              const id = readField('id', contactRef);
+              if (id === updatedContact.id) {
+                // Merge updatedContact directly into cache
+                return { ...contactRef, ...updatedContact };
+              }
+              return contactRef;
+            });
+          },
+        },
+      });
+    },
+  });
+
+  const [deleteContactFn] = useMutation<{ deleteUserContact: string }>(deleteContactMutation, {
     update: (cache, { data: mutationData }) => {
       if (!mutationData?.deleteUserContact) return;
 
@@ -68,15 +88,66 @@ export const ContactCard = ({ contact }: { contact: IContact }) => {
     Linking.canOpenURL(url)
       .then((supported) => {
         if (!supported) {
+          updateContact({
+            variables: {
+              tenant: { tenantId },
+              userId: customer?.id,
+              contactId: contact.id,
+              contactData: {
+                followedUp: true,
+              },
+            },
+          });
           Alert.alert('Error', 'Phone call not supported on this device');
         } else {
+          if (!contact.followedUp) {
+            updateContact({
+              variables: {
+                tenant: { tenantId },
+                userId: customer?.id,
+                contactId: contact.id,
+                contactData: {
+                  followedUp: true,
+                },
+              },
+            });
+          }
           return Linking.openURL(url);
         }
       })
       .catch((err) => console.error('Error opening dialer', err));
   };
 
-  const handleSmsContact = () => {};
+  const handleSmsContact = () => {
+    if (!contact.phone) {
+      Alert.alert('Error', 'No phone number available for this contact');
+      return;
+    }
+
+    const url = `sms:${contact.phone}`;
+    Linking.canOpenURL(url)
+      .then((supported) => {
+        if (!supported) {
+          Alert.alert('Error', 'SMS not supported on this device');
+        } else {
+          if (!contact.followedUp) {
+            updateContact({
+              variables: {
+                tenant: { tenantId },
+                userId: customer?.id,
+                contactId: contact.id,
+                contactData: {
+                  followedUp: true,
+                },
+              },
+            });
+          }
+
+          return Linking.openURL(url);
+        }
+      })
+      .catch((err) => console.error('Error opening SMS app', err));
+  };
 
   const handleEmailContact = () => {};
 
@@ -88,7 +159,7 @@ export const ContactCard = ({ contact }: { contact: IContact }) => {
         style: 'destructive',
         onPress: async () => {
           try {
-            await deleteIncomeFn({
+            await deleteContactFn({
               variables: {
                 tenant: {
                   tenantId,
@@ -117,41 +188,43 @@ export const ContactCard = ({ contact }: { contact: IContact }) => {
             <Text style={styles.contactName}>
               {contact.firstName} {contact.lastName}
             </Text>
-            <View style={styles.badgeContainer}>
-              <View
-                style={[
-                  styles.statusBadge,
-                  {
-                    backgroundColor: statusColors.bg,
-                    borderColor: statusColors.border,
-                  },
-                ]}>
-                <Text style={[styles.badgeText, { color: statusColors.text }]}>
-                  {contact.category}
-                </Text>
+
+            {/* Follow-up badge */}
+            {!contact.followedUp && (
+              <View style={styles.followUpBadge}>
+                <Text style={styles.followUpText}>Follow Up</Text>
               </View>
-              <View
-                style={[
-                  styles.statusBadge,
-                  {
-                    backgroundColor: typeColors.bg,
-                    borderColor: typeColors.border,
-                  },
-                ]}>
-                <Text style={[styles.badgeText, { color: typeColors.text }]}>{contact.type}</Text>
-              </View>
-            </View>
+            )}
           </View>
 
           <Text style={styles.contactNotes}>{contact.notes}</Text>
         </View>
       </View>
-      <View
-        style={{
-          flexDirection: 'row', // make items horizontal
-          alignItems: 'center', // vertically center them
-          justifyContent: 'flex-end', // push everything to the right
-        }}>
+
+      {/* Action buttons */}
+      <View style={styles.actionButtonContainer}>
+        <View style={styles.badgeContainer}>
+          <View
+            style={[
+              styles.statusBadge,
+              {
+                backgroundColor: statusColors.bg,
+                borderColor: statusColors.border,
+              },
+            ]}>
+            <Text style={[styles.badgeText, { color: statusColors.text }]}>{contact.category}</Text>
+          </View>
+          <View
+            style={[
+              styles.statusBadge,
+              {
+                backgroundColor: typeColors.bg,
+                borderColor: typeColors.border,
+              },
+            ]}>
+            <Text style={[styles.badgeText, { color: typeColors.text }]}>{contact.type}</Text>
+          </View>
+        </View>
         <View style={styles.contactActions}>
           <TouchableOpacity style={styles.actionButton} onPress={handleCallContact}>
             <Icons.Phone size={16} color="#2563EB" />
@@ -162,8 +235,8 @@ export const ContactCard = ({ contact }: { contact: IContact }) => {
           <TouchableOpacity style={styles.actionButton} onPress={handleEmailContact}>
             <Icons.Mail size={16} color="#2563EB" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton} onPress={handleEmailContact}>
-            <Icons.Trash size={16} onPress={handleDelete} color="red" />
+          <TouchableOpacity style={styles.actionButton} onPress={handleDelete}>
+            <Icons.Trash size={16} color="red" />
           </TouchableOpacity>
         </View>
       </View>
@@ -266,4 +339,18 @@ const styles = StyleSheet.create({
     color: '#2563EB',
     fontWeight: '500',
   },
+  followUpBadge: {
+    backgroundColor: '#FBBF24', // yellow
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 12,
+    marginLeft: 8,
+    alignSelf: 'flex-start',
+  },
+  followUpText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#1F2937', // dark text
+  },
+  actionButtonContainer: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 },
 });

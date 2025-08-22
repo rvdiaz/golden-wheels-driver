@@ -1,93 +1,73 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  TextInput,
-  ScrollView,
-  Dimensions,
-  Modal,
-} from 'react-native';
-import { Card } from '../../codidge_components/UI/card';
-import * as Icons from 'lucide-react-native';
+import { View, StyleSheet, SafeAreaView, ScrollView, Modal } from 'react-native';
 import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 import ContactForm from './widgets/addContact';
 import { ContactList } from './widgets/contactList';
-import { CrmMetrics, IActivity, IFollowUp } from './interfaces';
-import {
-  getActivityColor,
-  getActivityIcon,
-  getPriorityColor,
-  getPriorityTextColor,
-} from './helpers';
+import { CrmMetrics, IContact } from './interfaces';
+
 import { CrmMetricsCard } from './widgets/crmMetricCard';
+import { useQuery, useReactiveVar } from '@apollo/client';
+import { getUserContacts } from './graphql/queries';
+import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
+import Constants from 'expo-constants';
+import { userData } from '~/store/user';
 
-const mockActivity: IActivity[] = [
-  {
-    id: '1',
-    type: 'call',
-    contact: 'Maria Gonzalez',
-    description: 'Follow-up call - 15 min',
-    time: '2 hours ago',
-  },
-  {
-    id: '2',
-    type: 'email',
-    contact: 'Carlos Rodriguez',
-    description: 'Sent market analysis',
-    time: '4 hours ago',
-  },
-  {
-    id: '3',
-    type: 'meeting',
-    contact: 'Jennifer Smith',
-    description: 'Scheduled showing for tomorrow',
-    time: '1 day ago',
-  },
-];
-
-const mockFollowUps: IFollowUp[] = [
-  {
-    id: '1',
-    contact: 'Maria Gonzalez',
-    task: 'Schedule showing',
-    dueDate: 'Today',
-    priority: 'high',
-  },
-  {
-    id: '2',
-    contact: 'Carlos Rodriguez',
-    task: 'Send proposal',
-    dueDate: 'Tomorrow',
-    priority: 'medium',
-  },
-  {
-    id: '3',
-    contact: 'Jennifer Smith',
-    task: 'Follow-up call',
-    dueDate: 'Friday',
-    priority: 'low',
-  },
-];
+const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const CRMScreen: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activity] = useState<IActivity[]>(mockActivity);
-  const [followUps] = useState<IFollowUp[]>(mockFollowUps);
+  const customer = useReactiveVar(userData);
 
-  const stats: CrmMetrics[] = [
-    { label: 'Total Contacts', value: 147, icon: 'Users', color: '#2563EB', bgColor: '#EEF2FF' },
-    { label: 'Hot Leads', value: 23, icon: 'TrendingUp', color: '#EF4444', bgColor: '#FEF2F2' },
-    { label: 'Follow-ups', value: 12, icon: 'Calendar', color: '#10B981', bgColor: '#ECFDF5' },
-    { label: 'Closed', value: 3, icon: 'Building', color: '#7C3AED', bgColor: '#F3E8FF' },
-  ];
-
+  const [activeTab, setactiveTab] = useState<'contact' | 'followUp'>('followUp');
   const [modalVisible, setModalVisible] = useState(false);
 
   const disposeModalHandler = () => {
     setModalVisible(false);
   };
+
+  const { data, loading } = useQuery<{ getUserContacts: IContact[] }>(getUserContacts, {
+    variables: {
+      tenant: {
+        tenantId,
+      },
+      userId: customer?.id,
+    },
+  });
+
+  if (loading) {
+    return <PageLoading />;
+  }
+
+  const contacts = (data?.getUserContacts ?? []).slice().sort((a, b) => {
+    return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+  });
+
+  const followUp = contacts.filter((ctc) => !ctc.followedUp);
+  const pureContacts = contacts.filter((ctc) => ctc.followedUp);
+
+  const stats: CrmMetrics[] = [
+    {
+      label: 'Follow-ups',
+      value: followUp.length,
+      icon: 'Calendar',
+      color: '#10B981',
+      bgColor: '#ECFDF5',
+      active: activeTab === 'contact',
+      onPress: () => {
+        setactiveTab('followUp');
+      },
+    },
+    {
+      label: 'Total Contacts',
+      value: pureContacts.length,
+      icon: 'Users',
+      color: '#2563EB',
+      bgColor: '#EEF2FF',
+      active: activeTab === 'followUp',
+      onPress: () => {
+        setactiveTab('contact');
+      },
+    },
+  ];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -95,65 +75,17 @@ export const CRMScreen: React.FC = () => {
         {/* Stats Row */}
         <View style={styles.statsContainer}>
           {stats.map((stat, index) => {
-            return <CrmMetricsCard onPress={() => {}} key={index} crmMetrics={stat} />;
+            return <CrmMetricsCard key={index} crmMetrics={stat} />;
           })}
         </View>
 
         {/* Main Content Grid */}
         <View style={styles.mainGrid}>
           {/* Contacts List */}
-          <ContactList />
-
-          {/* Right Column */}
-          <View style={styles.rightColumn}>
-            {/* Recent Activity */}
-            <Card style={styles.activityCard}>
-              <Text style={styles.sectionTitle}>Recent Activity</Text>
-              <View style={styles.activityList}>
-                {activity.map((item) => {
-                  const IconComponent = getActivityIcon(item.type);
-                  const colors = getActivityColor(item.type);
-
-                  return (
-                    <View key={item.id} style={styles.activityItem}>
-                      <View style={[styles.activityIcon, { backgroundColor: colors.bg }]}>
-                        <IconComponent size={16} color={colors.icon} />
-                      </View>
-                      <View style={styles.activityContent}>
-                        <Text style={styles.activityContact}>{item.contact}</Text>
-                        <Text style={styles.activityDescription}>{item.description}</Text>
-                        <Text style={styles.activityTime}>{item.time}</Text>
-                      </View>
-                    </View>
-                  );
-                })}
-              </View>
-            </Card>
-
-            {/* Follow-ups */}
-            <Card style={styles.followUpCard}>
-              <Text style={styles.sectionTitle}>Pending Follow-ups</Text>
-              <View style={styles.followUpList}>
-                {followUps.map((item) => (
-                  <View
-                    key={item.id}
-                    style={[
-                      styles.followUpItem,
-                      { backgroundColor: getPriorityColor(item.priority) },
-                    ]}>
-                    <View style={styles.followUpContent}>
-                      <Text style={styles.followUpContact}>{item.contact}</Text>
-                      <Text style={styles.followUpTask}>{item.task}</Text>
-                    </View>
-                    <Text
-                      style={[styles.followUpDate, { color: getPriorityTextColor(item.priority) }]}>
-                      {item.dueDate}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-            </Card>
-          </View>
+          <ContactList
+            title={activeTab === 'contact' ? 'Contacts' : 'Follow Ups'}
+            contacts={activeTab === 'contact' ? pureContacts : followUp}
+          />
         </View>
       </ScrollView>
       <FloatingMenu

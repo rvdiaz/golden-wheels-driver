@@ -1,47 +1,55 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Text, View, FlatList, StyleSheet } from 'react-native';
 import { Card } from '~/codidge_components/UI/card';
 import { ContactCard } from './contactCard';
 import { IContact } from '../interfaces';
-import { useQuery, useReactiveVar } from '@apollo/client';
-import { getUserContacts } from '../graphql/queries';
-import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
-import { userData } from '~/store/user';
-import Constants from 'expo-constants';
+import InputField from '~/codidge_components/UI/form/inputs/inputField';
 
-const tenantId = Constants.expoConfig?.extra?.TENANTID;
+import * as Icons from 'lucide-react-native';
 
-export const ContactList = () => {
-  const customer = useReactiveVar(userData);
+export const ContactList = ({ title, contacts }: { title: string; contacts: IContact[] }) => {
+  const [inputSearch, setinputSearch] = useState<string>('');
 
-  const { data, loading } = useQuery<{ getUserContacts: IContact[] }>(getUserContacts, {
-    variables: {
-      tenant: {
-        tenantId,
-      },
-      userId: customer?.id,
-    },
-  });
+  // Filter contacts based on search input
+  const filteredContacts = contacts.filter((contact) => {
+    const search = inputSearch.toLowerCase();
 
-  if (loading) {
-    return <PageLoading />;
-  }
-
-  const contacts = (data?.getUserContacts ?? []).slice().sort((a, b) => {
-    return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+    // Search in first name, last name, email, phone, and category
+    return (
+      contact.firstName.toLowerCase().includes(search) ||
+      contact.lastName.toLowerCase().includes(search) ||
+      contact.email.toLowerCase().includes(search) ||
+      contact.phone.toLowerCase().includes(search) ||
+      (contact.category?.toLowerCase().includes(search) ?? false)
+    );
   });
 
   return (
     <View style={styles.contactsSection}>
       <Card style={styles.contactsCard}>
-        <Text style={styles.sectionTitle}>Recent Contacts</Text>
-        <FlatList
-          data={contacts}
-          renderItem={(item) => <ContactCard contact={item.item} />}
-          keyExtractor={(item) => item.id}
-          showsVerticalScrollIndicator={false}
-          scrollEnabled={false}
+        <Text style={styles.sectionTitle}>{title}</Text>
+        <InputField
+          value={inputSearch}
+          onChangeText={(e) => {
+            setinputSearch(e);
+          }}
+          placeholder="Search Contacts"
+          leftIcon={<Icons.Search size={16} color="#2563EB" />}
         />
+
+        {filteredContacts.length === 0 ? (
+          <Text style={styles.noContactsText}>
+            {inputSearch ? `No contacts found for "${inputSearch}"` : 'No contacts available'}
+          </Text>
+        ) : (
+          <FlatList
+            data={filteredContacts}
+            renderItem={(item) => <ContactCard contact={item.item} />}
+            keyExtractor={(item) => item.id}
+            showsVerticalScrollIndicator={false}
+            scrollEnabled={false}
+          />
+        )}
       </Card>
     </View>
   );
@@ -63,5 +71,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#1F2937',
     marginBottom: 20,
+  },
+  noContactsText: {
+    textAlign: 'center',
+    color: '#888',
+    fontSize: 14,
+    marginVertical: 20,
   },
 });

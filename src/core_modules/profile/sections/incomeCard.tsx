@@ -76,33 +76,20 @@ export const IncomeCard = ({ income }: { income: IIncome }) => {
 
         const updatedIncome = mutationData.updateUserIncome;
 
-        // Read existing cache
-        const existingData: any = cache.readQuery({
-          query: getUserIncomes,
-          variables: {
-            tenant: { tenantId },
-            userId: customer?.id,
+        cache.modify({
+          fields: {
+            getUserIncomes(existingIncomeRefs = [], { readField }) {
+              return existingIncomeRefs.map((incomeRef: any) => {
+                const id = readField('id', incomeRef);
+                if (id === updatedIncome.id) {
+                  // Merge the updated income directly into the cached reference
+                  return { ...incomeRef, ...updatedIncome };
+                }
+                return incomeRef;
+              });
+            },
           },
         });
-
-        if (existingData) {
-          // Replace the old income with the updated one
-          const updatedIncomes = existingData.getUserIncomes.map((income: IIncome) =>
-            income.id === updatedIncome.id ? updatedIncome : income
-          );
-
-          // Write the updated list back to the cache
-          cache.writeQuery({
-            query: getUserIncomes,
-            variables: {
-              tenant: { tenantId },
-              userId: customer?.id,
-            },
-            data: {
-              getUserIncomes: updatedIncomes,
-            },
-          });
-        }
       },
     }
   );

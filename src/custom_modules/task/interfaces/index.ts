@@ -1,9 +1,7 @@
-import { ReactNode } from 'react';
-
-export enum Priority {
-  high = 'high',
-  medium = 'medium',
+export enum TaskPriority {
   low = 'low',
+  medium = 'medium',
+  high = 'high',
 }
 
 export enum TaskStatus {
@@ -16,26 +14,33 @@ export enum TaskSource {
   admin = 'admin',
 }
 
+export enum TaskCategory {
+  TRAINING = 'training',
+  EDUCATION = 'education',
+  NETWORKING = 'networking',
+}
+
 export interface ITask {
   id: string;
   title: string;
   description: string;
-  scheduledTime: string;
+  scheduledTime: Date | string;
   isCompleted: boolean;
   targetCount?: number;
   currentProgress?: number;
   date: string;
-  priority: Priority;
-  category: string;
+  priority: TaskPriority;
+  category: TaskCategory;
   userId: string;
   source: TaskSource;
   status: TaskStatus;
   durationMinutes: number;
 }
 
-export interface ITaskCategory {
-  value: string;
-  label: string;
-  icon: ReactNode;
-  color: string;
+export interface TaskFormValues {
+  title: string;
+  description: string;
+  category: string;
+  priority: TaskPriority;
+  scheduledTime: Date | string;
 }

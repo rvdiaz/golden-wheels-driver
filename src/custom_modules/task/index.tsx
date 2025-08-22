@@ -11,7 +11,7 @@ import { getTaskByUserQuery } from './graphql/queries';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import Constants from 'expo-constants';
 
-const today = new Date(); // create once per render (or useMemo if needed)
+const today = new Date().toISOString().split('T')[0];
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const TasksScreen: React.FC = () => {

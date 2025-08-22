@@ -41,7 +41,7 @@ const DropdownComponent: React.FC<DropdownProps> = ({
   );
 
   return (
-    <View>
+    <View style={styles.dropDownContainer}>
       {label && (
         <Text style={styles.labelStyle}>
           {label} {required && <Text style={{ color: 'red' }}> *</Text>}
@@ -77,6 +77,9 @@ const DropdownComponent: React.FC<DropdownProps> = ({
 export default DropdownComponent;
 
 const styles = StyleSheet.create({
+  dropDownContainer: {
+    marginBottom: 12,
+  },
   dropdown: {
     height: 48,
     backgroundColor: 'white',
@@ -84,7 +87,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     borderColor: '#ccc',
-    marginBottom: 12,
   },
   icon: {
     marginRight: 5,
@@ -119,9 +121,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   errorText: {
-    marginLeft: 16,
-    color: 'red',
-    fontSize: 12,
+    marginTop: 4,
+    fontSize: 14,
+    color: '#EF4444',
   },
   labelStyle: {
     fontSize: 14,

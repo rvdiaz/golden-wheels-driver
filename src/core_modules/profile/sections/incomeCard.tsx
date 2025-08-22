@@ -10,20 +10,10 @@ import { userData } from '~/store/user';
 import { getUserIncomes } from '../graphql/queries';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import IncomeForm from './incomeForm';
+import { getStatusColor } from '../helpers';
 
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString();
-};
-
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'completed':
-      return '#10B981';
-    case 'pending':
-      return '#F59E0B';
-    default:
-      return '#6B7280';
-  }
 };
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;

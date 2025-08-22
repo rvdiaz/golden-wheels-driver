@@ -17,16 +17,13 @@ export enum ContactType {
 
 export interface IContact {
   id: string;
-  tenantId: string;
+  tenWWETEWTRWETantId: string;
   userId: string;
-
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
-
   category?: ContactCategory;
-
   address?: string;
   priority?: 'low' | 'medium' | 'high';
   notes: string;

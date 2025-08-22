@@ -10,6 +10,7 @@ interface DateInputFieldProps {
   label?: string;
   error?: boolean;
   errorMessage?: string;
+  mode?: 'date' | 'time' | 'datetime'; // NEW: allow different modes
 }
 
 export const DateInputField: React.FC<DateInputFieldProps> = ({
@@ -18,6 +19,7 @@ export const DateInputField: React.FC<DateInputFieldProps> = ({
   label,
   error,
   errorMessage,
+  mode = 'date',
 }) => {
   const [showModal, setShowModal] = useState(false);
 

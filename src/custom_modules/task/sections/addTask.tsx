@@ -1,193 +1,238 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, StyleSheet, SafeAreaView, Alert, ScrollView } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
-
-import * as Icons from 'lucide-react-native';
-import { Card } from '~/codidge_components/UI/card';
 import { Header } from '~/codidge_components/UI/header';
+import InputField from '~/codidge_components/UI/form/inputs/inputField';
+import DropdownComponent from '~/codidge_components/UI/dropdown';
+import { getPriorityColor, TASK_CATEGORY_OPTIONS, TASK_PRIORITY_OPTIONS } from '../helpers';
+import { RadioGroupButtons } from '~/codidge_components/UI/form/RadioGroupButton';
+import { DateInputField } from '~/codidge_components/UI/form/inputs/datePicker';
+import { ITask, TaskFormValues, TaskPriority } from '../interfaces';
+import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
+import { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
+import { useMutation, useReactiveVar } from '@apollo/client';
+import { addTaskMutation } from '../graphql/mutations';
+import Constants from 'expo-constants';
+import { userData } from '~/store/user';
+import { getTaskByUserQuery } from '../graphql/queries';
 
-type Priority = 'high' | 'medium' | 'low';
-
-interface TaskFormValues {
-  title: string;
-  description: string;
-  category: string;
-  priority: Priority;
-}
+const tenantId = Constants.expoConfig?.extra?.TENANTID;
+const today = new Date().toISOString().split('T')[0];
 
 export const AddTaskScreen = ({ disposeModalHandler }: { disposeModalHandler: () => void }) => {
-  const navigation = useNavigation();
+  const customer = useReactiveVar(userData);
+
+  const defaultTaskDate = new Date();
+  defaultTaskDate.setDate(defaultTaskDate.getDate() + 1);
+  const taskDateISO = defaultTaskDate.toISOString();
+
+  const [addTaskMutationFn, { loading }] = useMutation<{ addTask: ITask }>(addTaskMutation, {
+    update: (cache, { data }) => {
+      if (!data?.addTask) return;
+
+      const newTask = data.addTask;
+
+      // Read existing tasks for this user from cache
+      const existingData = cache.readQuery<{ getTasksByUser: ITask[] }>({
+        query: getTaskByUserQuery,
+        variables: {
+          tenant: { tenantId },
+          userId: customer?.id,
+          date: today,
+        },
+      });
+
+      if (existingData?.getTasksByUser) {
+        cache.writeQuery({
+          query: getTaskByUserQuery,
+          variables: {
+            tenant: { tenantId },
+            userId: customer?.id,
+            date: today,
+          },
+          data: {
+            getTasksByUser: [...existingData.getTasksByUser, newTask],
+          },
+        });
+      }
+    },
+  });
   const {
     control,
     handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
+    reset,
+    formState: { errors, isValid },
   } = useForm<TaskFormValues>({
     defaultValues: {
       title: '',
       description: '',
       category: '',
-      priority: 'medium',
+      priority: TaskPriority.medium,
+      scheduledTime: taskDateISO,
     },
   });
 
-  const priority = watch('priority');
+  const onSubmit = async (data: TaskFormValues) => {
+    try {
+      await addTaskMutationFn({
+        variables: {
+          tenant: { tenantId },
+          userId: customer?.id,
+          task: {
+            ...data,
+            source: 'user',
+          },
+        },
+      });
 
-  const onSubmit = (data: TaskFormValues) => {
-    if (!data.title.trim()) {
-      Alert.alert('Error', 'Please enter a task title');
-      return;
-    }
+      reset({
+        title: '',
+        description: '',
+        category: '',
+        priority: TaskPriority.medium,
+        scheduledTime: taskDateISO,
+      });
 
-    // Save task to your store here
-    console.log('Saving task:', data);
-
-    Alert.alert('Success', 'Task added successfully', [
-      { text: 'OK', onPress: () => navigation.goBack() },
-    ]);
-    disposeModalHandler();
-  };
-
-  const getPriorityColor = (selectedPriority: string) => {
-    switch (selectedPriority) {
-      case 'high':
-        return '#EF4444';
-      case 'medium':
-        return '#F59E0B';
-      case 'low':
-        return '#10B981';
-      default:
-        return '#6B7280';
+      disposeModalHandler();
+    } catch (error) {
+      Alert.alert('Error', 'Error adding task!');
+      console.log('data', data);
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header
-        title="Add Task"
-        showBack
-        onBack={disposeModalHandler}
-        rightAction={handleSubmit(onSubmit)}
-        rightText="Save"
-      />
+      <Header title="Add Task" rightAction={disposeModalHandler} rightText="Close" />
 
-      <View style={styles.content}>
-        <Card style={styles.formCard}>
+      <ScrollView style={styles.content}>
+        <View style={styles.formCard}>
           {/* Title */}
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Title</Text>
+          <View style={styles.fieldContainer}>
             <Controller
               control={control}
               name="title"
               rules={{ required: 'Title is required' }}
               render={({ field: { onChange, value } }) => (
-                <TextInput
-                  style={styles.input}
+                <InputField
+                  label="Title"
+                  required={true}
                   placeholder="Enter task title"
                   value={value}
                   onChangeText={onChange}
+                  error={!!errors.title}
+                  errorMessage={errors.title?.message}
                 />
               )}
             />
-            {errors.title && <Text style={{ color: 'red' }}>{errors.title.message}</Text>}
           </View>
 
           {/* Description */}
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Description</Text>
+          <View style={styles.fieldContainer}>
             <Controller
               control={control}
               name="description"
+              rules={{ required: 'Description is required' }}
               render={({ field: { onChange, value } }) => (
-                <TextInput
-                  style={[styles.input, styles.textArea]}
+                <InputField
+                  label="Description"
+                  required={true}
                   placeholder="Enter task description"
                   value={value}
                   onChangeText={onChange}
                   multiline
                   numberOfLines={4}
                   textAlignVertical="top"
+                  style={{
+                    minHeight: 80,
+                  }}
+                  error={!!errors.description}
+                  errorMessage={errors.description?.message}
                 />
               )}
             />
           </View>
-
-          {/* Category */}
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Category</Text>
+          <View style={styles.fieldContainer}>
             <Controller
               control={control}
               name="category"
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  style={styles.input}
-                  placeholder="e.g., Follow-up, Listing, Research"
-                  value={value}
-                  onChangeText={onChange}
+              rules={{
+                required: 'Category is required',
+              }}
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <DropdownComponent
+                  label="Type"
+                  required={true}
+                  data={TASK_CATEGORY_OPTIONS}
+                  placeholder="Select task category"
+                  value={value ?? ''}
+                  onChange={onChange}
+                  error={!!error}
+                  errorMessage={error?.message}
                 />
               )}
             />
           </View>
 
-          {/* Priority */}
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Priority</Text>
-            <View style={styles.priorityContainer}>
-              {(['high', 'medium', 'low'] as const).map((p) => (
-                <TouchableOpacity
-                  key={p}
-                  style={[
-                    styles.priorityButton,
-                    priority === p && {
-                      backgroundColor: getPriorityColor(p) + '20',
-                      borderColor: getPriorityColor(p),
-                    },
-                  ]}
-                  onPress={() => setValue('priority', p)}>
-                  <Text
-                    style={[styles.priorityText, priority === p && { color: getPriorityColor(p) }]}>
-                    {p.toUpperCase()}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+          <View style={styles.fieldContainer}>
+            {/* Priority */}
+            <Controller
+              control={control}
+              name="priority"
+              render={({ field: { value, onChange } }) => (
+                <RadioGroupButtons
+                  label="Priority"
+                  value={value}
+                  onChange={onChange}
+                  options={TASK_PRIORITY_OPTIONS}
+                  getColor={getPriorityColor}
+                />
+              )}
+            />
           </View>
-        </Card>
+        </View>
 
-        {/* Schedule Card */}
-        <Card style={styles.scheduleCard}>
-          <View style={styles.scheduleHeader}>
-            <Icons.Calendar size={20} color="#2563EB" />
-            <Text style={styles.scheduleTitle}>Add to Schedule</Text>
+        {/* Follow Up */}
+        <View style={styles.fieldContainer}>
+          <View
+            style={{
+              flex: 1,
+            }}>
+            <Controller
+              control={control}
+              name="scheduledTime"
+              render={({ field: { onChange, value } }) => (
+                <DateInputField label="Tasks date" value={value as Date} onChangeText={onChange} />
+              )}
+            />
           </View>
-          <Text style={styles.scheduleDescription}>
-            This task will be added to your daily schedule
-          </Text>
-          <TouchableOpacity style={styles.scheduleButton}>
-            <Icons.Clock size={16} color="#2563EB" />
-            <Text style={styles.scheduleButtonText}>Set Due Date & Time</Text>
-          </TouchableOpacity>
-        </Card>
+        </View>
+      </ScrollView>
+      <View style={styles.bottomBarContainer}>
+        {/* Submit Button */}
+        <PrimaryButton
+          loading={loading}
+          onPress={handleSubmit(onSubmit)}
+          size={ButtonSize.LARGE}
+          disabled={!isValid}
+          title="Save Task"
+        />
       </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F9FAFB' },
-  content: { flex: 1, padding: 16 },
-  formCard: { padding: 20, marginBottom: 16 },
-  formGroup: { marginBottom: 20 },
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 20,
+    paddingTop: 40,
+  },
+  fieldContainer: {
+    marginBottom: 10,
+  },
+  content: { flex: 1, padding: 24 },
+  formCard: { marginBottom: 16 },
   label: { fontSize: 16, fontWeight: '600', color: '#374151', marginBottom: 8 },
   input: {
     borderWidth: 1,
@@ -211,29 +256,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   priorityText: { fontSize: 14, fontWeight: '600', color: '#6B7280' },
-  scheduleCard: { padding: 20 },
-  scheduleHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
-  scheduleTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1F2937',
-    marginLeft: 8,
-  },
-  scheduleDescription: { fontSize: 14, color: '#6B7280', marginBottom: 16 },
-  scheduleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: '#EEF2FF',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#C7D2FE',
-  },
-  scheduleButtonText: {
-    fontSize: 14,
-    color: '#2563EB',
-    fontWeight: '600',
-    marginLeft: 8,
+  bottomBarContainer: {
+    paddingHorizontal: 20,
   },
 });

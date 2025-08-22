@@ -49,3 +49,9 @@ export const updateContactMutation = gql`
     }
   }
 `;
+
+export const deleteContactMutation = gql`
+  mutation deleteUserContact($tenant: TenantData!, $userId: ID!, $contactId: ID!) {
+    deleteUserContact(tenant: $tenant, userId: $userId, contactId: $contactId)
+  }
+`;

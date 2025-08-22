@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const getTaskByUserQuery = gql`
-  query getTasksByUser($customerId: String!, $date: AWSDate) {
-    getTasksByUser(customerId: $customerId, date: $date) {
+  query getTasksByUser($tenant: TenantData!, $userId: String!, $date: AWSDate) {
+    getTasksByUser(tenant: $tenant, userId: $userId, date: $date) {
       category
       currentProgress
       description
@@ -20,8 +20,8 @@ export const getTaskByUserQuery = gql`
 `;
 
 export const getTaskQuery = gql`
-  query getTask($customerId: String!, $taskId: ID!) {
-    getSingleTask(customerId: $customerId, taskId: $taskId) {
+  query getTask($tenant: TenantData!, $userId: String!, $taskId: ID!) {
+    getSingleTask(tenant: $tenant, userId: $userId, taskId: $taskId) {
       category
       currentProgress
       description

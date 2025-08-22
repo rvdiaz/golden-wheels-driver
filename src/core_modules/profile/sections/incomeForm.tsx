@@ -2,8 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, Switch, Alert } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { useMutation, useReactiveVar } from '@apollo/client';
-import { IIncome } from '../interfaces';
-import { addUserIncome } from '../graphql/mutations';
+import { IFormData, IIncome, IncomeSource, IncomeStatus } from '../interfaces';
+import { addUserIncome, updateUserIncome } from '../graphql/mutations';
 import { getUserIncomes } from '../graphql/queries';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import * as Icons from 'lucide-react-native';
@@ -12,23 +12,12 @@ import { Header } from '~/codidge_components/UI/header';
 import Constants from 'expo-constants';
 import { userData } from '~/store/user';
 import DropdownComponent from '~/codidge_components/UI/dropdown';
+import { DateInputField } from '~/codidge_components/UI/form/inputs/datePicker';
+import { INCOME_SOURCE } from '../helpers';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
-// Income source options
-const INCOME_SOURCE_OPTIONS = [
-  { label: 'Salary', value: 'salary' },
-  { label: 'Rental Income', value: 'rental' },
-  { label: 'Freelance', value: 'freelance' },
-  { label: 'Business Income', value: 'business' },
-  { label: 'Investment Returns', value: 'investment' },
-  { label: 'Commission', value: 'commission' },
-  { label: 'Bonus', value: 'bonus' },
-  { label: 'Pension', value: 'pension' },
-  { label: 'Other', value: 'other' },
-];
-
-export default function AddIncomeScreen({ dispose }: { dispose: () => void }) {
+export default function IncomeForm({ dispose, income }: { dispose: () => void; income?: IIncome }) {
   const customer = useReactiveVar(userData);
 
   const {
@@ -37,51 +26,151 @@ export default function AddIncomeScreen({ dispose }: { dispose: () => void }) {
     formState: { errors },
     watch,
     reset,
-  } = useForm<IIncome>({
+  } = useForm<IFormData>({
     defaultValues: {
-      source: '',
-      amount: 0,
-      description: '',
-      propertyAddress: '',
-      completed: false,
-      expectedDate: '',
+      source: income?.source ?? undefined,
+      amount: income?.amount ?? 0,
+      description: income?.description ?? '',
+      propertyAddress: income?.propertyAddress ?? '',
+      expectedDate: income?.expectedDate ?? '',
+      sourceDropDown: income?.source ?? '',
+      status: income?.status ?? IncomeStatus.completed,
+    },
+  });
+  const [updateIncome, { loading: loadingUpdate }] = useMutation<{ updateUserIncome: IIncome }>(
+    updateUserIncome,
+    {
+      update: (cache, { data: mutationData }) => {
+        if (!mutationData?.updateUserIncome) return;
+
+        const updatedIncome = mutationData.updateUserIncome;
+
+        // Read existing cache
+        const existingData: any = cache.readQuery({
+          query: getUserIncomes,
+          variables: {
+            tenant: { tenantId },
+            userId: customer?.id,
+          },
+        });
+
+        if (existingData) {
+          // Replace the old income with the updated one
+          const updatedIncomes = existingData.getUserIncomes.map((income: IIncome) =>
+            income.id === updatedIncome.id ? updatedIncome : income
+          );
+
+          // Write the updated list back to the cache
+          cache.writeQuery({
+            query: getUserIncomes,
+            variables: {
+              tenant: { tenantId },
+              userId: customer?.id,
+            },
+            data: {
+              getUserIncomes: updatedIncomes,
+            },
+          });
+        }
+      },
+    }
+  );
+
+  const [addIncome, { loading }] = useMutation<{ addUserIncome: IIncome }>(addUserIncome, {
+    update: (cache, { data: mutationData }) => {
+      if (!mutationData?.addUserIncome) return;
+
+      const newIncome = mutationData.addUserIncome;
+
+      // Read existing cache
+      const existingData: any = cache.readQuery({
+        query: getUserIncomes,
+        variables: {
+          tenant: { tenantId },
+          userId: customer?.id,
+        },
+      });
+
+      if (existingData) {
+        // Merge new income with existing incomes
+        cache.writeQuery({
+          query: getUserIncomes,
+          variables: {
+            tenant: { tenantId },
+            userId: customer?.id,
+          },
+          data: {
+            getUserIncomes: [...existingData.getUserIncomes, newIncome],
+          },
+        });
+      }
     },
   });
 
-  const [addIncome, { loading }] = useMutation(addUserIncome, {
-    refetchQueries: [getUserIncomes],
-  });
+  const isCompleted = watch('status') === IncomeStatus.completed;
+  const watchSource = watch('sourceDropDown');
 
-  const watchIsPending = watch('completed');
-  const watchSource = watch('source');
-
-  const onSubmit = async (data: IIncome) => {
+  const onSubmit = async (data: IFormData) => {
     try {
-      const incomeData = {
-        source: data.source,
+      let source = data.sourceDropDown;
+
+      if (data.sourceDropDown === IncomeSource.Other) {
+        source = data.source;
+      }
+
+      const incomeData: Record<string, any> = {
+        source,
         amount: data.amount,
         description: data.description || null,
         propertyAddress: data.propertyAddress || null,
-        status: data.completed ? 'pending' : 'completed',
+        status: data.status ? IncomeStatus.pending : IncomeStatus.completed,
+        ...(data.status && { expectedDate: data.expectedDate }),
       };
-      await addIncome({
-        variables: {
-          tenant: {
-            tenantId,
+
+      if (income?.id) {
+        const res = await updateIncome({
+          variables: {
+            tenant: {
+              tenantId,
+            },
+            incomeId: income?.id,
+            userId: customer?.id,
+            incomeData,
           },
-          userId: customer?.id,
-          incomeData,
-        },
-      });
-      reset({
-        source: '',
-        amount: 0,
-        description: '',
-        propertyAddress: '',
-        completed: false,
-        expectedDate: '',
-      });
-      Alert.alert('Success', 'Income added successfully!');
+        });
+        const updatedIncome = res.data?.updateUserIncome;
+        if (updatedIncome) {
+          reset({
+            source: updatedIncome.source,
+            amount: updatedIncome.amount,
+            description: updatedIncome.description,
+            propertyAddress: updatedIncome.propertyAddress,
+            status: updatedIncome.status,
+            expectedDate: updatedIncome.expectedDate,
+          });
+          dispose();
+        }
+      } else {
+        await addIncome({
+          variables: {
+            tenant: {
+              tenantId,
+            },
+            userId: customer?.id,
+            incomeData,
+          },
+        });
+        reset({
+          source: undefined,
+          amount: 0,
+          description: '',
+          propertyAddress: '',
+          status: IncomeStatus.completed,
+          expectedDate: '',
+        });
+
+        dispose();
+      }
     } catch (error) {
       console.log('::error', error);
       Alert.alert('Error', 'Failed to add income. Please try again.');
@@ -91,7 +180,7 @@ export default function AddIncomeScreen({ dispose }: { dispose: () => void }) {
   return (
     <SafeAreaView style={styles.container}>
       <Header
-        title="New Income"
+        title={income ? 'Update Income' : 'New Income'}
         rightAction={() => {
           dispose();
         }}
@@ -105,14 +194,14 @@ export default function AddIncomeScreen({ dispose }: { dispose: () => void }) {
         <View style={styles.fieldContainer}>
           <Controller
             control={control}
-            name="source"
+            name="sourceDropDown"
             rules={{
-              required: 'Income source is required',
+              required: 'Income type is required',
             }}
             render={({ field: { onChange, value }, fieldState: { error } }) => (
               <DropdownComponent
-                label="Source"
-                data={INCOME_SOURCE_OPTIONS}
+                label="Income Type"
+                data={INCOME_SOURCE}
                 placeholder="Select income source"
                 value={value}
                 onChange={onChange}
@@ -131,7 +220,7 @@ export default function AddIncomeScreen({ dispose }: { dispose: () => void }) {
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <InputField
-                  leftIcon={<Icons.FileText size={16} color="#6B7280" />}
+                  leftIcon={<Icons.FileText size={16} color="#6B7280" style={styles.inputIcon} />}
                   label="Specify Income Source"
                   placeholder="Enter custom income source"
                   value={value}
@@ -171,24 +260,6 @@ export default function AddIncomeScreen({ dispose }: { dispose: () => void }) {
 
           <Controller
             control={control}
-            name="description"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <InputField
-                leftIcon={<Icons.FileText size={16} color="#6B7280" style={styles.inputIcon} />}
-                label="Description (Optional)"
-                placeholder="Additional details about this income"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                multiline
-                numberOfLines={3}
-                style={styles.textArea}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
             name="propertyAddress"
             render={({ field: { onChange, onBlur, value } }) => (
               <InputField
@@ -202,6 +273,23 @@ export default function AddIncomeScreen({ dispose }: { dispose: () => void }) {
             )}
           />
 
+          <Controller
+            control={control}
+            name="description"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <InputField
+                label="Description (Optional)"
+                placeholder="Additional details about this income"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                multiline
+                numberOfLines={3}
+                style={styles.textArea}
+              />
+            )}
+          />
+
           <View style={styles.switchContainer}>
             <View style={styles.switchLabel}>
               <Text style={styles.switchText}>This is a pending income</Text>
@@ -209,35 +297,36 @@ export default function AddIncomeScreen({ dispose }: { dispose: () => void }) {
             </View>
             <Controller
               control={control}
-              name="completed"
+              name="status"
               render={({ field: { onChange, value } }) => (
                 <Switch
-                  value={value}
+                  value={value === IncomeStatus.pending}
                   onValueChange={(newValue) => {
-                    onChange(newValue);
+                    if (newValue) {
+                      onChange(IncomeStatus.pending);
+                    } else {
+                      onChange(IncomeStatus.completed);
+                    }
                   }}
                   trackColor={{ false: '#D1D5DB', true: '#93C5FD' }}
-                  thumbColor={value ? '#3B82F6' : '#FFFFFF'}
+                  thumbColor={value === IncomeStatus.pending ? '#3B82F6' : '#FFFFFF'}
                 />
               )}
             />
           </View>
 
-          {watchIsPending && (
+          {!isCompleted && (
             <Controller
               control={control}
               name="expectedDate"
               rules={{
-                required: watchIsPending ? 'Expected date is required for pending income' : false,
+                required: isCompleted ? 'Expected date is required for pending income' : false,
               }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <InputField
-                  leftIcon={<Icons.Calendar size={16} color="#6B7280" style={styles.inputIcon} />}
+              render={({ field: { onChange, value } }) => (
+                <DateInputField
                   label="Expected Date"
-                  placeholder="YYYY-MM-DD"
-                  value={value}
+                  value={value as Date}
                   onChangeText={onChange}
-                  onBlur={onBlur}
                   error={!!errors.expectedDate}
                   errorMessage={errors.expectedDate?.message}
                 />
@@ -251,9 +340,9 @@ export default function AddIncomeScreen({ dispose }: { dispose: () => void }) {
         <PrimaryButton
           style={styles.footerButton}
           size={ButtonSize.LARGE}
-          loading={loading}
+          loading={loading || loadingUpdate}
           onPress={handleSubmit(onSubmit)}
-          title="Add Income"
+          title={'Save Income'}
         />
       </View>
     </SafeAreaView>
@@ -277,7 +366,6 @@ const styles = StyleSheet.create({
   },
   textArea: {
     minHeight: 80,
-    textAlignVertical: 'top',
   },
   formContent: {
     paddingBottom: 100,

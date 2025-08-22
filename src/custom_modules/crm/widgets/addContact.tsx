@@ -1,11 +1,10 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, SafeAreaView, Alert } from 'react-native';
 import * as Icons from 'lucide-react-native';
-
 import { useForm, Controller } from 'react-hook-form';
 import { UserPlus } from 'lucide-react-native';
 import { Header } from '~/codidge_components/UI/header';
-import { IContact } from '../interfaces';
+import { ContactType, IContact } from '../interfaces';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import { useMutation, useReactiveVar } from '@apollo/client';
@@ -13,6 +12,9 @@ import { addContactMutation, updateContactMutation } from '../graphql/mutations'
 import { userData } from '~/store/user';
 import Constants from 'expo-constants';
 import { getUserContacts } from '../graphql/queries';
+import DropdownComponent from '~/codidge_components/UI/dropdown';
+import { CONTACT_CATEGORY_OPTIONS, CONTACT_TYPE_OPTIONS } from '../helpers';
+import { DateInputField } from '~/codidge_components/UI/form/inputs/datePicker';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -24,6 +26,10 @@ export default function ContactForm({
   contact?: IContact;
 }) {
   const customer = useReactiveVar(userData);
+
+  const defaultFollowUpDate = new Date();
+  defaultFollowUpDate.setDate(defaultFollowUpDate.getDate() + 1);
+  const followUpISO = defaultFollowUpDate.toISOString();
 
   const {
     control,
@@ -38,10 +44,11 @@ export default function ContactForm({
       email: contact?.email ?? '',
       address: contact?.address ?? '',
       notes: contact?.notes ?? '',
-      category: contact?.category ?? 'buyer',
+      category: contact?.category,
       priority: contact?.priority ?? 'medium',
-      type: contact?.type ?? 'lead',
+      type: contact?.type ?? ContactType.LEAD,
       leadStatus: contact?.leadStatus ?? 'new',
+      followUp: contact?.followUp ?? followUpISO,
     },
     mode: 'onChange',
   });
@@ -141,14 +148,14 @@ export default function ContactForm({
             email: updatedContact.email ?? '',
             address: updatedContact.address ?? '',
             notes: updatedContact.notes ?? '',
-            category: updatedContact.category ?? 'buyer',
+            category: updatedContact.category ?? undefined,
             priority: updatedContact.priority ?? 'medium',
-            type: updatedContact.type ?? 'lead',
+            type: updatedContact.type ?? ContactType.LEAD,
             leadStatus: updatedContact.leadStatus ?? 'new',
           });
         }
 
-        Alert.alert('Success', 'Contact was updated successfully!');
+        disposeModalHandler(updatedContact);
       } else {
         // Add new contact
         await addContactFn({
@@ -166,13 +173,13 @@ export default function ContactForm({
           email: '',
           address: '',
           notes: '',
-          category: 'buyer',
+          category: undefined,
           priority: 'medium',
-          type: 'lead',
+          type: ContactType.LEAD,
           leadStatus: 'new',
         });
 
-        Alert.alert('Success', 'Contact was added successfully!');
+        disposeModalHandler();
       }
     } catch (error) {
       Alert.alert('Error', 'Error adding contact!');
@@ -219,6 +226,7 @@ export default function ContactForm({
                 <InputField
                   leftIcon={<Icons.User size={16} color="#6B7280" style={styles.inputIcon} />}
                   label="First name"
+                  required={true}
                   placeholder="First name"
                   placeholderTextColor="#9ca3af"
                   value={value}
@@ -247,6 +255,7 @@ export default function ContactForm({
               render={({ field: { onChange, onBlur, value } }) => (
                 <InputField
                   label="Last name"
+                  required={true}
                   placeholder="Last name"
                   placeholderTextColor="#9ca3af"
                   value={value}
@@ -280,6 +289,7 @@ export default function ContactForm({
                 <InputField
                   leftIcon={<Icons.Phone size={16} color="#6B7280" style={styles.inputIcon} />}
                   label="Phone"
+                  required={true}
                   placeholder="(555) 123-4567"
                   placeholderTextColor="#9ca3af"
                   value={value}
@@ -312,6 +322,7 @@ export default function ContactForm({
                 <InputField
                   leftIcon={<Icons.Mail size={16} color="#6B7280" style={styles.inputIcon} />}
                   label="Email"
+                  required={true}
                   placeholder="email@example.com"
                   placeholderTextColor="#9ca3af"
                   value={value}
@@ -321,6 +332,76 @@ export default function ContactForm({
                   autoCapitalize="none"
                   error={!!errors.email}
                   errorMessage={errors.email?.message}
+                />
+              )}
+            />
+          </View>
+        </View>
+
+        {/* Category Field */}
+        <View style={styles.fieldContainer}>
+          <View
+            style={{
+              flex: 1,
+            }}>
+            <Controller
+              control={control}
+              name="category"
+              rules={{
+                required: 'Category is required',
+              }}
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <DropdownComponent
+                  label="Category"
+                  required={true}
+                  data={CONTACT_CATEGORY_OPTIONS}
+                  placeholder="Select contact category"
+                  value={value ?? ''}
+                  onChange={onChange}
+                  error={!!error}
+                  errorMessage={error?.message}
+                  icon={<Icons.User size={16} color="gray" />} // custom icon
+                />
+              )}
+            />
+          </View>
+          <View
+            style={{
+              flex: 1,
+            }}>
+            <Controller
+              control={control}
+              name="type"
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <DropdownComponent
+                  label="Type"
+                  required={true}
+                  data={CONTACT_TYPE_OPTIONS}
+                  placeholder="Select contact type"
+                  value={value ?? ContactType.LEAD}
+                  onChange={onChange}
+                  error={!!error}
+                  errorMessage={error?.message}
+                  icon={<Icons.UserCircle size={16} color="gray" />} // custom icon
+                />
+              )}
+            />
+          </View>
+        </View>
+        {/* Follow Up */}
+        <View style={styles.fieldContainer}>
+          <View
+            style={{
+              flex: 1,
+            }}>
+            <Controller
+              control={control}
+              name="followUp"
+              render={({ field: { onChange, value } }) => (
+                <DateInputField
+                  label="Follow up date"
+                  value={value as Date}
+                  onChangeText={onChange}
                 />
               )}
             />
@@ -350,34 +431,28 @@ export default function ContactForm({
             />
           </View>
         </View>
+
         {/* Notes Field */}
-        <View style={styles.fieldContainer}>
-          <View
-            style={{
-              flex: 1,
-            }}>
-            <Controller
-              control={control}
-              name="notes"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <InputField
-                  label="Notes"
-                  placeholder="Additional notes"
-                  placeholderTextColor="#9ca3af"
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  multiline
-                  numberOfLines={4}
-                  textAlignVertical="top"
-                  style={{
-                    minHeight: 80,
-                  }}
-                />
-              )}
+        <Controller
+          control={control}
+          name="notes"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <InputField
+              label="Notes"
+              placeholder="Additional notes"
+              placeholderTextColor="#9ca3af"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              multiline
+              numberOfLines={4}
+              textAlignVertical="top"
+              style={{
+                minHeight: 80,
+              }}
             />
-          </View>
-        </View>
+          )}
+        />
       </ScrollView>
       <View style={styles.bottomBarContainer}>
         {/* Submit Button */}

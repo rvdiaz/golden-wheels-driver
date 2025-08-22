@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const addTaskMutation = gql`
-  mutation addTask($customerId: String!, $task: TaskInput!) {
-    addTask(customerId: $customerId, task: $task) {
+  mutation addTask($tenant: TenantData!, $userId: String!, $task: TaskInput!) {
+    addTask(tenant: $tenant, userId: $userId, task: $task) {
       category
       currentProgress
       description
@@ -20,8 +20,13 @@ export const addTaskMutation = gql`
 `;
 
 export const updateTaskMutation = gql`
-  mutation updateTask($customerId: String!, $taskId: ID!, $updates: TaskUpdateInput!) {
-    updateTask(customerId: $customerId, taskId: $taskId, updates: $updates) {
+  mutation updateTask(
+    $tenant: TenantData!
+    $userId: String!
+    $taskId: ID!
+    $updates: TaskUpdateInput!
+  ) {
+    updateTask(tenant: $tenant, userId: $userId, taskId: $taskId, updates: $updates) {
       category
       currentProgress
       description
@@ -39,7 +44,7 @@ export const updateTaskMutation = gql`
 `;
 
 export const deleteTaskMutation = gql`
-  mutation deleteTask($customerId: String!, $taskId: ID!) {
-    deleteTask(customerId: $customerId, taskId: $taskId)
+  mutation deleteTask($tenant: TenantData!, $userId: String!, $taskId: ID!) {
+    deleteTask(tenant: $tenant, userId: $userId, taskId: $taskId)
   }
 `;

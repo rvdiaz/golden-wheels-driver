@@ -14,3 +14,34 @@ export const addUserIncome = gql`
     }
   }
 `;
+
+export const updateUserIncome = gql`
+  mutation updateUserIncome(
+    $tenant: TenantData!
+    $userId: ID!
+    $incomeId: ID!
+    $incomeData: UserInputIncome!
+  ) {
+    updateUserIncome(
+      tenant: $tenant
+      userId: $userId
+      incomeId: $incomeId
+      incomeData: $incomeData
+    ) {
+      amount
+      createdAt
+      description
+      expectedDate
+      id
+      propertyAddress
+      source
+      status
+    }
+  }
+`;
+
+export const deleteUserIncomeMutation = gql`
+  mutation deleteUserIncome($tenant: TenantData!, $userId: ID!, $incomeId: ID!) {
+    deleteUserIncome(tenant: $tenant, userId: $userId, incomeId: $incomeId)
+  }
+`;

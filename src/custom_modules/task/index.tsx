@@ -9,8 +9,10 @@ import { useQuery, useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import { getTaskByUserQuery } from './graphql/queries';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
+import Constants from 'expo-constants';
 
 const today = new Date(); // create once per render (or useMemo if needed)
+const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const TasksScreen: React.FC = () => {
   const customer = useReactiveVar(userData);
@@ -29,7 +31,10 @@ export const TasksScreen: React.FC = () => {
 
   const { data, loading: isLoading } = useQuery<{ getTasksByUser: ITask[] }>(getTaskByUserQuery, {
     variables: {
-      customerId: customer?.id,
+      tenant: {
+        tenantId,
+      },
+      userId: customer?.id,
       date: today,
     },
   });

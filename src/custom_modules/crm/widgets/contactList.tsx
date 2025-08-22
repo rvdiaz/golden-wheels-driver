@@ -37,7 +37,7 @@ export const ContactList = () => {
         <Text style={styles.sectionTitle}>Recent Contacts</Text>
         <FlatList
           data={contacts}
-          renderItem={(item) => <ContactCard item={item.item} />}
+          renderItem={(item) => <ContactCard contact={item.item} />}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           scrollEnabled={false}

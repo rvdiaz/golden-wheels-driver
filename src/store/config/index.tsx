@@ -7,7 +7,7 @@ import { TrainingScreen } from '~/custom_modules/training';
 import { MortgageCalculatorScreen } from '~/custom_modules/tools/sections/mortgage_calculator';
 import { ExpiredListingsScreen } from '~/custom_modules/tools/sections/expiredListing';
 import { NotificationsScreen } from '~/core_modules/notifications';
-import { ContactDetailsScreen } from '~/custom_modules/crm/sections/contactDetail';
+import { ContactDetailsScreen } from '~/custom_modules/crm/widgets/contactDetail';
 import { CourseDetailsScreen } from '~/custom_modules/training/sections/CourseDetailsScreen';
 import { ProfileScreen } from '~/core_modules/profile';
 import { PropertyInfoScreen } from '~/custom_modules/tools/sections/owner_property_details';

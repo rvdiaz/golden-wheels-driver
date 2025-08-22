@@ -12,9 +12,16 @@ import {
 import { Card } from '../../codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
 import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
-import ContactForm from './sections/addContact';
-import { ContactList } from './sections/contactList';
-import { IActivity, IContact, IFollowUp } from './interfaces';
+import ContactForm from './widgets/addContact';
+import { ContactList } from './widgets/contactList';
+import { CrmMetrics, IActivity, IFollowUp } from './interfaces';
+import {
+  getActivityColor,
+  getActivityIcon,
+  getPriorityColor,
+  getPriorityTextColor,
+} from './helpers';
+import { CrmMetricsCard } from './widgets/crmMetricCard';
 
 const mockActivity: IActivity[] = [
   {
@@ -64,71 +71,17 @@ const mockFollowUps: IFollowUp[] = [
   },
 ];
 
-const screenWidth = Dimensions.get('window').width;
-
 export const CRMScreen: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activity] = useState<IActivity[]>(mockActivity);
   const [followUps] = useState<IFollowUp[]>(mockFollowUps);
 
-  const stats = [
-    { label: 'Total Contacts', value: '147', icon: 'Users', color: '#2563EB', bgColor: '#EEF2FF' },
-    { label: 'Hot Leads', value: '23', icon: 'TrendingUp', color: '#EF4444', bgColor: '#FEF2F2' },
-    { label: 'Follow-ups', value: '12', icon: 'Calendar', color: '#10B981', bgColor: '#ECFDF5' },
-    { label: 'Closed', value: '3', icon: 'Building', color: '#7C3AED', bgColor: '#F3E8FF' },
+  const stats: CrmMetrics[] = [
+    { label: 'Total Contacts', value: 147, icon: 'Users', color: '#2563EB', bgColor: '#EEF2FF' },
+    { label: 'Hot Leads', value: 23, icon: 'TrendingUp', color: '#EF4444', bgColor: '#FEF2F2' },
+    { label: 'Follow-ups', value: 12, icon: 'Calendar', color: '#10B981', bgColor: '#ECFDF5' },
+    { label: 'Closed', value: 3, icon: 'Building', color: '#7C3AED', bgColor: '#F3E8FF' },
   ];
-
-  const getActivityIcon = (type: string) => {
-    switch (type) {
-      case 'call':
-        return Icons.Phone;
-      case 'email':
-        return Icons.Mail;
-      case 'meeting':
-        return Icons.Calendar;
-      default:
-        return Icons.Activity;
-    }
-  };
-
-  const getActivityColor = (type: string) => {
-    switch (type) {
-      case 'call':
-        return { bg: '#ECFDF5', icon: '#059669' };
-      case 'email':
-        return { bg: '#EFF6FF', icon: '#2563EB' };
-      case 'meeting':
-        return { bg: '#F3E8FF', icon: '#7C3AED' };
-      default:
-        return { bg: '#F9FAFB', icon: '#6B7280' };
-    }
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high':
-        return '#FFFBEB';
-      case 'medium':
-        return '#FFF7ED';
-      case 'low':
-        return '#EFF6FF';
-      default:
-        return '#F9FAFB';
-    }
-  };
-
-  const getPriorityTextColor = (priority: string) => {
-    switch (priority) {
-      case 'high':
-        return '#D97706';
-      case 'medium':
-        return '#EA580C';
-      case 'low':
-        return '#2563EB';
-      default:
-        return '#374151';
-    }
-  };
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -142,40 +95,9 @@ export const CRMScreen: React.FC = () => {
         {/* Stats Row */}
         <View style={styles.statsContainer}>
           {stats.map((stat, index) => {
-            const IconComponent = (Icons as any)[stat.icon] || Icons.Users;
-            return (
-              <Card key={index} style={[styles.statCard, { backgroundColor: stat.bgColor }]}>
-                <View style={styles.statContent}>
-                  <View style={styles.statInfo}>
-                    <Text style={styles.statValue}>{stat.value}</Text>
-                    <Text style={styles.statLabel}>{stat.label}</Text>
-                  </View>
-                  <IconComponent size={32} color={stat.color} />
-                </View>
-              </Card>
-            );
+            return <CrmMetricsCard onPress={() => {}} key={index} crmMetrics={stat} />;
           })}
         </View>
-
-        {/* Search */}
-        <Card style={styles.searchCard}>
-          <View style={styles.searchContainer}>
-            <View style={styles.searchInputContainer}>
-              <Icons.Search size={20} color="#6B7280" />
-              <TextInput
-                style={styles.searchInput}
-                placeholder="Search contacts..."
-                value={searchTerm}
-                onChangeText={setSearchTerm}
-                placeholderTextColor="#9CA3AF"
-              />
-            </View>
-            {/*    <TouchableOpacity style={styles.filterButton}>
-              <Icons.Filter size={16} color="#6B7280" />
-              <Text style={styles.filterText}>Filter</Text>
-            </TouchableOpacity> */}
-          </View>
-        </Card>
 
         {/* Main Content Grid */}
         <View style={styles.mainGrid}>
@@ -270,41 +192,13 @@ const styles = StyleSheet.create({
     marginTop: 16,
     marginHorizontal: -8,
   },
-  statCard: {
-    width: (screenWidth - 48) / 2,
-    marginHorizontal: 8,
-    marginBottom: 16,
-    borderWidth: 0,
-    borderRadius: 16,
-    elevation: 0,
-    shadowOpacity: 0,
-  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: '#1F2937',
     marginBottom: 20,
   },
-  statContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-  },
-  statInfo: {
-    flex: 1,
-  },
-  statValue: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#1F2937',
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: '#6B7280',
-    fontWeight: '500',
-  },
+
   searchCard: {
     marginBottom: 16,
     padding: 16,

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -17,6 +17,8 @@ interface DropdownProps {
   errorMessage?: string;
   search?: boolean;
   label?: string;
+  required?: boolean;
+  icon?: React.ReactElement; // <-- must be ReactElement, not ReactNode
 }
 
 const DropdownComponent: React.FC<DropdownProps> = ({
@@ -28,19 +30,23 @@ const DropdownComponent: React.FC<DropdownProps> = ({
   errorMessage,
   search = false,
   label,
+  required,
+  icon,
 }) => {
   const renderItem = (item: DropdownItem) => (
     <View style={styles.item}>
       <Text style={styles.textItem}>{item.label}</Text>
-      {item.value === value && (
-        <AntDesign style={styles.icon} color="black" name="Safety" size={20} />
-      )}
+      {item.value === value && icon}
     </View>
   );
 
   return (
     <View>
-      {label && <Text style={styles.labelStyle}>{label}</Text>}
+      {label && (
+        <Text style={styles.labelStyle}>
+          {label} {required && <Text style={{ color: 'red' }}> *</Text>}
+        </Text>
+      )}
       <Dropdown
         style={[styles.dropdown, error ? styles.errorBorder : null]}
         placeholderStyle={styles.placeholderStyle}
@@ -57,8 +63,10 @@ const DropdownComponent: React.FC<DropdownProps> = ({
         value={value}
         onChange={(item) => onChange(item.value)}
         renderLeftIcon={() => (
-          <AntDesign style={styles.icon} color="black" name="Safety" size={20} />
-        )}
+          <View style={styles.icon}>
+            {icon ? icon : <AntDesign color="black" name="Safety" size={16} />}
+          </View>
+        )} // <-
         renderItem={renderItem}
       />
       {error && errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}

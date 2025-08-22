@@ -22,6 +22,7 @@ interface InputProps extends TextInputProps {
   rightIcon?: ReactNode;
   leftIcon?: ReactNode;
   labelStyle?: TextStyle;
+  required?: boolean;
 }
 
 const InputField = forwardRef<TextInput, InputProps>(
@@ -40,6 +41,7 @@ const InputField = forwardRef<TextInput, InputProps>(
       onChangeText,
       style,
       labelStyle,
+      required,
       ...rest
     },
     ref
@@ -63,7 +65,12 @@ const InputField = forwardRef<TextInput, InputProps>(
 
     return (
       <View style={{ marginBottom: 12 }}>
-        {label && <Text style={[styles.label, labelStyle]}>{label}</Text>}
+        {label && (
+          <Text style={[styles.label, labelStyle]}>
+            {label}
+            {required && <Text style={{ color: 'red' }}> *</Text>}
+          </Text>
+        )}
         <View style={styles.container}>
           {leftIcon && <View style={styles.leftIcon}>{leftIcon}</View>}
           <TextInput

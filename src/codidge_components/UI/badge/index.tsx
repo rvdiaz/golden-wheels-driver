@@ -9,9 +9,16 @@ interface BadgeProps {
   type?: BadgeType;
   style?: any;
   textStyle?: any;
+  displayIcon?: boolean;
 }
 
-export const Badge: React.FC<BadgeProps> = ({ children, type = 'info', style, textStyle }) => {
+export const Badge: React.FC<BadgeProps> = ({
+  children,
+  type = 'info',
+  style,
+  displayIcon = true,
+  textStyle,
+}) => {
   // color mapping
   const typeColors = {
     success: { bg: '#34D399', border: '#059669', icon: <CheckCircle size={14} color="white" /> },
@@ -25,7 +32,7 @@ export const Badge: React.FC<BadgeProps> = ({ children, type = 'info', style, te
   return (
     <View style={[styles.badge, { backgroundColor: bg, borderColor: border }, style]}>
       <View style={styles.content}>
-        {icon}
+        {displayIcon && icon}
         <Text style={[styles.badgeText, textStyle]}>{children}</Text>
       </View>
     </View>

@@ -4,13 +4,7 @@ import { Card } from '~/codidge_components/UI/card';
 import { ITask } from '../interfaces';
 import { TaskItem } from './taskItem';
 
-export const TaskList = ({
-  tasks,
-  onToggle,
-}: {
-  tasks: ITask[];
-  onToggle: (taskId: string) => void;
-}) => {
+export const TaskList = ({ tasks }: { tasks: ITask[] }) => {
   return (
     <Card style={styles.tasksCard}>
       <View style={styles.tasksHeader}>
@@ -20,7 +14,7 @@ export const TaskList = ({
 
       <View style={styles.tasksList}>
         {tasks.map((task) => (
-          <TaskItem key={task.id} task={task} onToggle={onToggle} />
+          <TaskItem key={task.id} task={task} />
         ))}
       </View>
     </Card>

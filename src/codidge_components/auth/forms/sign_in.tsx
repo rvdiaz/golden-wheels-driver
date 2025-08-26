@@ -115,7 +115,7 @@ export const SignInForm = ({ onLoginSuccess }: { onLoginSuccess: (userId: string
                 name="password"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
-                    leftIcon={<Icons.Lock size={20} color="#6B7280" style={styles.inputIcon} />}
+                    leftIcon={<Icons.Lock size={16} color="#6B7280" />}
                     label="Password"
                     placeholder="Enter your password"
                     value={value}
@@ -130,9 +130,9 @@ export const SignInForm = ({ onLoginSuccess }: { onLoginSuccess: (userId: string
                         onPress={() => setShowPassword(!showPassword)}
                         style={styles.eyeIcon}>
                         {showPassword ? (
-                          <Icons.EyeOff size={20} color="#6B7280" />
+                          <Icons.EyeOff size={16} color="#6B7280" />
                         ) : (
-                          <Icons.Eye size={20} color="#6B7280" />
+                          <Icons.Eye size={16} color="#6B7280" />
                         )}
                       </TouchableOpacity>
                     }
@@ -220,9 +220,6 @@ const styles = StyleSheet.create({
   form: {
     padding: 24,
     gap: 12,
-  },
-  inputIcon: {
-    marginLeft: 16,
   },
   eyeIcon: {
     paddingHorizontal: 10,

@@ -4,17 +4,13 @@ export const addTaskMutation = gql`
   mutation addTask($tenant: TenantData!, $userId: String!, $task: TaskInput!) {
     addTask(tenant: $tenant, userId: $userId, task: $task) {
       category
-      currentProgress
-      description
       id
       date
       isCompleted
       priority
-      scheduledTime
-      targetCount
       title
-      source
-      status
+      startTime
+      endTime
     }
   }
 `;
@@ -24,21 +20,18 @@ export const updateTaskMutation = gql`
     $tenant: TenantData!
     $userId: String!
     $taskId: ID!
+    $date: AWSDate!
     $updates: TaskUpdateInput!
   ) {
-    updateTask(tenant: $tenant, userId: $userId, taskId: $taskId, updates: $updates) {
+    updateTask(tenant: $tenant, userId: $userId, taskId: $taskId, date: $date, updates: $updates) {
       category
-      currentProgress
-      description
       id
       date
       isCompleted
       priority
-      scheduledTime
-      targetCount
       title
-      source
-      status
+      startTime
+      endTime
     }
   }
 `;

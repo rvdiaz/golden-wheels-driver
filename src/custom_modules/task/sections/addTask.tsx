@@ -7,7 +7,7 @@ import DropdownComponent from '~/codidge_components/UI/dropdown';
 import { getPriorityColor, TASK_CATEGORY_OPTIONS, TASK_PRIORITY_OPTIONS } from '../helpers';
 import { RadioGroupButtons } from '~/codidge_components/UI/form/RadioGroupButton';
 import { DateInputField } from '~/codidge_components/UI/form/inputs/datePicker';
-import { ITask, TaskFormValues, TaskPriority } from '../interfaces';
+import { ITask, TaskFormValues, TaskPriority, TaskSource } from '../interfaces';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
 import { useMutation, useReactiveVar } from '@apollo/client';
@@ -15,16 +15,13 @@ import { addTaskMutation } from '../graphql/mutations';
 import Constants from 'expo-constants';
 import { userData } from '~/store/user';
 import { getTaskByUserQuery } from '../graphql/queries';
+import { DateTimeInputField } from '~/codidge_components/UI/form/inputs/dateTimePicker';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 const today = new Date().toISOString().split('T')[0];
 
 export const AddTaskScreen = ({ disposeModalHandler }: { disposeModalHandler: () => void }) => {
   const customer = useReactiveVar(userData);
-
-  const defaultTaskDate = new Date();
-  defaultTaskDate.setDate(defaultTaskDate.getDate() + 1);
-  const taskDateISO = defaultTaskDate.toISOString();
 
   const [addTaskMutationFn, { loading }] = useMutation<{ addTask: ITask }>(addTaskMutation, {
     update: (cache, { data }) => {
@@ -61,36 +58,57 @@ export const AddTaskScreen = ({ disposeModalHandler }: { disposeModalHandler: ()
     control,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isValid },
   } = useForm<TaskFormValues>({
     defaultValues: {
       title: '',
-      description: '',
       category: '',
       priority: TaskPriority.medium,
-      scheduledTime: taskDateISO,
+      startTime: null,
+      endTime: null,
+      date: today,
     },
   });
 
   const onSubmit = async (data: TaskFormValues) => {
     try {
+      const formatted = {
+        ...data,
+        startTime: data.startTime
+          ? new Date(data.startTime).toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false, // remove if you want AM/PM
+            })
+          : null,
+        endTime: data.endTime
+          ? new Date(data.endTime).toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false,
+            })
+          : null,
+      };
+
       await addTaskMutationFn({
         variables: {
           tenant: { tenantId },
           userId: customer?.id,
           task: {
-            ...data,
-            source: 'user',
+            ...formatted,
+            source: TaskSource.user,
           },
         },
       });
 
       reset({
         title: '',
-        description: '',
         category: '',
         priority: TaskPriority.medium,
-        scheduledTime: taskDateISO,
+        startTime: null,
+        endTime: null,
+        date: today,
       });
 
       disposeModalHandler();
@@ -99,6 +117,8 @@ export const AddTaskScreen = ({ disposeModalHandler }: { disposeModalHandler: ()
       console.log('data', data);
     }
   };
+
+  const startTime = watch('startTime'); // watch start time
 
   return (
     <SafeAreaView style={styles.container}>
@@ -126,31 +146,6 @@ export const AddTaskScreen = ({ disposeModalHandler }: { disposeModalHandler: ()
             />
           </View>
 
-          {/* Description */}
-          <View style={styles.fieldContainer}>
-            <Controller
-              control={control}
-              name="description"
-              rules={{ required: 'Description is required' }}
-              render={({ field: { onChange, value } }) => (
-                <InputField
-                  label="Description"
-                  required={true}
-                  placeholder="Enter task description"
-                  value={value}
-                  onChangeText={onChange}
-                  multiline
-                  numberOfLines={4}
-                  textAlignVertical="top"
-                  style={{
-                    minHeight: 80,
-                  }}
-                  error={!!errors.description}
-                  errorMessage={errors.description?.message}
-                />
-              )}
-            />
-          </View>
           <View style={styles.fieldContainer}>
             <Controller
               control={control}
@@ -184,14 +179,14 @@ export const AddTaskScreen = ({ disposeModalHandler }: { disposeModalHandler: ()
                   value={value}
                   onChange={onChange}
                   options={TASK_PRIORITY_OPTIONS}
-                  getColor={getPriorityColor}
+                  getColor={(prio) => getPriorityColor(prio).color}
                 />
               )}
             />
           </View>
         </View>
 
-        {/* Follow Up */}
+        {/* Task Date */}
         <View style={styles.fieldContainer}>
           <View
             style={{
@@ -199,9 +194,82 @@ export const AddTaskScreen = ({ disposeModalHandler }: { disposeModalHandler: ()
             }}>
             <Controller
               control={control}
-              name="scheduledTime"
+              name="date"
               render={({ field: { onChange, value } }) => (
-                <DateInputField label="Tasks date" value={value as Date} onChangeText={onChange} />
+                <DateInputField
+                  label="Tasks date"
+                  value={value as Date}
+                  onChangeText={(date) => {
+                    const formatted = date.toISOString().split('T')[0]; // YYYY-MM-DD
+                    onChange(formatted);
+                  }}
+                />
+              )}
+            />
+          </View>
+        </View>
+        {/* Date Time */}
+        <View
+          style={[
+            styles.fieldContainer,
+            {
+              flexDirection: 'row',
+              gap: 10,
+            },
+          ]}>
+          <View
+            style={{
+              flex: 1,
+            }}>
+            <Controller
+              control={control}
+              name="startTime"
+              rules={{ required: 'Start time is required' }} // <-- validation rule
+              render={({ field: { onChange, value }, fieldState: { error } }) => {
+                return (
+                  <DateTimeInputField
+                    required={true}
+                    mode="time"
+                    label="From"
+                    value={value as Date}
+                    onChangeText={(date: Date) => {
+                      onChange(date);
+                    }}
+                    error={!!error} // pass error state
+                    errorMessage={error?.message} // pass message to display
+                  />
+                );
+              }}
+            />
+          </View>
+          <View
+            style={{
+              flex: 1,
+            }}>
+            <Controller
+              control={control}
+              name="endTime"
+              rules={{
+                required: 'End time is required',
+                validate: (endTimeValue: Date | null) => {
+                  if (!endTimeValue || !startTime) return true; // required will catch empty
+                  if (endTimeValue <= startTime) {
+                    return 'End time must be after start time';
+                  }
+                  return true;
+                },
+              }}
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <DateTimeInputField
+                  required={true}
+                  mode="time"
+                  label="To"
+                  value={value as Date}
+                  onChangeText={onChange}
+                  error={!!error} // pass error state
+                  errorMessage={error?.message} // pass message to display
+                  hint="After from date*"
+                />
               )}
             />
           </View>

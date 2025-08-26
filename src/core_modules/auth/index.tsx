@@ -3,11 +3,11 @@ import { ConfirmResetPassword } from '~/codidge_components/auth/forms/confirm_re
 import { useAuthContext } from '~/codidge_components/auth/context';
 import Constants from 'expo-constants';
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { addCustomerMutation } from './graphql/mutations';
+import { addUserMutation } from './graphql/mutations';
 import { updateUser } from '~/store/user';
 import { IUser } from '~/store/interface';
 import { signOut } from 'aws-amplify/auth/cognito';
-import { getCustomerQuery } from './graphql/queries';
+import { getUserQuery } from './graphql/queries';
 import { IAuthModuleKeys } from '~/codidge_components/auth/interfaces';
 import { SignUpForm } from '~/codidge_components/auth/forms/sign_up';
 import { ForcePasswordChange } from '~/codidge_components/auth/forms/force_password_change';
@@ -19,25 +19,25 @@ const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const AuthFormWrapper = () => {
   const { currentView } = useAuthContext();
-  const [addCustomerFn] = useMutation<{ addCustomer: IUser }>(addCustomerMutation);
-  const [getCustomerFn] = useLazyQuery<{ getCustomer: IUser }>(getCustomerQuery);
+  const [addCustomerFn] = useMutation<{ addUser: IUser }>(addUserMutation);
+  const [getCustomerFn] = useLazyQuery<{ getUser: IUser }>(getUserQuery);
 
   const handleLoginSuccess = async (userId: string) => {
     try {
-      const customer = await getCustomerFn({
+      const user = await getCustomerFn({
         variables: {
           tenant: {
             tenantId,
           },
-          customerId: userId,
+          userId,
         },
       });
 
-      if (!customer.data?.getCustomer) {
+      if (!user.data?.getUser) {
         throw Error('Error getting user');
       }
 
-      updateUser(customer.data?.getCustomer);
+      updateUser(user.data?.getUser);
     } catch (error) {
       console.log('::::error getting customer', error);
       await signOut();
@@ -58,11 +58,11 @@ export const AuthFormWrapper = () => {
         },
       });
 
-      if (!customerData.data?.addCustomer) {
+      if (!customerData.data?.addUser) {
         throw Error('Error getting user');
       }
 
-      updateUser(customerData.data?.addCustomer);
+      updateUser(customerData.data?.addUser);
     } catch (error) {
       await signOut();
       console.log(':::error', error);

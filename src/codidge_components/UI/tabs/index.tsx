@@ -5,6 +5,7 @@ interface Tab {
   key: string;
   label: string;
   Icon?: React.FC<{ size?: number; color?: string }>;
+  indexNumber?: number;
 }
 
 interface TabHeaderProps {
@@ -39,7 +40,7 @@ export const TabHeader: React.FC<TabHeaderProps> = ({
               <tab.Icon size={20} color={activeTab === tab.key ? '#2563EB' : '#6b7280'} />
             )}
             <Text style={[styles.tabText, activeTab === tab.key && styles.activeTabText]}>
-              {tab.label}
+              {tab.label} {tab?.indexNumber ? `(${tab.indexNumber})` : ''}
             </Text>
           </TouchableOpacity>
         ))}

@@ -148,7 +148,7 @@ export const SignUpForm = ({
                 name="name"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
-                    leftIcon={<Icons.User size={20} color="#6B7280" style={styles.inputIcon} />}
+                    leftIcon={<Icons.User size={16} color="#6B7280" />}
                     label="Full name"
                     placeholder="Full name"
                     value={value}
@@ -165,7 +165,7 @@ export const SignUpForm = ({
                 name="email"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
-                    leftIcon={<Icons.Mail size={20} color="#6B7280" style={styles.inputIcon} />}
+                    leftIcon={<Icons.Mail size={16} color="#6B7280" />}
                     label="Email"
                     placeholder="Enter your email"
                     value={value}
@@ -184,7 +184,7 @@ export const SignUpForm = ({
                 name="phone"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
-                    leftIcon={<Icons.Phone size={20} color="#6B7280" style={styles.inputIcon} />}
+                    leftIcon={<Icons.Phone size={16} color="#6B7280" />}
                     label="Phone Number"
                     placeholder="Enter your phone number"
                     value={value}
@@ -202,7 +202,7 @@ export const SignUpForm = ({
                 name="password"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
-                    leftIcon={<Icons.Lock size={20} color="#6B7280" style={styles.inputIcon} />}
+                    leftIcon={<Icons.Lock size={16} color="#6B7280" />}
                     label="Password"
                     placeholder="Create a password"
                     value={value}
@@ -216,9 +216,9 @@ export const SignUpForm = ({
                         onPress={() => setShowPassword(!showPassword)}
                         style={styles.eyeIcon}>
                         {showPassword ? (
-                          <Icons.EyeOff size={20} color="#6B7280" />
+                          <Icons.EyeOff size={16} color="#6B7280" />
                         ) : (
-                          <Icons.Eye size={20} color="#6B7280" />
+                          <Icons.Eye size={16} color="#6B7280" />
                         )}
                       </TouchableOpacity>
                     }
@@ -231,7 +231,7 @@ export const SignUpForm = ({
                 name="confirmPassword"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
-                    leftIcon={<Icons.Lock size={20} color="#6B7280" style={styles.inputIcon} />}
+                    leftIcon={<Icons.Lock size={16} color="#6B7280" />}
                     label="Confirm Password"
                     placeholder="Confirm your password"
                     value={value}
@@ -245,9 +245,9 @@ export const SignUpForm = ({
                         onPress={() => setShowConfirmPassword(!showConfirmPassword)}
                         style={styles.eyeIcon}>
                         {showConfirmPassword ? (
-                          <Icons.EyeOff size={20} color="#6B7280" />
+                          <Icons.EyeOff size={16} color="#6B7280" />
                         ) : (
-                          <Icons.Eye size={20} color="#6B7280" />
+                          <Icons.Eye size={16} color="#6B7280" />
                         )}
                       </TouchableOpacity>
                     }
@@ -344,9 +344,6 @@ const styles = StyleSheet.create({
   form: {
     padding: 24,
     gap: 12,
-  },
-  inputIcon: {
-    marginLeft: 16,
   },
   inputError: {
     borderColor: '#EF4444',

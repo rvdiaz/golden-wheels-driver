@@ -1,10 +1,11 @@
 import { gql } from '@apollo/client';
 
-export const addCustomerMutation = gql`
-  mutation addCustomer($tenant: TenantData!, $customer: CustomerInput!) {
-    addCustomer(tenant: $tenant, customer: $customer) {
+export const addUserMutation = gql`
+  mutation addUser($tenant: TenantData!, $user: UserInput!) {
+    addUser(tenant: $tenant, user: $user) {
       email
       id
+      activeTemplateId
       image {
         alt
         s3Key

@@ -19,7 +19,6 @@ export const DateInputField: React.FC<DateInputFieldProps> = ({
   label,
   error,
   errorMessage,
-  mode = 'date',
 }) => {
   const [showModal, setShowModal] = useState(false);
 
@@ -34,6 +33,9 @@ export const DateInputField: React.FC<DateInputFieldProps> = ({
 
   const date = value ? new Date(value) : new Date();
   const inputValue = date.toDateString();
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // optional: start of today
 
   return (
     <>
@@ -63,6 +65,7 @@ export const DateInputField: React.FC<DateInputFieldProps> = ({
               mode="date"
               display={Platform.OS === 'ios' ? 'spinner' : 'calendar'}
               onChange={handleChange}
+              minimumDate={today} // prevent selecting past dates
             />
             {Platform.OS === 'ios' && <Button title="Done" onPress={() => setShowModal(false)} />}
           </View>

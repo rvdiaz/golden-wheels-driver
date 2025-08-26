@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, FlatList, Modal, SafeAreaView, View } from 'react-native';
 import { TaskItem } from './widgets/taskItem';
-import { ITask } from './interfaces';
-import { TaskManagementHeader } from './widgets/taskManagementHeader';
+import { ActiveTab, ITask, TaskSource } from './interfaces';
 import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 import { AddTaskScreen } from './sections/addTask';
 import { useQuery, useReactiveVar } from '@apollo/client';
@@ -10,20 +9,18 @@ import { userData } from '~/store/user';
 import { getTaskByUserQuery } from './graphql/queries';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import Constants from 'expo-constants';
+import { TabHeader } from '~/codidge_components/UI/tabs';
+import { CheckSquare, Clock } from 'lucide-react-native';
+import { getCustomTasks, sortTasks } from './helpers';
 
 const today = new Date().toISOString().split('T')[0];
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const TasksScreen: React.FC = () => {
   const customer = useReactiveVar(userData);
+  const [activeTab, setActiveTab] = useState<ActiveTab>(ActiveTab.admin);
 
   const [modalVisible, setModalVisible] = useState(false);
-
-  const toggleTask = (id: string) => {
-    /*  setTasks((prevTasks) =>
-      prevTasks.map((task) => (task.id === id ? { ...task, completed: !task.completed } : task))
-    ); */
-  };
 
   const disposeModalHandler = () => {
     setModalVisible(false);
@@ -36,21 +33,41 @@ export const TasksScreen: React.FC = () => {
       },
       userId: customer?.id,
       date: today,
+      userActiveTemplateId: customer?.activeTemplateId,
     },
   });
-  const tasks = data?.getTasksByUser ?? [];
 
   if (isLoading) {
     return <PageLoading />;
   }
 
+  const tasks = sortTasks(data?.getTasksByUser ?? []);
+
+  const customeTask = getCustomTasks(tasks);
+  const inCompleteCustomTask = customeTask.filter((ta) => !ta.isCompleted).length;
+
   return (
     <SafeAreaView style={styles.container}>
-      <TaskManagementHeader />
+      <TabHeader
+        tabs={[
+          {
+            key: ActiveTab.admin,
+            label: 'Daily Schedule',
+            Icon: Clock,
+          },
+          {
+            key: ActiveTab.custom,
+            label: 'Custom Tasks',
+            Icon: CheckSquare,
+            indexNumber: inCompleteCustomTask,
+          },
+        ]}
+        onTabChange={(key) => setActiveTab(key as ActiveTab)}
+      />
 
       <FlatList
-        data={tasks}
-        renderItem={({ item }: { item: ITask }) => <TaskItem task={item} onToggle={toggleTask} />}
+        data={activeTab === ActiveTab.admin ? tasks : customeTask}
+        renderItem={({ item }: { item: ITask }) => <TaskItem task={item} />}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}

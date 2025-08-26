@@ -1,10 +1,11 @@
 import { gql } from '@apollo/client';
 
-export const getCustomerQuery = gql`
-  query getCustomer($tenant: TenantData!, $customerId: ID!) {
-    getCustomer(tenant: $tenant, customerId: $customerId) {
+export const getUserQuery = gql`
+  query getUser($tenant: TenantData!, $userId: ID!) {
+    getUser(tenant: $tenant, userId: $userId) {
       email
       id
+      activeTemplateId
       modules {
         icon
         label

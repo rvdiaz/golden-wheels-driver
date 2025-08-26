@@ -3,45 +3,68 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { ITask } from '../interfaces';
 import * as Icons from 'lucide-react-native';
 import { Badge } from '~/codidge_components/UI/badge';
+import { formatTaskTime, getCategoryColor, getPriorityColor } from '../helpers';
+import { useMutation, useReactiveVar } from '@apollo/client';
+import { updateTaskMutation } from '../graphql/mutations';
+import { userData } from '~/store/user';
+import Constants from 'expo-constants';
 
-const getCategoryColor = (category: string) => {
-  switch (category) {
-    case 'Marketing':
-      return '#2563EB';
-    case 'Lead Generation':
-      return '#DC2626';
-    case 'Relationship Building':
-      return '#059669';
-    default:
-      return '#6B7280';
-  }
-};
+const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
-const getPriorityColor = (priority: string) => {
-  switch (priority) {
-    case 'High':
-      return { backgroundColor: '#FEE2E2', color: '#991B1B', borderColor: '#FECACA' };
-    case 'Medium':
-      return { backgroundColor: '#FEF3C7', color: '#92400E', borderColor: '#FDE68A' };
-    case 'Low':
-      return { backgroundColor: '#D1FAE5', color: '#065F46', borderColor: '#A7F3D0' };
-    default:
-      return { backgroundColor: '#F3F4F6', color: '#374151', borderColor: '#E5E7EB' };
-  }
-};
+export const TaskItem = ({ task }: { task: ITask }) => {
+  const customer = useReactiveVar(userData);
+  const [updateTaskFn] = useMutation<{ updateTask: ITask }>(updateTaskMutation, {
+    update: (cache, { data: mutationData }) => {
+      if (!mutationData?.updateTask) return;
 
-export const TaskItem = ({
-  task,
-  onToggle,
-}: {
-  task: ITask;
-  onToggle: (taskId: string) => void;
-}) => {
+      const updatedTask = mutationData.updateTask;
+
+      cache.modify({
+        fields: {
+          getTasksByUser(existingTaskRefs = [], { readField }) {
+            return existingTaskRefs.map((taskRef: any) => {
+              const id = readField('id', taskRef);
+              if (id === updatedTask.id) {
+                // Merge the updated task directly into the cached reference
+                return { ...taskRef, ...updatedTask };
+              }
+              return taskRef;
+            });
+          },
+        },
+      });
+    },
+  });
+
+  const handleCompleteTask = async () => {
+    try {
+      await updateTaskFn({
+        variables: {
+          tenant: { tenantId },
+          userId: customer?.id,
+          taskId: task.id,
+          date: task.date, // ensure AWSDateTime format
+          updates: {
+            isCompleted: !task.isCompleted,
+          },
+        },
+        optimisticResponse: {
+          updateTask: {
+            ...task,
+            isCompleted: !task.isCompleted,
+          },
+        },
+      });
+    } catch (error) {
+      console.error(':error', error);
+    }
+  };
+
   return (
     <TouchableOpacity
       key={task.id}
       style={[styles.taskItem, task.isCompleted && styles.taskCompleted]}
-      onPress={() => onToggle(task.id)}>
+      onPress={handleCompleteTask}>
       <View style={styles.taskCheckbox}>
         {task.isCompleted ? (
           <Icons.CheckCircle2 size={20} color="#059669" />
@@ -55,11 +78,15 @@ export const TaskItem = ({
           <Text style={[styles.taskTitle, task.isCompleted && styles.taskTitleCompleted]}>
             {task.title}
           </Text>
-          <Text style={styles.taskTime}>{task.scheduledTime}</Text>
+
+          <View style={styles.taskHeader}>
+            <Text style={styles.taskTime}>
+              {formatTaskTime(task.startTime.toString())} -{' '}
+              {formatTaskTime(task.endTime.toString())}
+            </Text>
+          </View>
         </View>
-        <Text style={[styles.taskDescription, task.isCompleted && styles.taskDescriptionCompleted]}>
-          {task.description}
-        </Text>
+        {<Text>{task.source}</Text>}
         <View style={styles.taskMeta}>
           <View style={[styles.taskBadge, { borderColor: getCategoryColor(task.category) }]}>
             <Text style={[styles.taskBadgeText, { color: getCategoryColor(task.category) }]}>
@@ -74,6 +101,7 @@ export const TaskItem = ({
                 borderColor: getPriorityColor(task.priority).borderColor,
               },
             ]}
+            displayIcon={false}
             textStyle={{ color: getPriorityColor(task.priority).color }}>
             {task.priority}
           </Badge>
@@ -142,6 +170,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginBottom: 4,
+    paddingHorizontal: 4,
   },
   taskTitle: {
     fontSize: 14,

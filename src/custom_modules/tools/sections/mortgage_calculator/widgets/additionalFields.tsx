@@ -6,7 +6,7 @@ import { MortgageFormValues } from '../interfaces';
 import { Label } from '~/codidge_components/UI/form/label';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 
-const iconsSize = 20;
+const iconsSize = 16;
 
 export const AdditionalFields = () => {
   const {
@@ -46,7 +46,7 @@ export const AdditionalFields = () => {
             rules={{ required: 'Property Tax is required' }}
             render={({ field: { value, onChange } }) => (
               <InputField
-                leftIcon={<TrendingUp size={iconsSize} style={styles.iconStyle} />}
+                leftIcon={<TrendingUp size={iconsSize} />}
                 label="Property Tax Rate (Annual %)"
                 placeholder="1.5"
                 keyboardType="decimal-pad"
@@ -67,7 +67,7 @@ export const AdditionalFields = () => {
                 rules={{ required: 'Home Insurance is required' }}
                 render={({ field: { value, onChange } }) => (
                   <InputField
-                    leftIcon={<Shield size={iconsSize} style={styles.iconStyle} />}
+                    leftIcon={<Shield size={iconsSize} />}
                     label="Home Insurance ($)"
                     placeholder="150"
                     keyboardType="decimal-pad"
@@ -143,9 +143,5 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     gap: 8,
-  },
-  iconStyle: {
-    marginHorizontal: 10,
-    color: '#6B7280',
   },
 });

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, SafeAreaView, ScrollView, Modal } from 'react-native';
+import { View, StyleSheet, SafeAreaView, ScrollView, Modal, RefreshControl } from 'react-native';
 import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 import ContactForm from './widgets/addContact';
 import { ContactList } from './widgets/contactList';
@@ -16,6 +16,7 @@ const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const CRMScreen: React.FC = () => {
   const customer = useReactiveVar(userData);
+  const [refreshing, setRefreshing] = useState(false);
 
   const [activeTab, setactiveTab] = useState<'contact' | 'followUp'>('followUp');
   const [modalVisible, setModalVisible] = useState(false);
@@ -24,7 +25,7 @@ export const CRMScreen: React.FC = () => {
     setModalVisible(false);
   };
 
-  const { data, loading } = useQuery<{ getUserContacts: IContact[] }>(getUserContacts, {
+  const { data, loading, refetch } = useQuery<{ getUserContacts: IContact[] }>(getUserContacts, {
     variables: {
       tenant: {
         tenantId,
@@ -36,6 +37,12 @@ export const CRMScreen: React.FC = () => {
   if (loading) {
     return <PageLoading />;
   }
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  };
 
   const contacts = (data?.getUserContacts ?? []).slice().sort((a, b) => {
     return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
@@ -71,7 +78,10 @@ export const CRMScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        style={styles.content}
+        showsVerticalScrollIndicator={false}>
         {/* Stats Row */}
         <View style={styles.statsContainer}>
           {stats.map((stat, index) => {

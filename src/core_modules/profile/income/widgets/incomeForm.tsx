@@ -207,7 +207,7 @@ export default function IncomeForm({ dispose, income }: { dispose: () => void; i
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <InputField
-                  leftIcon={<Icons.FileText size={16} color="#6B7280" style={styles.inputIcon} />}
+                  leftIcon={<Icons.FileText size={16} color="#6B7280" />}
                   label="Specify Income Source"
                   placeholder="Enter custom income source"
                   value={value}
@@ -232,7 +232,7 @@ export default function IncomeForm({ dispose, income }: { dispose: () => void; i
             }}
             render={({ field: { onChange, onBlur, value } }) => (
               <InputField
-                leftIcon={<Icons.DollarSign size={16} color="#6B7280" style={styles.inputIcon} />}
+                leftIcon={<Icons.DollarSign size={16} color="#6B7280" />}
                 label="Amount"
                 placeholder="0.00"
                 value={value ? String(value) : ''} // convert number to string for UI
@@ -250,7 +250,7 @@ export default function IncomeForm({ dispose, income }: { dispose: () => void; i
             name="propertyAddress"
             render={({ field: { onChange, onBlur, value } }) => (
               <InputField
-                leftIcon={<Icons.Home size={16} color="#6B7280" style={styles.inputIcon} />}
+                leftIcon={<Icons.Home size={16} color="#6B7280" />}
                 label="Property Address (Optional)"
                 placeholder="For rental income"
                 value={value}
@@ -389,8 +389,5 @@ const styles = StyleSheet.create({
   },
   footerButton: {
     flex: 1,
-  },
-  inputIcon: {
-    marginLeft: 16,
   },
 });

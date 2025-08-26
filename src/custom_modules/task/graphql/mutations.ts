@@ -15,6 +15,26 @@ export const addTaskMutation = gql`
   }
 `;
 
+export const completeTaskMutation = gql`
+  mutation completeTask(
+    $tenant: TenantData!
+    $userId: String!
+    $task: TaskCompletionInput!
+    $completionParam: Boolean!
+  ) {
+    completeTask(tenant: $tenant, userId: $userId, task: $task, completionParam: $completionParam) {
+      category
+      id
+      date
+      isCompleted
+      priority
+      title
+      startTime
+      endTime
+    }
+  }
+`;
+
 export const updateTaskMutation = gql`
   mutation updateTask(
     $tenant: TenantData!

@@ -18,9 +18,14 @@ import { getTaskByUserQuery } from '../graphql/queries';
 import { DateTimeInputField } from '~/codidge_components/UI/form/inputs/dateTimePicker';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
-const today = new Date().toISOString().split('T')[0];
 
-export const AddTaskScreen = ({ disposeModalHandler }: { disposeModalHandler: () => void }) => {
+export const AddTaskScreen = ({
+  disposeModalHandler,
+  defaultDate,
+}: {
+  disposeModalHandler: () => void;
+  defaultDate: string;
+}) => {
   const customer = useReactiveVar(userData);
 
   const [addTaskMutationFn, { loading }] = useMutation<{ addTask: ITask }>(addTaskMutation, {
@@ -35,7 +40,7 @@ export const AddTaskScreen = ({ disposeModalHandler }: { disposeModalHandler: ()
         variables: {
           tenant: { tenantId },
           userId: customer?.id,
-          date: today,
+          date: defaultDate,
         },
       });
 
@@ -45,7 +50,7 @@ export const AddTaskScreen = ({ disposeModalHandler }: { disposeModalHandler: ()
           variables: {
             tenant: { tenantId },
             userId: customer?.id,
-            date: today,
+            date: defaultDate,
           },
           data: {
             getTasksByUser: [...existingData.getTasksByUser, newTask],
@@ -67,7 +72,7 @@ export const AddTaskScreen = ({ disposeModalHandler }: { disposeModalHandler: ()
       priority: TaskPriority.medium,
       startTime: null,
       endTime: null,
-      date: today,
+      date: defaultDate,
     },
   });
 
@@ -108,7 +113,7 @@ export const AddTaskScreen = ({ disposeModalHandler }: { disposeModalHandler: ()
         priority: TaskPriority.medium,
         startTime: null,
         endTime: null,
-        date: today,
+        date: defaultDate,
       });
 
       disposeModalHandler();

@@ -20,7 +20,7 @@ export const MortgageCalculatorForm = ({
     formState: { errors },
   } = useFormContext<MortgageFormValues>();
 
-  const iconsSize = 18;
+  const iconsSize = 16;
 
   const tabs = [
     { key: 'dollar', label: '$' },
@@ -35,7 +35,7 @@ export const MortgageCalculatorForm = ({
         rules={{ required: 'Home price is required' }}
         render={({ field: { value, onChange } }) => (
           <InputField
-            leftIcon={<Building size={iconsSize} style={styles.iconStyle} />}
+            leftIcon={<Building size={iconsSize} />}
             label="Home Price"
             placeholder="450000"
             keyboardType="decimal-pad"
@@ -59,7 +59,7 @@ export const MortgageCalculatorForm = ({
               rules={{ required: 'Down Payment is required' }}
               render={({ field: { value, onChange } }) => (
                 <InputField
-                  leftIcon={<Percent size={iconsSize} style={styles.iconStyle} />}
+                  leftIcon={<Percent size={iconsSize} />}
                   label="Down Payment"
                   placeholder="45000"
                   keyboardType="decimal-pad"
@@ -77,7 +77,7 @@ export const MortgageCalculatorForm = ({
               rules={{ required: 'Down Payment is required' }}
               render={({ field: { value, onChange } }) => (
                 <InputField
-                  leftIcon={<DollarSign size={iconsSize} style={styles.iconStyle} />}
+                  leftIcon={<DollarSign size={iconsSize} />}
                   label="Down Payment"
                   placeholder="45000"
                   keyboardType="decimal-pad"
@@ -116,7 +116,7 @@ export const MortgageCalculatorForm = ({
             rules={{ required: 'Interest Rate is required' }}
             render={({ field: { value, onChange } }) => (
               <InputField
-                leftIcon={<PercentCircle size={iconsSize} style={styles.iconStyle} />}
+                leftIcon={<PercentCircle size={iconsSize} />}
                 label="Interest Rate (%)"
                 placeholder="1.6"
                 keyboardType="decimal-pad"
@@ -137,7 +137,7 @@ export const MortgageCalculatorForm = ({
             rules={{ required: 'Loan Term is required' }}
             render={({ field: { value, onChange } }) => (
               <InputField
-                leftIcon={<TrendingUp size={iconsSize} style={styles.iconStyle} />}
+                leftIcon={<TrendingUp size={iconsSize} />}
                 label="Loan Term (Years)"
                 placeholder="30"
                 keyboardType="numeric"
@@ -165,9 +165,5 @@ export const MortgageCalculatorForm = ({
 const styles = StyleSheet.create({
   formContainer: {
     gap: 12,
-  },
-  iconStyle: {
-    marginHorizontal: 10,
-    color: '#6B7280',
   },
 });

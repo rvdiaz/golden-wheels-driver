@@ -10,17 +10,17 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery, useReactiveVar } from '@apollo/client';
-import { getUserIncomes } from '../graphql/queries';
 import * as Icons from 'lucide-react-native';
 import Constants from 'expo-constants';
 import { userData } from '~/store/user';
-import { IIncome, IncomeStatus } from '../interfaces';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import { Header } from '~/codidge_components/UI/header';
 import { useNavigation } from '@react-navigation/native';
-import { IncomeCard } from './incomeCard';
 import IncomeForm from './incomeForm';
 import { TabHeader } from '~/codidge_components/UI/tabs';
+import { getUserIncomes } from '../graphql/queries';
+import { IIncome, IncomeStatus } from '../interfaces';
+import { IncomeCard } from './incomeCard';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -50,12 +50,13 @@ export const UserIncomes = () => {
   const incomes: IIncome[] = data?.getUserIncomes || [];
 
   if (loading && !refreshing) {
-    return <PageLoading />;
+    return <PageLoading headerTitle="Income" />;
   }
 
   if (error) {
     return (
       <SafeAreaView style={styles.container}>
+        <Header showBack={true} title="Incomes" onBack={() => navigation.goBack()} />
         <View style={styles.centerContent}>
           <Text style={styles.errorText}>Error loading incomes</Text>
           <TouchableOpacity style={styles.retryButton} onPress={() => refetch()}>

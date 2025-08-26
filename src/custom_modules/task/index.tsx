@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { StyleSheet, FlatList, Modal, SafeAreaView, View } from 'react-native';
+import { StyleSheet, FlatList, Modal, SafeAreaView, View, RefreshControl } from 'react-native';
 import { TaskItem } from './widgets/taskItem';
-import { ActiveTab, ITask, TaskSource } from './interfaces';
+import { ActiveTab, ITask } from './interfaces';
 import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 import { AddTaskScreen } from './sections/addTask';
 import { useQuery, useReactiveVar } from '@apollo/client';
@@ -12,13 +12,18 @@ import Constants from 'expo-constants';
 import { TabHeader } from '~/codidge_components/UI/tabs';
 import { CheckSquare, Clock } from 'lucide-react-native';
 import { getCustomTasks, sortTasks } from './helpers';
+import { ExpandableCalendar, CalendarProvider } from 'react-native-calendars';
+import { Positions } from 'react-native-calendars/src/expandableCalendar';
 
 const today = new Date().toISOString().split('T')[0];
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const TasksScreen: React.FC = () => {
+  const [selected, setSelected] = useState(today);
   const customer = useReactiveVar(userData);
   const [activeTab, setActiveTab] = useState<ActiveTab>(ActiveTab.admin);
+
+  const [refreshing, setRefreshing] = useState(false);
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -26,13 +31,17 @@ export const TasksScreen: React.FC = () => {
     setModalVisible(false);
   };
 
-  const { data, loading: isLoading } = useQuery<{ getTasksByUser: ITask[] }>(getTaskByUserQuery, {
+  const {
+    data,
+    loading: isLoading,
+    refetch,
+  } = useQuery<{ getTasksByUser: ITask[] }>(getTaskByUserQuery, {
     variables: {
       tenant: {
         tenantId,
       },
       userId: customer?.id,
-      date: today,
+      date: selected,
       userActiveTemplateId: customer?.activeTemplateId,
     },
   });
@@ -46,48 +55,79 @@ export const TasksScreen: React.FC = () => {
   const customeTask = getCustomTasks(tasks);
   const inCompleteCustomTask = customeTask.filter((ta) => !ta.isCompleted).length;
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  };
+  const primaryColor = '#007AFF'; // 🔵 your brand color
   return (
     <SafeAreaView style={styles.container}>
-      <TabHeader
-        tabs={[
-          {
-            key: ActiveTab.admin,
-            label: 'Daily Schedule',
-            Icon: Clock,
-          },
-          {
-            key: ActiveTab.custom,
-            label: 'Custom Tasks',
-            Icon: CheckSquare,
-            indexNumber: inCompleteCustomTask,
-          },
-        ]}
-        onTabChange={(key) => setActiveTab(key as ActiveTab)}
-      />
+      <CalendarProvider
+        date={new Date().toISOString().split('T')[0]} // today
+        onDateChanged={(date) => setSelected(date)}>
+        <ExpandableCalendar
+          initialPosition={Positions.CLOSED} // start in week mode
+          disablePan={true} // lock it in week mode
+          firstDay={1}
+          markedDates={{
+            [selected]: {
+              selected: true,
+              selectedColor: primaryColor, // ✅ primary color for selected day
+              disableTouchEvent: true,
+            },
+          }}
+          theme={{
+            selectedDayBackgroundColor: primaryColor,
+            todayTextColor: primaryColor,
+            arrowColor: primaryColor,
+            dotColor: primaryColor,
+            textDayFontWeight: '500',
+            textMonthFontWeight: 'bold',
+          }}
+        />
+        <TabHeader
+          tabs={[
+            {
+              key: ActiveTab.admin,
+              label: 'Daily Schedule',
+              Icon: Clock,
+            },
+            {
+              key: ActiveTab.custom,
+              label: 'Custom Tasks',
+              Icon: CheckSquare,
+              indexNumber: inCompleteCustomTask,
+            },
+          ]}
+          onTabChange={(key) => setActiveTab(key as ActiveTab)}
+        />
 
-      <FlatList
-        data={activeTab === ActiveTab.admin ? tasks : customeTask}
-        renderItem={({ item }: { item: ITask }) => <TaskItem task={item} />}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContainer}
-        showsVerticalScrollIndicator={false}
-      />
-      <FloatingMenu
-        title="Add Task"
-        icon="Plus"
-        onPress={() => {
-          setModalVisible(true);
-        }}
-      />
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={disposeModalHandler}>
-        <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <AddTaskScreen disposeModalHandler={disposeModalHandler} />
-        </View>
-      </Modal>
+        <FlatList
+          data={activeTab === ActiveTab.admin ? tasks : customeTask}
+          renderItem={({ item }: { item: ITask }) => <TaskItem task={item} />}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.listContainer}
+          showsVerticalScrollIndicator={false}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        />
+        <FloatingMenu
+          title="Add Task"
+          icon="Plus"
+          onPress={() => {
+            setModalVisible(true);
+          }}
+        />
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={disposeModalHandler}>
+          <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+            <AddTaskScreen defaultDate={selected} disposeModalHandler={disposeModalHandler} />
+          </View>
+        </Modal>
+      </CalendarProvider>
     </SafeAreaView>
   );
 };

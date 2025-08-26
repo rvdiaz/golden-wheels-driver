@@ -141,7 +141,7 @@ export const ResetPassword = ({
                   name="email"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <View style={styles.inputContainer}>
-                      <Icons.Mail size={20} color="#6B7280" style={styles.inputIcon} />
+                      <Icons.Mail size={20} color="#6B7280" />
                       <TextInput
                         style={[styles.input, errors.email && styles.inputError]}
                         placeholder="Enter your email"
@@ -255,9 +255,6 @@ const styles = StyleSheet.create({
     borderColor: '#D1D5DB',
     borderRadius: 12,
     backgroundColor: 'white',
-  },
-  inputIcon: {
-    marginLeft: 16,
   },
   input: {
     flex: 1,

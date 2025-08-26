@@ -113,7 +113,7 @@ export const ForcePasswordChange = ({
                   name="currentPassword"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <View style={styles.inputContainer}>
-                      <Icons.Lock size={20} color="#6B7280" style={styles.inputIcon} />
+                      <Icons.Lock size={20} color="#6B7280" />
                       <TextInput
                         style={[styles.input, errors.currentPassword && styles.inputError]}
                         placeholder="Enter current password"
@@ -146,7 +146,7 @@ export const ForcePasswordChange = ({
                   name="newPassword"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <View style={styles.inputContainer}>
-                      <Icons.Lock size={20} color="#6B7280" style={styles.inputIcon} />
+                      <Icons.Lock size={20} color="#6B7280" />
                       <TextInput
                         style={[styles.input, errors.newPassword && styles.inputError]}
                         placeholder="Create new password"
@@ -199,7 +199,7 @@ export const ForcePasswordChange = ({
                   name="confirmPassword"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <View style={styles.inputContainer}>
-                      <Icons.Lock size={20} color="#6B7280" style={styles.inputIcon} />
+                      <Icons.Lock size={20} color="#6B7280" />
                       <TextInput
                         style={[styles.input, errors.confirmPassword && styles.inputError]}
                         placeholder="Confirm new password"
@@ -370,9 +370,6 @@ const styles = StyleSheet.create({
     borderColor: '#D1D5DB',
     borderRadius: 12,
     backgroundColor: 'white',
-  },
-  inputIcon: {
-    marginLeft: 16,
   },
   input: {
     flex: 1,

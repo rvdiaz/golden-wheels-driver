@@ -213,7 +213,7 @@ export default function ContactForm({
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <InputField
-                  leftIcon={<Icons.User size={16} color="#6B7280" style={styles.inputIcon} />}
+                  leftIcon={<Icons.User size={16} color="#6B7280" />}
                   label="First name"
                   required={true}
                   placeholder="First name"
@@ -276,7 +276,7 @@ export default function ContactForm({
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <InputField
-                  leftIcon={<Icons.Phone size={16} color="#6B7280" style={styles.inputIcon} />}
+                  leftIcon={<Icons.Phone size={16} color="#6B7280" />}
                   label="Phone"
                   required={true}
                   placeholder="(555) 123-4567"
@@ -309,7 +309,7 @@ export default function ContactForm({
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <InputField
-                  leftIcon={<Icons.Mail size={16} color="#6B7280" style={styles.inputIcon} />}
+                  leftIcon={<Icons.Mail size={16} color="#6B7280" />}
                   label="Email"
                   required={true}
                   placeholder="email@example.com"
@@ -408,7 +408,7 @@ export default function ContactForm({
               name="address"
               render={({ field: { onChange, onBlur, value } }) => (
                 <InputField
-                  leftIcon={<Icons.Map size={16} color="#6B7280" style={styles.inputIcon} />}
+                  leftIcon={<Icons.Map size={16} color="#6B7280" />}
                   label="Address"
                   placeholder="123 Main St, City, State 12345"
                   placeholderTextColor="#9ca3af"
@@ -479,8 +479,5 @@ const styles = StyleSheet.create({
   },
   bottomBarContainer: {
     paddingHorizontal: 20,
-  },
-  inputIcon: {
-    marginLeft: 16,
   },
 });

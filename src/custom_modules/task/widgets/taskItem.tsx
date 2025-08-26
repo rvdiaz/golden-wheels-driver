@@ -5,7 +5,7 @@ import * as Icons from 'lucide-react-native';
 import { Badge } from '~/codidge_components/UI/badge';
 import { formatTaskTime, getCategoryColor, getPriorityColor } from '../helpers';
 import { useMutation, useReactiveVar } from '@apollo/client';
-import { updateTaskMutation } from '../graphql/mutations';
+import { completeTaskMutation, updateTaskMutation } from '../graphql/mutations';
 import { userData } from '~/store/user';
 import Constants from 'expo-constants';
 
@@ -13,11 +13,11 @@ const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const TaskItem = ({ task }: { task: ITask }) => {
   const customer = useReactiveVar(userData);
-  const [updateTaskFn] = useMutation<{ updateTask: ITask }>(updateTaskMutation, {
+  const [completeTaskFn] = useMutation<{ completeTask: ITask }>(completeTaskMutation, {
     update: (cache, { data: mutationData }) => {
-      if (!mutationData?.updateTask) return;
+      if (!mutationData?.completeTask) return;
 
-      const updatedTask = mutationData.updateTask;
+      const updatedTask = mutationData.completeTask;
 
       cache.modify({
         fields: {
@@ -38,18 +38,15 @@ export const TaskItem = ({ task }: { task: ITask }) => {
 
   const handleCompleteTask = async () => {
     try {
-      await updateTaskFn({
+      await completeTaskFn({
         variables: {
+          task,
           tenant: { tenantId },
           userId: customer?.id,
-          taskId: task.id,
-          date: task.date, // ensure AWSDateTime format
-          updates: {
-            isCompleted: !task.isCompleted,
-          },
+          completionParam: !task.isCompleted,
         },
         optimisticResponse: {
-          updateTask: {
+          completeTask: {
             ...task,
             isCompleted: !task.isCompleted,
           },
@@ -86,7 +83,7 @@ export const TaskItem = ({ task }: { task: ITask }) => {
             </Text>
           </View>
         </View>
-        {<Text>{task.source}</Text>}
+
         <View style={styles.taskMeta}>
           <View style={[styles.taskBadge, { borderColor: getCategoryColor(task.category) }]}>
             <Text style={[styles.taskBadgeText, { color: getCategoryColor(task.category) }]}>

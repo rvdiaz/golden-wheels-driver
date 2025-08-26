@@ -193,9 +193,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: 'white',
   },
-  inputIcon: {
-    marginLeft: 12,
-  },
   input: {
     flex: 1,
     paddingVertical: 12,

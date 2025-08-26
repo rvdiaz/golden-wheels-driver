@@ -12,19 +12,6 @@ export const TaskMetricsStats = ({ completedTasks }: { completedTasks: ITask[] }
       <Card style={styles.metricCard}>
         <View style={styles.metricContent}>
           <View style={styles.metricInfo}>
-            <Text style={styles.metricLabel}>Q1 Progress</Text>
-            <Text style={styles.metricValue}>0%</Text>
-            <Text style={styles.metricSubtext}>→ On track to goals</Text>
-          </View>
-          <View style={[styles.metricIcon, { backgroundColor: '#ECFDF5' }]}>
-            <Icons.Target size={24} color="#059669" />
-          </View>
-        </View>
-      </Card>
-
-      <Card style={styles.metricCard}>
-        <View style={styles.metricContent}>
-          <View style={styles.metricInfo}>
             <Text style={styles.metricLabel}>Today's Tasks</Text>
             <Text style={styles.metricValue}>{completedTasks.length}/5</Text>
             <Text style={[styles.metricSubtext, { color: '#2563EB' }]}>
@@ -46,19 +33,6 @@ export const TaskMetricsStats = ({ completedTasks }: { completedTasks: ITask[] }
           </View>
           <View style={[styles.metricIcon, { backgroundColor: '#FFF7ED' }]}>
             <Icons.Users size={24} color="#EA580C" />
-          </View>
-        </View>
-      </Card>
-
-      <Card style={styles.metricCard}>
-        <View style={styles.metricContent}>
-          <View style={styles.metricInfo}>
-            <Text style={styles.metricLabel}>This Quarter</Text>
-            <Text style={styles.metricValue}>$8,500</Text>
-            <Text style={[styles.metricSubtext, { color: '#059669' }]}>Goal: $31,250</Text>
-          </View>
-          <View style={[styles.metricIcon, { backgroundColor: '#ECFDF5' }]}>
-            <Icons.DollarSign size={24} color="#059669" />
           </View>
         </View>
       </Card>

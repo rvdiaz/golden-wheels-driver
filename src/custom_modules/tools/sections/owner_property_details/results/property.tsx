@@ -46,7 +46,6 @@ export const Property = ({ propertyData }: { propertyData: IProperty }) => {
 const styles = StyleSheet.create({
   resultCard: {
     padding: 20,
-    marginBottom: 16,
   },
   resultHeader: {
     flexDirection: 'row',

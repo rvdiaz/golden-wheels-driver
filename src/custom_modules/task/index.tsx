@@ -46,10 +46,6 @@ export const TasksScreen: React.FC = () => {
     },
   });
 
-  if (isLoading) {
-    return <PageLoading />;
-  }
-
   const tasks = sortTasks(data?.getTasksByUser ?? []);
 
   const customeTask = getCustomTasks(tasks);
@@ -86,6 +82,7 @@ export const TasksScreen: React.FC = () => {
             textMonthFontWeight: 'bold',
           }}
         />
+
         <TabHeader
           tabs={[
             {
@@ -103,14 +100,18 @@ export const TasksScreen: React.FC = () => {
           onTabChange={(key) => setActiveTab(key as ActiveTab)}
         />
 
-        <FlatList
-          data={activeTab === ActiveTab.admin ? tasks : customeTask}
-          renderItem={({ item }: { item: ITask }) => <TaskItem task={item} />}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContainer}
-          showsVerticalScrollIndicator={false}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-        />
+        {isLoading ? (
+          <PageLoading />
+        ) : (
+          <FlatList
+            data={activeTab === ActiveTab.admin ? tasks : customeTask}
+            renderItem={({ item }: { item: ITask }) => <TaskItem task={item} />}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.listContainer}
+            showsVerticalScrollIndicator={false}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          />
+        )}
         <FloatingMenu
           title="Add Task"
           icon="Plus"

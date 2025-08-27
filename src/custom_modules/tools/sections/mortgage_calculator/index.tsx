@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useForm, FormProvider } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
@@ -110,28 +110,29 @@ export const MortgageCalculatorScreen: React.FC = () => {
             <PrimaryButton
               size={ButtonSize.LARGE}
               title="Show Results"
+              onPress={() => {
+                setshowResults(true);
+              }}
               rightWidget={<Icons.ChevronRight color="#FFF" />}
             />
-
-            {calculation && showResults && <MortgageCalculatorResults calculation={calculation} />}
-          </Card>
-
-          <Card style={styles.infoCard}>
-            <View style={styles.infoHeader}>
-              <Icons.Info size={20} color="#2563EB" />
-              <Text style={styles.infoTitle}>Mortgage Information</Text>
-            </View>
-            <Text style={styles.infoText}>
-              • PMI is typically required when down payment is less than 20%
-            </Text>
-            <Text style={styles.infoText}>
-              • Property taxes vary by location and are usually 1-3% of home value annually
-            </Text>
-            <Text style={styles.infoText}>
-              • Home insurance typically costs 0.3-1.5% of home value annually
-            </Text>
           </Card>
         </ScrollView>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showResults}
+          onRequestClose={() => {
+            setshowResults(false);
+          }}>
+          {calculation && (
+            <MortgageCalculatorResults
+              calculation={calculation}
+              onDispose={() => {
+                setshowResults(false);
+              }}
+            />
+          )}
+        </Modal>
       </SafeAreaView>
     </FormProvider>
   );

@@ -9,17 +9,12 @@ import {
   Linking,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Header } from '../../codidge_components/UI/header';
 import { Card } from '../../codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
 import { ModuleKeys } from '~/store/interface';
 
 export const ToolsScreen: React.FC = () => {
   const navigation = useNavigation();
-
-  const openDocumentation = (url: string) => {
-    Linking.openURL(url);
-  };
 
   const tools = [
     {

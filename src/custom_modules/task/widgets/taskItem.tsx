@@ -38,6 +38,8 @@ export const TaskItem = ({ task }: { task: ITask }) => {
 
   const handleCompleteTask = async () => {
     try {
+      console.log(':::task', task);
+
       await completeTaskFn({
         variables: {
           task,

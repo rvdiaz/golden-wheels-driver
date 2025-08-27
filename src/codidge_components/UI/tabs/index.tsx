@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 18,
-    paddingTop: 24,
+    paddingTop: 5,
   },
   tabContainer: {
     flexDirection: 'row',

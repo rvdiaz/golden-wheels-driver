@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, StyleSheet, SafeAreaView, ScrollView, View } from 'react-native';
+import { Text, StyleSheet, SafeAreaView, ScrollView, View, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -89,17 +89,23 @@ export const PropertyInfoScreen: React.FC = () => {
             disabled={!selectedAddress} // ✅ Disabled if no address
           />
         </Card>
-
-        {showResults && data?.getPropertyData && (
-          <ScrollView
-            style={{
-              zIndex: -1,
-            }}
-            showsVerticalScrollIndicator={false}>
-            <PropertyOwnerResults propertyData={data?.getPropertyData} />
-          </ScrollView>
-        )}
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showResults}
+        onRequestClose={() => {
+          setShowResults(false);
+        }}>
+        {data?.getPropertyData && (
+          <PropertyOwnerResults
+            dispose={() => {
+              setShowResults(false);
+            }}
+            propertyData={data?.getPropertyData}
+          />
+        )}
+      </Modal>
     </SafeAreaView>
   );
 };

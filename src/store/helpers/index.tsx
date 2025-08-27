@@ -93,6 +93,11 @@ export const getTenantRoutes = (user: IUser | null) => {
           moduleKey: ModuleKeys.expiredListing,
           metaData: {},
         },
+        {
+          label: 'Quick CMA Tool',
+          moduleKey: ModuleKeys.propertyEstimations,
+          metaData: {},
+        },
       ],
     },
     {

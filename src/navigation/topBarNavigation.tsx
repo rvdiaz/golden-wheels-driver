@@ -1,13 +1,11 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import * as Icons from 'lucide-react-native';
 import type { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import type { RouteProp, ParamListBase } from '@react-navigation/native';
 import { NotificationButton } from '~/components/NotificationButton';
 import { ModuleKeys } from '~/store/interface';
-import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import IconButton from '~/codidge_components/UI/button/IconButton';
 
 type ScreenOptionsProps = {

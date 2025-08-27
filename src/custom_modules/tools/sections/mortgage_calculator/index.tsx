@@ -24,7 +24,7 @@ export const MortgageCalculatorScreen: React.FC = () => {
       interestRate: '7.25',
       loanTerm: '30',
       propertyTaxRate: '1.2',
-      homeInsurance: '1800',
+      homeInsurance: '1800', //TODO:::: calculate based on home price
       pmiRate: '0.5',
       hoaFees: '0',
     },

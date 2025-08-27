@@ -27,6 +27,8 @@ export interface IPropertyInfo {
   lotSquareFeet: number;
   yearBuilt: number;
   propertyUse: string;
+  landUse: string;
+  estimatedValue: string;
 }
 
 export interface IMortgageHistoryItem {
@@ -93,4 +95,21 @@ export interface IOwnerAddress {
   displayName: string;
   formattedAddress: string;
   id: string;
+}
+
+export interface PropertyEstimatorAvm {
+  id: string;
+  apn: string;
+  fips: string;
+  avm: string;
+  avmMin: string;
+  avmMax: string;
+  confidence: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  zip4: string;
+  label: string;
+  lastUpdateDate: string; // ISO date string
 }

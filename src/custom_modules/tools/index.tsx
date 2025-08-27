@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-  TouchableOpacity,
-  Linking,
-} from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Card } from '../../codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
@@ -43,6 +35,15 @@ export const ToolsScreen: React.FC = () => {
       color: '#DC2626',
       backgroundColor: '#FEF2F2',
       route: 'PropertyInfo',
+    },
+    {
+      id: ModuleKeys.propertyEstimations,
+      title: 'Quick CMA Tool',
+      description: 'Generate comparative market analysis',
+      icon: 'TrendingUp', // better icon for market analysis
+      color: '#9333EA', // purple shade for a professional, analytical feel
+      backgroundColor: '#F3E8FF', // light lavender for contrast
+      route: 'PropertyEstimations',
     },
     {
       id: ModuleKeys.expiredListing,

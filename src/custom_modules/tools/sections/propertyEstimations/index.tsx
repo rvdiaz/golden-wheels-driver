@@ -1,31 +1,34 @@
-import React, { useState } from 'react';
-import { Text, StyleSheet, SafeAreaView, View, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import * as Icons from 'lucide-react-native';
-import { Header } from '~/codidge_components/UI/header';
+import { Modal, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { Card } from '~/codidge_components/UI/card';
+import { Header } from '~/codidge_components/UI/header';
 import SearchAddressAutoComplete from '../../widgets/searchAutoComplete';
-import { PropertyOwnerResults } from './results';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import {
+  IProperty,
+  IPropertyInfo,
+  PropertyEstimatorAvm,
+} from '../owner_property_details/interfaces';
 import { useLazyQuery } from '@apollo/client';
-import { IProperty } from './interfaces';
-import { getPropertyQuery } from './api/queries';
+import {
+  getPropertyEstimationQuery,
+  getPropertyQuery,
+} from '../owner_property_details/api/queries';
+import * as Icons from 'lucide-react-native';
+import { ResultsWrapper } from './results';
 
 interface PropertySearchData {
   address: string;
 }
 
-export const PropertyInfoScreen: React.FC = () => {
+export const PropertyEstimationsPage = () => {
   const navigation = useNavigation();
+
   const [showResults, setShowResults] = useState(false);
 
-  const {
-    control,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<PropertySearchData>({
+  const { control, handleSubmit, watch } = useForm<PropertySearchData>({
     defaultValues: {
       address: '',
     },
@@ -34,8 +37,12 @@ export const PropertyInfoScreen: React.FC = () => {
   const selectedAddress = watch('address'); // ✅ Watch address for button state
 
   const [getPropertyDetailsFn, { data, loading }] = useLazyQuery<{
-    getPropertyData: IProperty;
-  }>(getPropertyQuery, {
+    getPropertyEstimations: {
+      avm: PropertyEstimatorAvm;
+      comps: IPropertyInfo[];
+      property: IProperty;
+    };
+  }>(getPropertyEstimationQuery, {
     fetchPolicy: 'network-only', // ✅ Always fetch from backend
   });
 
@@ -44,7 +51,7 @@ export const PropertyInfoScreen: React.FC = () => {
       await getPropertyDetailsFn({
         variables: {
           propertyId: data.address,
-          needOwnerContact: true,
+          needClosestProperties: true,
         },
       });
       setShowResults(true);
@@ -55,8 +62,7 @@ export const PropertyInfoScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header title="Property/Owner Information" showBack onBack={() => navigation.goBack()} />
-
+      <Header title="Quick CMA Tool" showBack onBack={() => navigation.goBack()} />
       <View style={styles.content}>
         <Card style={styles.searchCard}>
           <Text style={styles.cardTitle}>Property Lookup</Text>
@@ -92,18 +98,16 @@ export const PropertyInfoScreen: React.FC = () => {
       <Modal
         animationType="slide"
         transparent={true}
-        visible={showResults}
+        visible={!!data?.getPropertyEstimations && showResults}
         onRequestClose={() => {
           setShowResults(false);
         }}>
-        {data?.getPropertyData && (
-          <PropertyOwnerResults
-            dispose={() => {
-              setShowResults(false);
-            }}
-            propertyData={data?.getPropertyData}
-          />
-        )}
+        <ResultsWrapper
+          estimationResults={data?.getPropertyEstimations!}
+          dispose={() => {
+            setShowResults(false);
+          }}
+        />
       </Modal>
     </SafeAreaView>
   );
@@ -134,23 +138,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6B7280',
     marginBottom: 20,
-  },
-  searchButton: {
-    backgroundColor: '#2563EB',
-    paddingVertical: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 16,
-  },
-  searchButtonDisabled: {
-    opacity: 0.6,
-  },
-  searchButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
   },
 });

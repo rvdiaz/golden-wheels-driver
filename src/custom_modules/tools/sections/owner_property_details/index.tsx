@@ -33,7 +33,7 @@ export const PropertyInfoScreen: React.FC = () => {
 
   const selectedAddress = watch('address'); // ✅ Watch address for button state
 
-  const [getPropertyDetailsFn, { data, loading }] = useLazyQuery<{
+  const [getPropertyDetailsFn, { data, loading, error }] = useLazyQuery<{
     getPropertyData: IProperty;
   }>(getPropertyQuery, {
     fetchPolicy: 'network-only', // ✅ Always fetch from backend
@@ -53,6 +53,8 @@ export const PropertyInfoScreen: React.FC = () => {
     }
   };
 
+  console.log('::::error', error);
+
   return (
     <SafeAreaView style={styles.container}>
       <Header title="Property/Owner Information" showBack onBack={() => navigation.goBack()} />
@@ -71,7 +73,7 @@ export const PropertyInfoScreen: React.FC = () => {
             render={({ field: { onChange } }) => (
               <SearchAddressAutoComplete
                 onSelection={(address) => {
-                  onChange(address); // ✅ Update form value
+                  onChange(address);
                 }}
               />
             )}

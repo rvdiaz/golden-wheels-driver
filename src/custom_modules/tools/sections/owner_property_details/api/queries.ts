@@ -126,17 +126,14 @@ export const getPropertyEstimationQuery = gql`
           baths
           beds
           daysOnMarket
-          lastStatusDate
           price
           propertyId
           seqNo
           status
-          statusDate
           type
         }
         mortgageHistory {
           amount
-          documentDate
           documentNumber
           granteeName
           lenderName

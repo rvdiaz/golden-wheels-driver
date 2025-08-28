@@ -36,7 +36,7 @@ export const PropertyEstimationsPage = () => {
 
   const selectedAddress = watch('address'); // ✅ Watch address for button state
 
-  const [getPropertyDetailsFn, { data, loading }] = useLazyQuery<{
+  const [getPropertyDetailsFn, { data, loading, error }] = useLazyQuery<{
     getPropertyEstimations: {
       avm: PropertyEstimatorAvm;
       comps: IPropertyInfo[];
@@ -59,6 +59,8 @@ export const PropertyEstimationsPage = () => {
       console.log(':::error', error);
     }
   };
+
+  console.log('::::data', error);
 
   return (
     <SafeAreaView style={styles.container}>

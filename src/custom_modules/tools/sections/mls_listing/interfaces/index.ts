@@ -36,5 +36,4 @@ export enum ExpiredStatus {
 export interface IExpiredListingForm {
   zipCode: string;
   daysOld: number;
-  status: ExpiredStatus;
 }

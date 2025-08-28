@@ -16,7 +16,6 @@ export const getMlsListingQuery = gql`
         fullName
       }
       mlsDaysOnMarket
-      mlsLastStatusDate
       mlsListingPrice
       propertyType
       yearBuilt

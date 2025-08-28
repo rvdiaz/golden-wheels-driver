@@ -9,8 +9,6 @@ import { useNavigation } from '@react-navigation/native';
 import { Card } from '~/codidge_components/UI/card';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { MapPin } from 'lucide-react-native';
-import DropdownComponent from '~/codidge_components/UI/dropdown';
-import { EXP_STATUS_OPTIONS } from '../helpers';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
 import * as Icons from 'lucide-react-native';
@@ -22,7 +20,7 @@ export const ExpiredListing = () => {
   const navigation = useNavigation();
   const [showResults, setShowResults] = useState(false);
 
-  const [getExpiredListingFn, { data, loading }] = useLazyQuery<{
+  const [getExpiredListingFn, { data, loading, error }] = useLazyQuery<{
     getMlsListing: IMlsListingItemResponse[];
   }>(getMlsListingQuery, {
     fetchPolicy: 'network-only',
@@ -35,7 +33,6 @@ export const ExpiredListing = () => {
   } = useForm<IExpiredListingForm>({
     defaultValues: {
       daysOld: 10,
-      status: ExpiredStatus.active,
       zipCode: '',
     },
   });
@@ -47,7 +44,7 @@ export const ExpiredListing = () => {
           input: {
             zipCode: data.zipCode,
             daysOld: data.daysOld,
-            status: data.status,
+            status: ExpiredStatus.active,
           },
         },
       });
@@ -60,7 +57,7 @@ export const ExpiredListing = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Header title="Expired Listings" showBack onBack={() => navigation.goBack()} />
-      <Card>
+      <Card style={styles.cardContainer}>
         <ScrollView>
           <View style={styles.formContainer}>
             <Controller
@@ -94,25 +91,6 @@ export const ExpiredListing = () => {
                   onChangeText={onChange}
                   error={!!errors.daysOld}
                   errorMessage={errors.daysOld?.message}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="status"
-              rules={{
-                required: 'Status is required',
-              }}
-              render={({ field: { onChange, value }, fieldState: { error } }) => (
-                <DropdownComponent
-                  label="Listing Status"
-                  required={true}
-                  data={EXP_STATUS_OPTIONS}
-                  placeholder="Select listing status"
-                  value={value ?? ''}
-                  onChange={onChange}
-                  error={!!error}
-                  errorMessage={error?.message}
                 />
               )}
             />
@@ -150,6 +128,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F9FAFB',
+  },
+  cardContainer: {
+    margin: 16,
   },
   formContainer: {
     gap: 16,

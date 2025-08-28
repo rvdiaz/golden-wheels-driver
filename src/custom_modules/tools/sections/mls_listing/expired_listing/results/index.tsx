@@ -64,7 +64,7 @@ export const ExpiredListingResults = ({
           />
         ))}
       </ScrollView>
-      <View
+      {/* <View
         style={{
           paddingVertical: 10,
         }}>
@@ -78,7 +78,7 @@ export const ExpiredListingResults = ({
           onPress={() => {}}
           rightWidget={<Share size={16} color="#FFF" style={{ marginLeft: 10 }} />}
         />
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 };

@@ -46,9 +46,9 @@ const PropertyListingCard: React.FC<PropertyListingCardProps> = ({ listing, onPr
         {/* Price and Address Section */}
         <View style={styles.headerSection}>
           <Text style={styles.price}>{formatPrice(listing.mlsListingPrice)}</Text>
-          <Text style={styles.address}>{listing.address.address}</Text>
-          <Text style={styles.cityState}>
-            {listing.address.city}, {listing.address.state} {listing.address.zip}
+          <Text style={styles.address}>
+            {listing.address.address} {listing.address.city}, {listing.address.state}{' '}
+            {listing.address.zip}
           </Text>
         </View>
 
@@ -64,10 +64,10 @@ const PropertyListingCard: React.FC<PropertyListingCardProps> = ({ listing, onPr
             <Text style={styles.detailLabel}>Baths</Text>
           </View>
           <View style={styles.detailDivider} />
-          <View style={styles.detailItem}>
+          {/*   <View style={styles.detailItem}>
             <Text style={styles.detailValue}>{formatNumber(listing.lotSquareFeet)}</Text>
             <Text style={styles.detailLabel}>Sq Ft</Text>
-          </View>
+          </View> */}
           <View style={styles.detailDivider} />
           <View style={styles.detailItem}>
             <Text style={styles.detailValue}>{listing.yearBuilt}</Text>
@@ -76,7 +76,7 @@ const PropertyListingCard: React.FC<PropertyListingCardProps> = ({ listing, onPr
         </View>
 
         {/* Financial Information */}
-        <View style={styles.financialSection}>
+        {/*   <View style={styles.financialSection}>
           <View style={styles.financialRow}>
             <View style={styles.financialItem}>
               <Text style={styles.financialLabel}>Est. Value</Text>
@@ -94,7 +94,7 @@ const PropertyListingCard: React.FC<PropertyListingCardProps> = ({ listing, onPr
               )}
             </View>
           </View>
-        </View>
+        </View> */}
 
         {/* Agent Information */}
         <View style={styles.agentSection}>
@@ -172,12 +172,9 @@ const styles = StyleSheet.create({
   address: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333333',
-    marginBottom: 2,
-  },
-  cityState: {
-    fontSize: 14,
     color: '#666666',
+    marginBottom: 2,
+    marginTop: 4,
   },
   detailsRow: {
     flexDirection: 'row',

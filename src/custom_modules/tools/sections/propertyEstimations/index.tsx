@@ -12,10 +12,7 @@ import {
   PropertyEstimatorAvm,
 } from '../owner_property_details/interfaces';
 import { useLazyQuery } from '@apollo/client';
-import {
-  getPropertyEstimationQuery,
-  getPropertyQuery,
-} from '../owner_property_details/api/queries';
+import { getPropertyEstimationQuery } from '../owner_property_details/graphql/queries';
 import * as Icons from 'lucide-react-native';
 import { ResultsWrapper } from './results';
 
@@ -59,8 +56,6 @@ export const PropertyEstimationsPage = () => {
       console.log(':::error', error);
     }
   };
-
-  console.log('::::data', error);
 
   return (
     <SafeAreaView style={styles.container}>

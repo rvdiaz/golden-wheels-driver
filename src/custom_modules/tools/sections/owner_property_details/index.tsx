@@ -10,7 +10,7 @@ import { PropertyOwnerResults } from './results';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import { useLazyQuery } from '@apollo/client';
 import { IProperty } from './interfaces';
-import { getPropertyQuery } from './api/queries';
+import { getPropertyQuery } from './graphql/queries';
 
 interface PropertySearchData {
   address: string;

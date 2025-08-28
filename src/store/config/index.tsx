@@ -5,7 +5,6 @@ import { CRMScreen } from '~/custom_modules/crm';
 import { ToolsScreen } from '~/custom_modules/tools';
 import { TrainingScreen } from '~/custom_modules/training';
 import { MortgageCalculatorScreen } from '~/custom_modules/tools/sections/mortgage_calculator';
-import { ExpiredListingsScreen } from '~/custom_modules/tools/sections/expiredListing';
 import { NotificationsScreen } from '~/core_modules/notifications';
 import { ContactDetailsScreen } from '~/custom_modules/crm/widgets/contactDetail';
 import { CourseDetailsScreen } from '~/custom_modules/training/sections/CourseDetailsScreen';
@@ -14,6 +13,7 @@ import { PropertyInfoScreen } from '~/custom_modules/tools/sections/owner_proper
 import { PrequalifiedLoanScreen } from '~/custom_modules/tools/sections/pre_qualified_tools';
 import { UserIncomes } from '~/core_modules/profile/income/widgets';
 import { PropertyEstimationsPage } from '~/custom_modules/tools/sections/propertyEstimations';
+import { ExpiredListing } from '~/custom_modules/tools/sections/mls_listing/expired_listing';
 
 export const moduleScreens: Record<ModuleKeys, React.ComponentType<any>> = {
   Dashboard: Dashboard,
@@ -26,7 +26,7 @@ export const moduleScreens: Record<ModuleKeys, React.ComponentType<any>> = {
   MortgageCalculator: MortgageCalculatorScreen,
   PropertyTools: PropertyInfoScreen,
   PrequalifiedTools: PrequalifiedLoanScreen,
-  ExpiredListing: ExpiredListingsScreen,
+  ExpiredListing: ExpiredListing,
   Notifications: NotificationsScreen,
   TrainingDetailPage: CourseDetailsScreen,
   ContactDetals: ContactDetailsScreen,

@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
   },
   daysText: {
     color: '#FFFFFF',
-    fontSize: 9,
+    fontSize: 12,
     fontWeight: '700',
   },
   rightInfoContainer: {
@@ -196,12 +196,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   mlsNumber: {
-    fontSize: 10,
+    fontSize: 12,
     color: '#888888',
     marginLeft: 8,
   },
   address: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#666666',
     lineHeight: 16,
     marginBottom: 8,
@@ -222,12 +222,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   statValue: {
-    fontSize: 13,
+    fontSize: 16,
     fontWeight: '600',
     color: '#333333',
   },
   statLabel: {
-    fontSize: 10,
+    fontSize: 13,
     color: '#888888',
   },
 
@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   daysOnMarketText: {
-    fontSize: 11,
+    fontSize: 13,
     color: '#777777',
     fontStyle: 'italic',
   },
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   conditionText: {
-    fontSize: 9,
+    fontSize: 12,
     fontWeight: '600',
   },
   financialRow: {
@@ -284,18 +284,18 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   financialLabel: {
-    fontSize: 10,
+    fontSize: 12,
     color: '#888888',
     marginBottom: 2,
     textTransform: 'uppercase',
   },
   financialValue: {
-    fontSize: 12,
+    fontSize: 16,
     fontWeight: '600',
     color: '#1A1A1A',
   },
   equityValue: {
-    fontSize: 12,
+    fontSize: 16,
     fontWeight: '600',
     color: '#4CAF50',
   },
@@ -304,22 +304,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   agentLabel: {
-    fontSize: 10,
+    fontSize: 13,
     color: '#888888',
     marginRight: 4,
   },
   agentName: {
-    fontSize: 10,
+    fontSize: 13,
     color: '#666666',
     flex: 1,
   },
   tapIndicator: {
     alignItems: 'center',
-    marginTop: 4,
-    paddingVertical: 4,
+    marginTop: 10,
+    paddingVertical: 6,
   },
   tapText: {
-    fontSize: 11,
+    fontSize: 16,
     color: '#3B82F6',
     fontWeight: '500',
   },

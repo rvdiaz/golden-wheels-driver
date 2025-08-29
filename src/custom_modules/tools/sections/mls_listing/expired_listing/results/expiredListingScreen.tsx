@@ -224,7 +224,7 @@ const ExpiredListingDetail: React.FC<PropertyDetailScreenProps> = ({
         <PrimaryButton
           style={{ flex: 1 }}
           size={ButtonSize.LARGE}
-          title="Contact Agent"
+          title="Contact Owner"
           rightWidget={<PhoneCall size={16} color="#fff" />}
         />
       </View>

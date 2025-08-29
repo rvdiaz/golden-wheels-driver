@@ -28,18 +28,14 @@ function BottomTabs({ tenantModules }: { tenantModules: IModule[] }) {
 export default function Navigation() {
   const userInfo = useReactiveVar(userData);
 
-  // Tenant-specific dynamic screens (like in web)
   const tenantModules = getTenantRoutes(userInfo);
-
   const nestedNav = createNestedNavigationScreens(tenantModules, Stack);
 
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {userInfo ? (
-          // Authenticated stack
           <>
-            {/* <Stack.Screen name="MainTabs" component={() => BottomTabs(tenantModules)} /> */}
             <Stack.Screen name="MainTabs">
               {() => <BottomTabs tenantModules={tenantModules} />}
             </Stack.Screen>

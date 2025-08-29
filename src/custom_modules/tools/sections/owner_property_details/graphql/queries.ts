@@ -1,8 +1,18 @@
 import { gql } from '@apollo/client';
 
 export const getPropertyQuery = gql`
-  query getProperyDetail($propertyId: String!, $needOwnerContact: Boolean) {
-    getPropertyData(propertyId: $propertyId, needOwnerContact: $needOwnerContact) {
+  query getProperyDetail(
+    $propertyId: String!
+    $needOwnerContact: Boolean
+    $zipCode: String
+    $apn: ID
+  ) {
+    getPropertyData(
+      propertyId: $propertyId
+      needOwnerContact: $needOwnerContact
+      zipCode: $zipCode
+      apn: $apn
+    ) {
       vacant
       propertyType
       propertyInfo {

@@ -1,6 +1,7 @@
 export interface IMlsListingItemResponse {
   listingId: string;
   id: string;
+  mlsNumber: string;
   address: {
     address: string;
     label: string;
@@ -23,6 +24,11 @@ export interface IMlsListingItemResponse {
   estimatedValue: string;
   propertyType: string;
   imageUrl: string;
+  absenteeOwner: boolean;
+  foreclosure: boolean;
+  preForeclosure: boolean;
+  assumable: boolean;
+  apn: string;
 }
 
 export enum ExpiredStatus {

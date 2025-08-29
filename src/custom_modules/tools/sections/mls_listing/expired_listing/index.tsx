@@ -12,15 +12,15 @@ import { MapPin } from 'lucide-react-native';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
 import * as Icons from 'lucide-react-native';
-import { ExpiredListingResults } from './results';
+import PropertyListScreen from './results/expiredListingListContainer';
 
 const iconsSize = 16;
 
-export const ExpiredListing = () => {
+export const ExpiredListingPage = () => {
   const navigation = useNavigation();
   const [showResults, setShowResults] = useState(false);
 
-  const [getExpiredListingFn, { data, loading, error }] = useLazyQuery<{
+  const [getExpiredListingFn, { data, loading }] = useLazyQuery<{
     getMlsListing: IMlsListingItemResponse[];
   }>(getMlsListingQuery, {
     fetchPolicy: 'network-only',
@@ -45,6 +45,7 @@ export const ExpiredListing = () => {
             zipCode: data.zipCode,
             daysOld: data.daysOld,
             status: ExpiredStatus.active,
+            count: 20,
           },
         },
       });
@@ -112,7 +113,7 @@ export const ExpiredListing = () => {
           setShowResults(false);
         }}>
         {data?.getMlsListing && (
-          <ExpiredListingResults
+          <PropertyListScreen
             expListings={data?.getMlsListing ?? []}
             dispose={() => {
               setShowResults(false);

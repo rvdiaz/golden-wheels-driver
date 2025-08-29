@@ -23,6 +23,7 @@ export interface IFeatureModule {
   label?: string;
   moduleKey: ModuleKeys;
   metaData: any;
+  modules?: IFeatureModule[];
 }
 
 export interface ITenantTheme {

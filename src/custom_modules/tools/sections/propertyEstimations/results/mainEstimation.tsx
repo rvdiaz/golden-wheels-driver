@@ -62,7 +62,10 @@ export const MarketValueCard = ({
           <View style={styles.addressContainer}>
             <Feather name="map-pin" size={14} color="#065f46" />
             <View style={styles.addressText}>
-              <Text style={styles.addressLine}>{propertyInfo.address.address}</Text>
+              <Text style={styles.addressLine}>
+                {propertyInfo.address.address}, {propertyInfo.address.state}{' '}
+                {propertyInfo.address.zip}
+              </Text>
             </View>
           </View>
 

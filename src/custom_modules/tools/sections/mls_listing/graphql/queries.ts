@@ -8,6 +8,7 @@ export const getMlsListingQuery = gql`
       estimatedEquity
       estimatedValue
       id
+      mlsNumber
       imageUrl
       listingId
       lotSquareFeet
@@ -16,6 +17,7 @@ export const getMlsListingQuery = gql`
         fullName
       }
       mlsDaysOnMarket
+      mlsLastStatusDate
       mlsListingPrice
       propertyType
       yearBuilt
@@ -26,6 +28,11 @@ export const getMlsListingQuery = gql`
         state
         zip
       }
+      absenteeOwner
+      foreclosure
+      preForeclosure
+      assumable
+      apn
     }
   }
 `;

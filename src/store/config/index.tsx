@@ -13,7 +13,7 @@ import { PropertyInfoScreen } from '~/custom_modules/tools/sections/owner_proper
 import { PrequalifiedLoanScreen } from '~/custom_modules/tools/sections/pre_qualified_tools';
 import { UserIncomes } from '~/core_modules/profile/income/widgets';
 import { PropertyEstimationsPage } from '~/custom_modules/tools/sections/propertyEstimations';
-import { ExpiredListing } from '~/custom_modules/tools/sections/mls_listing/expired_listing';
+import { ExpiredListingPage } from '~/custom_modules/tools/sections/mls_listing/expired_listing';
 
 export const moduleScreens: Record<ModuleKeys, React.ComponentType<any>> = {
   Dashboard: Dashboard,
@@ -26,7 +26,7 @@ export const moduleScreens: Record<ModuleKeys, React.ComponentType<any>> = {
   MortgageCalculator: MortgageCalculatorScreen,
   PropertyTools: PropertyInfoScreen,
   PrequalifiedTools: PrequalifiedLoanScreen,
-  ExpiredListing: ExpiredListing,
+  ExpiredListing: ExpiredListingPage,
   Notifications: NotificationsScreen,
   TrainingDetailPage: CourseDetailsScreen,
   ContactDetals: ContactDetailsScreen,

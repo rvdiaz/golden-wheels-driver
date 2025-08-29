@@ -1,17 +1,32 @@
 import React, { useRef, useState } from 'react';
-import { SafeAreaView, ScrollView, Animated, Dimensions } from 'react-native';
+import {
+  SafeAreaView,
+  ScrollView,
+  Animated,
+  Dimensions,
+  FlatList,
+  ActivityIndicator,
+} from 'react-native';
 import { Header } from '~/codidge_components/UI/header';
 import PropertyDetailScreen from './expiredListingScreen';
 import ExpiredListingCard from './expiredListingCard';
+import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 
 const { width: screenWidth } = Dimensions.get('window');
 
 interface PropertyListScreenProps {
   expListings: any[]; // Your listings array
+  loadMore: () => void;
   dispose: () => void;
+  loadingMore: boolean;
 }
 
-const ExpiredListingContainer: React.FC<PropertyListScreenProps> = ({ expListings, dispose }) => {
+const ExpiredListingContainer: React.FC<PropertyListScreenProps> = ({
+  expListings,
+  dispose,
+  loadMore,
+  loadingMore,
+}) => {
   const [selectedListing, setSelectedListing] = useState(null);
 
   // Animation values
@@ -72,11 +87,15 @@ const ExpiredListingContainer: React.FC<PropertyListScreenProps> = ({ expListing
           ],
         }}>
         <Header title="Expired Listing" rightText="Close" rightAction={dispose} />
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {expListings.map((list) => (
-            <ExpiredListingCard key={list.listingId} listing={list} onPress={handleCardPress} />
-          ))}
-        </ScrollView>
+        <FlatList
+          data={expListings}
+          keyExtractor={(item) => item.listingId}
+          renderItem={({ item }) => <ExpiredListingCard listing={item} onPress={handleCardPress} />}
+          showsVerticalScrollIndicator={false}
+          onEndReached={loadMore} // 👈 load more when reaching bottom
+          onEndReachedThreshold={0.5} // 0.5 = trigger when 50% before end
+          ListFooterComponent={loadingMore ? <ActivityIndicator size="large" /> : null}
+        />
       </Animated.View>
 
       {/* Detail Screen Overlay */}

@@ -5,7 +5,6 @@ import Navigation from './src/navigation';
 import { Amplify } from 'aws-amplify';
 import { cognitoUserPoolsTokenProvider } from 'aws-amplify/auth/cognito';
 
-
 const httpLink = new HttpLink({
   uri: Constants.expoConfig?.extra?.GRAPHQL_ENDPOINT,
 });
@@ -18,7 +17,6 @@ Amplify.configure({
       loginWith: {
         email: true,
       },
-      
     },
   },
 });
@@ -62,7 +60,6 @@ const client = new ApolloClient({
 });
 
 export default function App() {
-
   return (
     <ApolloProvider client={client}>
       <Navigation />

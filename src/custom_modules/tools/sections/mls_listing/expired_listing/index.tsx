@@ -15,20 +15,28 @@ import * as Icons from 'lucide-react-native';
 import PropertyListScreen from './results/expiredListingListContainer';
 
 const iconsSize = 16;
+const pageSize = 20;
 
 export const ExpiredListingPage = () => {
   const navigation = useNavigation();
   const [showResults, setShowResults] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   const [getExpiredListingFn, { data, loading }] = useLazyQuery<{
-    getMlsListing: IMlsListingItemResponse[];
+    getMlsListing: {
+      listings: IMlsListingItemResponse[];
+      indexCount: number;
+    };
   }>(getMlsListingQuery, {
     fetchPolicy: 'network-only',
   });
 
+  const [results, setResults] = useState<IMlsListingItemResponse[]>([]);
+
   const {
     control,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<IExpiredListingForm>({
     defaultValues: {
@@ -37,22 +45,50 @@ export const ExpiredListingPage = () => {
     },
   });
 
-  const onSubmit = async (data: IExpiredListingForm) => {
+  const onSubmit = async (formData: IExpiredListingForm) => {
     try {
-      await getExpiredListingFn({
+      const res = await getExpiredListingFn({
         variables: {
           input: {
-            zipCode: data.zipCode,
-            daysOld: data.daysOld,
+            zipCode: formData.zipCode,
+            daysOld: formData.daysOld,
             status: ExpiredStatus.active,
-            count: 20,
+            pageSize,
+            indexCount: 0,
           },
         },
       });
+      setResults(res.data?.getMlsListing?.listings ?? []); // replace with new search
       setShowResults(true);
     } catch (error) {
       console.log(':::error', error);
     }
+  };
+
+  const fetchMoreResults = async () => {
+    const zipCode = getValues('zipCode');
+    const daysOld = getValues('daysOld');
+    setLoadingMore(true);
+
+    if (data?.getMlsListing.indexCount !== 0) {
+      const res = await getExpiredListingFn({
+        variables: {
+          input: {
+            zipCode: zipCode ?? '',
+            daysOld: daysOld ?? 10,
+            status: ExpiredStatus.active,
+            pageSize,
+            indexCount: data?.getMlsListing.indexCount ?? 0,
+          },
+        },
+      });
+      if (res.data?.getMlsListing?.listings && res.data?.getMlsListing?.listings.length > 0) {
+        console.log(':::es.data?.getMlsListing?.listings', res.data?.getMlsListing?.listings);
+        setResults((prev) => [...prev, ...(res.data?.getMlsListing?.listings ?? [])]); // append
+      }
+    }
+
+    setLoadingMore(false);
   };
 
   return (
@@ -112,9 +148,13 @@ export const ExpiredListingPage = () => {
         onRequestClose={() => {
           setShowResults(false);
         }}>
-        {data?.getMlsListing && (
+        {results && (
           <PropertyListScreen
-            expListings={data?.getMlsListing ?? []}
+            loadMore={async () => {
+              await fetchMoreResults();
+            }}
+            expListings={results}
+            loadingMore={loadingMore}
             dispose={() => {
               setShowResults(false);
             }}

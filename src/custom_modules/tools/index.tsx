@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Card } from '../../codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
 import { ModuleKeys } from '~/store/interface';
+import { theme } from '~/theme/theme';
 
 export const ToolsScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -169,7 +170,7 @@ export const ToolsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: theme.colors.bodyBackground,
   },
   content: {
     flex: 1,

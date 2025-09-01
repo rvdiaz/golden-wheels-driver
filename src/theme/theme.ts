@@ -6,9 +6,9 @@ export const theme = {
     secondaryText: '#374151',
     danger: '#DC2626',
     dangerText: '#FFFFFF',
-
-    // Gradients can be defined as arrays
     primaryGradient: ['#4F46E5', '#4F46E5'] as const,
+    headerBackground: '#1D0D66',
+    bodyBackground: '#F9FAFB',
   },
   spacing: {
     xs: 4,
@@ -20,7 +20,8 @@ export const theme = {
   borderRadius: {
     sm: 6,
     md: 8,
-    lg: 12,
+    lg: 14,
+    xl: 20,
     full: 9999,
   },
 } as const;

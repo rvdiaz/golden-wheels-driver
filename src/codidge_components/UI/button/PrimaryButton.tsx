@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle, View } from 'react-native';
 import { LoadingSpinner } from '../loading/loadingSpinner';
+import { theme } from '~/theme/theme';
 
 export enum ButtonSize {
   SMALL = 'sm',
@@ -21,9 +22,9 @@ interface PrimaryButtonProps {
 }
 
 const sizeStyles = {
-  [ButtonSize.SMALL]: { paddingVertical: 6, paddingHorizontal: 12, fontSize: 14 },
-  [ButtonSize.MEDIUM]: { paddingVertical: 8, paddingHorizontal: 16, fontSize: 16 },
-  [ButtonSize.LARGE]: { paddingVertical: 12, paddingHorizontal: 20, fontSize: 16 },
+  [ButtonSize.SMALL]: { paddingVertical: 6, paddingHorizontal: 12, fontSize: 12 },
+  [ButtonSize.MEDIUM]: { paddingVertical: 10, paddingHorizontal: 16, fontSize: 12 },
+  [ButtonSize.LARGE]: { paddingVertical: 12, paddingHorizontal: 20, fontSize: 14 },
 };
 
 const PrimaryButton: React.FC<PrimaryButtonProps> = ({
@@ -48,7 +49,7 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
       style={[
         styles.button,
         {
-          backgroundColor: disabledAux ? '#D1D5DB' : '#2563EB', // gray-300 or brand-500
+          backgroundColor: disabledAux ? '#D1D5DB' : theme.colors.primary, // gray-300 or brand-500
           paddingVertical: sizeStyle.paddingVertical,
           paddingHorizontal: sizeStyle.paddingHorizontal,
         },
@@ -70,10 +71,12 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
 const styles = StyleSheet.create({
   button: {
     minWidth: 96, // ~min-w-24
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
+    fontSize: 12,
+    fontWeight: '700',
   },
   buttonBody: {
     flexDirection: 'row',

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } fr
 import { Header } from '../../codidge_components/UI/header';
 import { Card } from '../../codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
+import { theme } from '~/theme/theme';
 
 interface ScheduleItem {
   id: string;
@@ -140,7 +141,7 @@ export const ScheduleScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: theme.colors.bodyBackground,
   },
   dateHeader: {
     flexDirection: 'row',

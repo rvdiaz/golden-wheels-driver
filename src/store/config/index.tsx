@@ -14,23 +14,60 @@ import { PrequalifiedLoanScreen } from '~/custom_modules/tools/sections/pre_qual
 import { UserIncomes } from '~/core_modules/profile/income/widgets';
 import { PropertyEstimationsPage } from '~/custom_modules/tools/sections/propertyEstimations';
 import { ExpiredListingPage } from '~/custom_modules/tools/sections/mls_listing/expired_listing';
+import { DashboardBottomHeader } from '~/custom_modules/dashboard/widgets/headers';
 
-export const moduleScreens: Record<ModuleKeys, React.ComponentType<any>> = {
-  Dashboard: Dashboard,
-  Tasks: TasksScreen,
-  CRM: CRMScreen,
-  Tools: ToolsScreen,
-  Training: TrainingScreen,
-
-  // Feature modules (examples)
-  MortgageCalculator: MortgageCalculatorScreen,
-  PropertyTools: PropertyInfoScreen,
-  PrequalifiedTools: PrequalifiedLoanScreen,
-  ExpiredListing: ExpiredListingPage,
-  Notifications: NotificationsScreen,
-  TrainingDetailPage: CourseDetailsScreen,
-  ContactDetals: ContactDetailsScreen,
-  Profile: ProfileScreen,
-  Incomes: UserIncomes,
-  PropertyEstimations: PropertyEstimationsPage,
+export const moduleScreens: Record<
+  ModuleKeys,
+  {
+    body: React.ComponentType<any>;
+    rightHeader?: React.ComponentType<any>;
+    bottomHeader?: React.ComponentType<any>;
+  }
+> = {
+  Dashboard: {
+    body: Dashboard,
+    bottomHeader: DashboardBottomHeader,
+  },
+  Tasks: {
+    body: TasksScreen,
+  },
+  CRM: {
+    body: CRMScreen,
+  },
+  Tools: {
+    body: ToolsScreen,
+  },
+  Training: {
+    body: TrainingScreen,
+  },
+  MortgageCalculator: {
+    body: MortgageCalculatorScreen,
+  },
+  PropertyTools: {
+    body: PropertyInfoScreen,
+  },
+  PrequalifiedTools: {
+    body: PrequalifiedLoanScreen,
+  },
+  ExpiredListing: {
+    body: ExpiredListingPage,
+  },
+  Notifications: {
+    body: NotificationsScreen,
+  },
+  TrainingDetailPage: {
+    body: CourseDetailsScreen,
+  },
+  ContactDetals: {
+    body: ContactDetailsScreen,
+  },
+  Profile: {
+    body: ProfileScreen,
+  },
+  Incomes: {
+    body: UserIncomes,
+  },
+  PropertyEstimations: {
+    body: PropertyEstimationsPage,
+  },
 };

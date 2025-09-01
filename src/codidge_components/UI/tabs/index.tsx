@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import React, { useState } from 'react';
+import { theme } from '~/theme/theme';
 
 interface Tab {
   key: string;
@@ -36,12 +37,29 @@ export const TabHeader: React.FC<TabHeaderProps> = ({
             key={tab.key}
             style={[styles.tab, activeTab === tab.key && styles.activeTab]}
             onPress={() => handleTabPress(tab.key)}>
-            {tab.Icon && (
-              <tab.Icon size={20} color={activeTab === tab.key ? '#2563EB' : '#6b7280'} />
+            {tab.Icon && <tab.Icon size={18} color={'#0A0A0A'} />}
+            <Text style={[styles.tabText]}>{tab.label}</Text>
+            {tab?.indexNumber && (
+              <View
+                style={{
+                  padding: 2,
+                  borderRadius: 20,
+                  backgroundColor: theme.colors.primary,
+                  height: 20,
+                  width: 20,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 'bold',
+                    color: '#FFF',
+                  }}>
+                  {tab.indexNumber}
+                </Text>
+              </View>
             )}
-            <Text style={[styles.tabText, activeTab === tab.key && styles.activeTabText]}>
-              {tab.label} {tab?.indexNumber ? `(${tab.indexNumber})` : ''}
-            </Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -59,10 +77,10 @@ const styles = StyleSheet.create({
   },
   tabContainer: {
     flexDirection: 'row',
-    backgroundColor: '#f3f4f6',
-    borderRadius: 12,
-    paddingVertical: 5,
-    paddingHorizontal: 5,
+    backgroundColor: '#E2E8F0',
+    borderRadius: 18,
+    paddingVertical: 3,
+    paddingHorizontal: 3,
     marginBottom: 10,
   },
   tab: {
@@ -72,7 +90,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderRadius: 8,
+    borderRadius: 18,
     gap: 5,
   },
   activeTab: {
@@ -81,9 +99,7 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#9ca3af',
-  },
-  activeTabText: {
-    color: '#2563EB',
+    color: '#0A0A0A',
+    marginLeft: 2,
   },
 });

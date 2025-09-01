@@ -133,7 +133,7 @@ export const createNestedNavigationScreens = (modules: IModule[], stack: TypedNa
           <stack.Screen
             key={mod.moduleKey}
             name={mod.moduleKey}
-            component={moduleScreens[mod.moduleKey]}
+            component={moduleScreens[mod.moduleKey].body}
             options={{ title: mod.label ?? mod.moduleKey }}
           />
         );
@@ -143,7 +143,7 @@ export const createNestedNavigationScreens = (modules: IModule[], stack: TypedNa
     // 2️⃣ Add nested feature modules
     if (mod.modules && mod.modules.length > 0) {
       mod.modules.forEach((feat) => {
-        const FeatureComp = moduleScreens[feat.moduleKey];
+        const FeatureComp = moduleScreens[feat.moduleKey].body;
         if (FeatureComp) {
           screens.push(
             <stack.Screen
@@ -170,7 +170,8 @@ export const createTabNavigationItem = (tab: TypedNavigator<any>, module: IModul
     <tab.Screen
       key={module.moduleKey}
       name={module.label ?? ''}
-      component={moduleScreens[module.moduleKey]}
+      component={moduleScreens[module.moduleKey].body}
+      navigationKey={module.moduleKey}
       options={{
         tabBarIcon: ({ color, size }: any) => (
           <Ionicons name={(module.icon ?? 'home') as any} size={size} color={color} />

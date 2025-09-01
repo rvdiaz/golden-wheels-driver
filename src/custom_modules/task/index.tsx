@@ -10,10 +10,11 @@ import { getTaskByUserQuery } from './graphql/queries';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import Constants from 'expo-constants';
 import { TabHeader } from '~/codidge_components/UI/tabs';
-import { CheckSquare, Clock } from 'lucide-react-native';
+import { CheckSquare, Clock, ListChecks, Pencil } from 'lucide-react-native';
 import { getCustomTasks, sortTasks } from './helpers';
 import { ExpandableCalendar, CalendarProvider } from 'react-native-calendars';
 import { Positions } from 'react-native-calendars/src/expandableCalendar';
+import { theme } from '~/theme/theme';
 
 const today = new Date().toISOString().split('T')[0];
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
@@ -88,12 +89,13 @@ export const TasksScreen: React.FC = () => {
             {
               key: ActiveTab.admin,
               label: 'Daily Schedule',
-              Icon: Clock,
+              Icon: ListChecks,
+              indexNumber: 8,
             },
             {
               key: ActiveTab.custom,
               label: 'Custom Tasks',
-              Icon: CheckSquare,
+              Icon: Pencil,
               indexNumber: inCompleteCustomTask,
             },
           ]}
@@ -136,7 +138,7 @@ export const TasksScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: theme.colors.bodyBackground,
   },
   statsRow: {
     flexDirection: 'row',

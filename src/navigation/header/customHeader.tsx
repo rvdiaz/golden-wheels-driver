@@ -36,7 +36,6 @@ export const CustomHeader: React.FC<CustomHeaderProps> = ({
   headerHeight = 56,
 }) => {
   const userInfo = useReactiveVar(userData);
-  const [widgetHeight, setWidgetHeight] = useState(0);
 
   const insets = useSafeAreaInsets();
   const isDashboard = route === ModuleKeys.dashboard;
@@ -46,19 +45,6 @@ export const CustomHeader: React.FC<CustomHeaderProps> = ({
   const module: any = moduleScreens[route];
   const RightHeader = module.rightHeader;
   const BottomHeader = module.bottomHeader;
-
-  // Handle widget layout measurement
-  const handleWidgetLayout = (event: any) => {
-    const { height } = event.nativeEvent.layout;
-    setWidgetHeight(height);
-  };
-
-  // Handle BottomHeader layout measurement
-  const [bottomHeaderHeight, setBottomHeaderHeight] = useState(0);
-  const handleBottomHeaderLayout = (event: any) => {
-    const { height } = event.nativeEvent.layout;
-    setBottomHeaderHeight(height);
-  };
 
   return (
     <View style={styles.container}>
@@ -70,12 +56,7 @@ export const CustomHeader: React.FC<CustomHeaderProps> = ({
             paddingTop: insets.top,
             backgroundColor,
             paddingHorizontal: 16,
-            // Dynamic height calculation:
-            // - Basic header height
-            // - Bottom header height (if exists)
-            // - Half of widget height (for overlap effect)
-            // - Extra padding
-            minHeight: headerHeight + bottomHeaderHeight + widgetHeight / 2 + 30 + insets.top,
+            minHeight: headerHeight + insets.top,
           },
         ]}>
         {/* Main Header Content */}
@@ -87,9 +68,17 @@ export const CustomHeader: React.FC<CustomHeaderProps> = ({
                 {today}
               </Text>
             )}
-            <Text style={[styles.welcomeText, { color: textColor }]} numberOfLines={1}>
-              {isDashboard ? `Welcome, ${userInfo?.email}` : route}
-            </Text>
+            {isDashboard ? (
+              <Text style={[styles.welcomeText, { color: textColor }]} numberOfLines={1}>
+                {`Welcome, ${userInfo?.email}`}
+              </Text>
+            ) : (
+              <Text
+                style={[styles.welcomeText, { color: textColor, fontSize: 30 }]}
+                numberOfLines={1}>
+                {route}
+              </Text>
+            )}
           </View>
 
           {/* Right Section */}
@@ -105,11 +94,7 @@ export const CustomHeader: React.FC<CustomHeaderProps> = ({
         </View>
 
         {/* Bottom Header - measure its height */}
-        {BottomHeader && (
-          <View onLayout={handleBottomHeaderLayout}>
-            <BottomHeader />
-          </View>
-        )}
+        <View style={{ marginBottom: 30 }}>{BottomHeader && <BottomHeader />}</View>
       </View>
 
       {/* Widget Area - dynamically sized with overlapping border radius */}
@@ -121,15 +106,9 @@ export const CustomHeader: React.FC<CustomHeaderProps> = ({
               backgroundColor: widgetBackgroundColor || theme.colors.bodyBackground,
               borderTopLeftRadius: borderRadius,
               borderTopRightRadius: borderRadius,
-              // Dynamic margin - half of widget height for overlap
-              marginTop: -(widgetHeight / 2 || borderRadius), // Fallback to borderRadius if height not measured yet
+              marginTop: -borderRadius, // Fallback to borderRadius if height not measured yet
             },
-          ]}>
-          {/* Widget content wrapper - measures its own height */}
-          <View style={styles.widgetContent} onLayout={handleWidgetLayout}>
-            {widgetComponent}
-          </View>
-        </View>
+          ]}></View>
       )}
 
       {/* Curved bottom section - only show if no widgets */}

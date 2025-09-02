@@ -58,7 +58,7 @@ export enum TaskCategory {
   SHOWING_PROPERTY_FOR_RENT = 'Showing Property for Rent',
   PERSONAL_TIME = 'Personal Time',
   FOLLOW_UP_NEW_CONTACT = 'Follow-Ups - New Contacts',
-  MAIL_OUTS = 'MAil Outs',
+  MAIL_OUTS = 'Mail Outs',
 }
 
 export interface ITask {

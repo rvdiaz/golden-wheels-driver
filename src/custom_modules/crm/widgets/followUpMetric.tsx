@@ -1,11 +1,11 @@
 import React from 'react';
-import { TaskMetricsCard } from '~/custom_modules/dashboard/widgets/metricsStats';
 import * as Icons from 'lucide-react-native';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import Constants from 'expo-constants';
 import { IContact } from '../interfaces';
 import { getUserContacts } from '../graphql/queries';
+import { TaskMetricsCard } from '~/custom_modules/dashboard/widgets/metricCards';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 

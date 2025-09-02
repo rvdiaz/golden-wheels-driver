@@ -39,7 +39,7 @@ export const TabHeader: React.FC<TabHeaderProps> = ({
             onPress={() => handleTabPress(tab.key)}>
             {tab.Icon && <tab.Icon size={18} color={'#0A0A0A'} />}
             <Text style={[styles.tabText]}>{tab.label}</Text>
-            {tab?.indexNumber && (
+            {!!tab?.indexNumber && (
               <View
                 style={{
                   padding: 2,

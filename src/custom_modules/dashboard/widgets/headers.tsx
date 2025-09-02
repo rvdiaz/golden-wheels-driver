@@ -1,9 +1,15 @@
 import { X } from 'lucide-react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Card } from '~/codidge_components/UI/card';
 
 export const DashboardBottomHeader = () => {
+  const [open, setOpen] = useState(true);
+
+  if (!open) {
+    return;
+  }
+
   return (
     <Card style={styles.bannerCard}>
       <View style={styles.bannerContent}>
@@ -20,7 +26,11 @@ export const DashboardBottomHeader = () => {
             </Text>
             <Text style={styles.quoteText}>Robin Sharma</Text>
           </View>
-          <TouchableOpacity style={styles.bannerButton}>
+          <TouchableOpacity
+            onPress={() => {
+              setOpen((op) => !op);
+            }}
+            style={styles.bannerButton}>
             <X color={'#CBCFF0'} size={16} />
           </TouchableOpacity>
         </View>
@@ -31,7 +41,7 @@ export const DashboardBottomHeader = () => {
 
 const styles = StyleSheet.create({
   bannerCard: {
-    marginBottom: 16,
+    marginBottom: 10,
     marginTop: 10,
     overflow: 'hidden',
     borderRadius: 20,

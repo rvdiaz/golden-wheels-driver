@@ -5,7 +5,7 @@ import { TaskItem } from './taskItem';
 import { theme } from '~/theme/theme';
 import { Slider } from '~/codidge_components/UI/slider';
 
-export const TaskList = ({ tasks }: { tasks: ITask[] }) => {
+export const TaskList = ({ tasks, displayList }: { tasks: ITask[]; displayList: ITask[] }) => {
   const completedTasks = tasks.filter((task) => task.isCompleted);
   const totalTasks = tasks.length;
   const completedCount = completedTasks.length;
@@ -21,7 +21,7 @@ export const TaskList = ({ tasks }: { tasks: ITask[] }) => {
       </View>
       <Slider progressPercentage={progressPercentage} primaryColor={theme.colors.primary} />
       <View>
-        {tasks.map((task) => (
+        {displayList.map((task) => (
           <TaskItem key={task.id} task={task} />
         ))}
       </View>
@@ -35,12 +35,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
     borderRadius: theme.borderRadius.lg,
     padding: 12,
+    paddingVertical: 16,
   },
   tasksHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingBottom: 16,
+    marginBottom: 16,
   },
   tasksTitle: {
     fontSize: 16,

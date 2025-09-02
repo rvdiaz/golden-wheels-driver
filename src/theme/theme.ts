@@ -9,7 +9,7 @@ export const theme = {
     dangerText: '#FFFFFF',
     primaryGradient: ['#4F46E5', '#4F46E5'] as const,
     headerBackground: '#1D0D66',
-    bodyBackground: '#F9FAFB',
+    bodyBackground: '#FFF',
   },
   spacing: {
     xs: 4,

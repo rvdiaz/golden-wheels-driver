@@ -1,84 +1,112 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import { Card } from '~/codidge_components/UI/card';
-import * as Icons from 'lucide-react-native';
-import { ITask } from '~/custom_modules/task/interfaces';
+import { theme } from '~/theme/theme';
+import { HighPriorityTaskMetric } from '~/custom_modules/task/widgets/highPriorityTaskMetric';
+import { FollowUpMetric } from '~/custom_modules/crm/widgets/followUpMetric';
 
 const screenWidth = Dimensions.get('window').width;
 
-export const TaskMetricsStats = ({ completedTasks }: { completedTasks: ITask[] }) => {
-  return (
-    <View style={styles.metricsGrid}>
-      <Card style={styles.metricCard}>
-        <View style={styles.metricContent}>
-          <View style={styles.metricInfo}>
-            <Text style={styles.metricLabel}>Today's Tasks</Text>
-            <Text style={styles.metricValue}>{completedTasks.length}/5</Text>
-            <Text style={[styles.metricSubtext, { color: '#2563EB' }]}>
-              {5 - completedTasks.length} remaining
-            </Text>
-          </View>
-          <View style={[styles.metricIcon, { backgroundColor: '#EEF2FF' }]}>
-            <Icons.CheckCircle size={24} color="#2563EB" />
-          </View>
-        </View>
-      </Card>
+export interface IMetric {
+  label: string;
+  value: string;
+  subLabel: string;
+  iconName: ReactNode;
+  iconColor?: string;
+  iconBackgroundColor?: string;
+  cardBackgroundColor?: string;
+  valueColor?: string;
+  subLabelColor?: string;
+  labelColor?: string;
+  width?: number;
+}
 
-      <Card style={styles.metricCard}>
-        <View style={styles.metricContent}>
-          <View style={styles.metricInfo}>
-            <Text style={styles.metricLabel}>CRM Contacts</Text>
-            <Text style={styles.metricValue}>24</Text>
-            <Text style={[styles.metricSubtext, { color: '#EA580C' }]}>→ +3 today</Text>
-          </View>
-          <View style={[styles.metricIcon, { backgroundColor: '#FFF7ED' }]}>
-            <Icons.Users size={24} color="#EA580C" />
+export const TaskMetricsCard = ({
+  label,
+  value,
+  subLabel,
+  iconName,
+  iconBackgroundColor = '#86EFAC',
+  cardBackgroundColor = '#F0FDF4',
+  valueColor = '#0A0A0A',
+  subLabelColor = '#166534',
+  labelColor = '#0A0A0A',
+  width = (screenWidth - 48) / 2,
+}: IMetric) => {
+  return (
+    <View
+      style={[
+        styles.metricCard,
+        {
+          backgroundColor: cardBackgroundColor,
+          width: width,
+        },
+      ]}>
+      <View style={styles.metricContent}>
+        <View style={styles.metricInfo}>
+          <Text style={[styles.metricLabel, { color: labelColor }]}>{label}</Text>
+          <View style={styles.metricFooter}>
+            <Text style={[styles.metricValue, { color: valueColor }]}>{value}</Text>
+            <Text style={[styles.metricSubLabel, { color: subLabelColor }]}>{subLabel}</Text>
           </View>
         </View>
-      </Card>
+        <View style={[styles.metricIcon, { backgroundColor: iconBackgroundColor }]}>
+          {iconName}
+        </View>
+      </View>
     </View>
   );
+};
+
+// Container component for multiple metrics
+export const TaskMetricsStats = () => {
+  const metricWidgets = [<HighPriorityTaskMetric />, <FollowUpMetric />];
+
+  return <View style={styles.metricsGrid}>{metricWidgets}</View>;
 };
 
 const styles = StyleSheet.create({
   metricsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginBottom: 10,
     marginHorizontal: -8,
   },
   metricCard: {
-    width: (screenWidth - 48) / 2,
     marginHorizontal: 8,
     marginBottom: 16,
+    borderRadius: theme.borderRadius.lg,
+    padding: 14,
   },
   metricContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
+    alignItems: 'flex-start',
   },
   metricInfo: {
     flex: 1,
   },
+  metricFooter: {
+    flexDirection: 'row',
+    marginTop: 22,
+    alignItems: 'center',
+    gap: 5,
+  },
   metricLabel: {
-    fontSize: 12,
-    color: '#6B7280',
+    fontSize: 14,
+    fontWeight: '400',
+  },
+  metricSubLabel: {
+    fontSize: 14,
+    fontWeight: '700',
     marginBottom: 4,
   },
   metricValue: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1F2937',
     marginBottom: 4,
   },
-  metricSubtext: {
-    fontSize: 10,
-    color: '#059669',
-  },
   metricIcon: {
-    width: 48,
-    height: 48,
+    width: 36,
+    height: 36,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',

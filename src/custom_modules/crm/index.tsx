@@ -4,7 +4,6 @@ import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 import ContactForm from './widgets/addContact';
 import { ContactList } from './widgets/contactList';
 import { CrmMetrics, IContact } from './interfaces';
-
 import { CrmMetricsCard } from './widgets/crmMetricCard';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { getUserContacts } from './graphql/queries';

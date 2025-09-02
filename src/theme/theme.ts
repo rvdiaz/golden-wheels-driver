@@ -4,6 +4,7 @@ export const theme = {
     primaryText: '#FFFFFF',
     secondary: '#F3F4F6',
     secondaryText: '#374151',
+    textColor: '#0A0A0A',
     danger: '#DC2626',
     dangerText: '#FFFFFF',
     primaryGradient: ['#4F46E5', '#4F46E5'] as const,

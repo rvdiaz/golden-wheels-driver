@@ -10,7 +10,7 @@ import { getTaskByUserQuery } from './graphql/queries';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import Constants from 'expo-constants';
 import { TabHeader } from '~/codidge_components/UI/tabs';
-import { CheckSquare, Clock, ListChecks, Pencil } from 'lucide-react-native';
+import { ListChecks, Pencil } from 'lucide-react-native';
 import { getCustomTasks, sortTasks } from './helpers';
 import { ExpandableCalendar, CalendarProvider } from 'react-native-calendars';
 import { Positions } from 'react-native-calendars/src/expandableCalendar';
@@ -57,7 +57,6 @@ export const TasksScreen: React.FC = () => {
     await refetch();
     setRefreshing(false);
   };
-  const primaryColor = '#007AFF'; // 🔵 your brand color
   return (
     <SafeAreaView style={styles.container}>
       <CalendarProvider
@@ -70,15 +69,15 @@ export const TasksScreen: React.FC = () => {
           markedDates={{
             [selected]: {
               selected: true,
-              selectedColor: primaryColor, // ✅ primary color for selected day
+              selectedColor: theme.colors.primary, // ✅ primary color for selected day
               disableTouchEvent: true,
             },
           }}
           theme={{
-            selectedDayBackgroundColor: primaryColor,
-            todayTextColor: primaryColor,
-            arrowColor: primaryColor,
-            dotColor: primaryColor,
+            selectedDayBackgroundColor: theme.colors.primary,
+            todayTextColor: theme.colors.primary,
+            arrowColor: theme.colors.primary,
+            dotColor: theme.colors.primary,
             textDayFontWeight: '500',
             textMonthFontWeight: 'bold',
           }}

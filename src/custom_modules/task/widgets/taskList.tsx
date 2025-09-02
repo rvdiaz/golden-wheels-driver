@@ -1,48 +1,55 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Card } from '~/codidge_components/UI/card';
 import { ITask } from '../interfaces';
 import { TaskItem } from './taskItem';
+import { theme } from '~/theme/theme';
+import { Slider } from '~/codidge_components/UI/slider';
 
 export const TaskList = ({ tasks }: { tasks: ITask[] }) => {
+  const completedTasks = tasks.filter((task) => task.isCompleted);
+  const totalTasks = tasks.length;
+  const completedCount = completedTasks.length;
+  const progressPercentage = totalTasks > 0 ? (completedCount / totalTasks) * 100 : 0;
+
   return (
-    <Card style={styles.tasksCard}>
+    <View style={styles.tasksCard}>
       <View style={styles.tasksHeader}>
         <Text style={styles.tasksTitle}>Today's Tasks</Text>
-        <Text style={styles.tasksDate}>Wednesday, August 7</Text>
+        <Text style={styles.tasksDate}>
+          {completedCount}/{totalTasks} Complete
+        </Text>
       </View>
-
-      <View style={styles.tasksList}>
+      <Slider progressPercentage={progressPercentage} primaryColor={theme.colors.primary} />
+      <View>
         {tasks.map((task) => (
           <TaskItem key={task.id} task={task} />
         ))}
       </View>
-    </Card>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   tasksCard: {
     flex: 2,
+    backgroundColor: '#F8FAFC',
+    borderRadius: theme.borderRadius.lg,
+    padding: 12,
   },
   tasksHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 24,
     paddingBottom: 16,
   },
   tasksTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
-    color: '#1F2937',
+    color: '#0A0A0A',
   },
   tasksDate: {
-    fontSize: 14,
-    color: '#6B7280',
-  },
-  tasksList: {
-    paddingHorizontal: 24,
-    paddingBottom: 24,
+    fontSize: 12,
+    color: '#0A0A0A',
+    fontWeight: '400',
   },
 });

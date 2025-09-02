@@ -1,17 +1,20 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { ITask } from '../interfaces';
-import * as Icons from 'lucide-react-native';
-import { Badge } from '~/codidge_components/UI/badge';
-import { formatTaskTime, getCategoryColor, getPriorityColor } from '../helpers';
+import { formatTaskTime } from '../helpers';
 import { useMutation, useReactiveVar } from '@apollo/client';
-import { completeTaskMutation, updateTaskMutation } from '../graphql/mutations';
+import { completeTaskMutation } from '../graphql/mutations';
 import { userData } from '~/store/user';
 import Constants from 'expo-constants';
+import { theme } from '~/theme/theme';
+import { SimpleCheckbox } from '~/codidge_components/UI/form/checkbox';
+import * as Icons from 'lucide-react-native';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const TaskItem = ({ task }: { task: ITask }) => {
+  const [value, setvalue] = useState(false);
+
   const customer = useReactiveVar(userData);
   const [completeTaskFn] = useMutation<{ completeTask: ITask }>(completeTaskMutation, {
     update: (cache, { data: mutationData }) => {
@@ -36,11 +39,11 @@ export const TaskItem = ({ task }: { task: ITask }) => {
     },
   });
 
-  const handleCompleteTask = async () => {
+  const handleCompleteTask = async (toggleValue: boolean) => {
     try {
-      console.log(':::task', task);
-
-      await completeTaskFn({
+      setvalue(toggleValue);
+      console.log(':::toggle', toggleValue);
+      /*    await completeTaskFn({
         variables: {
           task,
           tenant: { tenantId },
@@ -53,60 +56,40 @@ export const TaskItem = ({ task }: { task: ITask }) => {
             isCompleted: !task.isCompleted,
           },
         },
-      });
+      }); */
     } catch (error) {
       console.error(':error', error);
     }
   };
 
   return (
-    <TouchableOpacity
-      key={task.id}
-      style={[styles.taskItem, task.isCompleted && styles.taskCompleted]}
-      onPress={handleCompleteTask}>
-      <View style={styles.taskCheckbox}>
-        {task.isCompleted ? (
-          <Icons.CheckCircle2 size={20} color="#059669" />
-        ) : (
-          <View style={styles.taskCheckboxEmpty} />
-        )}
-      </View>
-
+    <View key={task.id} style={styles.taskItem}>
       <View style={styles.taskContent}>
         <View style={styles.taskHeader}>
-          <Text style={[styles.taskTitle, task.isCompleted && styles.taskTitleCompleted]}>
-            {task.title}
-          </Text>
+          <View style={{ flexDirection: 'row' }}>
+            <View>
+              <Text style={styles.taskTitle}>{task.title}</Text>
+              <Text style={styles.taskDescription}>Descriptions here</Text>
+            </View>
+          </View>
 
-          <View style={styles.taskHeader}>
+          <SimpleCheckbox checked={value} onToggle={handleCompleteTask} />
+        </View>
+
+        <View style={styles.taskMeta}>
+          <View style={[styles.taskCategoryBadge]}>
+            <Text style={[styles.taskBadgeText]}>{task.category}</Text>
+          </View>
+          <View style={styles.rightFooter}>
+            <Image source={require('../../../assets/highPriority.png')} />
             <Text style={styles.taskTime}>
               {formatTaskTime(task.startTime.toString())} -{' '}
               {formatTaskTime(task.endTime.toString())}
             </Text>
           </View>
         </View>
-
-        <View style={styles.taskMeta}>
-          <View style={[styles.taskBadge, { borderColor: getCategoryColor(task.category) }]}>
-            <Text style={[styles.taskBadgeText, { color: getCategoryColor(task.category) }]}>
-              {task.category}
-            </Text>
-          </View>
-          <Badge
-            style={[
-              styles.priorityBadge,
-              {
-                backgroundColor: getPriorityColor(task.priority).backgroundColor,
-                borderColor: getPriorityColor(task.priority).borderColor,
-              },
-            ]}
-            displayIcon={false}
-            textStyle={{ color: getPriorityColor(task.priority).color }}>
-            {task.priority}
-          </Badge>
-        </View>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 };
 
@@ -141,19 +124,12 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     padding: 12,
     marginBottom: 12,
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 2,
     borderColor: '#F3F4F6',
     backgroundColor: 'white',
   },
-  taskCompleted: {
-    opacity: 0.7,
-    backgroundColor: '#F9FAFB',
-  },
-  taskCheckbox: {
-    marginRight: 12,
-    marginTop: 2,
-  },
+  rightFooter: { alignItems: 'flex-end', marginBottom: 4, gap: 2 },
   taskCheckboxEmpty: {
     width: 20,
     height: 20,
@@ -169,12 +145,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginBottom: 4,
-    paddingHorizontal: 4,
   },
   taskTitle: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#1F2937',
+    fontWeight: '500',
+    color: theme.colors.textColor,
     flex: 1,
     marginRight: 8,
   },
@@ -187,26 +162,26 @@ const styles = StyleSheet.create({
   },
   taskDescription: {
     fontSize: 12,
-    color: '#6B7280',
-    marginBottom: 8,
-    lineHeight: 16,
+    color: '#737373',
+    marginTop: 4,
   },
   taskDescriptionCompleted: {
     textDecorationLine: 'line-through',
   },
   taskMeta: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     justifyContent: 'space-between',
+    marginTop: 21,
   },
-  taskBadge: {
+  taskCategoryBadge: {
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 6,
-    borderWidth: 1,
+    borderRadius: 14,
+    backgroundColor: '#ededed',
   },
   taskBadgeText: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '600',
   },
   taskProgress: {

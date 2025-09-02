@@ -21,7 +21,7 @@ export const ProfileCompletionWidget: React.FC<ProfileCompletionWidgetProps> = (
   title = 'Set-Up',
   description = 'Complete your profile to unlock all features and improve your experience',
   onButtonPress,
-  size = 100,
+  size = 110,
   strokeWidth = 18,
 }) => {
   // Calculate progress percentage
@@ -103,9 +103,10 @@ export const ProfileCompletionWidget: React.FC<ProfileCompletionWidgetProps> = (
 
           {/* Center Content */}
           <View style={styles.centerContent}>
-            <Text style={styles.progressText}>
-              {completedSteps}/{totalSteps}
-            </Text>
+            <View style={styles.progressNumbers}>
+              <Text style={[styles.completedNumber]}>{completedSteps}</Text>
+              <Text style={styles.totalNumber}>/{totalSteps}</Text>
+            </View>
             <Text style={styles.statusText}>{isComplete ? 'Complete' : 'Progress'}</Text>
           </View>
         </View>
@@ -241,9 +242,10 @@ export const EnhancedProfileCompletionWidget: React.FC<EnhancedProfileWidgetProp
           </Svg>
 
           <View style={styles.centerContent}>
-            <Text style={styles.progressText}>
-              {completedSteps}/{totalSteps}
-            </Text>
+            <View style={styles.progressNumbers}>
+              <Text style={[styles.completedNumber]}>{completedSteps}</Text>
+              <Text style={styles.totalNumber}>/{totalSteps}</Text>
+            </View>
             <Text style={[styles.statusText, isComplete && styles.completeStatusText]}>
               {isComplete ? 'Complete' : 'Steps'}
             </Text>
@@ -261,15 +263,10 @@ export const EnhancedProfileCompletionWidget: React.FC<EnhancedProfileWidgetProp
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#EEF2FF',
-    borderRadius: 16,
+    borderRadius: 18,
     padding: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
     marginBottom: 16,
   },
   enhancedContainer: {
@@ -363,7 +360,7 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 10,
     fontWeight: '500',
-    color: '#6B7280',
+    color: '#818CF8',
     marginTop: 2,
   },
   completeStatusText: {
@@ -376,5 +373,19 @@ const styles = StyleSheet.create({
   },
   completePercentageText: {
     color: '#10B981',
+  },
+  progressNumbers: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 1,
+  },
+  completedNumber: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  totalNumber: {
+    fontSize: 12,
+    color: '#818CF8',
+    fontWeight: '500',
   },
 });

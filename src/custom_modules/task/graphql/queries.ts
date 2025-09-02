@@ -22,6 +22,7 @@ export const getTaskByUserQuery = gql`
       startTime
       endTime
       source
+      description
     }
   }
 `;
@@ -37,6 +38,8 @@ export const getTaskQuery = gql`
       title
       startTime
       endTime
+      source
+      description
     }
   }
 `;

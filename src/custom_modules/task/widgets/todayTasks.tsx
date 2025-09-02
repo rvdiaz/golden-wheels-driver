@@ -1,18 +1,11 @@
-import { useQuery, useReactiveVar } from '@apollo/client';
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { ITask } from '../interfaces';
-import { getTaskByUserQuery } from '../graphql/queries';
-import Constants from 'expo-constants';
-import { userData } from '~/store/user';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import { sortTasks } from '../helpers';
 import { TaskList } from './taskList';
 import moment from 'moment';
 import * as Icons from 'lucide-react-native';
-
-const tenantId = Constants.expoConfig?.extra?.TENANTID;
-const today = new Date().toISOString().split('T')[0];
+import { useTasksByUser } from '../hooks/listTask';
 
 // Completion Widget Component
 const TasksCompletionWidget = ({ onViewCompleted }: { onViewCompleted?: () => void }) => {
@@ -39,37 +32,15 @@ const TasksCompletionWidget = ({ onViewCompleted }: { onViewCompleted?: () => vo
   );
 };
 
-// Alternative Minimal Completion Widget
-const MinimalCompletionWidget = () => {
-  return (
-    <View style={styles.minimalWidget}>
-      <Icons.Trophy size={24} color="#F59E0B" />
-      <Text style={styles.minimalTitle}>All Done for Today!</Text>
-      <Text style={styles.minimalSubtitle}>Take a break 😊</Text>
-    </View>
-  );
-};
-
 export const TodayTasks = () => {
-  const customer = useReactiveVar(userData);
-
-  const { data, loading: isLoading } = useQuery<{ getTasksByUser: ITask[] }>(getTaskByUserQuery, {
-    variables: {
-      tenant: {
-        tenantId,
-      },
-      userId: customer?.id,
-      date: today,
-      userActiveTemplateId: customer?.activeTemplateId,
-    },
-  });
+  const { tasks: taskList, isLoading } = useTasksByUser();
 
   if (isLoading) {
     return <PageLoading />;
   }
 
   const now = moment();
-  const allTasks = data?.getTasksByUser ?? [];
+  const allTasks = taskList ?? [];
 
   // Filter tasks that haven't ended yet (future tasks)
   const activeTasks = sortTasks(

@@ -49,7 +49,7 @@ export const ContactDetailsScreen = () => {
                 <Text style={styles.profileName}>{contact.firstName}</Text>
                 <Text style={styles.profileName}> {contact.lastName}</Text>
               </View>
-              <Text style={styles.profileStatus}>{contact.category.toUpperCase()}</Text>
+              <Text style={styles.profileStatus}>{contact?.category?.toUpperCase()}</Text>
             </View>
           </View>
 

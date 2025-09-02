@@ -1,8 +1,8 @@
 import React from 'react';
 import { theme } from '~/theme/theme';
 import { daySelection } from '../hooks/dailySelectionVar';
-import DatePickerWidget from '~/codidge_components/UI/datePicker';
 import moment from 'moment';
+import DatePickerWidget from '~/codidge_components/UI/datePicker';
 
 export const DailyTaskSelector = () => {
   return (

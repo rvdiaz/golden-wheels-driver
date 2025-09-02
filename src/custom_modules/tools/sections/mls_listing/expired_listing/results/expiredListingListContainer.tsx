@@ -90,7 +90,9 @@ const ExpiredListingContainer: React.FC<PropertyListScreenProps> = ({
         <FlatList
           data={expListings}
           keyExtractor={(item) => item.listingId}
-          renderItem={({ item }) => <ExpiredListingCard listing={item} onPress={handleCardPress} />}
+          renderItem={({ item }) => (
+            <ExpiredListingCard key={item.listingId} listing={item} onPress={handleCardPress} />
+          )}
           showsVerticalScrollIndicator={false}
           onEndReached={loadMore} // 👈 load more when reaching bottom
           onEndReachedThreshold={0.5} // 0.5 = trigger when 50% before end

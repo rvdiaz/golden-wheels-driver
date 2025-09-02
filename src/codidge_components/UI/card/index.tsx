@@ -14,9 +14,11 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: 'white',
     borderRadius: 12,
-    elevation: 2,
     shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 0,
+    shadowOffset: { width: 0, height: 4 }, // vertical offset
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    // Android shadow
+    elevation: 3,
   },
 });

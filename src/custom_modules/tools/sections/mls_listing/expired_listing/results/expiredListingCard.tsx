@@ -90,10 +90,10 @@ const ExpiredListingCard: React.FC<PropertyListingCardProps> = ({ listing, onPre
           {conditions.some((condition) => condition.value) && (
             <View style={styles.conditionsContainer}>
               {conditions.map(
-                (condition) =>
+                (condition, index) =>
                   condition.value && (
                     <Badge
-                      key={condition.key}
+                      key={`${condition.key} ${index}`}
                       style={styles.conditionBadge}
                       textStyle={styles.conditionText}
                       displayIcon={false}

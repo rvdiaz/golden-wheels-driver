@@ -3,6 +3,7 @@ import { Platform, TouchableOpacity, Modal, View, Button } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Calendar } from 'lucide-react-native'; // icon
 import InputField from './inputField';
+import moment from 'moment';
 
 interface DateInputFieldProps {
   value?: Date;
@@ -24,15 +25,20 @@ export const DateInputField: React.FC<DateInputFieldProps> = ({
 
   const handleChange = (_event: any, selectedDate?: Date) => {
     if (Platform.OS === 'android') {
-      setShowModal(false); // close modal on Android
+      setShowModal(false);
     }
+
     if (selectedDate) {
-      onChangeText?.(selectedDate); // YYYY-MM-DD
+      // Use moment to handle the date properly and avoid timezone issues
+      const momentDate = moment(selectedDate).startOf('day');
+      const fixedDate = momentDate.toDate();
+
+      onChangeText?.(fixedDate);
     }
   };
 
-  const date = value ? new Date(value) : new Date();
-  const inputValue = date.toDateString();
+  const date = value ? moment(value).toDate() : moment().toDate();
+  const inputValue = moment(date).format('ddd MMM DD YYYY');
 
   const today = new Date();
   today.setHours(0, 0, 0, 0); // optional: start of today

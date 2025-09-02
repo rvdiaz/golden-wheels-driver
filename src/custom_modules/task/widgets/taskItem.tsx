@@ -8,12 +8,11 @@ import { userData } from '~/store/user';
 import Constants from 'expo-constants';
 import { theme } from '~/theme/theme';
 import { SimpleCheckbox } from '~/codidge_components/UI/form/checkbox';
-import * as Icons from 'lucide-react-native';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const TaskItem = ({ task }: { task: ITask }) => {
-  const [value, setvalue] = useState(false);
+  const [value, setvalue] = useState(task.isCompleted ?? false);
 
   const customer = useReactiveVar(userData);
   const [completeTaskFn] = useMutation<{ completeTask: ITask }>(completeTaskMutation, {
@@ -42,8 +41,7 @@ export const TaskItem = ({ task }: { task: ITask }) => {
   const handleCompleteTask = async (toggleValue: boolean) => {
     try {
       setvalue(toggleValue);
-      console.log(':::toggle', toggleValue);
-      /*    await completeTaskFn({
+      await completeTaskFn({
         variables: {
           task,
           tenant: { tenantId },
@@ -56,7 +54,7 @@ export const TaskItem = ({ task }: { task: ITask }) => {
             isCompleted: !task.isCompleted,
           },
         },
-      }); */
+      });
     } catch (error) {
       console.error(':error', error);
     }

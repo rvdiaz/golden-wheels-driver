@@ -66,7 +66,7 @@ export const ExpiredListingPage = () => {
   };
 
   const fetchMoreResults = async () => {
-    const zipCode = getValues('zipCode');
+    /*   const zipCode = getValues('zipCode');
     const daysOld = getValues('daysOld');
     setLoadingMore(true);
 
@@ -88,7 +88,7 @@ export const ExpiredListingPage = () => {
       }
     }
 
-    setLoadingMore(false);
+    setLoadingMore(false); */
   };
 
   return (

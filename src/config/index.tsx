@@ -4,7 +4,7 @@ import { ContactDetailsScreen } from '~/custom_modules/crm/widgets/contactDetail
 import { Dashboard } from '~/custom_modules/dashboard';
 import { ScheduleScreen } from '~/custom_modules/schedule';
 import { TasksScreen } from '~/custom_modules/task';
-import { AddTaskScreen } from '~/custom_modules/task/sections/addTask';
+import { AddTaskScreen } from '~/custom_modules/task/widgets/addTask';
 import { ToolsScreen } from '~/custom_modules/tools';
 import { ExpiredListingPage } from '~/custom_modules/tools/sections/mls_listing/expired_listing';
 import { MortgageCalculatorScreen } from '~/custom_modules/tools/sections/mortgage_calculator';

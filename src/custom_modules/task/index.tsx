@@ -3,24 +3,19 @@ import { StyleSheet, FlatList, Modal, SafeAreaView, View, RefreshControl } from 
 import { TaskItem } from './widgets/taskItem';
 import { ActiveTab, ITask } from './interfaces';
 import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
-import { AddTaskScreen } from './sections/addTask';
-import { useQuery, useReactiveVar } from '@apollo/client';
-import { userData } from '~/store/user';
-import { getTaskByUserQuery } from './graphql/queries';
+import { AddTaskScreen } from './widgets/addTask';
+import { useReactiveVar } from '@apollo/client';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
-import Constants from 'expo-constants';
 import { TabHeader } from '~/codidge_components/UI/tabs';
 import { ListChecks, Pencil } from 'lucide-react-native';
 import { getCustomTasks, sortTasks } from './helpers';
 import { theme } from '~/theme/theme';
 import { daySelection } from './hooks/dailySelectionVar';
-
-const tenantId = Constants.expoConfig?.extra?.TENANTID;
+import { useTasksByUser } from './hooks/listTask';
 
 export const TasksScreen: React.FC = () => {
   const selectedDay = useReactiveVar(daySelection);
 
-  const customer = useReactiveVar(userData);
   const [activeTab, setActiveTab] = useState<ActiveTab>(ActiveTab.admin);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -31,22 +26,9 @@ export const TasksScreen: React.FC = () => {
     setModalVisible(false);
   };
 
-  const {
-    data,
-    loading: isLoading,
-    refetch,
-  } = useQuery<{ getTasksByUser: ITask[] }>(getTaskByUserQuery, {
-    variables: {
-      tenant: {
-        tenantId,
-      },
-      userId: customer?.id,
-      date: selectedDay,
-      userActiveTemplateId: customer?.activeTemplateId,
-    },
-  });
+  const { tasks: taskList, isLoading, refetch } = useTasksByUser();
 
-  const tasks = sortTasks(data?.getTasksByUser ?? []);
+  const tasks = sortTasks(taskList ?? []);
 
   const customeTask = getCustomTasks(tasks);
   const inCompleteCustomTask = customeTask.filter((ta) => !ta.isCompleted).length;

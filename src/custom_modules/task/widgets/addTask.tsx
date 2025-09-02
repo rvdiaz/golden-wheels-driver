@@ -4,8 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { Header } from '~/codidge_components/UI/header';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import DropdownComponent from '~/codidge_components/UI/dropdown';
-import { getPriorityColor, TASK_CATEGORY_OPTIONS, TASK_PRIORITY_OPTIONS } from '../helpers';
-import { RadioGroupButtons } from '~/codidge_components/UI/form/RadioGroupButton';
+import { TASK_CATEGORY_OPTIONS, TASK_PRIORITY_OPTIONS } from '../helpers';
 import { DateInputField } from '~/codidge_components/UI/form/inputs/datePicker';
 import { ITask, TaskFormValues, TaskPriority, TaskSource } from '../interfaces';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
@@ -16,6 +15,7 @@ import Constants from 'expo-constants';
 import { userData } from '~/store/user';
 import { getTaskByUserQuery } from '../graphql/queries';
 import { DateTimeInputField } from '~/codidge_components/UI/form/inputs/dateTimePicker';
+import moment from 'moment';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -41,6 +41,7 @@ export const AddTaskScreen = ({
           tenant: { tenantId },
           userId: customer?.id,
           date: defaultDate,
+          userActiveTemplateId: customer?.activeTemplateId,
         },
       });
 
@@ -51,6 +52,7 @@ export const AddTaskScreen = ({
             tenant: { tenantId },
             userId: customer?.id,
             date: defaultDate,
+            userActiveTemplateId: customer?.activeTemplateId,
           },
           data: {
             getTasksByUser: [...existingData.getTasksByUser, newTask],
@@ -80,6 +82,7 @@ export const AddTaskScreen = ({
     try {
       const formatted = {
         ...data,
+        description: data.title,
         startTime: data.startTime
           ? new Date(data.startTime).toLocaleTimeString([], {
               hour: '2-digit',
@@ -173,18 +176,20 @@ export const AddTaskScreen = ({
             />
           </View>
 
-          <View style={styles.fieldContainer}>
+          <View>
             {/* Priority */}
             <Controller
               control={control}
               name="priority"
-              render={({ field: { value, onChange } }) => (
-                <RadioGroupButtons
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <DropdownComponent
                   label="Priority"
+                  data={TASK_PRIORITY_OPTIONS}
+                  placeholder="Select income source"
                   value={value}
                   onChange={onChange}
-                  options={TASK_PRIORITY_OPTIONS}
-                  getColor={(prio) => getPriorityColor(prio).color}
+                  error={!!error}
+                  errorMessage={error?.message}
                 />
               )}
             />
@@ -205,7 +210,7 @@ export const AddTaskScreen = ({
                   label="Tasks date"
                   value={value as Date}
                   onChangeText={(date) => {
-                    const formatted = date.toISOString().split('T')[0]; // YYYY-MM-DD
+                    const formatted = moment(date).format('YYYY-MM-DD');
                     onChange(formatted);
                   }}
                 />

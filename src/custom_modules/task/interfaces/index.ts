@@ -76,6 +76,7 @@ export interface ITask {
   startTime: Date | string;
   endTime: Date | string;
   date: Date | string;
+  description: string;
 }
 
 export interface TaskFormValues {
@@ -85,4 +86,5 @@ export interface TaskFormValues {
   startTime: Date | null;
   endTime: Date | null;
   date: Date | string;
+  description: string;
 }

@@ -11,6 +11,8 @@ export const addTaskMutation = gql`
       title
       startTime
       endTime
+      source
+      description
     }
   }
 `;
@@ -31,6 +33,8 @@ export const completeTaskMutation = gql`
       title
       startTime
       endTime
+      source
+      description
     }
   }
 `;
@@ -52,6 +56,8 @@ export const updateTaskMutation = gql`
       title
       startTime
       endTime
+      source
+      description
     }
   }
 `;

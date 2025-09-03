@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, FlatList, Modal, SafeAreaView, View, RefreshControl } from 'react-native';
 import { TaskItem } from './widgets/taskItem';
 import { ActiveTab, ITask } from './interfaces';
@@ -8,7 +8,7 @@ import { useReactiveVar } from '@apollo/client';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import { TabHeader } from '~/codidge_components/UI/tabs';
 import { ListChecks, Pencil } from 'lucide-react-native';
-import { getCustomTasks, sortTasks } from './helpers';
+import { getActiveTasks, getCustomTasks, sortTasks } from './helpers';
 import { theme } from '~/theme/theme';
 import { daySelection } from './hooks/dailySelectionVar';
 import { useTasksByUser } from './hooks/listTask';
@@ -27,11 +27,18 @@ export const TasksScreen: React.FC = () => {
   };
 
   const { tasks: taskList, isLoading, refetch } = useTasksByUser();
-
+  //all tasks
   const tasks = sortTasks(taskList ?? []);
 
-  const customeTask = getCustomTasks(tasks);
-  const inCompleteCustomTask = customeTask.filter((ta) => !ta.isCompleted).length;
+  //active Tasks Today
+  const activeTasks = getActiveTasks(tasks);
+
+  //incomplete active schedule tasks
+  const inCompleteScheduleTasks = activeTasks.filter((ta) => !ta.isCompleted).length;
+
+  //incomplete active custom tasks
+  const customTask = getCustomTasks(activeTasks);
+  const inCompleteCustomTask = customTask.filter((ta) => !ta.isCompleted).length;
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -46,7 +53,7 @@ export const TasksScreen: React.FC = () => {
             key: ActiveTab.admin,
             label: 'Daily Schedule',
             Icon: ListChecks,
-            indexNumber: 8,
+            indexNumber: inCompleteScheduleTasks,
           },
           {
             key: ActiveTab.custom,
@@ -62,7 +69,7 @@ export const TasksScreen: React.FC = () => {
         <PageLoading />
       ) : (
         <FlatList
-          data={activeTab === ActiveTab.admin ? tasks : customeTask}
+          data={activeTab === ActiveTab.admin ? tasks : customTask}
           renderItem={({ item }: { item: ITask }) => <TaskItem task={item} />}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContainer}
@@ -71,7 +78,7 @@ export const TasksScreen: React.FC = () => {
         />
       )}
       <FloatingMenu
-        title="Add Task"
+        title="Add New Task"
         icon="Plus"
         onPress={() => {
           setModalVisible(true);

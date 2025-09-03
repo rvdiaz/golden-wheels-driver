@@ -16,7 +16,6 @@ import { AuthFormWrapper } from '~/core_modules/auth';
 import { AuthProvider } from '~/codidge_components/auth/context';
 import { CustomHeader } from './header/customHeader';
 import { theme } from '~/theme/theme';
-import { BodyWrapper } from '~/codidge_components/UI/bodyWrapper';
 import { View } from 'react-native';
 
 const Stack = createStackNavigator();
@@ -35,6 +34,9 @@ function BottomTabs({
     <Tab.Navigator
       screenOptions={{
         headerShown: false, // Disable default header for tabs
+        tabBarActiveTintColor: theme.colors.menuItemActive, // iOS blue
+        tabBarInactiveTintColor: theme.colors.menuItemInactive, // iOS gray
+        tabBarShowLabel: true,
       }}
       screenListeners={{
         state: (e) => {
@@ -73,7 +75,6 @@ function TabsWithCustomHeader({ tenantModules }: { tenantModules: IModule[] }) {
               <CustomHeader
                 navigation={navigation}
                 route={currentRouteName}
-                // You can pass custom props here
                 backgroundColor={theme.colors.headerBackground}
                 textColor="#fff"
               />

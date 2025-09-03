@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
-import { ITask } from '../interfaces';
-import { formatTaskTime } from '../helpers';
+import { ITask, TaskSource } from '../interfaces';
+import { formatTaskTime, isActiveTask } from '../helpers';
 import { useMutation, useReactiveVar } from '@apollo/client';
 import { completeTaskMutation } from '../graphql/mutations';
 import { userData } from '~/store/user';
 import Constants from 'expo-constants';
 import { theme } from '~/theme/theme';
 import { SimpleCheckbox } from '~/codidge_components/UI/form/checkbox';
+import { Badge } from '~/codidge_components/UI/badge';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const TaskItem = ({ task }: { task: ITask }) => {
+  const isActive = isActiveTask(task);
+
   const [value, setvalue] = useState(task.isCompleted ?? false);
 
   const customer = useReactiveVar(userData);
@@ -61,17 +64,34 @@ export const TaskItem = ({ task }: { task: ITask }) => {
   };
 
   return (
-    <View key={task.id} style={styles.taskItem}>
+    <View
+      key={task.id}
+      style={[
+        styles.taskItem,
+        { backgroundColor: task.source === TaskSource.admin ? 'white' : '#f7fafc' },
+      ]}>
       <View style={styles.taskContent}>
         <View style={styles.taskHeader}>
           <View style={{ flexDirection: 'row' }}>
-            <View>
+            <View> 
               <Text style={styles.taskTitle}>{task.title}</Text>
-              <Text style={styles.taskDescription}>Descriptions here</Text>
+              <Text style={styles.taskDescription} numberOfLines={3}>
+                {task.description ?? ''}
+              </Text>
             </View>
           </View>
 
-          <SimpleCheckbox checked={value} onToggle={handleCompleteTask} />
+          {isActive ? (
+            <SimpleCheckbox checked={value} onToggle={handleCompleteTask} />
+          ) : task.isCompleted ? (
+            <Badge type="success" displayIcon={false}>
+              Completed
+            </Badge>
+          ) : (
+            <Badge type="error" displayIcon={false}>
+              Incompleted
+            </Badge>
+          )}
         </View>
 
         <View style={styles.taskMeta}>
@@ -97,13 +117,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#F3F4F6',
   },
-  tasksHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 24,
-    paddingBottom: 16,
-  },
   tasksTitle: {
     fontSize: 18,
     fontWeight: '600',
@@ -125,7 +138,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 2,
     borderColor: '#F3F4F6',
-    backgroundColor: 'white',
   },
   rightFooter: { alignItems: 'flex-end', marginBottom: 4, gap: 2 },
   taskCheckboxEmpty: {
@@ -142,7 +154,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 4,
   },
   taskTitle: {
     fontSize: 14,

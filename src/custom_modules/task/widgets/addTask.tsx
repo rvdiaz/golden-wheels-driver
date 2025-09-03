@@ -22,9 +22,11 @@ const tenantId = Constants.expoConfig?.extra?.TENANTID;
 export const AddTaskScreen = ({
   disposeModalHandler,
   defaultDate,
+  task,
 }: {
   disposeModalHandler: () => void;
   defaultDate: string;
+  task?: ITask;
 }) => {
   const customer = useReactiveVar(userData);
 
@@ -69,12 +71,12 @@ export const AddTaskScreen = ({
     formState: { errors, isValid },
   } = useForm<TaskFormValues>({
     defaultValues: {
-      title: '',
-      category: '',
-      priority: TaskPriority.medium,
-      startTime: null,
-      endTime: null,
-      date: defaultDate,
+      title: task?.title ?? '',
+      category: task?.category ?? '',
+      priority: task?.priority ?? TaskPriority.medium,
+      startTime: task?.startTime ?? null,
+      endTime: task?.endTime ?? null,
+      date: task?.date ?? defaultDate,
     },
   });
 
@@ -82,7 +84,7 @@ export const AddTaskScreen = ({
     try {
       const formatted = {
         ...data,
-        description: data.title,
+        description: data.description,
         startTime: data.startTime
           ? new Date(data.startTime).toLocaleTimeString([], {
               hour: '2-digit',
@@ -261,7 +263,7 @@ export const AddTaskScreen = ({
               name="endTime"
               rules={{
                 required: 'End time is required',
-                validate: (endTimeValue: Date | null) => {
+                validate: (endTimeValue: Date | null | string) => {
                   if (!endTimeValue || !startTime) return true; // required will catch empty
                   if (endTimeValue <= startTime) {
                     return 'End time must be after start time';
@@ -284,6 +286,24 @@ export const AddTaskScreen = ({
             />
           </View>
         </View>
+
+        {/* Date Time */}
+        <Controller
+          control={control}
+          name="description"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <InputField
+              label="Notes"
+              placeholder="Additional details about this income"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              multiline
+              numberOfLines={3}
+              style={styles.textArea}
+            />
+          )}
+        />
       </ScrollView>
       <View style={styles.bottomBarContainer}>
         {/* Submit Button */}

@@ -55,6 +55,7 @@ export interface IModule {
   modules?: IFeatureModule[];
   icon?: string;
   isBottomBar?: boolean;
+  customIcon?: string;
 }
 
 export enum StatusUser {

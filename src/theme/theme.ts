@@ -10,6 +10,8 @@ export const theme = {
     primaryGradient: ['#4F46E5', '#4F46E5'] as const,
     headerBackground: '#1D0D66',
     bodyBackground: '#FFF',
+    menuItemActive: '#312E81',
+    menuItemInactive: '#64748B',
   },
   spacing: {
     xs: 4,

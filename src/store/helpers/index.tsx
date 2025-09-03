@@ -2,6 +2,7 @@ import { TypedNavigator } from '@react-navigation/native';
 import { IModule, IUser, ModuleKeys } from '../interface';
 import { Ionicons } from '@expo/vector-icons';
 import { moduleScreens } from '../config';
+import { Image } from 'react-native';
 
 export const getTenantRoutes = (user: IUser | null) => {
   //  const modules = user?.tenantModules ?? [];
@@ -15,6 +16,7 @@ export const getTenantRoutes = (user: IUser | null) => {
       metaData: '{}',
       icon: 'home-outline',
       isBottomBar: true,
+      customIcon: 'dashboard',
     },
     {
       label: 'Tasks',
@@ -24,6 +26,7 @@ export const getTenantRoutes = (user: IUser | null) => {
       metaData: '{}',
       icon: 'calendar-outline',
       isBottomBar: true,
+      customIcon: 'task',
     },
     {
       label: 'Profile',
@@ -63,6 +66,7 @@ export const getTenantRoutes = (user: IUser | null) => {
         },
       ],
       isBottomBar: true,
+      customIcon: 'crm',
     },
     {
       label: 'Tools',
@@ -72,6 +76,7 @@ export const getTenantRoutes = (user: IUser | null) => {
       metaData: '{}',
       icon: 'hammer-outline',
       isBottomBar: true,
+      customIcon: 'tools',
       modules: [
         {
           label: 'Mortgage Calculator',
@@ -108,6 +113,7 @@ export const getTenantRoutes = (user: IUser | null) => {
       metaData: '{}',
       icon: 'school',
       isBottomBar: true,
+      customIcon: 'training',
       modules: [
         {
           label: 'Course Details',
@@ -119,6 +125,29 @@ export const getTenantRoutes = (user: IUser | null) => {
   ];
 
   return modules;
+};
+
+export const customIcons: Record<string, { active: any; inactive: any }> = {
+  dashboard: {
+    active: require('../../assets/icons/dashboard-active.png'),
+    inactive: require('../../assets/icons/dashboard-inactive.png'),
+  },
+  task: {
+    active: require('../../assets/icons/task-active.png'),
+    inactive: require('../../assets/icons/task-inactive.png'),
+  },
+  crm: {
+    active: require('../../assets/icons/crm-active.png'),
+    inactive: require('../../assets/icons/crm-inactive.png'),
+  },
+  tools: {
+    active: require('../../assets/icons/tools-active.png'),
+    inactive: require('../../assets/icons/tools-inactive.png'),
+  },
+  training: {
+    active: require('../../assets/icons/training-active.png'),
+    inactive: require('../../assets/icons/training-inactive.png'),
+  },
 };
 
 export const createNestedNavigationScreens = (modules: IModule[], stack: TypedNavigator<any>) => {
@@ -173,9 +202,21 @@ export const createTabNavigationItem = (tab: TypedNavigator<any>, module: IModul
       component={moduleScreens[module.moduleKey].body}
       navigationKey={module.moduleKey}
       options={{
-        tabBarIcon: ({ color, size }: any) => (
-          <Ionicons name={(module.icon ?? 'home') as any} size={size} color={color} />
-        ),
+        tabBarIcon: ({ color, size, focused }: any) => {
+          if (module.customIcon) {
+            const { active, inactive } = customIcons[module.customIcon];
+
+            return (
+              <Image
+                source={focused ? active : inactive}
+                style={{ width: size, height: size, marginBottom: 2, resizeMode: 'contain' }}
+              />
+            );
+          }
+
+          // fallback to Ionicons
+          return <Ionicons name={(module.icon ?? 'home') as any} size={size} color={color} />;
+        },
       }}
     />
   );

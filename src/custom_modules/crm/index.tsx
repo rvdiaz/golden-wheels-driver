@@ -100,11 +100,11 @@ export const CRMScreen: React.FC = () => {
       </ScrollView>
       <FloatingMenu
         title="Add Contact"
-        icon="Plus"
+         icon="Plus"
         onPress={() => {
           setModalVisible(true);
         }}
-      />
+      /> 
       <Modal
         animationType="slide"
         transparent={true}

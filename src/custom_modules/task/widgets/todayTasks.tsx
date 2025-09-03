@@ -1,9 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
-import { sortTasks } from '../helpers';
+import { getActiveTasks } from '../helpers';
 import { TaskList } from './taskList';
-import moment from 'moment';
 import * as Icons from 'lucide-react-native';
 import { useTasksByUser } from '../hooks/listTask';
 
@@ -39,18 +38,10 @@ export const TodayTasks = () => {
     return <PageLoading />;
   }
 
-  const now = moment();
   const allTasks = taskList ?? [];
 
   // Filter tasks that haven't ended yet (future tasks)
-  const activeTasks = sortTasks(
-    allTasks.filter((task) => {
-      if (!task.endTime || !task.date) return true; // keep if missing data
-
-      const taskEnd = moment(`${task.date} ${task.endTime}`, 'YYYY-MM-DD HH:mm');
-      return taskEnd.isAfter(now);
-    })
-  );
+  const activeTasks = getActiveTasks(allTasks);
 
   // Check if ALL tasks are actually completed (marked as isCompleted: true)
   const allTasksCompleted = allTasks.length > 0 && allTasks.every((task) => task.isCompleted);

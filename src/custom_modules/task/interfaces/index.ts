@@ -83,8 +83,8 @@ export interface TaskFormValues {
   title: string;
   category: string;
   priority: TaskPriority;
-  startTime: Date | null;
-  endTime: Date | null;
+  startTime: Date | string | null;
+  endTime: Date | string | null;
   date: Date | string;
   description: string;
 }

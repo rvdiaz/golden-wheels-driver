@@ -25,7 +25,7 @@ export const FloatingMenu: React.FC<FloatingMenuProps> = ({
       title={title}
       size={ButtonSize.LARGE}
       style={styles.fab}
-      rightWidget={<IconComponent size={20} color="#fff" />}
+      leftWidget={<IconComponent size={20} color="#fff" />}
     />
   );
 };

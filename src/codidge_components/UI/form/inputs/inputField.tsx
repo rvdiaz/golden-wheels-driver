@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { X } from 'lucide-react-native'; // make sure you have RN version
 import { LoadingSpinner } from '../../loading/loadingSpinner';
+import { theme } from '~/theme/theme';
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -72,10 +73,10 @@ const InputField = forwardRef<TextInput, InputProps>(
           </Text>
         )}
         <View style={styles.container}>
-          {leftIcon && <View style={styles.leftIcon}>{leftIcon}</View>}
+          {leftIcon && <View style={[styles.leftIcon]}>{leftIcon}</View>}
           <TextInput
             ref={ref}
-            value={value?.toString()}
+            value={value ?? ''}
             onChangeText={onChangeText}
             style={[
               styles.input,
@@ -128,8 +129,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderRadius: 8,
-    flex: 1,
+    borderRadius: theme.borderRadius.lg,
     paddingVertical: 10,
     paddingHorizontal: 16,
     fontSize: 16,
@@ -154,6 +154,7 @@ const styles = StyleSheet.create({
     top: '50%',
     transform: [{ translateY: -8 }],
     marginLeft: 16,
+    zIndex: 1,
   },
   rightIcon: {
     position: 'absolute',

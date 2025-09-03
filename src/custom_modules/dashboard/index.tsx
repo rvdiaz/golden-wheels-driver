@@ -5,12 +5,15 @@ import { TodayTasks } from '../task/widgets/todayTasks';
 import { theme } from '~/theme/theme';
 import { ProfileCompletionWidget } from './widgets/setupStatusGraph';
 import { InfoWidget } from './widgets/rentApplication';
+import { SearchCrmBox } from '../crm/widgets/searchCrmBox';
+import { SearchCrmBoxIA } from '../crm/widgets/searchCrmIABox';
 
 export const Dashboard: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <ProfileCompletionWidget completedSteps={2} totalSteps={10} />
+
         <TaskMetricsStats />
         <InfoWidget
           title="Rent Application"

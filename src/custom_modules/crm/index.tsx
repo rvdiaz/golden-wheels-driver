@@ -3,22 +3,25 @@ import { View, StyleSheet, SafeAreaView, ScrollView, Modal, RefreshControl } fro
 import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 import ContactForm from './widgets/addContact';
 import { ContactList } from './widgets/contactList';
-import { CrmMetrics, IContact } from './interfaces';
-import { CrmMetricsCard } from './widgets/crmMetricCard';
+import { ActiveCrmTabs, IContact } from './interfaces';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { getUserContacts } from './graphql/queries';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import Constants from 'expo-constants';
 import { userData } from '~/store/user';
 import { theme } from '~/theme/theme';
+import { TabHeader } from '~/codidge_components/UI/tabs';
+import { CircleUser, Clock } from 'lucide-react-native';
+import { crmTabSelection } from './hooks/tabSelectionVar';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const CRMScreen: React.FC = () => {
+  const crmTab = useReactiveVar(crmTabSelection);
+
   const customer = useReactiveVar(userData);
   const [refreshing, setRefreshing] = useState(false);
 
-  const [activeTab, setactiveTab] = useState<'contact' | 'followUp'>('followUp');
   const [modalVisible, setModalVisible] = useState(false);
 
   const disposeModalHandler = () => {
@@ -51,60 +54,42 @@ export const CRMScreen: React.FC = () => {
   const followUp = contacts.filter((ctc) => !ctc.followedUp);
   const pureContacts = contacts.filter((ctc) => ctc.followedUp);
 
-  const stats: CrmMetrics[] = [
-    {
-      label: 'Follow-ups',
-      value: followUp.length,
-      icon: 'Calendar',
-      color: '#10B981',
-      bgColor: '#ECFDF5',
-      active: activeTab === 'contact',
-      onPress: () => {
-        setactiveTab('followUp');
-      },
-    },
-    {
-      label: 'Total Contacts',
-      value: pureContacts.length,
-      icon: 'Users',
-      color: '#2563EB',
-      bgColor: '#EEF2FF',
-      active: activeTab === 'followUp',
-      onPress: () => {
-        setactiveTab('contact');
-      },
-    },
-  ];
-
   return (
     <SafeAreaView style={styles.container}>
+      <TabHeader
+        tabs={[
+          {
+            key: ActiveCrmTabs.contact,
+            label: 'Contacts',
+            Icon: CircleUser,
+            indexNumber: pureContacts.length,
+          },
+          {
+            key: ActiveCrmTabs.followUp,
+            label: 'Follow-ups',
+            Icon: Clock,
+            indexNumber: followUp.length,
+          },
+        ]}
+        onTabChange={(key) => crmTabSelection(key as ActiveCrmTabs)}
+      />
+
       <ScrollView
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         style={styles.content}
         showsVerticalScrollIndicator={false}>
-        {/* Stats Row */}
-        <View style={styles.statsContainer}>
-          {stats.map((stat, index) => {
-            return <CrmMetricsCard key={index} crmMetrics={stat} />;
-          })}
-        </View>
-
-        {/* Main Content Grid */}
-        <View style={styles.mainGrid}>
-          {/* Contacts List */}
-          <ContactList
-            title={activeTab === 'contact' ? 'Contacts' : 'Follow Ups'}
-            contacts={activeTab === 'contact' ? pureContacts : followUp}
-          />
-        </View>
+        <ContactList
+          title={crmTab === ActiveCrmTabs.contact ? 'Contacts' : 'Follow Ups'}
+          contacts={crmTab === ActiveCrmTabs.contact ? pureContacts : followUp}
+        />
       </ScrollView>
       <FloatingMenu
         title="Add Contact"
-         icon="Plus"
+        icon="Plus"
         onPress={() => {
           setModalVisible(true);
         }}
-      /> 
+      />
       <Modal
         animationType="slide"
         transparent={true}
@@ -125,7 +110,14 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 10,
+    backgroundColor: '#F8FAFC',
+    borderRadius: theme.borderRadius.lg,
+    padding: 18,
+    marginHorizontal: 16,
+    marginVertical: 16,
+  },
+  contactListContainer: {
+    flex: 1,
   },
   statsContainer: {
     flexDirection: 'row',
@@ -140,7 +132,6 @@ const styles = StyleSheet.create({
     color: '#1F2937',
     marginBottom: 20,
   },
-
   searchCard: {
     marginBottom: 16,
     padding: 16,

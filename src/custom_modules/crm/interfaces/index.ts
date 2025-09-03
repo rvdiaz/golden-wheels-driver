@@ -15,6 +15,11 @@ export enum ContactType {
   CLIENT = 'client',
 }
 
+export enum ActiveCrmTabs {
+  contact = 'contact',
+  followUp = 'Follow-ups',
+}
+
 export interface IContact {
   id: string;
   tenWWETEWTRWETantId: string;

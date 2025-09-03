@@ -213,8 +213,6 @@ export const createTabNavigationItem = (tab: TypedNavigator<any>, module: IModul
               />
             );
           }
-
-          // fallback to Ionicons
           return <Ionicons name={(module.icon ?? 'home') as any} size={size} color={color} />;
         },
       }}

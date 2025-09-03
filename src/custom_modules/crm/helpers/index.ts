@@ -15,58 +15,6 @@ export const CONTACT_TYPE_OPTIONS = Object.values(ContactType).map((value) => ({
   value,
 }));
 
-export const getActivityIcon = (type: string) => {
-  switch (type) {
-    case 'call':
-      return Icons.Phone;
-    case 'email':
-      return Icons.Mail;
-    case 'meeting':
-      return Icons.Calendar;
-    default:
-      return Icons.Activity;
-  }
-};
-
-export const getActivityColor = (type: string) => {
-  switch (type) {
-    case 'call':
-      return { bg: '#ECFDF5', icon: '#059669' };
-    case 'email':
-      return { bg: '#EFF6FF', icon: '#2563EB' };
-    case 'meeting':
-      return { bg: '#F3E8FF', icon: '#7C3AED' };
-    default:
-      return { bg: '#F9FAFB', icon: '#6B7280' };
-  }
-};
-
-export const getPriorityColor = (priority: string) => {
-  switch (priority) {
-    case 'high':
-      return '#FFFBEB';
-    case 'medium':
-      return '#FFF7ED';
-    case 'low':
-      return '#EFF6FF';
-    default:
-      return '#F9FAFB';
-  }
-};
-
-export const getPriorityTextColor = (priority: string) => {
-  switch (priority) {
-    case 'high':
-      return '#D97706';
-    case 'medium':
-      return '#EA580C';
-    case 'low':
-      return '#2563EB';
-    default:
-      return '#374151';
-  }
-};
-
 export const getStatusColor = (status?: string) => {
   switch (status) {
     case 'qualified':
@@ -91,4 +39,61 @@ export const getTypeColor = (type?: string) => {
     default:
       return { bg: '#F9FAFB', text: '#374151', border: '#E5E7EB' };
   }
+};
+
+// Category color mapping
+export const getCategoryColors = (category: string) => {
+  const categoryColors = {
+    [ContactCategory.AGENT]: {
+      bg: '#BBF7D0',
+      text: '#166534',
+    },
+    [ContactCategory.BUYER]: {
+      bg: '#DDD6FE',
+      text: '#5B21B6',
+    },
+    [ContactCategory.SELLER]: {
+      bg: '#FECACA',
+      text: '#991B1B',
+    },
+    [ContactCategory.RENTER]: {
+      bg: '#FEF08A',
+      text: '#A16207',
+    },
+    [ContactCategory.LANDLORD]: {
+      bg: '#99F6E4',
+      text: '#0F766E',
+    },
+    [ContactCategory.FSBO]: {
+      bg: '#BFDBFE',
+      text: '#1E40AF',
+    },
+    [ContactCategory.FRBO]: {
+      bg: '#FED7AA',
+      text: '#C2410C',
+    },
+    [ContactCategory.EXPIRED]: {
+      bg: '#FCA5A5',
+      text: '#7F1D1D',
+    },
+    // 🔄 updated
+    [ContactCategory.INVESTOR]: {
+      bg: '#D9F99D',
+      text: '#365314',
+    },
+  };
+
+  return (
+    categoryColors[category as ContactCategory] || {
+      bg: '#F3F4F6',
+      text: '#374151',
+    }
+  );
+};
+
+// Generate initials
+export const getUserInitials = (firstName: string, lastName: string) => {
+  const firstInitial = firstName ? firstName.charAt(0).toUpperCase() : '';
+  const lastInitial = lastName ? lastName.charAt(0).toUpperCase() : '';
+  return `${firstInitial}${lastInitial}`;
 };

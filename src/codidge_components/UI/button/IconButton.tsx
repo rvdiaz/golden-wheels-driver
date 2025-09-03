@@ -1,5 +1,6 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, forwardRef } from 'react';
 import { TouchableOpacity, StyleSheet, ActivityIndicator, ViewStyle } from 'react-native';
+import { theme } from '~/theme/theme';
 
 interface IconButtonProps {
   loading?: boolean;
@@ -29,31 +30,30 @@ const variantStyles = {
   },
 };
 
-const IconButton: React.FC<IconButtonProps> = ({
-  loading = false,
-  icon,
-  variant = 'secondary',
-  disabled = false,
-  onPress,
-  style,
-}) => {
-  const disabledAux = loading || disabled;
+const IconButton = forwardRef<TouchableOpacity, IconButtonProps>(
+  ({ loading = false, icon, variant = 'secondary', disabled = false, onPress, style }, ref) => {
+    const disabledAux = loading || disabled;
 
-  return (
-    <TouchableOpacity
-      activeOpacity={0.7}
-      onPress={onPress}
-      disabled={disabledAux}
-      style={[styles.button, { backgroundColor: variantStyles[variant].backgroundColor }, style]}>
-      {loading ? <ActivityIndicator color={variantStyles[variant].color} /> : icon}
-    </TouchableOpacity>
-  );
-};
+    return (
+      <TouchableOpacity
+        ref={ref}
+        activeOpacity={0.7}
+        onPress={onPress}
+        disabled={disabledAux}
+        style={[styles.button, { backgroundColor: variantStyles[variant].backgroundColor }, style]}>
+        {loading ? <ActivityIndicator color={variantStyles[variant].color} /> : icon}
+      </TouchableOpacity>
+    );
+  }
+);
+
+// Add display name for debugging purposes
+IconButton.displayName = 'IconButton';
 
 const styles = StyleSheet.create({
   button: {
     padding: 6,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
   },

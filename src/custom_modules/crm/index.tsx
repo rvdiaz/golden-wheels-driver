@@ -3,7 +3,7 @@ import { View, StyleSheet, SafeAreaView, ScrollView, Modal, RefreshControl } fro
 import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 import ContactForm from './widgets/addContact';
 import { ContactList } from './widgets/contactList';
-import { ActiveCrmTabs, ContactType, IContact } from './interfaces';
+import { ActiveCrmTabs, ContactType, IContact, IFollowUp } from './interfaces';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { getUserContacts } from './graphql/queries';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
@@ -15,6 +15,7 @@ import { crmTabSelection } from './hooks/tabSelectionVar';
 import { CompactTabHeader } from '~/codidge_components/UI/tabs';
 import { FollowUpList } from './widgets/followUps/followUpList';
 import { AddFollowUpModal } from './widgets/followUps/followUpForm';
+import { useAddFollowUp } from './hooks/followUpCreation';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -29,6 +30,11 @@ export const CRMScreen: React.FC = () => {
   const disposeModalHandler = () => {
     setModalVisible(false);
   };
+
+  const { addFollowUp, addingFollowUp } = useAddFollowUp({
+    tenantId,
+    onCompleted: () => setModalVisible(false),
+  });
 
   const { data, loading, refetch } = useQuery<{ getUserContacts: IContact[] }>(getUserContacts, {
     variables: {
@@ -109,7 +115,6 @@ export const CRMScreen: React.FC = () => {
           icon="Plus"
           onPress={() => {
             setModalVisible(true);
-            //display correct modal form
           }}
         />
       )}
@@ -125,9 +130,30 @@ export const CRMScreen: React.FC = () => {
         </Modal>
       ) : (
         <AddFollowUpModal
+          loading={addingFollowUp}
           visible={modalVisible}
           onClose={() => setModalVisible(false)}
-          onSave={() => {}}
+          onSave={async (newFollowUp: Partial<IFollowUp>) => {
+            try {
+              await addFollowUp({
+                variables: {
+                  tenant: {
+                    tenantId,
+                  },
+                  input: {
+                    userId: customer?.id,
+                    date: newFollowUp.date,
+                    notes: newFollowUp.notes,
+                    title: newFollowUp.title,
+                    contact: newFollowUp.contact,
+                    time: newFollowUp.time,
+                  },
+                },
+              });
+            } catch (error) {
+              console.log('::error');
+            }
+          }}
           contacts={contacts}
         />
       )}

@@ -78,7 +78,9 @@ export interface IFollowUp {
   userId: string;
   tenantId: string;
   date: string;
+  time: Date | string;
   notes: string;
+  title: string;
   contact: FollowUpIContact;
   isDone: IsDoneValues;
 }

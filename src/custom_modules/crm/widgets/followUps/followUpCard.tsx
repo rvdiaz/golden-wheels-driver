@@ -13,15 +13,12 @@ import {
 
 interface FollowUpCardProps {
   followUp: IFollowUp;
-  onPress?: (followUp: IFollowUp) => void;
   onComplete?: (followUpId: IFollowUp) => void;
-  onCall?: (phone: string) => void;
   containerStyle?: ViewStyle;
 }
 
 export const FollowUpCard: React.FC<FollowUpCardProps> = ({
   followUp,
-  onPress,
   onComplete,
   containerStyle,
 }) => {
@@ -43,14 +40,13 @@ export const FollowUpCard: React.FC<FollowUpCardProps> = ({
         overdue && styles.overdueCard,
         containerStyle,
       ]}
-      onPress={() => onPress?.(followUp)}
       activeOpacity={0.7}>
       <View style={styles.cardHeader}>
         <View style={styles.cardLeft}>
           <Text style={[styles.contactName, isCompleted && styles.completedText]}>
             {followUp.contact.firstName} {followUp.contact.lastName}
           </Text>
-          <Text style={[styles.title, isCompleted && styles.completedText]}>{followUp.notes}</Text>
+          <Text style={[styles.title, isCompleted && styles.completedText]}>{followUp.title}</Text>
         </View>
 
         {/* Action buttons */}
@@ -110,7 +106,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 16,
-    marginBottom: 12,
     elevation: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },

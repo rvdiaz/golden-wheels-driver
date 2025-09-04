@@ -34,8 +34,10 @@ export const getUserFollowUpsQuery = gql`
           phone
         }
         date
+        time
         followUpId
         isDone
+        title
         notes
         userId
       }

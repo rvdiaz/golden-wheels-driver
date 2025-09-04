@@ -12,13 +12,30 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { Header } from '../../../codidge_components/UI/header';
 import { Card } from '../../../codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
-import { IContact } from '../interfaces';
+import { IContact, IFollowUp } from '../interfaces';
 import ContactForm from './addContact';
+import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
+import { useAddFollowUp } from '../hooks/followUpCreation';
+
+import Constants from 'expo-constants';
+import { AddFollowUpModal } from './followUps/followUpForm';
+import { useReactiveVar } from '@apollo/client';
+import { userData } from '~/store/user';
+const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const ContactDetailsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { contact: contactRuote } = route.params as { contact: IContact };
+
+  const customer = useReactiveVar(userData);
+
+  const [followUpCreationModal, setFollowUpCreationModal] = useState(false);
+
+  const { addFollowUp, addingFollowUp } = useAddFollowUp({
+    tenantId,
+    onCompleted: () => setFollowUpCreationModal(false),
+  });
 
   const [contact, setContact] = useState(contactRuote);
 
@@ -51,6 +68,12 @@ export const ContactDetailsScreen = () => {
               </View>
               <Text style={styles.profileStatus}>{contact?.category?.toUpperCase()}</Text>
             </View>
+            <OutlineButton
+              onPress={() => {
+                setFollowUpCreationModal(true);
+              }}
+              title="Follow Up"
+            />
           </View>
 
           <View style={styles.contactInfo}>
@@ -122,6 +145,35 @@ export const ContactDetailsScreen = () => {
           />
         </View>
       </Modal>
+      <AddFollowUpModal
+        onClose={() => {
+          setFollowUpCreationModal(false);
+        }}
+        defaultContact={contact}
+        loading={addingFollowUp}
+        visible={followUpCreationModal}
+        onSave={async (newFollowUp: Partial<IFollowUp>) => {
+          try {
+            await addFollowUp({
+              variables: {
+                tenant: {
+                  tenantId,
+                },
+                input: {
+                  userId: customer?.id,
+                  date: newFollowUp.date,
+                  notes: newFollowUp.notes,
+                  title: newFollowUp.title,
+                  contact: newFollowUp.contact,
+                  time: newFollowUp.time,
+                },
+              },
+            });
+          } catch (error) {
+            console.log('::error');
+          }
+        }}
+      />
     </SafeAreaView>
   );
 };

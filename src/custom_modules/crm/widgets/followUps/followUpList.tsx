@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, FlatList, RefreshControl, ListRenderItem } from 'react-native';
 import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
@@ -7,7 +7,6 @@ import { userData } from '~/store/user';
 import { IContact, IFollowUp, IFollowUpResponse, IsDoneValues } from '../../interfaces';
 import { getUserFollowUpsQuery } from '../../graphql/queries';
 import { FollowUpCard } from './followUpCard';
-import { AddFollowUpModal } from './followUpForm';
 import { theme } from '~/theme/theme';
 import { markDoneUserFollowUpMutation } from '../../graphql/mutations';
 import moment from 'moment';
@@ -21,12 +20,11 @@ interface FollowUpListProps {
 }
 
 const today = moment().format('YYYY-MM-DD');
+const fifteenDaysLater = moment().add(15, 'days').format('YYYY-MM-DD');
 
 export const FollowUpList: React.FC<FollowUpListProps> = ({
-  contacts = [],
   emptyStateText = 'No follow-ups yet',
 }) => {
-  const [showAddModal, setShowAddModal] = useState<boolean>(false);
   const user = useReactiveVar(userData);
 
   const { data, loading, refetch } = useQuery<{ getUserFollowUps: IFollowUpResponse }>(
@@ -39,6 +37,7 @@ export const FollowUpList: React.FC<FollowUpListProps> = ({
         input: {
           userId: user?.id,
           dateFrom: today,
+          dateTo: fifteenDaysLater,
         },
       },
     }
@@ -94,16 +93,6 @@ export const FollowUpList: React.FC<FollowUpListProps> = ({
     }
   };
 
-  const handleCall = (phone: string) => {
-    console.log('Calling:', phone);
-  };
-
-  const handleAddFollowUp = (newFollowUp: Partial<IFollowUp>) => {
-    refetch();
-  };
-
-  const handleCardPress = (followUp: IFollowUp) => {};
-
   if (loading && !data) {
     return <PageLoading />;
   }
@@ -111,13 +100,7 @@ export const FollowUpList: React.FC<FollowUpListProps> = ({
   const followUps = data?.getUserFollowUps?.followUps ?? [];
 
   const renderFollowUpItem: ListRenderItem<IFollowUp> = ({ item }) => (
-    <FollowUpCard
-      key={item.followUpId}
-      followUp={item}
-      onPress={handleCardPress}
-      onComplete={handleComplete}
-      onCall={handleCall}
-    />
+    <FollowUpCard key={item.followUpId} followUp={item} onComplete={handleComplete} />
   );
 
   const renderEmptyComponent = () => (
@@ -145,14 +128,6 @@ export const FollowUpList: React.FC<FollowUpListProps> = ({
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         // Add some bottom padding for better UX
         contentInsetAdjustmentBehavior="automatic"
-      />
-
-      {/* Add Follow-up Modal */}
-      <AddFollowUpModal
-        visible={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onSave={handleAddFollowUp}
-        contacts={contacts}
       />
     </View>
   );

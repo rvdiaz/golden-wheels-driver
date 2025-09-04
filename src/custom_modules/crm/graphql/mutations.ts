@@ -72,8 +72,31 @@ export const markDoneUserFollowUpMutation = gql`
         phone
       }
       date
+      time
       followUpId
       isDone
+      title
+      notes
+      userId
+    }
+  }
+`;
+
+export const addFollowUpMutation = gql`
+  mutation addFollowUpMutation($tenant: TenantData!, $input: CreateFollowUpInput!) {
+    createUserFollowUp(tenant: $tenant, input: $input) {
+      contact {
+        contactId
+        email
+        firstName
+        lastName
+        phone
+      }
+      date
+      time
+      followUpId
+      isDone
+      title
       notes
       userId
     }

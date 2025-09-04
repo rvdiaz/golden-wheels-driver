@@ -55,3 +55,27 @@ export const deleteContactMutation = gql`
     deleteUserContact(tenant: $tenant, userId: $userId, contactId: $contactId)
   }
 `;
+
+export const markDoneUserFollowUpMutation = gql`
+  mutation markDoneUserFollowUp(
+    $tenant: TenantData!
+    $userId: ID!
+    $followUpId: ID!
+    $date: AWSDate!
+  ) {
+    markDoneUserFollowUp(tenant: $tenant, userId: $userId, followUpId: $followUpId, date: $date) {
+      contact {
+        contactId
+        email
+        firstName
+        lastName
+        phone
+      }
+      date
+      followUpId
+      isDone
+      notes
+      userId
+    }
+  }
+`;

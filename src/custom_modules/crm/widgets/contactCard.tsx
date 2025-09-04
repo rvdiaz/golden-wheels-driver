@@ -106,15 +106,15 @@ export const ContactCard = ({ contact }: { contact: IContact }) => {
         <View style={styles.contactActions}>
           <IconButton
             onPress={() => handleCallContact(contact.phone ?? '')}
-            icon={<Icons.Phone size={18} />}
+            icon={<Icons.Phone size={16} />}
           />
           <IconButton
             onPress={() => handleSmsContact(contact.phone ?? '')}
-            icon={<Icons.MessageCircle size={18} />}
+            icon={<Icons.MessageCircle size={16} />}
           />
           <IconButton
             onPress={() => handleEmailContact(contact.email ?? '')}
-            icon={<Icons.Mail size={18} />}
+            icon={<Icons.Mail size={16} />}
           />
         </View>
       </View>

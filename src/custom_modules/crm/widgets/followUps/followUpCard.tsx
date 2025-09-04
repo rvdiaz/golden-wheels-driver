@@ -14,7 +14,7 @@ import {
 interface FollowUpCardProps {
   followUp: IFollowUp;
   onPress?: (followUp: IFollowUp) => void;
-  onComplete?: (followUpId: string) => void;
+  onComplete?: (followUpId: IFollowUp) => void;
   onCall?: (phone: string) => void;
   containerStyle?: ViewStyle;
 }
@@ -23,7 +23,6 @@ export const FollowUpCard: React.FC<FollowUpCardProps> = ({
   followUp,
   onPress,
   onComplete,
-  onCall,
   containerStyle,
 }) => {
   const isCompleted = followUp.isDone === IsDoneValues.done;
@@ -58,15 +57,15 @@ export const FollowUpCard: React.FC<FollowUpCardProps> = ({
         <View style={styles.contactActions}>
           <IconButton
             onPress={() => handleCallContact(followUp.contact.phone ?? '')}
-            icon={<Icons.Phone size={18} />}
+            icon={<Icons.Phone size={16} />}
           />
           <IconButton
             onPress={() => handleSmsContact(followUp.contact.phone ?? '')}
-            icon={<Icons.MessageCircle size={18} />}
+            icon={<Icons.MessageCircle size={16} />}
           />
           <IconButton
             onPress={() => handleEmailContact(followUp.contact.email ?? '')}
-            icon={<Icons.Mail size={18} />}
+            icon={<Icons.Mail size={16} />}
           />
         </View>
       </View>
@@ -85,9 +84,7 @@ export const FollowUpCard: React.FC<FollowUpCardProps> = ({
         </View>
 
         {!isCompleted && (
-          <TouchableOpacity
-            style={styles.completeButton}
-            onPress={() => onComplete?.(followUp.followUpId)}>
+          <TouchableOpacity style={styles.completeButton} onPress={() => onComplete?.(followUp)}>
             <Text style={styles.completeButtonText}>Mark Done</Text>
           </TouchableOpacity>
         )}

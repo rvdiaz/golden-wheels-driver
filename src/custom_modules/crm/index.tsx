@@ -82,19 +82,19 @@ export const CRMScreen: React.FC = () => {
         onTabChange={(key) => crmTabSelection(key as ActiveCrmTabs)}
       />
 
-      <ScrollView
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-        style={styles.content}
-        showsVerticalScrollIndicator={false}>
-        {crmTab !== ActiveCrmTabs.followUp ? (
+      {crmTab !== ActiveCrmTabs.followUp ? (
+        <ScrollView
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          style={styles.content}
+          showsVerticalScrollIndicator={false}>
           <ContactList
             title={crmTab === ActiveCrmTabs.contact ? 'Contacts' : 'Follow Ups'}
             contacts={crmTab === ActiveCrmTabs.contact ? pureContacts : leads}
           />
-        ) : (
-          <FollowUpList />
-        )}
-      </ScrollView>
+        </ScrollView>
+      ) : (
+        <FollowUpList />
+      )}
       {crmTab !== ActiveCrmTabs.followUp ? (
         <FloatingMenu
           title="Add New"
@@ -146,7 +146,6 @@ const styles = StyleSheet.create({
     borderRadius: theme.borderRadius.lg,
     padding: 18,
     marginHorizontal: 16,
-    marginVertical: 4,
   },
   contactListContainer: {
     flex: 1,

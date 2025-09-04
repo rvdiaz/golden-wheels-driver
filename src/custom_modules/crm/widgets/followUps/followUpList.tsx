@@ -1,37 +1,30 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, RefreshControl } from 'react-native';
-import { Plus } from 'lucide-react-native';
-import { useQuery, useReactiveVar } from '@apollo/client';
+import { View, Text, StyleSheet, FlatList, RefreshControl, ListRenderItem } from 'react-native';
+import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import Constants from 'expo-constants';
 import { userData } from '~/store/user';
-import { IContact, IFollowUp, IFollowUpResponse } from '../../interfaces';
+import { IContact, IFollowUp, IFollowUpResponse, IsDoneValues } from '../../interfaces';
 import { getUserFollowUpsQuery } from '../../graphql/queries';
 import { FollowUpCard } from './followUpCard';
 import { AddFollowUpModal } from './followUpForm';
+import { theme } from '~/theme/theme';
+import { markDoneUserFollowUpMutation } from '../../graphql/mutations';
+import moment from 'moment';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 interface FollowUpListProps {
-  onCardPress?: (followUp: IFollowUp) => void;
-  onComplete?: (followUpId: string) => void;
-  onCall?: (phone: string) => void;
   contacts?: IContact[];
-  showAddButton?: boolean;
   showHeader?: boolean;
   emptyStateText?: string;
-  filterCompleted?: boolean;
 }
 
+const today = moment().format('YYYY-MM-DD');
+
 export const FollowUpList: React.FC<FollowUpListProps> = ({
-  onCardPress,
-  onComplete,
-  onCall,
   contacts = [],
-  showAddButton = true,
-  showHeader = true,
   emptyStateText = 'No follow-ups yet',
-  filterCompleted = true,
 }) => {
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
   const user = useReactiveVar(userData);
@@ -44,43 +37,72 @@ export const FollowUpList: React.FC<FollowUpListProps> = ({
           tenantId,
         },
         input: {
-          isDone: filterCompleted ? 0 : undefined, // Only show undone if filtering
           userId: user?.id,
+          dateFrom: today,
         },
       },
-      fetchPolicy: 'cache-and-network',
     }
   );
 
-  const handleComplete = (followUpId: string) => {
-    // Handle completion logic here
-    if (onComplete) {
-      onComplete(followUpId);
+  const [markCompleteFn] = useMutation<{ markDoneUserFollowUp: IFollowUp }>(
+    markDoneUserFollowUpMutation,
+    {
+      update: (cache, { data: mutationData }) => {
+        if (!mutationData?.markDoneUserFollowUp) return;
+
+        const updatedFollowUp = mutationData.markDoneUserFollowUp;
+
+        cache.modify({
+          fields: {
+            getUserFollowUps(existingFollowUpRefs, { readField }) {
+              const currentFollowUps = existingFollowUpRefs.followUps;
+              return {
+                ...existingFollowUpRefs,
+                followUps: currentFollowUps.map((followUpRef: any) => {
+                  const id = readField('followUpId', followUpRef);
+                  if (id === updatedFollowUp.followUpId) {
+                    return { ...followUpRef, ...updatedFollowUp };
+                  }
+                  return followUpRef;
+                }),
+              };
+            },
+          },
+        });
+      },
     }
-    // Optionally refetch the data
-    refetch();
+  );
+
+  const handleComplete = async (followUp: IFollowUp) => {
+    try {
+      await markCompleteFn({
+        variables: {
+          tenant: { tenantId },
+          userId: user?.id,
+          followUpId: followUp.followUpId,
+          date: followUp.date, // YYYY-MM-DD or Date string
+        },
+        optimisticResponse: {
+          markDoneUserFollowUp: {
+            ...followUp,
+            isDone: IsDoneValues.done,
+          },
+        },
+      });
+    } catch (error) {
+      console.log('::error');
+    }
   };
 
   const handleCall = (phone: string) => {
     console.log('Calling:', phone);
-    if (onCall) {
-      onCall(phone);
-    }
-    // Implement call functionality
   };
 
   const handleAddFollowUp = (newFollowUp: Partial<IFollowUp>) => {
-    // Handle adding follow-up logic here
-    console.log('Adding follow-up:', newFollowUp);
-    // After adding, refetch the data
     refetch();
   };
 
-  const handleCardPress = (followUp: IFollowUp) => {
-    if (onCardPress) {
-      onCardPress(followUp);
-    }
-  };
+  const handleCardPress = (followUp: IFollowUp) => {};
 
   if (loading && !data) {
     return <PageLoading />;
@@ -88,40 +110,42 @@ export const FollowUpList: React.FC<FollowUpListProps> = ({
 
   const followUps = data?.getUserFollowUps?.followUps ?? [];
 
-  const renderEmptyState = () => (
+  const renderFollowUpItem: ListRenderItem<IFollowUp> = ({ item }) => (
+    <FollowUpCard
+      key={item.followUpId}
+      followUp={item}
+      onPress={handleCardPress}
+      onComplete={handleComplete}
+      onCall={handleCall}
+    />
+  );
+
+  const renderEmptyComponent = () => (
     <View style={styles.emptyState}>
       <Text style={styles.emptyStateText}>{emptyStateText}</Text>
-      {showAddButton && (
-        <TouchableOpacity style={styles.addButtonEmpty} onPress={() => setShowAddModal(true)}>
-          <Text style={styles.addButtonEmptyText}>Add your first follow-up</Text>
-        </TouchableOpacity>
-      )}
     </View>
   );
 
-  const renderFollowUpList = () => (
-    <ScrollView
-      style={styles.listContainer}
-      refreshControl={<RefreshControl refreshing={loading} onRefresh={refetch} />}
-      showsVerticalScrollIndicator={false}>
-      {followUps.map((followUp) => (
-        <FollowUpCard
-          key={followUp.followUpId}
-          followUp={followUp}
-          onPress={handleCardPress}
-          onComplete={handleComplete}
-          onCall={handleCall}
-        />
-      ))}
-      {/* Add some bottom padding for better UX */}
-      <View style={{ height: 20 }} />
-    </ScrollView>
-  );
+  const keyExtractor = (item: IFollowUp) => item.followUpId.toString();
 
   return (
     <View style={styles.container}>
-      {/* Content */}
-      {followUps.length === 0 ? renderEmptyState() : renderFollowUpList()}
+      {/* FlatList with RefreshControl */}
+      <FlatList
+        data={followUps}
+        renderItem={renderFollowUpItem}
+        keyExtractor={keyExtractor}
+        style={styles.listContainer}
+        contentContainerStyle={
+          followUps.length === 0 ? styles.emptyListContent : styles.listContent
+        }
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={loading} onRefresh={refetch} />}
+        ListEmptyComponent={renderEmptyComponent}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        // Add some bottom padding for better UX
+        contentInsetAdjustmentBehavior="automatic"
+      />
 
       {/* Add Follow-up Modal */}
       <AddFollowUpModal
@@ -138,6 +162,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8F9FA',
+    padding: 16,
+    marginHorizontal: 16,
+    borderRadius: theme.borderRadius.lg,
   },
   header: {
     flexDirection: 'row',
@@ -170,6 +197,12 @@ const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
   },
+  listContent: {
+    paddingBottom: 20,
+  },
+  emptyListContent: {
+    flex: 1,
+  },
   emptyState: {
     flex: 1,
     justifyContent: 'center',
@@ -192,5 +225,8 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 16,
     fontWeight: '600',
+  },
+  separator: {
+    height: 8,
   },
 });

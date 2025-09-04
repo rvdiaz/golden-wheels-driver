@@ -61,8 +61,8 @@ export interface CrmMetrics {
 
 // interfaces/followUp.interface.ts
 export enum IsDoneValues {
-  done = 0,
-  notDone = 1,
+  done = 1,
+  notDone = 0,
 }
 
 export interface FollowUpIContact {

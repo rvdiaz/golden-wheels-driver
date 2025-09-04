@@ -3,16 +3,18 @@ import { View, StyleSheet, SafeAreaView, ScrollView, Modal, RefreshControl } fro
 import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 import ContactForm from './widgets/addContact';
 import { ContactList } from './widgets/contactList';
-import { ActiveCrmTabs, IContact } from './interfaces';
+import { ActiveCrmTabs, ContactType, IContact } from './interfaces';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { getUserContacts } from './graphql/queries';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import Constants from 'expo-constants';
 import { userData } from '~/store/user';
 import { theme } from '~/theme/theme';
-import { TabHeader } from '~/codidge_components/UI/tabs';
-import { CircleUser, Clock } from 'lucide-react-native';
+import { CircleUser, Clock, Users } from 'lucide-react-native';
 import { crmTabSelection } from './hooks/tabSelectionVar';
+import { CompactTabHeader } from '~/codidge_components/UI/tabs';
+import { FollowUpList } from './widgets/followUps/followUpList';
+import { AddFollowUpModal } from './widgets/followUps/followUpForm';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -51,13 +53,19 @@ export const CRMScreen: React.FC = () => {
     return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
   });
 
-  const followUp = contacts.filter((ctc) => !ctc.followedUp);
-  const pureContacts = contacts.filter((ctc) => ctc.followedUp);
+  const leads = contacts.filter((ctc) => ctc.type === ContactType.LEAD);
+  const pureContacts = contacts.filter((ctc) => ctc.type === ContactType.CLIENT);
 
   return (
     <SafeAreaView style={styles.container}>
-      <TabHeader
+      <CompactTabHeader
         tabs={[
+          {
+            key: ActiveCrmTabs.lead,
+            label: 'Leads',
+            Icon: Users,
+            indexNumber: leads.length,
+          },
           {
             key: ActiveCrmTabs.contact,
             label: 'Contacts',
@@ -68,7 +76,7 @@ export const CRMScreen: React.FC = () => {
             key: ActiveCrmTabs.followUp,
             label: 'Follow-ups',
             Icon: Clock,
-            indexNumber: followUp.length,
+            indexNumber: 0,
           },
         ]}
         onTabChange={(key) => crmTabSelection(key as ActiveCrmTabs)}
@@ -78,27 +86,51 @@ export const CRMScreen: React.FC = () => {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         style={styles.content}
         showsVerticalScrollIndicator={false}>
-        <ContactList
-          title={crmTab === ActiveCrmTabs.contact ? 'Contacts' : 'Follow Ups'}
-          contacts={crmTab === ActiveCrmTabs.contact ? pureContacts : followUp}
-        />
+        {crmTab !== ActiveCrmTabs.followUp ? (
+          <ContactList
+            title={crmTab === ActiveCrmTabs.contact ? 'Contacts' : 'Follow Ups'}
+            contacts={crmTab === ActiveCrmTabs.contact ? pureContacts : leads}
+          />
+        ) : (
+          <FollowUpList />
+        )}
       </ScrollView>
-      <FloatingMenu
-        title="Add Contact"
-        icon="Plus"
-        onPress={() => {
-          setModalVisible(true);
-        }}
-      />
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={disposeModalHandler}>
-        <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <ContactForm disposeModalHandler={disposeModalHandler} />
-        </View>
-      </Modal>
+      {crmTab !== ActiveCrmTabs.followUp ? (
+        <FloatingMenu
+          title="Add New"
+          icon="Plus"
+          onPress={() => {
+            setModalVisible(true);
+          }}
+        />
+      ) : (
+        <FloatingMenu
+          title="Follow Up"
+          icon="Plus"
+          onPress={() => {
+            setModalVisible(true);
+            //display correct modal form
+          }}
+        />
+      )}
+      {crmTab !== ActiveCrmTabs.followUp ? (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={disposeModalHandler}>
+          <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+            <ContactForm disposeModalHandler={disposeModalHandler} />
+          </View>
+        </Modal>
+      ) : (
+        <AddFollowUpModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          onSave={() => {}}
+          contacts={contacts}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -114,7 +146,7 @@ const styles = StyleSheet.create({
     borderRadius: theme.borderRadius.lg,
     padding: 18,
     marginHorizontal: 16,
-    marginVertical: 16,
+    marginVertical: 4,
   },
   contactListContainer: {
     flex: 1,

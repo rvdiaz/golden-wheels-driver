@@ -3,8 +3,8 @@ import * as Icons from 'lucide-react-native';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import Constants from 'expo-constants';
-import { IContact } from '../interfaces';
-import { getUserContacts } from '../graphql/queries';
+import { IContact } from '../../interfaces';
+import { getUserContacts } from '../../graphql/queries';
 import { TaskMetricsCard } from '~/custom_modules/dashboard/widgets/metricCards';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
@@ -21,12 +21,8 @@ export const FollowUpMetric = () => {
     },
   });
 
-  if (loading) {
-    return;
-  }
-
   const users = data?.getUserContacts ?? [];
-  const followUp = users.filter((user) => user.followUp);
+  const followUp = [];
 
   const metric = {
     label: 'Contacts',
@@ -36,9 +32,8 @@ export const FollowUpMetric = () => {
     iconBackgroundColor: '#FDBA74',
     cardBackgroundColor: '#FFF7ED',
     subLabelColor: '#7C2D12',
+    isLoading: loading,
   };
 
-  if (followUp.length > 0) {
-    return <TaskMetricsCard {...metric} />;
-  }
+  return <TaskMetricsCard {...metric} />;
 };

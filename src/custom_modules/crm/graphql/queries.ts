@@ -17,8 +17,28 @@ export const getUserContacts = gql`
       type
       convertedAt
       updatedAt
-      followedUp
-      followUp
+    }
+  }
+`;
+
+export const getUserFollowUpsQuery = gql`
+  query getUserFollowUps($tenant: TenantData!, $input: FollowUpFilter!) {
+    getUserFollowUps(tenant: $tenant, input: $input) {
+      total
+      followUps {
+        contact {
+          contactId
+          email
+          firstName
+          lastName
+          phone
+        }
+        date
+        followUpId
+        isDone
+        notes
+        userId
+      }
     }
   }
 `;

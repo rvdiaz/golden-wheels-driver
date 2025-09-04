@@ -16,13 +16,14 @@ export enum ContactType {
 }
 
 export enum ActiveCrmTabs {
+  lead = 'Lead',
   contact = 'contact',
   followUp = 'Follow-ups',
 }
 
 export interface IContact {
   id: string;
-  tenWWETEWTRWETantId: string;
+  tenantId: string;
   userId: string;
   firstName: string;
   lastName: string;
@@ -32,10 +33,6 @@ export interface IContact {
   address?: string;
   priority?: 'low' | 'medium' | 'high';
   notes: string;
-
-  followUp: Date | string;
-  followedUp: boolean;
-
   type?: ContactType; // NEW: Lifecycle type
   leadStatus?: 'new' | 'contacted' | 'qualified' | 'proposal' | 'won' | 'lost'; // NEW: Status for leads
   leadStatusHistory?: string[]; // Optional: Track past statuses
@@ -52,14 +49,6 @@ export interface IActivity {
   time: string;
 }
 
-export interface IFollowUp {
-  id: string;
-  contact: string;
-  task: string;
-  dueDate: string;
-  priority: 'high' | 'medium' | 'low';
-}
-
 export interface CrmMetrics {
   label: string;
   value: number;
@@ -68,4 +57,34 @@ export interface CrmMetrics {
   bgColor: string;
   onPress: () => void;
   active: boolean;
+}
+
+// interfaces/followUp.interface.ts
+export enum IsDoneValues {
+  done = 0,
+  notDone = 1,
+}
+
+export interface FollowUpIContact {
+  contactId: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  email?: string;
+}
+
+export interface IFollowUp {
+  followUpId: string;
+  userId: string;
+  tenantId: string;
+  date: string;
+  notes: string;
+  contact: FollowUpIContact;
+  isDone: IsDoneValues;
+}
+
+export interface IFollowUpResponse {
+  followUps: IFollowUp[];
+  total: number;
+  hasMore: boolean;
 }

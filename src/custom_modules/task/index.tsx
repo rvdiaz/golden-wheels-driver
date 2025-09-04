@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, FlatList, Modal, SafeAreaView, View, RefreshControl } from 'react-native';
 import { TaskItem } from './widgets/taskItem';
 import { ActiveTab, ITask } from './interfaces';
@@ -78,7 +78,7 @@ export const TasksScreen: React.FC = () => {
         />
       )}
       <FloatingMenu
-        title="Add New Task"
+        title="Add Task"
         icon="Plus"
         onPress={() => {
           setModalVisible(true);

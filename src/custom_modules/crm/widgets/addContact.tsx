@@ -48,7 +48,6 @@ export default function ContactForm({
       priority: contact?.priority ?? 'medium',
       type: contact?.type ?? ContactType.LEAD,
       leadStatus: contact?.leadStatus ?? 'new',
-      followUp: contact?.followUp ?? followUpISO,
     },
     mode: 'onChange',
   });
@@ -148,10 +147,7 @@ export default function ContactForm({
           variables: {
             tenant: { tenantId },
             userId: customer?.id,
-            contactData: {
-              ...data,
-              followedUp: false,
-            },
+            contactData: data,
           },
         });
 
@@ -377,26 +373,6 @@ export default function ContactForm({
             />
           </View>
         </View>
-        {/* Follow Up */}
-        <View style={styles.fieldContainer}>
-          <View
-            style={{
-              flex: 1,
-            }}>
-            <Controller
-              control={control}
-              name="followUp"
-              render={({ field: { onChange, value } }) => (
-                <DateInputField
-                  label="Follow up date"
-                  value={value as Date}
-                  onChangeText={onChange}
-                />
-              )}
-            />
-          </View>
-        </View>
-
         {/* Address Field */}
         <View style={styles.fieldContainer}>
           <View
@@ -450,7 +426,7 @@ export default function ContactForm({
           onPress={handleSubmit(onSubmit)}
           size={ButtonSize.LARGE}
           disabled={!isValid}
-          title="Save Contact"
+          title="Save"
           rightWidget={<UserPlus size={20} color="#ffffff" />}
         />
       </View>

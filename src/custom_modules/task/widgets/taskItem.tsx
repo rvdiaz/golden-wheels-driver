@@ -73,7 +73,7 @@ export const TaskItem = ({ task }: { task: ITask }) => {
       <View style={styles.taskContent}>
         <View style={styles.taskHeader}>
           <View style={{ flexDirection: 'row' }}>
-            <View> 
+            <View>
               <Text style={styles.taskTitle}>{task.title}</Text>
               <Text style={styles.taskDescription} numberOfLines={3}>
                 {task.description ?? ''}

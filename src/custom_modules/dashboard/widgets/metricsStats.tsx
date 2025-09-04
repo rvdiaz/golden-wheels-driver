@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { HighPriorityTaskMetric } from '~/custom_modules/task/widgets/highPriorityTaskMetric';
-import { FollowUpMetric } from '~/custom_modules/crm/widgets/followUpMetric';
+import { FollowUpMetric } from '~/custom_modules/crm/widgets/followUps/followUpMetric';
 
 // Container component for multiple metrics
 export const TaskMetricsStats = () => {

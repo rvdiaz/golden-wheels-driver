@@ -4,43 +4,28 @@ import * as Icons from 'lucide-react-native';
 import { ModuleKeys } from '~/store/interface';
 import { useNavigation } from '@react-navigation/native';
 import { IContact } from '../interfaces';
-import { getStatusColor, getTypeColor } from '../helpers';
 import { useMutation, useReactiveVar } from '@apollo/client';
 import { deleteContactMutation, updateContactMutation } from '../graphql/mutations';
 import Constants from 'expo-constants';
 import { userData } from '~/store/user';
 import { getUserContacts } from '../graphql/queries';
+import {
+  getCategoryColors,
+  getUserInitials,
+  handleCallContact,
+  handleEmailContact,
+  handleSmsContact,
+} from '../helpers';
+import IconButton from '~/codidge_components/UI/button/IconButton';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const ContactCard = ({ contact }: { contact: IContact }) => {
   const customer = useReactiveVar(userData);
-
-  const statusColors = getStatusColor(contact.leadStatus);
-  const typeColors = getTypeColor(contact.type);
   const navigation = useNavigation();
 
-  const [updateContact] = useMutation<{ updateUserContact: IContact }>(updateContactMutation, {
-    update(cache, { data }) {
-      if (!data?.updateUserContact) return;
-      const updatedContact = data.updateUserContact;
-
-      cache.modify({
-        fields: {
-          getUserContacts(existingContactsRefs = [], { readField }) {
-            return existingContactsRefs.map((contactRef: any) => {
-              const id = readField('id', contactRef);
-              if (id === updatedContact.id) {
-                // Merge updatedContact directly into cache
-                return { ...contactRef, ...updatedContact };
-              }
-              return contactRef;
-            });
-          },
-        },
-      });
-    },
-  });
+  // Get category colors
+  const categoryColors = getCategoryColors(contact.category ?? '');
 
   const [deleteContactFn] = useMutation<{ deleteUserContact: string }>(deleteContactMutation, {
     update: (cache, { data: mutationData }) => {
@@ -48,7 +33,6 @@ export const ContactCard = ({ contact }: { contact: IContact }) => {
 
       const deletedContact: string = mutationData.deleteUserContact;
 
-      // Read existing cache
       const existingData: any = cache.readQuery({
         query: getUserContacts,
         variables: {
@@ -58,12 +42,10 @@ export const ContactCard = ({ contact }: { contact: IContact }) => {
       });
 
       if (existingData) {
-        // Filter out the deleted one
         const updatedContacts = existingData.getUserContacts.filter(
           (income: IContact) => income.id !== deletedContact
         );
 
-        // Write the updated list back
         cache.writeQuery({
           query: getUserContacts,
           variables: {
@@ -78,104 +60,6 @@ export const ContactCard = ({ contact }: { contact: IContact }) => {
     },
   });
 
-  const handleCallContact = () => {
-    if (!contact.phone) {
-      Alert.alert('Error', 'No phone number available for this contact');
-      return;
-    }
-
-    const url = `tel:${contact.phone}`;
-    Linking.canOpenURL(url)
-      .then((supported) => {
-        if (!supported) {
-          updateContact({
-            variables: {
-              tenant: { tenantId },
-              userId: customer?.id,
-              contactId: contact.id,
-              contactData: {
-                followedUp: true,
-              },
-            },
-          });
-          Alert.alert('Error', 'Phone call not supported on this device');
-        } else {
-          if (!contact.followedUp) {
-            updateContact({
-              variables: {
-                tenant: { tenantId },
-                userId: customer?.id,
-                contactId: contact.id,
-                contactData: {
-                  followedUp: true,
-                },
-              },
-            });
-          }
-          return Linking.openURL(url);
-        }
-      })
-      .catch((err) => console.error('Error opening dialer', err));
-  };
-
-  const handleSmsContact = () => {
-    if (!contact.phone) {
-      Alert.alert('Error', 'No phone number available for this contact');
-      return;
-    }
-
-    const url = `sms:${contact.phone}`;
-    Linking.canOpenURL(url)
-      .then((supported) => {
-        if (!supported) {
-          Alert.alert('Error', 'SMS not supported on this device');
-        } else {
-          if (!contact.followedUp) {
-            updateContact({
-              variables: {
-                tenant: { tenantId },
-                userId: customer?.id,
-                contactId: contact.id,
-                contactData: {
-                  followedUp: true,
-                },
-              },
-            });
-          }
-
-          return Linking.openURL(url);
-        }
-      })
-      .catch((err) => console.error('Error opening SMS app', err));
-  };
-
-  const handleEmailContact = () => {};
-
-  const handleDelete = () => {
-    Alert.alert('Delete Contact', 'Are you sure you want to delete this contact?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await deleteContactFn({
-              variables: {
-                tenant: {
-                  tenantId,
-                },
-                userId: customer?.id,
-                contactId: contact.id,
-              },
-            });
-          } catch (err) {
-            Alert.alert('Error', 'Failed to delete income');
-          }
-        },
-      },
-    ]);
-  };
-
   return (
     <TouchableOpacity
       onPress={() => {
@@ -183,61 +67,55 @@ export const ContactCard = ({ contact }: { contact: IContact }) => {
       }}
       style={styles.contactCard}>
       <View style={styles.contactRow}>
+        {/* Avatar with initials */}
+        <View
+          style={[
+            styles.avatarContainer,
+            {
+              backgroundColor: categoryColors.bg,
+            },
+          ]}>
+          <Text style={[styles.initialsText, { color: categoryColors.text }]}>
+            {getUserInitials(contact.firstName, contact.lastName)}
+          </Text>
+        </View>
+
+        {/* Contact info */}
         <View style={styles.contactInfo}>
           <View style={styles.contactNameSection}>
             <Text style={styles.contactName}>
               {contact.firstName} {contact.lastName}
             </Text>
-
-            {/* Follow-up badge */}
-            {!contact.followedUp && (
-              <View style={styles.followUpBadge}>
-                <Text style={styles.followUpText}>Follow Up</Text>
-              </View>
-            )}
           </View>
 
-          <Text style={styles.contactNotes}>{contact.notes}</Text>
-        </View>
-      </View>
-
-      {/* Action buttons */}
-      <View style={styles.actionButtonContainer}>
-        <View style={styles.badgeContainer}>
+          {/* Category badge */}
           <View
             style={[
-              styles.statusBadge,
+              styles.categoryBadge,
               {
-                backgroundColor: statusColors.bg,
-                borderColor: statusColors.border,
+                backgroundColor: categoryColors.bg,
               },
             ]}>
-            <Text style={[styles.badgeText, { color: statusColors.text }]}>{contact.category}</Text>
-          </View>
-          <View
-            style={[
-              styles.statusBadge,
-              {
-                backgroundColor: typeColors.bg,
-                borderColor: typeColors.border,
-              },
-            ]}>
-            <Text style={[styles.badgeText, { color: typeColors.text }]}>{contact.type}</Text>
+            <Text style={[styles.categoryText, { color: categoryColors.text }]}>
+              {contact.category ? contact.category?.toUpperCase() : ''}
+            </Text>
           </View>
         </View>
+
+        {/* Action buttons */}
         <View style={styles.contactActions}>
-          <TouchableOpacity style={styles.actionButton} onPress={handleCallContact}>
-            <Icons.Phone size={16} color="#2563EB" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton} onPress={handleSmsContact}>
-            <Icons.MessageCircle size={16} color="#2563EB" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton} onPress={handleEmailContact}>
-            <Icons.Mail size={16} color="#2563EB" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton} onPress={handleDelete}>
-            <Icons.Trash size={16} color="red" />
-          </TouchableOpacity>
+          <IconButton
+            onPress={() => handleCallContact(contact.phone ?? '')}
+            icon={<Icons.Phone size={18} />}
+          />
+          <IconButton
+            onPress={() => handleSmsContact(contact.phone ?? '')}
+            icon={<Icons.MessageCircle size={18} />}
+          />
+          <IconButton
+            onPress={() => handleEmailContact(contact.email ?? '')}
+            icon={<Icons.Mail size={18} />}
+          />
         </View>
       </View>
     </TouchableOpacity>
@@ -245,112 +123,81 @@ export const ContactCard = ({ contact }: { contact: IContact }) => {
 };
 
 const styles = StyleSheet.create({
-  contactNameSection: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
   contactCard: {
-    marginBottom: 14,
-    padding: 10,
-    backgroundColor: 'white',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
+    marginBottom: 24,
   },
   contactRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    flex: 1,
   },
   avatarContainer: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#F3F4F6',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 16,
+    marginRight: 12,
+  },
+  initialsText: {
+    fontSize: 16,
+    fontWeight: '700',
   },
   contactInfo: {
     flex: 1,
-    justifyContent: 'space-between',
+    marginRight: 12,
+  },
+  contactNameSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
   },
   contactName: {
     fontSize: 16,
     fontWeight: '600',
     color: '#1F2937',
-    marginBottom: 8,
-  },
-  badgeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: 8,
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    borderWidth: 1,
-    justifyContent: 'center',
-  },
-  typeBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    borderWidth: 1,
-  },
-  badgeText: {
-    fontSize: 10,
-    fontWeight: '600',
-  },
-  contactActions: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  actionButton: {
-    padding: 8,
-    backgroundColor: '#F9FAFB',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-  },
-  contactDetails: {
-    marginBottom: 12,
-    gap: 6,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  detailText: {
-    fontSize: 12,
-    color: '#6B7280',
-  },
-  contactNotes: {
-    fontSize: 12,
-    color: '#6B7280',
-    marginBottom: 8,
-    lineHeight: 16,
-  },
-  lastContact: {
-    fontSize: 12,
-    color: '#2563EB',
-    fontWeight: '500',
+    flex: 1,
   },
   followUpBadge: {
-    backgroundColor: '#FBBF24', // yellow
+    backgroundColor: '#FEF3C7',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 12,
     marginLeft: 8,
-    alignSelf: 'flex-start',
   },
   followUpText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#1F2937', // dark text
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#92400E',
   },
-  actionButtonContainer: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 },
+  categoryBadge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  categoryText: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  contactActions: {
+    alignItems: 'center',
+    gap: 8,
+    flexDirection: 'row',
+  },
+  actionButton: {
+    padding: 10,
+    backgroundColor: '#F9FAFB',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 1,
+    elevation: 1,
+  },
 });

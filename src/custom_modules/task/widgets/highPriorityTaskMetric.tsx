@@ -24,10 +24,6 @@ export const HighPriorityTaskMetric = () => {
     },
   });
 
-  if (isLoading) {
-    return;
-  }
-
   const tasks = data?.getTasksByUser ?? [];
   const highPriorityTask = tasks.filter((tsk) => tsk.priority === TaskPriority.high);
 
@@ -38,9 +34,9 @@ export const HighPriorityTaskMetric = () => {
     iconName: <Icons.Goal color="#166534" size={20} />,
     iconBackgroundColor: '#86EFAC',
     cardBackgroundColor: '#F0FDF4',
+    isLoading, // Pass the loading state
   };
 
-  if (highPriorityTask.length > 0) {
-    return <TaskMetricsCard {...metric} />;
-  }
+  // Always render the card - loading state is handled internally
+  return <TaskMetricsCard {...metric} />;
 };

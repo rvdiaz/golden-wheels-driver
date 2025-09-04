@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import { getActiveTasks } from '../helpers';
 import { TaskList } from './taskList';
 import * as Icons from 'lucide-react-native';
@@ -34,10 +33,6 @@ const TasksCompletionWidget = ({ onViewCompleted }: { onViewCompleted?: () => vo
 export const TodayTasks = () => {
   const { tasks: taskList, isLoading } = useTasksByUser();
 
-  if (isLoading) {
-    return <PageLoading />;
-  }
-
   const allTasks = taskList ?? [];
 
   // Filter tasks that haven't ended yet (future tasks)
@@ -47,7 +42,7 @@ export const TodayTasks = () => {
   const allTasksCompleted = allTasks.length > 0 && allTasks.every((task) => task.isCompleted);
 
   // Show completion widget ONLY when all tasks are actually completed
-  if (allTasksCompleted) {
+  if (allTasksCompleted && !isLoading) {
     return (
       <View style={{ marginTop: 16 }}>
         <TasksCompletionWidget
@@ -60,14 +55,15 @@ export const TodayTasks = () => {
     );
   }
 
-  if (activeTasks.length === 0) {
-    return;
+  // Show loading or empty state when no active tasks, but always show TaskList for loading
+  if (activeTasks.length === 0 && !isLoading) {
+    return null;
   }
 
-  // Show regular task list if there are incomplete tasks
+  // Show TaskList with loading state or actual data
   return (
     <View style={{ marginTop: 16 }}>
-      <TaskList displayList={activeTasks} tasks={allTasks} />
+      <TaskList displayList={activeTasks} tasks={allTasks} isLoading={isLoading} />
     </View>
   );
 };
@@ -139,32 +135,3 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-
-// Usage with different completion conditions:
-/*
-// Version that checks only active tasks
-export const TodayTasksActiveOnly = () => {
-  // ... same query logic ...
-  
-  const allActiveTasksCompleted = activeTasks.every(task => task.isCompleted) && activeTasks.length > 0;
-  
-  if (allActiveTasksCompleted) {
-    return <TasksCompletionWidget />;
-  }
-  
-  return <TaskList displayList={activeTasks} tasks={allTasks} />;
-};
-
-// Version that checks all tasks regardless of time
-export const TodayTasksAllTasks = () => {
-  // ... same query logic ...
-  
-  const allTasksCompleted = allTasks.every(task => task.isCompleted) && allTasks.length > 0;
-  
-  if (allTasksCompleted) {
-    return <TasksCompletionWidget />;
-  }
-  
-  return <TaskList displayList={activeTasks} tasks={allTasks} />;
-};
-*/

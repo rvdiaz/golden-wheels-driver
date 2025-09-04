@@ -1,4 +1,5 @@
-import { ContactCategory, ContactType } from '../interfaces';
+import { Alert, Linking } from 'react-native';
+import { ContactCategory, ContactType, IContact } from '../interfaces';
 import * as Icons from 'lucide-react-native';
 
 function capitalize(str: string) {
@@ -96,4 +97,79 @@ export const getUserInitials = (firstName: string, lastName: string) => {
   const firstInitial = firstName ? firstName.charAt(0).toUpperCase() : '';
   const lastInitial = lastName ? lastName.charAt(0).toUpperCase() : '';
   return `${firstInitial}${lastInitial}`;
+};
+
+export const formatFollowUpDate = (followUpdate: string) => {
+  const formatDate = new Date(followUpdate).toLocaleDateString();
+  const date = new Date(followUpdate);
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+
+  if (date.toDateString() === today.toDateString()) {
+    return `Today at ${formatDate}`;
+  }
+  if (date.toDateString() === tomorrow.toDateString()) {
+    return `Tomorrow at ${formatDate}`;
+  }
+
+  const options: Intl.DateTimeFormatOptions = {
+    month: 'short',
+    day: 'numeric',
+  };
+  return `${date.toLocaleDateString('en-US', options)} at ${formatDate}`;
+};
+
+export const handleCallContact = (phone: string) => {
+  if (!phone) {
+    Alert.alert('Error', 'No phone number available for this contact');
+    return;
+  }
+
+  const url = `tel:${phone}`;
+  Linking.canOpenURL(url)
+    .then((supported) => {
+      if (!supported) {
+        Alert.alert('Error', 'Phone call not supported on this device');
+      } else {
+        return Linking.openURL(url);
+      }
+    })
+    .catch((err) => console.error('Error opening dialer', err));
+};
+
+export const handleSmsContact = (phone: string) => {
+  if (!phone) {
+    Alert.alert('Error', 'No phone number available for this contact');
+    return;
+  }
+
+  const url = `sms:${phone}`;
+  Linking.canOpenURL(url)
+    .then((supported) => {
+      if (!supported) {
+        Alert.alert('Error', 'SMS not supported on this device');
+      } else {
+        return Linking.openURL(url);
+      }
+    })
+    .catch((err) => console.error('Error opening SMS app', err));
+};
+
+export const handleEmailContact = (email: string) => {
+  if (!email) {
+    Alert.alert('Error', 'No email address available for this contact');
+    return;
+  }
+
+  const url = `mailto:${email}`;
+  Linking.canOpenURL(url)
+    .then((supported) => {
+      if (!supported) {
+        Alert.alert('Error', 'Email not supported on this device');
+      } else {
+        return Linking.openURL(url);
+      }
+    })
+    .catch((err) => console.error('Error opening email app', err));
 };

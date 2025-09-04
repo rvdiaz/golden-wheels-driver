@@ -17,8 +17,6 @@ export const addContactMutation = gql`
       type
       convertedAt
       updatedAt
-      followedUp
-      followUp
     }
   }
 `;
@@ -48,8 +46,6 @@ export const updateContactMutation = gql`
       notes
       type
       convertedAt
-      followedUp
-      followUp
     }
   }
 `;

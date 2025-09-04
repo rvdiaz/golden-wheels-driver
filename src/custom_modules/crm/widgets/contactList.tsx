@@ -3,7 +3,7 @@ import { Text, View, FlatList, StyleSheet } from 'react-native';
 import { ContactCategory, IContact } from '../interfaces';
 import { useReactiveVar } from '@apollo/client';
 import { crmSearhInput, selectedFiltersVar, selectedSortVar } from '../hooks/tabSelectionVar';
-import { ContactCardIA } from './iaContactCard';
+import { ContactCard } from './contactCard';
 
 export const ContactList = ({ contacts }: { title: string; contacts: IContact[] }) => {
   const searchInputValue = useReactiveVar(crmSearhInput);
@@ -41,7 +41,7 @@ export const ContactList = ({ contacts }: { title: string; contacts: IContact[] 
       ) : (
         <FlatList
           data={filteredContacts}
-          renderItem={(item) => <ContactCardIA contact={item.item} />}
+          renderItem={(item) => <ContactCard contact={item.item} />}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           scrollEnabled={false}

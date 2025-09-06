@@ -4,6 +4,9 @@ import { getActiveTasks } from '../helpers';
 import { TaskList } from './taskList';
 import * as Icons from 'lucide-react-native';
 import { useTasksByUser } from '../hooks/listTask';
+import moment from 'moment';
+
+const today = moment().format('YYYY-MM-DD');
 
 // Completion Widget Component
 const TasksCompletionWidget = ({ onViewCompleted }: { onViewCompleted?: () => void }) => {
@@ -31,7 +34,7 @@ const TasksCompletionWidget = ({ onViewCompleted }: { onViewCompleted?: () => vo
 };
 
 export const TodayTasks = () => {
-  const { tasks: taskList, isLoading } = useTasksByUser();
+  const { tasks: taskList, isLoading } = useTasksByUser(today);
 
   const allTasks = taskList ?? [];
 

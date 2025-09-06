@@ -7,7 +7,7 @@ import { daySelection } from './dailySelectionVar';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
-export const useTasksByUser = () => {
+export const useTasksByUser = (today?: string) => {
   const customer = useReactiveVar(userData);
   const selectedDay = useReactiveVar(daySelection);
 
@@ -19,7 +19,7 @@ export const useTasksByUser = () => {
           tenantId,
         },
         userId: customer?.id,
-        date: selectedDay,
+        date: today ?? selectedDay,
         userActiveTemplateId: customer?.activeTemplateId,
       },
     }

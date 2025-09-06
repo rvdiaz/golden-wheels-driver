@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
-import { ITask, TaskSource } from '../interfaces';
-import { formatTaskTime, isActiveTask } from '../helpers';
+import { ITask } from '../interfaces';
+import { formatTaskTime, getDurationInMinutes, getTaskConfigByKey, isActiveTask } from '../helpers';
 import { useMutation, useReactiveVar } from '@apollo/client';
 import { completeTaskMutation } from '../graphql/mutations';
 import { userData } from '~/store/user';
@@ -9,15 +9,24 @@ import Constants from 'expo-constants';
 import { theme } from '~/theme/theme';
 import { SimpleCheckbox } from '~/codidge_components/UI/form/checkbox';
 import { Badge } from '~/codidge_components/UI/badge';
+import { TaskFieldsModal } from '~/codidge_components/UI/customField/modalForm';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
+
+export interface GoalType {
+  goalKey: string;
+  goalDataType: string;
+  value: number | string;
+}
 
 export const TaskItem = ({ task }: { task: ITask }) => {
   const isActive = isActiveTask(task);
 
   const [value, setvalue] = useState(task.isCompleted ?? false);
+  const [showModal, setShowModal] = useState(false);
 
-  const customer = useReactiveVar(userData);
+  const user = useReactiveVar(userData);
+  const userTaskSchema = user?.systemData?.tasksConfiguration;
   const [completeTaskFn] = useMutation<{ completeTask: ITask }>(completeTaskMutation, {
     update: (cache, { data: mutationData }) => {
       if (!mutationData?.completeTask) return;
@@ -30,7 +39,6 @@ export const TaskItem = ({ task }: { task: ITask }) => {
             return existingTaskRefs.map((taskRef: any) => {
               const id = readField('id', taskRef);
               if (id === updatedTask.id) {
-                // Merge the updated task directly into the cached reference
                 return { ...taskRef, ...updatedTask };
               }
               return taskRef;
@@ -41,73 +49,150 @@ export const TaskItem = ({ task }: { task: ITask }) => {
     },
   });
 
-  const handleCompleteTask = async (toggleValue: boolean) => {
+  const taskConfiguration = getTaskConfigByKey(task, userTaskSchema ?? []);
+
+  const executeTaskCompletion = async (goalTypes: GoalType[]) => {
     try {
-      setvalue(toggleValue);
+      console.log(':::goalTypes,', goalTypes);
+      /*  setvalue(true);
       await completeTaskFn({
         variables: {
           task,
           tenant: { tenantId },
-          userId: customer?.id,
-          completionParam: !task.isCompleted,
+          userId: user?.id,
+          completionParam: true,
+          goalTypes, // Add the goalTypes to the mutation variables
         },
         optimisticResponse: {
           completeTask: {
             ...task,
-            isCompleted: !task.isCompleted,
+            isCompleted: true,
           },
         },
-      });
+      }); */
+    } catch (error) {
+      console.error(':error', error);
+      setvalue(false); // Revert on error
+    }
+  };
+
+  const handleCompleteTask = async (toggleValue: boolean) => {
+    if (!toggleValue) {
+      // If unchecking, you might want to handle this differently
+      setvalue(false);
+      return;
+    }
+
+    try {
+      if (taskConfiguration) {
+        const goalTypes: GoalType[] = [];
+
+        // Handle duration goal type
+        if (taskConfiguration.goalType === 'duration') {
+          const duration = getDurationInMinutes(task.startTime as string, task.endTime as string);
+          goalTypes.push({
+            goalKey: taskConfiguration.goalKey!,
+            goalDataType: taskConfiguration.goalType,
+            value: duration,
+          });
+        }
+
+        // Check if task has additional fields
+        if (taskConfiguration.fields && taskConfiguration.fields.length > 0) {
+          // Show modal to collect field data
+          setShowModal(true);
+          return; // Don't complete the task yet, wait for modal submission
+        } else {
+          // No additional fields, complete the task with duration only
+          await executeTaskCompletion(goalTypes);
+        }
+      } else {
+        // No task configuration, complete without goal types
+        await executeTaskCompletion([]);
+      }
     } catch (error) {
       console.error(':error', error);
     }
   };
 
+  const handleModalSubmit = async (fieldGoalTypes: GoalType[]) => {
+    try {
+      const goalTypes: GoalType[] = [...fieldGoalTypes];
+
+      // Add duration if it's a goal type
+      if (taskConfiguration?.goalType === 'duration') {
+        const duration = getDurationInMinutes(task.startTime as string, task.endTime as string);
+        goalTypes.push({
+          goalKey: taskConfiguration.goalKey!,
+          goalDataType: taskConfiguration.goalType,
+          value: duration,
+        });
+      }
+
+      await executeTaskCompletion(goalTypes);
+    } catch (error) {
+      console.error(':error', error);
+    }
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    // Reset checkbox since task wasn't completed
+    setvalue(task.isCompleted ?? false);
+  };
+
   return (
-    <View
-      key={task.id}
-      style={[
-        styles.taskItem,
-        { backgroundColor: task.source === TaskSource.admin ? 'white' : '#f7fafc' },
-      ]}>
-      <View style={styles.taskContent}>
-        <View style={styles.taskHeader}>
-          <View style={{ flexDirection: 'row' }}>
-            <View>
-              <Text style={styles.taskTitle}>{task.title}</Text>
-              <Text style={styles.taskDescription} numberOfLines={3}>
-                {task.description ?? ''}
+    <>
+      <View key={task.id} style={[styles.taskItem, { backgroundColor: 'white' }]}>
+        <View style={styles.taskContent}>
+          <View style={styles.taskHeader}>
+            <View style={{ flexDirection: 'row', flex: 1 }}>
+              <View>
+                <Text style={styles.taskTitle}>{task.title}</Text>
+                <Text style={styles.taskDescription} numberOfLines={3}>
+                  {task.description ?? ''}
+                </Text>
+              </View>
+            </View>
+
+            {isActive ? (
+              <SimpleCheckbox checked={value} onToggle={handleCompleteTask} />
+            ) : task.isCompleted ? (
+              <Badge type="success" displayIcon={false}>
+                Completed
+              </Badge>
+            ) : (
+              <Badge type="error" displayIcon={false}>
+                Incompleted
+              </Badge>
+            )}
+          </View>
+
+          <View style={styles.taskMeta}>
+            <View style={[styles.taskCategoryBadge]}>
+              <Text style={[styles.taskBadgeText]}>
+                {taskConfiguration?.label ?? task.category}
+              </Text>
+            </View>
+            <View style={styles.rightFooter}>
+              <Image source={require('../../../assets/highPriority.png')} />
+              <Text style={styles.taskTime}>
+                {formatTaskTime(task.startTime.toString())} -{' '}
+                {formatTaskTime(task.endTime.toString())}
               </Text>
             </View>
           </View>
-
-          {isActive ? (
-            <SimpleCheckbox checked={value} onToggle={handleCompleteTask} />
-          ) : task.isCompleted ? (
-            <Badge type="success" displayIcon={false}>
-              Completed
-            </Badge>
-          ) : (
-            <Badge type="error" displayIcon={false}>
-              Incompleted
-            </Badge>
-          )}
-        </View>
-
-        <View style={styles.taskMeta}>
-          <View style={[styles.taskCategoryBadge]}>
-            <Text style={[styles.taskBadgeText]}>{task.category}</Text>
-          </View>
-          <View style={styles.rightFooter}>
-            <Image source={require('../../../assets/highPriority.png')} />
-            <Text style={styles.taskTime}>
-              {formatTaskTime(task.startTime.toString())} -{' '}
-              {formatTaskTime(task.endTime.toString())}
-            </Text>
-          </View>
         </View>
       </View>
-    </View>
+      {/* Task Fields Modal */}
+      <TaskFieldsModal
+        visible={showModal}
+        fields={taskConfiguration?.fields ?? []}
+        onClose={handleModalClose}
+        onSubmit={handleModalSubmit}
+        taskTitle={task.title}
+      />
+    </>
   );
 };
 

@@ -1,14 +1,10 @@
 import moment from 'moment';
-import { ITask, TaskCategory, TaskPriority, TaskSource } from '../interfaces';
+import { ITask, TaskPriority, TaskSource } from '../interfaces';
+import { ITaskSchemaItem } from '~/store/interface';
 
 function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
-
-export const TASK_CATEGORY_OPTIONS = Object.values(TaskCategory).map((value) => ({
-  label: capitalize(value),
-  value,
-}));
 
 export const TASK_PRIORITY_OPTIONS = Object.values(TaskPriority).map((value) => ({
   label: capitalize(value),
@@ -71,4 +67,38 @@ export const isActiveTask = (task: ITask, gracePeriodMinutes: number = 15) => {
   const taskEndWithGrace = taskEnd.clone().add(gracePeriodMinutes, 'minutes');
 
   return taskEndWithGrace.isAfter(now);
+};
+
+export const getTaskConfigByKey = (task: ITask, taskConfigSchema: ITaskSchemaItem[]) => {
+  const taskConfig = taskConfigSchema.find((cat) => cat.categoryKey === task.category);
+  return taskConfig;
+};
+
+export const getTaskCategoriesOptions = (taskConfigSchema: ITaskSchemaItem[]) => {
+  // Use a Map to avoid duplicate categoryKeys
+  const map = new Map<string, string>();
+
+  taskConfigSchema.forEach((task) => {
+    if (!map.has(task.categoryKey)) {
+      map.set(task.categoryKey, task.label);
+    }
+  });
+
+  // Convert Map to array of { label, value }
+  const res = Array.from(map.entries()).map(([value, label]) => ({
+    label,
+    value,
+  }));
+
+  return res;
+};
+
+export const getDurationInMinutes = (startTime: string, endTime: string): number => {
+  const [startHour, startMinute] = startTime.split(':').map(Number);
+  const [endHour, endMinute] = endTime.split(':').map(Number);
+
+  const startTotal = startHour * 60 + startMinute;
+  const endTotal = endHour * 60 + endMinute;
+
+  return endTotal - startTotal;
 };

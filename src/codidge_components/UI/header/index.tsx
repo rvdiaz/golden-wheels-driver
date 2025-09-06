@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Icons from 'lucide-react-native';
+import TextButton from '../button/TextButton';
 
 interface HeaderProps {
   title: string;
@@ -9,6 +10,8 @@ interface HeaderProps {
   onBack?: () => void;
   rightAction?: () => void;
   rightText?: string;
+  loadingRight?: boolean;
+  disabledRight?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -17,6 +20,8 @@ export const Header: React.FC<HeaderProps> = ({
   onBack,
   rightAction,
   rightText,
+  loadingRight,
+  disabledRight,
 }) => {
   return (
     <View style={styles.container}>
@@ -32,9 +37,13 @@ export const Header: React.FC<HeaderProps> = ({
         </View>
 
         {rightAction && (
-          <TouchableOpacity onPress={rightAction} style={styles.rightButton}>
-            <Text style={styles.rightButtonText}>{rightText}</Text>
-          </TouchableOpacity>
+          <TextButton
+            disabled={disabledRight}
+            loading={loadingRight}
+            textStyle={styles.rightButtonText}
+            onPress={rightAction}
+            title={rightText ?? ''}
+          />
         )}
       </View>
     </View>

@@ -1,11 +1,20 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, SafeAreaView, ScrollView, Modal, RefreshControl } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  Modal,
+  RefreshControl,
+  Platform,
+  ActionSheetIOS,
+  Alert,
+} from 'react-native';
 import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 import ContactForm from './widgets/addContact';
 import { ContactList } from './widgets/contactList';
 import { ActiveCrmTabs, ContactType, IContact, IFollowUp } from './interfaces';
-import { useQuery, useReactiveVar } from '@apollo/client';
-import { getUserContacts } from './graphql/queries';
+import { useReactiveVar } from '@apollo/client';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import Constants from 'expo-constants';
 import { userData } from '~/store/user';
@@ -16,15 +25,18 @@ import { CompactTabHeader } from '~/codidge_components/UI/tabs';
 import { FollowUpList } from './widgets/followUps/followUpList';
 import { AddFollowUpModal } from './widgets/followUps/followUpForm';
 import { useAddFollowUp } from './hooks/followUpCreation';
+import { ImportContactsModal } from './widgets/contactFromExport';
+import { useContactsQueries } from './hooks/contactMutations';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const CRMScreen: React.FC = () => {
   const crmTab = useReactiveVar(crmTabSelection);
 
-  const customer = useReactiveVar(userData);
+  const user = useReactiveVar(userData);
   const [refreshing, setRefreshing] = useState(false);
 
+  const [importModalVisible, setImportModalVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
   const disposeModalHandler = () => {
@@ -36,16 +48,14 @@ export const CRMScreen: React.FC = () => {
     onCompleted: () => setModalVisible(false),
   });
 
-  const { data, loading, refetch } = useQuery<{ getUserContacts: IContact[] }>(getUserContacts, {
-    variables: {
-      tenant: {
-        tenantId,
-      },
-      userId: customer?.id,
-    },
-  });
+  const {
+    loadingContacts,
+    contacts: dataContacts,
+    handleAddContact,
+    refetch,
+  } = useContactsQueries();
 
-  if (loading) {
+  if (loadingContacts) {
     return <PageLoading />;
   }
 
@@ -55,9 +65,59 @@ export const CRMScreen: React.FC = () => {
     setRefreshing(false);
   };
 
-  const contacts = (data?.getUserContacts ?? []).slice().sort((a, b) => {
+  const handleImportContacts = async (phoneContacts: any, asLeads: any, category: any) => {
+    try {
+      // Parse phone contacts and add category
+      const newContacts = phoneContacts.map((pc: any) => {
+        // Parse the full name if needed
+        let firstName = '';
+        let lastName = '';
+
+        if (pc.name) {
+          const nameParts = pc.name.split(' ');
+          firstName = nameParts[0] || '';
+          lastName = nameParts.slice(1).join(' ') || '';
+        }
+
+        return {
+          firstName,
+          lastName,
+          phone: pc.phoneNumbers?.[0]?.number || '',
+          email: pc.emails?.[0]?.email || '',
+          type: asLeads ? ContactType.LEAD : ContactType.CLIENT, // ContactType.LEAD or ContactType.CLIENT
+          category: category, // The selected category
+          priority: 'medium',
+          leadStatus: asLeads ? 'new' : undefined,
+          notes:
+            pc.company || pc.jobTitle
+              ? `Company: ${[pc.jobTitle, pc.company].filter(Boolean).join(' at ')}`
+              : '',
+        };
+      });
+
+      // Batch import - you'll need to create a mutation for this
+      // or loop through and add each contact
+      for (const contact of newContacts) {
+        await handleAddContact({
+          tenant: { tenantId },
+          userId: user?.id,
+          contactData: contact,
+        });
+      }
+
+      // Refetch contacts list
+      await refetch();
+    } catch (error) {
+      console.error('Error importing contacts:', error);
+      throw error;
+    }
+  };
+
+  const contacts = dataContacts.slice().sort((a, b) => {
     return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
   });
+
+  const existingPhones = contacts.flatMap((c) => c.phone);
 
   const leads = contacts.filter((ctc) => ctc.type === ContactType.LEAD);
   const pureContacts = contacts.filter((ctc) => ctc.type === ContactType.CLIENT);
@@ -106,7 +166,29 @@ export const CRMScreen: React.FC = () => {
           title="Add New"
           icon="Plus"
           onPress={() => {
-            setModalVisible(true);
+            if (Platform.OS === 'ios') {
+              ActionSheetIOS.showActionSheetWithOptions(
+                {
+                  options: ['Add Single Contact', 'Import from Phone', 'Cancel'],
+                  cancelButtonIndex: 2,
+                  title: 'Add Contacts',
+                },
+                (buttonIndex) => {
+                  if (buttonIndex === 0) {
+                    setModalVisible(true);
+                  } else if (buttonIndex === 1) {
+                    setImportModalVisible(true);
+                  }
+                }
+              );
+            } else {
+              // For Android, use Alert
+              Alert.alert('Add Contacts', 'Choose an option', [
+                { text: 'Add Single Contact', onPress: () => setModalVisible(true) },
+                { text: 'Import from Phone', onPress: () => setImportModalVisible(true) },
+                { text: 'Cancel', style: 'cancel' },
+              ]);
+            }
           }}
         />
       ) : (
@@ -141,7 +223,7 @@ export const CRMScreen: React.FC = () => {
                     tenantId,
                   },
                   input: {
-                    userId: customer?.id,
+                    userId: user?.id,
                     date: newFollowUp.date,
                     notes: newFollowUp.notes,
                     title: newFollowUp.title,
@@ -155,6 +237,14 @@ export const CRMScreen: React.FC = () => {
             }
           }}
           contacts={contacts}
+        />
+      )}
+      {importModalVisible && (
+        <ImportContactsModal
+          visible={importModalVisible}
+          onClose={() => setImportModalVisible(false)}
+          onImport={handleImportContacts}
+          existingContactPhones={existingPhones}
         />
       )}
     </SafeAreaView>

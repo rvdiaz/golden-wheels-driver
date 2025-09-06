@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  SafeAreaView,
 } from 'react-native';
 import { X, User } from 'lucide-react-native';
 import { useForm, Controller } from 'react-hook-form';
@@ -16,9 +17,8 @@ import { IContact, IFollowUp } from '../../interfaces';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { DateInputField } from '~/codidge_components/UI/form/inputs/datePicker';
 import { DateTimeInputField } from '~/codidge_components/UI/form/inputs/dateTimePicker';
-import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
-import { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
 import moment from 'moment';
+import { Header } from '~/codidge_components/UI/header';
 
 interface FollowUpFormValues {
   contactId: string;
@@ -155,216 +155,206 @@ export const AddFollowUpModal: React.FC<AddFollowUpModalProps> = ({
 
   return (
     <Modal visible={visible} transparent={true} animationType="slide" onRequestClose={handleClose}>
-      <KeyboardAvoidingView
-        style={styles.modalOverlay}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <TouchableOpacity style={styles.modalBackdrop} activeOpacity={1} onPress={handleClose} />
-
-        <View style={styles.modalContent}>
-          {/* Header */}
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Add Follow-up</Text>
-            <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-              <X size={24} color="#6B7280" />
-            </TouchableOpacity>
-          </View>
-
-          <ScrollView style={styles.formContainer} showsVerticalScrollIndicator={false}>
-            {/* Contact Selection or Display */}
-            {defaultContact ? (
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>Contact</Text>
-                <View style={styles.defaultContactDisplay}>
-                  <View style={styles.contactIcon}>
-                    <User size={20} color="#3B82F6" />
-                  </View>
-                  <View style={styles.contactInfo}>
-                    <Text style={styles.contactName}>
-                      {defaultContact.firstName} {defaultContact.lastName || ''}
-                    </Text>
-                    {defaultContact.phone && (
-                      <Text style={styles.contactDetail}>{defaultContact.phone}</Text>
-                    )}
-                    {defaultContact.email && (
-                      <Text style={styles.contactDetail}>{defaultContact.email}</Text>
-                    )}
+      <SafeAreaView style={styles.container}>
+        <KeyboardAvoidingView
+          style={styles.modalOverlay}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+          <View style={[styles.modalContent, { marginBottom: Platform.OS ? 50 : 0 }]}>
+            <Header
+              title="New Follow up"
+              showBack={true}
+              onBack={handleClose}
+              rightAction={handleSubmit(onSubmit)}
+              rightText="Save"
+              loadingRight={loading}
+              disabledRight={!isValid}
+            />
+            <ScrollView style={styles.formContainer} showsVerticalScrollIndicator={false}>
+              {/* Contact Selection or Display */}
+              {defaultContact ? (
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>Contact</Text>
+                  <View style={styles.defaultContactDisplay}>
+                    <View style={styles.contactIcon}>
+                      <User size={20} color="#3B82F6" />
+                    </View>
+                    <View style={styles.contactInfo}>
+                      <Text style={styles.contactName}>
+                        {defaultContact.firstName} {defaultContact.lastName || ''}
+                      </Text>
+                      {defaultContact.phone && (
+                        <Text style={styles.contactDetail}>{defaultContact.phone}</Text>
+                      )}
+                      {defaultContact.email && (
+                        <Text style={styles.contactDetail}>{defaultContact.email}</Text>
+                      )}
+                    </View>
                   </View>
                 </View>
-              </View>
-            ) : (
+              ) : (
+                <View style={styles.fieldContainer}>
+                  <Controller
+                    control={control}
+                    name="contactId"
+                    rules={{ required: 'Contact is required' }}
+                    render={({ fieldState: { error } }) => (
+                      <View>
+                        <Text style={styles.label}>Contact *</Text>
+                        <TouchableOpacity
+                          style={[styles.contactSelector, error && styles.contactSelectorError]}
+                          onPress={() => setShowContactList(!showContactList)}>
+                          <User size={20} color="#6B7280" />
+                          <Text
+                            style={[
+                              styles.contactSelectorText,
+                              !selectedContact && styles.placeholder,
+                            ]}>
+                            {selectedContact
+                              ? `${selectedContact.firstName} ${selectedContact.lastName || ''}`.trim()
+                              : 'Select contact'}
+                          </Text>
+                        </TouchableOpacity>
+                        {error && <Text style={styles.errorText}>{error.message}</Text>}
+
+                        {showContactList && (
+                          <View style={styles.contactList}>
+                            <ScrollView style={styles.contactScrollView} nestedScrollEnabled>
+                              {contacts.map((contact) => (
+                                <TouchableOpacity
+                                  key={contact.id}
+                                  style={styles.contactItem}
+                                  onPress={() => handleSelectContact(contact)}>
+                                  <Text style={styles.contactItemName}>
+                                    {contact.firstName} {contact.lastName}
+                                  </Text>
+                                  {contact.phone && (
+                                    <Text style={styles.contactItemPhone}>{contact.phone}</Text>
+                                  )}
+                                </TouchableOpacity>
+                              ))}
+                            </ScrollView>
+                          </View>
+                        )}
+                      </View>
+                    )}
+                  />
+                </View>
+              )}
+
+              {/* Title */}
               <View style={styles.fieldContainer}>
                 <Controller
                   control={control}
-                  name="contactId"
-                  rules={{ required: 'Contact is required' }}
-                  render={({ fieldState: { error } }) => (
-                    <View>
-                      <Text style={styles.label}>Contact *</Text>
-                      <TouchableOpacity
-                        style={[styles.contactSelector, error && styles.contactSelectorError]}
-                        onPress={() => setShowContactList(!showContactList)}>
-                        <User size={20} color="#6B7280" />
-                        <Text
-                          style={[
-                            styles.contactSelectorText,
-                            !selectedContact && styles.placeholder,
-                          ]}>
-                          {selectedContact
-                            ? `${selectedContact.firstName} ${selectedContact.lastName || ''}`.trim()
-                            : 'Select contact'}
-                        </Text>
-                      </TouchableOpacity>
-                      {error && <Text style={styles.errorText}>{error.message}</Text>}
+                  name="title"
+                  rules={{ required: 'Title is required' }}
+                  render={({ field: { onChange, value } }) => (
+                    <InputField
+                      label="What to do?"
+                      required={true}
+                      placeholder="e.g., Follow up call"
+                      value={value}
+                      onChangeText={onChange}
+                      error={!!errors.title}
+                      errorMessage={errors.title?.message}
+                    />
+                  )}
+                />
 
-                      {showContactList && (
-                        <View style={styles.contactList}>
-                          <ScrollView style={styles.contactScrollView} nestedScrollEnabled>
-                            {contacts.map((contact) => (
-                              <TouchableOpacity
-                                key={contact.id}
-                                style={styles.contactItem}
-                                onPress={() => handleSelectContact(contact)}>
-                                <Text style={styles.contactItemName}>
-                                  {contact.firstName} {contact.lastName}
-                                </Text>
-                                {contact.phone && (
-                                  <Text style={styles.contactItemPhone}>{contact.phone}</Text>
-                                )}
-                              </TouchableOpacity>
-                            ))}
-                          </ScrollView>
-                        </View>
-                      )}
-                    </View>
+                {/* Quick title suggestions */}
+                <View style={styles.quickTitles}>
+                  {quickTitles.map((quickTitle) => (
+                    <TouchableOpacity
+                      key={quickTitle}
+                      style={styles.quickTitleButton}
+                      onPress={() => handleQuickTitle(quickTitle)}>
+                      <Text style={styles.quickTitleText}>{quickTitle}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+
+              {/* Date */}
+              <View style={styles.fieldContainer}>
+                <Controller
+                  control={control}
+                  name="date"
+                  rules={{ required: 'Date is required' }}
+                  render={({ field: { onChange, value } }) => (
+                    <DateInputField
+                      label="Date"
+                      value={value ? new Date(value) : new Date()}
+                      onChangeText={(date) => {
+                        const formatted = moment(date).format('YYYY-MM-DD');
+                        onChange(formatted);
+                      }}
+                      error={!!errors.date}
+                      errorMessage={errors.date?.message}
+                    />
                   )}
                 />
               </View>
-            )}
 
-            {/* Title */}
-            <View style={styles.fieldContainer}>
-              <Controller
-                control={control}
-                name="title"
-                rules={{ required: 'Title is required' }}
-                render={({ field: { onChange, value } }) => (
-                  <InputField
-                    label="What to do?"
-                    required={true}
-                    placeholder="e.g., Follow up call"
-                    value={value}
-                    onChangeText={onChange}
-                    error={!!errors.title}
-                    errorMessage={errors.title?.message}
-                  />
-                )}
-              />
-
-              {/* Quick title suggestions */}
-              <View style={styles.quickTitles}>
-                {quickTitles.map((quickTitle) => (
-                  <TouchableOpacity
-                    key={quickTitle}
-                    style={styles.quickTitleButton}
-                    onPress={() => handleQuickTitle(quickTitle)}>
-                    <Text style={styles.quickTitleText}>{quickTitle}</Text>
-                  </TouchableOpacity>
-                ))}
+              {/* Time */}
+              <View style={styles.fieldContainer}>
+                <Controller
+                  control={control}
+                  name="time"
+                  rules={{ required: 'Time is required' }}
+                  render={({ field: { onChange, value }, fieldState: { error } }) => (
+                    <DateTimeInputField
+                      required={true}
+                      mode="time"
+                      label="Time"
+                      value={value as Date}
+                      onChangeText={onChange}
+                      error={!!error}
+                      errorMessage={error?.message}
+                    />
+                  )}
+                />
               </View>
-            </View>
 
-            {/* Date */}
-            <View style={styles.fieldContainer}>
-              <Controller
-                control={control}
-                name="date"
-                rules={{ required: 'Date is required' }}
-                render={({ field: { onChange, value } }) => (
-                  <DateInputField
-                    label="Date"
-                    value={value ? new Date(value) : new Date()}
-                    onChangeText={(date) => {
-                      const formatted = moment(date).format('YYYY-MM-DD');
-                      onChange(formatted);
-                    }}
-                    error={!!errors.date}
-                    errorMessage={errors.date?.message}
-                  />
-                )}
-              />
-            </View>
-
-            {/* Time */}
-            <View style={styles.fieldContainer}>
-              <Controller
-                control={control}
-                name="time"
-                rules={{ required: 'Time is required' }}
-                render={({ field: { onChange, value }, fieldState: { error } }) => (
-                  <DateTimeInputField
-                    required={true}
-                    mode="time"
-                    label="Time"
-                    value={value as Date}
-                    onChangeText={onChange}
-                    error={!!error}
-                    errorMessage={error?.message}
-                  />
-                )}
-              />
-            </View>
-
-            {/* Notes */}
-            <View style={styles.fieldContainer}>
-              <Controller
-                control={control}
-                name="notes"
-                render={({ field: { onChange, value, onBlur } }) => (
-                  <InputField
-                    label="Notes (optional)"
-                    placeholder="Add any additional notes..."
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    multiline
-                    numberOfLines={3}
-                    style={styles.notesInput}
-                  />
-                )}
-              />
-            </View>
-          </ScrollView>
-
-          {/* Save Button */}
-          <View style={styles.buttonContainer}>
-            <PrimaryButton
-              loading={loading}
-              onPress={handleSubmit(onSubmit)}
-              size={ButtonSize.LARGE}
-              disabled={!isValid}
-              title="Add Follow-up"
-            />
+              {/* Notes */}
+              <View style={styles.fieldContainer}>
+                <Controller
+                  control={control}
+                  name="notes"
+                  render={({ field: { onChange, value, onBlur } }) => (
+                    <InputField
+                      label="Notes (optional)"
+                      placeholder="Add any additional notes..."
+                      value={value}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      multiline
+                      numberOfLines={3}
+                      style={styles.notesInput}
+                    />
+                  )}
+                />
+              </View>
+            </ScrollView>
           </View>
-        </View>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 20,
+    paddingTop: 40,
+  },
   modalOverlay: {
     flex: 1,
-    justifyContent: 'flex-end',
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
     backgroundColor: '#FFF',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    maxHeight: '90%',
   },
   modalHeader: {
     flexDirection: 'row',
@@ -497,10 +487,5 @@ const styles = StyleSheet.create({
   },
   notesInput: {
     height: 80,
-  },
-  buttonContainer: {
-    padding: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
   },
 });

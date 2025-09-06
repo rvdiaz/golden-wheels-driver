@@ -90,3 +90,15 @@ export interface IFollowUpResponse {
   total: number;
   hasMore: boolean;
 }
+
+export interface PhoneContact {
+  id: string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
+  phoneNumbers?: Array<{ number: string; label?: string; digits: string }>;
+  emails?: Array<{ email: string; label?: string }>;
+  company?: string;
+  jobTitle?: string;
+  addresses?: Array<{ street?: string; city?: string; region?: string; postalCode?: string }>;
+}

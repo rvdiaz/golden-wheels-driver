@@ -1,14 +1,20 @@
 import React from 'react';
-import { View, StyleSheet, SafeAreaView, Alert, ScrollView } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  SafeAreaView,
+  Alert,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { Header } from '~/codidge_components/UI/header';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import DropdownComponent from '~/codidge_components/UI/dropdown';
-import { TASK_CATEGORY_OPTIONS, TASK_PRIORITY_OPTIONS } from '../helpers';
+import { getTaskCategoriesOptions, TASK_PRIORITY_OPTIONS } from '../helpers';
 import { DateInputField } from '~/codidge_components/UI/form/inputs/datePicker';
 import { ITask, TaskFormValues, TaskPriority, TaskSource } from '../interfaces';
-import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
-import { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
 import { useMutation, useReactiveVar } from '@apollo/client';
 import { addTaskMutation } from '../graphql/mutations';
 import Constants from 'expo-constants';
@@ -28,7 +34,8 @@ export const AddTaskScreen = ({
   defaultDate: string;
   task?: ITask;
 }) => {
-  const customer = useReactiveVar(userData);
+  const user = useReactiveVar(userData);
+  const userTaskSchema = user?.systemData?.tasksConfiguration;
 
   const [addTaskMutationFn, { loading }] = useMutation<{ addTask: ITask }>(addTaskMutation, {
     update: (cache, { data }) => {
@@ -41,9 +48,9 @@ export const AddTaskScreen = ({
         query: getTaskByUserQuery,
         variables: {
           tenant: { tenantId },
-          userId: customer?.id,
+          userId: user?.id,
           date: defaultDate,
-          userActiveTemplateId: customer?.activeTemplateId,
+          userActiveTemplateId: user?.activeTemplateId,
         },
       });
 
@@ -52,9 +59,9 @@ export const AddTaskScreen = ({
           query: getTaskByUserQuery,
           variables: {
             tenant: { tenantId },
-            userId: customer?.id,
+            userId: user?.id,
             date: defaultDate,
-            userActiveTemplateId: customer?.activeTemplateId,
+            userActiveTemplateId: user?.activeTemplateId,
           },
           data: {
             getTasksByUser: [...existingData.getTasksByUser, newTask],
@@ -104,7 +111,7 @@ export const AddTaskScreen = ({
       await addTaskMutationFn({
         variables: {
           tenant: { tenantId },
-          userId: customer?.id,
+          userId: user?.id,
           task: {
             ...formatted,
             source: TaskSource.user,
@@ -132,189 +139,191 @@ export const AddTaskScreen = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header title="Add Task" rightAction={disposeModalHandler} rightText="Close" />
+      <Header
+        title="Add Task"
+        showBack={true}
+        onBack={disposeModalHandler}
+        rightAction={handleSubmit(onSubmit)}
+        rightText="Save"
+        loadingRight={loading}
+        disabledRight={!isValid}
+      />
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoidingView}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={0}>
+        <ScrollView style={styles.content}>
+          <View style={styles.formCard}>
+            {/* Title */}
+            <View style={styles.fieldContainer}>
+              <Controller
+                control={control}
+                name="title"
+                rules={{ required: 'Title is required' }}
+                render={({ field: { onChange, value } }) => (
+                  <InputField
+                    label="Title"
+                    required={true}
+                    placeholder="Enter task title"
+                    value={value}
+                    onChangeText={onChange}
+                    error={!!errors.title}
+                    errorMessage={errors.title?.message}
+                  />
+                )}
+              />
+            </View>
 
-      <ScrollView style={styles.content}>
-        <View style={styles.formCard}>
-          {/* Title */}
+            <View style={styles.fieldContainer}>
+              <Controller
+                control={control}
+                name="category"
+                rules={{
+                  required: 'Category is required',
+                }}
+                render={({ field: { onChange, value }, fieldState: { error } }) => (
+                  <DropdownComponent
+                    label="Type"
+                    required={true}
+                    data={getTaskCategoriesOptions(userTaskSchema ?? [])}
+                    placeholder="Select task category"
+                    value={value ?? ''}
+                    onChange={onChange}
+                    error={!!error}
+                    errorMessage={error?.message}
+                  />
+                )}
+              />
+            </View>
+
+            <View>
+              {/* Priority */}
+              <Controller
+                control={control}
+                name="priority"
+                render={({ field: { onChange, value }, fieldState: { error } }) => (
+                  <DropdownComponent
+                    label="Priority"
+                    data={TASK_PRIORITY_OPTIONS}
+                    placeholder="Select income source"
+                    value={value}
+                    onChange={onChange}
+                    error={!!error}
+                    errorMessage={error?.message}
+                  />
+                )}
+              />
+            </View>
+          </View>
+
+          {/* Task Date */}
           <View style={styles.fieldContainer}>
-            <Controller
-              control={control}
-              name="title"
-              rules={{ required: 'Title is required' }}
-              render={({ field: { onChange, value } }) => (
-                <InputField
-                  label="Title"
-                  required={true}
-                  placeholder="Enter task title"
-                  value={value}
-                  onChangeText={onChange}
-                  error={!!errors.title}
-                  errorMessage={errors.title?.message}
-                />
-              )}
-            />
+            <View
+              style={{
+                flex: 1,
+              }}>
+              <Controller
+                control={control}
+                name="date"
+                render={({ field: { onChange, value } }) => (
+                  <DateInputField
+                    label="Tasks date"
+                    value={value as Date}
+                    onChangeText={(date) => {
+                      const formatted = moment(date).format('YYYY-MM-DD');
+                      onChange(formatted);
+                    }}
+                  />
+                )}
+              />
+            </View>
           </View>
-
-          <View style={styles.fieldContainer}>
-            <Controller
-              control={control}
-              name="category"
-              rules={{
-                required: 'Category is required',
-              }}
-              render={({ field: { onChange, value }, fieldState: { error } }) => (
-                <DropdownComponent
-                  label="Type"
-                  required={true}
-                  data={TASK_CATEGORY_OPTIONS}
-                  placeholder="Select task category"
-                  value={value ?? ''}
-                  onChange={onChange}
-                  error={!!error}
-                  errorMessage={error?.message}
-                />
-              )}
-            />
-          </View>
-
-          <View>
-            {/* Priority */}
-            <Controller
-              control={control}
-              name="priority"
-              render={({ field: { onChange, value }, fieldState: { error } }) => (
-                <DropdownComponent
-                  label="Priority"
-                  data={TASK_PRIORITY_OPTIONS}
-                  placeholder="Select income source"
-                  value={value}
-                  onChange={onChange}
-                  error={!!error}
-                  errorMessage={error?.message}
-                />
-              )}
-            />
-          </View>
-        </View>
-
-        {/* Task Date */}
-        <View style={styles.fieldContainer}>
+          {/* Date Time */}
           <View
-            style={{
-              flex: 1,
-            }}>
-            <Controller
-              control={control}
-              name="date"
-              render={({ field: { onChange, value } }) => (
-                <DateInputField
-                  label="Tasks date"
-                  value={value as Date}
-                  onChangeText={(date) => {
-                    const formatted = moment(date).format('YYYY-MM-DD');
-                    onChange(formatted);
-                  }}
-                />
-              )}
-            />
-          </View>
-        </View>
-        {/* Date Time */}
-        <View
-          style={[
-            styles.fieldContainer,
-            {
-              flexDirection: 'row',
-              gap: 10,
-            },
-          ]}>
-          <View
-            style={{
-              flex: 1,
-            }}>
-            <Controller
-              control={control}
-              name="startTime"
-              rules={{ required: 'Start time is required' }} // <-- validation rule
-              render={({ field: { onChange, value }, fieldState: { error } }) => {
-                return (
+            style={[
+              styles.fieldContainer,
+              {
+                flexDirection: 'row',
+                gap: 10,
+              },
+            ]}>
+            <View
+              style={{
+                flex: 1,
+              }}>
+              <Controller
+                control={control}
+                name="startTime"
+                rules={{ required: 'Start time is required' }} // <-- validation rule
+                render={({ field: { onChange, value }, fieldState: { error } }) => {
+                  return (
+                    <DateTimeInputField
+                      required={true}
+                      mode="time"
+                      label="From"
+                      value={value as Date}
+                      onChangeText={(date: Date) => {
+                        onChange(date);
+                      }}
+                      error={!!error} // pass error state
+                      errorMessage={error?.message} // pass message to display
+                    />
+                  );
+                }}
+              />
+            </View>
+            <View
+              style={{
+                flex: 1,
+              }}>
+              <Controller
+                control={control}
+                name="endTime"
+                rules={{
+                  required: 'End time is required',
+                  validate: (endTimeValue: Date | null | string) => {
+                    if (!endTimeValue || !startTime) return true; // required will catch empty
+                    if (endTimeValue <= startTime) {
+                      return 'End time must be after start time';
+                    }
+                    return true;
+                  },
+                }}
+                render={({ field: { onChange, value }, fieldState: { error } }) => (
                   <DateTimeInputField
                     required={true}
                     mode="time"
-                    label="From"
+                    label="To"
                     value={value as Date}
-                    onChangeText={(date: Date) => {
-                      onChange(date);
-                    }}
+                    onChangeText={onChange}
                     error={!!error} // pass error state
                     errorMessage={error?.message} // pass message to display
+                    hint="After from date*"
                   />
-                );
-              }}
-            />
+                )}
+              />
+            </View>
           </View>
-          <View
-            style={{
-              flex: 1,
-            }}>
-            <Controller
-              control={control}
-              name="endTime"
-              rules={{
-                required: 'End time is required',
-                validate: (endTimeValue: Date | null | string) => {
-                  if (!endTimeValue || !startTime) return true; // required will catch empty
-                  if (endTimeValue <= startTime) {
-                    return 'End time must be after start time';
-                  }
-                  return true;
-                },
-              }}
-              render={({ field: { onChange, value }, fieldState: { error } }) => (
-                <DateTimeInputField
-                  required={true}
-                  mode="time"
-                  label="To"
-                  value={value as Date}
-                  onChangeText={onChange}
-                  error={!!error} // pass error state
-                  errorMessage={error?.message} // pass message to display
-                  hint="After from date*"
-                />
-              )}
-            />
-          </View>
-        </View>
 
-        {/* Date Time */}
-        <Controller
-          control={control}
-          name="description"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <InputField
-              label="Notes"
-              placeholder="Additional details about this income"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              multiline
-              numberOfLines={3}
-              style={styles.textArea}
-            />
-          )}
-        />
-      </ScrollView>
-      <View style={styles.bottomBarContainer}>
-        {/* Submit Button */}
-        <PrimaryButton
-          loading={loading}
-          onPress={handleSubmit(onSubmit)}
-          size={ButtonSize.LARGE}
-          disabled={!isValid}
-          title="Save Task"
-        />
-      </View>
+          {/* Date Time */}
+          <Controller
+            control={control}
+            name="description"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <InputField
+                label="Notes"
+                placeholder="Additional details about this income"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                multiline
+                numberOfLines={3}
+                style={styles.textArea}
+              />
+            )}
+          />
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -328,6 +337,9 @@ const styles = StyleSheet.create({
   },
   fieldContainer: {
     marginBottom: 10,
+  },
+  keyboardAvoidingView: {
+    flex: 1,
   },
   content: { flex: 1, padding: 24 },
   formCard: { marginBottom: 16 },

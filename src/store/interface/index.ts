@@ -73,4 +73,24 @@ export interface IUser {
   metaData: any;
   modules: IModule[];
   activeTemplateId: string;
+  systemData: {
+    tasksConfiguration: ITaskSchemaItem[];
+  };
+}
+
+// Field definition
+export interface TaskField {
+  label: string;
+  type: 'text' | 'number'; // extend as needed
+  goalKey: string;
+  goalType: string; // new: type of the tracked data
+}
+
+export interface ITaskSchemaItem {
+  label: string;
+  description: string;
+  categoryKey: string;
+  fields: TaskField[];
+  goalKey?: string;
+  goalType?: string; // new: type of the tracked data
 }

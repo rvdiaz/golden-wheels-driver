@@ -19,6 +19,21 @@ export const getUserQuery = gql`
           moduleKey
         }
       }
+      systemData {
+        tasksConfiguration {
+          categoryKey
+          description
+          goalKey
+          goalType
+          label
+          fields {
+            goalKey
+            goalType
+            label
+            type
+          }
+        }
+      }
     }
   }
 `;

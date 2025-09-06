@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { StyleSheet, FlatList, Modal, SafeAreaView, View, RefreshControl } from 'react-native';
+import {
+  StyleSheet,
+  FlatList,
+  Modal,
+  SafeAreaView,
+  View,
+  RefreshControl,
+  Text,
+} from 'react-native';
 import { TaskItem } from './widgets/taskItem';
 import { ActiveTab, ITask } from './interfaces';
 import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
@@ -33,6 +41,19 @@ export const TasksScreen: React.FC = () => {
   //active Tasks Today
   const activeTasks = getActiveTasks(tasks);
 
+  // Separate active and inactive tasks based on tab
+  const currentTabTasks = activeTab === ActiveTab.admin ? tasks : getCustomTasks(tasks);
+  const currentTabActiveTasks =
+    activeTab === ActiveTab.admin ? activeTasks : getCustomTasks(activeTasks);
+
+  // Split tasks into active and inactive
+  const activeTasksForTab = currentTabActiveTasks.filter((task) => task.isCompleted === false);
+  const inactiveTasksForTab = currentTabTasks.filter(
+    (task) =>
+      !currentTabActiveTasks.some((activeTask) => activeTask.id === task.id) ||
+      task.isCompleted === true
+  );
+
   //incomplete active schedule tasks
   const inCompleteScheduleTasks = activeTasks.filter((ta) => !ta.isCompleted).length;
 
@@ -45,6 +66,26 @@ export const TasksScreen: React.FC = () => {
     await refetch();
     setRefreshing(false);
   };
+
+  const renderTaskSection = (title: string, data: ITask[], showCount: boolean = true) => {
+    if (data.length === 0) return null;
+
+    return (
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionHeader}>
+          {title} {showCount && `(${data.length})`}
+        </Text>
+        <FlatList
+          data={data}
+          renderItem={({ item }: { item: ITask }) => <TaskItem task={item} />}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          scrollEnabled={false}
+        />
+      </View>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <TabHeader
@@ -69,9 +110,17 @@ export const TasksScreen: React.FC = () => {
         <PageLoading />
       ) : (
         <FlatList
-          data={activeTab === ActiveTab.admin ? tasks : customTask}
-          renderItem={({ item }: { item: ITask }) => <TaskItem task={item} />}
-          keyExtractor={(item) => item.id}
+          data={[]}
+          renderItem={() => null}
+          ListHeaderComponent={
+            <View
+              style={{
+                marginTop: 16,
+              }}>
+              {renderTaskSection('Active Tasks', activeTasksForTab)}
+              {renderTaskSection('Past Tasks', inactiveTasksForTab)}
+            </View>
+          }
           contentContainerStyle={styles.listContainer}
           showsVerticalScrollIndicator={false}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
@@ -126,5 +175,15 @@ const styles = StyleSheet.create({
   listContainer: {
     paddingHorizontal: 16,
     paddingBottom: 80,
+  },
+  sectionContainer: {
+    marginBottom: 24,
+  },
+  sectionHeader: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1F2937',
+    marginBottom: 12,
+    paddingHorizontal: 4,
   },
 });

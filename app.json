@@ -36,8 +36,8 @@
       }
     },
     "extra": {
-      "GRAPHQL_ENDPOINT": "http://localhost:4000/graphql",
-      /* "GRAPHQL_ENDPOINT": "https://mliqeu5tf5hqnafxp55hwaekd4.appsync-api.us-east-1.amazonaws.com/graphql", */
+      /*  "GRAPHQL_ENDPOINT": "http://localhost:4000/graphql", */
+      "GRAPHQL_ENDPOINT": "https://mliqeu5tf5hqnafxp55hwaekd4.appsync-api.us-east-1.amazonaws.com/graphql",
       "COGNITO_USERPOOL_ID": "us-east-1_4aq3CuAAr",
       "COGNITO_CLIENT_ID": "77e3rsh7jds1lmvsuq4jt8j0h0",
       "TENANTID": "usa-my-own-boss",

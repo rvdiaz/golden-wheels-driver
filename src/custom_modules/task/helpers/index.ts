@@ -70,7 +70,7 @@ export const isActiveTask = (task: ITask, gracePeriodMinutes: number = 15) => {
 };
 
 export const getTaskConfigByKey = (task: ITask, taskConfigSchema: ITaskSchemaItem[]) => {
-  const taskConfig = taskConfigSchema.find((cat) => cat.categoryKey === task.category);
+  const taskConfig = taskConfigSchema.find((cat) => cat.key === task.category);
   return taskConfig;
 };
 
@@ -79,8 +79,8 @@ export const getTaskCategoriesOptions = (taskConfigSchema: ITaskSchemaItem[]) =>
   const map = new Map<string, string>();
 
   taskConfigSchema.forEach((task) => {
-    if (!map.has(task.categoryKey)) {
-      map.set(task.categoryKey, task.label);
+    if (!map.has(task.key)) {
+      map.set(task.key, task.label);
     }
   });
 

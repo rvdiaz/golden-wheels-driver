@@ -52,7 +52,7 @@ export const TaskFieldsModal: React.FC<TaskFieldsModalProps> = ({
         return;
       }
 
-      if (field.type === 'number') {
+      if (field.goalType === 'number') {
         const numValue = parseFloat(value);
         if (isNaN(numValue) || numValue < 0) {
           newErrors[field.goalKey] = `${field.label} must be a valid positive number`;
@@ -71,9 +71,9 @@ export const TaskFieldsModal: React.FC<TaskFieldsModalProps> = ({
 
     const goalTypes: GoalType[] = fields.map((field) => ({
       goalKey: field.goalKey,
-      goalDataType: field.goalType,
+      goalType: field.goalType,
       value:
-        field.type === 'number'
+        field.goalType === 'number'
           ? parseFloat(fieldValues[field.goalKey])
           : fieldValues[field.goalKey],
     }));
@@ -113,7 +113,7 @@ export const TaskFieldsModal: React.FC<TaskFieldsModalProps> = ({
                   value={fieldValues[field.goalKey] || ''}
                   onChangeText={(value) => handleFieldChange(field.goalKey, value)}
                   placeholder={`Enter ${field.label.toLowerCase()}`}
-                  keyboardType={getKeyboardType(field.type)}
+                  keyboardType={getKeyboardType(field.goalType)}
                   error={!!errors[field.goalKey]}
                   errorMessage={errors[field.goalKey]}
                 />
@@ -122,9 +122,9 @@ export const TaskFieldsModal: React.FC<TaskFieldsModalProps> = ({
           </ScrollView>
 
           <View style={styles.modalActions}>
-            <TextButton
+            <PrimaryButton
               size={ButtonSize.LARGE}
-              style={{ flex: 1 }}
+              style={{ flex: 1, backgroundColor: '#ccc' }}
               title="Cancel"
               onPress={handleClose}
             />

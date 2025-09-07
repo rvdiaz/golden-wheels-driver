@@ -20,9 +20,9 @@ interface TextButtonProps {
 }
 
 const sizeStyles = {
-  [ButtonSize.SMALL]: { paddingVertical: 4, paddingHorizontal: 4, fontSize: 14 },
-  [ButtonSize.MEDIUM]: { paddingVertical: 8, paddingHorizontal: 16, fontSize: 16 },
-  [ButtonSize.LARGE]: { paddingVertical: 12, paddingHorizontal: 20, fontSize: 18 },
+  [ButtonSize.SMALL]: { paddingVertical: 4, paddingHorizontal: 4, fontSize: 12 },
+  [ButtonSize.MEDIUM]: { paddingVertical: 8, paddingHorizontal: 16, fontSize: 12 },
+  [ButtonSize.LARGE]: { paddingVertical: 12, paddingHorizontal: 20, fontSize: 14 },
 };
 
 const TextButton: React.FC<TextButtonProps> = ({

@@ -6,6 +6,8 @@ export const getUserQuery = gql`
       email
       id
       activeTemplateId
+      name
+      phone
       modules {
         icon
         label
@@ -21,7 +23,7 @@ export const getUserQuery = gql`
       }
       systemData {
         tasksConfiguration {
-          categoryKey
+          key
           description
           goalKey
           goalType

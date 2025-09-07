@@ -13,7 +13,7 @@ import {
 import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 import ContactForm from './widgets/addContact';
 import { ContactList } from './widgets/contactList';
-import { ActiveCrmTabs, ContactType, IContact, IFollowUp } from './interfaces';
+import { ActiveCrmTabs, ContactType, IFollowUp } from './interfaces';
 import { useReactiveVar } from '@apollo/client';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import Constants from 'expo-constants';

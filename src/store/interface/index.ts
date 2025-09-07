@@ -81,15 +81,14 @@ export interface IUser {
 // Field definition
 export interface TaskField {
   label: string;
-  type: 'text' | 'number'; // extend as needed
   goalKey: string;
-  goalType: string; // new: type of the tracked data
+  goalType: 'text' | 'number'; // new: type of the tracked data
 }
 
 export interface ITaskSchemaItem {
   label: string;
   description: string;
-  categoryKey: string;
+  key: string;
   fields: TaskField[];
   goalKey?: string;
   goalType?: string; // new: type of the tracked data

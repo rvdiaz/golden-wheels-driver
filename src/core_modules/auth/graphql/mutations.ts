@@ -6,13 +6,36 @@ export const addUserMutation = gql`
       email
       id
       activeTemplateId
-      image {
-        alt
-        s3Key
-        url
-      }
       name
       phone
+      modules {
+        icon
+        label
+        isBottomBar
+        metaData
+        moduleKey
+        path
+        modules {
+          label
+          metaData
+          moduleKey
+        }
+      }
+      systemData {
+        tasksConfiguration {
+          key
+          description
+          goalKey
+          goalType
+          label
+          fields {
+            goalKey
+            goalType
+            label
+            type
+          }
+        }
+      }
     }
   }
 `;

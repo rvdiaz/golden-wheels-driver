@@ -15,7 +15,7 @@ const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export interface GoalType {
   goalKey: string;
-  goalDataType: string;
+  goalType: string;
   value: number | string;
 }
 
@@ -53,11 +53,10 @@ export const TaskItem = ({ task }: { task: ITask }) => {
 
   const executeTaskCompletion = async (goalTypes: GoalType[]) => {
     try {
-      console.log(':::goalTypes,', goalTypes);
-      /*  setvalue(true);
+      setvalue(true);
       await completeTaskFn({
         variables: {
-          task,
+          task: { ...task, progress: goalTypes },
           tenant: { tenantId },
           userId: user?.id,
           completionParam: true,
@@ -69,7 +68,7 @@ export const TaskItem = ({ task }: { task: ITask }) => {
             isCompleted: true,
           },
         },
-      }); */
+      });
     } catch (error) {
       console.error(':error', error);
       setvalue(false); // Revert on error
@@ -87,22 +86,30 @@ export const TaskItem = ({ task }: { task: ITask }) => {
       if (taskConfiguration) {
         const goalTypes: GoalType[] = [];
 
-        // Handle duration goal type
-        if (taskConfiguration.goalType === 'duration') {
-          const duration = getDurationInMinutes(task.startTime as string, task.endTime as string);
-          goalTypes.push({
-            goalKey: taskConfiguration.goalKey!,
-            goalDataType: taskConfiguration.goalType,
-            value: duration,
-          });
-        }
-
         // Check if task has additional fields
         if (taskConfiguration.fields && taskConfiguration.fields.length > 0) {
           // Show modal to collect field data
           setShowModal(true);
           return; // Don't complete the task yet, wait for modal submission
         } else {
+          // Handle duration goal type
+          if (taskConfiguration.goalType === 'duration') {
+            const duration = getDurationInMinutes(task.startTime as string, task.endTime as string);
+            goalTypes.push({
+              goalKey: taskConfiguration.goalKey!,
+              goalType: taskConfiguration.goalType,
+              value: duration,
+            });
+          }
+
+          // Handle duration goal type
+          if (taskConfiguration.goalType === 'amount') {
+            goalTypes.push({
+              goalKey: taskConfiguration.goalKey!,
+              goalType: taskConfiguration.goalType,
+              value: 1,
+            });
+          }
           // No additional fields, complete the task with duration only
           await executeTaskCompletion(goalTypes);
         }
@@ -119,16 +126,26 @@ export const TaskItem = ({ task }: { task: ITask }) => {
     try {
       const goalTypes: GoalType[] = [...fieldGoalTypes];
 
-      // Add duration if it's a goal type
-      if (taskConfiguration?.goalType === 'duration') {
-        const duration = getDurationInMinutes(task.startTime as string, task.endTime as string);
-        goalTypes.push({
-          goalKey: taskConfiguration.goalKey!,
-          goalDataType: taskConfiguration.goalType,
-          value: duration,
-        });
-      }
+      if (taskConfiguration) {
+        // Handle duration goal type
+        if (taskConfiguration.goalType === 'duration') {
+          const duration = getDurationInMinutes(task.startTime as string, task.endTime as string);
+          goalTypes.push({
+            goalKey: taskConfiguration.goalKey!,
+            goalType: taskConfiguration.goalType,
+            value: duration,
+          });
+        }
 
+        // Handle duration goal type
+        if (taskConfiguration.goalType === 'amount') {
+          goalTypes.push({
+            goalKey: taskConfiguration.goalKey!,
+            goalType: taskConfiguration.goalType,
+            value: 1,
+          });
+        }
+      }
       await executeTaskCompletion(goalTypes);
     } catch (error) {
       console.error(':error', error);

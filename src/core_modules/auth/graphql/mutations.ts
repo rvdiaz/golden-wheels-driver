@@ -32,7 +32,6 @@ export const addUserMutation = gql`
             goalKey
             goalType
             label
-            type
           }
         }
       }

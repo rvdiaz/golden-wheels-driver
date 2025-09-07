@@ -32,7 +32,6 @@ export const getUserQuery = gql`
             goalKey
             goalType
             label
-            type
           }
         }
       }

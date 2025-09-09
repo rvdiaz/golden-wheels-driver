@@ -16,8 +16,8 @@ import { PropertyEstimationsPage } from '~/custom_modules/tools/sections/propert
 import { ExpiredListingPage } from '~/custom_modules/tools/sections/mls_listing/expired_listing';
 import { DashboardBottomHeader } from '~/custom_modules/dashboard/widgets/headers';
 import { DailyTaskSelector } from '~/custom_modules/task/widgets/dailyTaskSelector';
-import { SearchCrmBox } from '~/custom_modules/crm/widgets/searchCrmBox';
 import { SearchCrmBoxIA } from '~/custom_modules/crm/widgets/searchCrmIABox';
+import { TransunionRentsApplications } from '~/custom_modules/tools/sections/transunion_rent_applications';
 
 export const moduleScreens: Record<
   ModuleKeys,
@@ -74,5 +74,8 @@ export const moduleScreens: Record<
   },
   PropertyEstimations: {
     body: PropertyEstimationsPage,
+  },
+  RentApplications: {
+    body: TransunionRentsApplications,
   },
 };

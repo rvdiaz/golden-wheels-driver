@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
-import { ITask } from '../interfaces';
+import { GoalType, ITask } from '../interfaces';
 import { formatTaskTime, getDurationInMinutes, getTaskConfigByKey, isActiveTask } from '../helpers';
 import { useMutation, useReactiveVar } from '@apollo/client';
 import { completeTaskMutation } from '../graphql/mutations';
@@ -12,12 +12,6 @@ import { Badge } from '~/codidge_components/UI/badge';
 import { TaskFieldsModal } from '~/codidge_components/UI/customField/modalForm';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
-
-export interface GoalType {
-  goalKey: string;
-  goalType: string;
-  value: number | string;
-}
 
 export const TaskItem = ({ task }: { task: ITask }) => {
   const isActive = isActiveTask(task);

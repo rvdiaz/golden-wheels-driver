@@ -8,6 +8,13 @@ export const addUserMutation = gql`
       activeTemplateId
       name
       phone
+      address {
+        addressLine1
+        locality
+        region
+        postalCode
+        country
+      }
       modules {
         icon
         label

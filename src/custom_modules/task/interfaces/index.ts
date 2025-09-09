@@ -50,6 +50,7 @@ export interface ITask {
   endTime: Date | string;
   date: Date | string;
   description: string;
+  progress: GoalType[];
 }
 
 export interface TaskFormValues {
@@ -60,4 +61,10 @@ export interface TaskFormValues {
   endTime: Date | string | null;
   date: Date | string;
   description: string;
+}
+
+export interface GoalType {
+  goalKey: string;
+  goalType: string;
+  value: number | string;
 }

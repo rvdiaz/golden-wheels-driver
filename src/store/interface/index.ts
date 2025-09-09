@@ -16,6 +16,7 @@ export enum ModuleKeys {
   contactDetals = 'ContactDetals',
   profile = 'Profile',
   income = 'Incomes',
+  transUnionRentApplications = 'RentApplications',
   /*   contentGallery = "contentGallery", */
 }
 
@@ -73,6 +74,7 @@ export interface IUser {
   metaData: any;
   modules: IModule[];
   activeTemplateId: string;
+  address: IUserAddress;
   systemData: {
     tasksConfiguration: ITaskSchemaItem[];
   };
@@ -92,4 +94,15 @@ export interface ITaskSchemaItem {
   fields: TaskField[];
   goalKey?: string;
   goalType?: string; // new: type of the tracked data
+}
+
+export interface IUserAddress {
+  addressLine1: string;
+  addressLine2?: string;
+  addressLine3?: string;
+  addressLine4?: string;
+  locality: string;
+  region: string;
+  postalCode: string;
+  country: string;
 }

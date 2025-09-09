@@ -11,6 +11,15 @@ export const ToolsScreen: React.FC = () => {
 
   const tools = [
     {
+      id: ModuleKeys.transUnionRentApplications,
+      title: 'Rental Applications',
+      description: 'Send customer rental applications',
+      icon: 'FileSignature',
+      color: '#059669',
+      backgroundColor: '#ECFDF5',
+      route: 'RentApplications',
+    },
+    {
       id: ModuleKeys.mortgageCalculator,
       title: 'Mortgage Calculator',
       description: 'Calculate monthly mortgage payments',

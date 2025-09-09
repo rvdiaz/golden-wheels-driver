@@ -79,10 +79,16 @@ export const getTenantRoutes = (user: IUser | null) => {
       customIcon: 'tools',
       modules: [
         {
+          label: 'Rent Applications',
+          moduleKey: ModuleKeys.transUnionRentApplications,
+          metaData: {},
+        },
+        {
           label: 'Mortgage Calculator',
           moduleKey: ModuleKeys.mortgageCalculator,
           metaData: {},
         },
+
         {
           label: 'Property Tools',
           moduleKey: ModuleKeys.propertyTools,

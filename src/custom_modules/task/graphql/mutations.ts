@@ -13,6 +13,11 @@ export const addTaskMutation = gql`
       endTime
       source
       description
+      progress {
+        goalKey
+        goalType
+        value
+      }
     }
   }
 `;
@@ -35,6 +40,11 @@ export const completeTaskMutation = gql`
       endTime
       source
       description
+      progress {
+        goalKey
+        goalType
+        value
+      }
     }
   }
 `;
@@ -58,6 +68,11 @@ export const updateTaskMutation = gql`
       endTime
       source
       description
+      progress {
+        goalKey
+        goalType
+        value
+      }
     }
   }
 `;

@@ -23,6 +23,11 @@ export const getTaskByUserQuery = gql`
       endTime
       source
       description
+      progress {
+        goalKey
+        goalType
+        value
+      }
     }
   }
 `;
@@ -40,6 +45,11 @@ export const getTaskQuery = gql`
       endTime
       source
       description
+      progress {
+        goalKey
+        goalType
+        value
+      }
     }
   }
 `;

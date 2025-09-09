@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   propertyName: {
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: '600',
     color: '#1a1a1a',
     flex: 1,
@@ -272,14 +272,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   primaryAddress: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#333333',
     fontWeight: '500',
     lineHeight: 22,
     marginBottom: 4,
   },
   secondaryAddress: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#666666',
     marginBottom: 2,
   },

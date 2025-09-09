@@ -1,4 +1,5 @@
 import { IImage } from '~/codidge_components/interfaces';
+import { GoalType } from '~/custom_modules/task/interfaces';
 
 export enum ModuleKeys {
   dashboard = 'Dashboard',
@@ -80,18 +81,11 @@ export interface IUser {
   };
 }
 
-// Field definition
-export interface TaskField {
-  label: string;
-  goalKey: string;
-  goalType: 'text' | 'number'; // new: type of the tracked data
-}
-
 export interface ITaskSchemaItem {
   label: string;
   description: string;
   key: string;
-  fields: TaskField[];
+  fields: GoalType[];
   goalKey?: string;
   goalType?: string; // new: type of the tracked data
 }

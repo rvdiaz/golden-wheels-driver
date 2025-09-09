@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { SafeAreaView, StyleSheet, View } from 'react-native';
 import { Card } from '~/codidge_components/UI/card';
 import { Header } from '~/codidge_components/UI/header';
-import { ScrollableTabHeader, TabHeader } from '~/codidge_components/UI/tabs';
+import { TabHeader } from '~/codidge_components/UI/tabs';
 import { TransUnionPropertyList } from './widgets/propertyList';
 import { ScreenRequestList } from './widgets/screenRequestList';
 import { ScreenRentersList } from './widgets/rentersList';
@@ -68,9 +68,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#F9FAFB',
   },
   card: {
-    margin: 16,
+    marginHorizontal: 16,
+    marginTop: 16,
     flex: 1,
-    padding: 8,
+    paddingTop: 16,
   },
   tabsContainer: {
     flex: 1,

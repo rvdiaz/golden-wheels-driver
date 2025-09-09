@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView } from 'react-native';
-import { TaskField } from '~/store/interface';
 import { theme } from '~/theme/theme';
 import InputField from '../form/inputs/inputField';
-import { GoalType } from '~/custom_modules/task/widgets/taskItem';
-import TextButton from '../button/TextButton';
 import PrimaryButton from '../button/PrimaryButton';
 import { ButtonSize } from '../button/OutlineButton';
+import { GoalType } from '~/custom_modules/task/interfaces';
 
 interface TaskFieldsModalProps {
   visible: boolean;
-  fields: TaskField[];
+  fields: GoalType[];
   onClose: () => void;
   onSubmit: (goalTypes: GoalType[]) => void;
   taskTitle?: string;
@@ -73,7 +71,7 @@ export const TaskFieldsModal: React.FC<TaskFieldsModalProps> = ({
       goalKey: field.goalKey,
       goalType: field.goalType,
       value:
-        field.goalType === 'number'
+        field.goalType === 'amount'
           ? parseFloat(fieldValues[field.goalKey])
           : fieldValues[field.goalKey],
     }));
@@ -86,10 +84,6 @@ export const TaskFieldsModal: React.FC<TaskFieldsModalProps> = ({
     setFieldValues({});
     setErrors({});
     onClose();
-  };
-
-  const getKeyboardType = (fieldType: 'text' | 'number') => {
-    return fieldType === 'number' ? 'numeric' : 'default';
   };
 
   return (
@@ -106,14 +100,14 @@ export const TaskFieldsModal: React.FC<TaskFieldsModalProps> = ({
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             bounces={false}>
-            {fields.map((field, index) => (
+            {fields.map((field) => (
               <View key={field.goalKey} style={styles.fieldContainer}>
                 <Text style={styles.fieldLabel}>{field.label}</Text>
                 <InputField
                   value={fieldValues[field.goalKey] || ''}
                   onChangeText={(value) => handleFieldChange(field.goalKey, value)}
-                  placeholder={`Enter ${field.label.toLowerCase()}`}
-                  keyboardType={getKeyboardType(field.goalType)}
+                  placeholder={field.label ? `Enter ${field.label.toLowerCase()}` : ''}
+                  keyboardType="numeric"
                   error={!!errors[field.goalKey]}
                   errorMessage={errors[field.goalKey]}
                 />

@@ -64,6 +64,7 @@ export interface TaskFormValues {
 }
 
 export interface GoalType {
+  label?: string;
   goalKey: string;
   goalType: string;
   value: number | string;

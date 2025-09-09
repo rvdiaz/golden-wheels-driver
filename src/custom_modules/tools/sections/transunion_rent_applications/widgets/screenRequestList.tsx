@@ -15,6 +15,8 @@ import { IScreeningRequest } from '../interfaces';
 import { Card } from '~/codidge_components/UI/card';
 import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 import { ScreenRequestForm } from './screenRequestForm';
+import { formatTransunionDate, getRequestStatus } from '../helpers';
+import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 
 export const ScreenRequestList = () => {
   const user = useReactiveVar(userData);
@@ -30,44 +32,70 @@ export const ScreenRequestList = () => {
     // navigation.navigate('ScreeningRequestDetails', { requestId: item.screeningRequestId });
   };
 
-  const renderScreeningRequest = ({ item }: { item: IScreeningRequest }) => (
-    <TouchableOpacity onPress={() => handleRequestPress(item)} activeOpacity={0.7}>
-      <Card style={styles.requestCard}>
-        <View style={styles.header}>
-          <Text style={styles.propertyName} numberOfLines={1}>
-            {item.propertyName}
-          </Text>
-          <Text style={styles.requestId}>#{item.screeningRequestId}</Text>
-        </View>
+  const renderScreeningRequest = ({ item }: { item: IScreeningRequest }) => {
+    const statusInfo = getRequestStatus(item.screeningRequestRenters);
+    const hasApplicants = item.screeningRequestRenters.length > 0;
+    const firstApplicant = hasApplicants ? item.screeningRequestRenters[0] : null;
 
-        <Text style={styles.address} numberOfLines={1}>
-          {item.propertySummaryAddress}
-        </Text>
+    return (
+      <TouchableOpacity onPress={() => handleRequestPress(item)} activeOpacity={0.7}>
+        <Card style={styles.requestCard}>
+          <View style={styles.header}>
+            <Text style={styles.propertyName} numberOfLines={1}>
+              {item.propertyName}
+            </Text>
+            <View style={styles.headerRight}>
+              <View style={[styles.statusBadge, { backgroundColor: statusInfo.bgColor }]}>
+                <Text style={[styles.statusText, { color: statusInfo.color }]}>
+                  {statusInfo.status}
+                </Text>
+              </View>
+            </View>
+          </View>
 
-        <View style={styles.footer}>
-          <Text style={styles.applicantCount}>
-            {item.screeningRequestRenters.length} applicant
-            {item.screeningRequestRenters.length !== 1 ? 's' : ''}
-          </Text>
+          {/* Conditional display based on applicants */}
+          {hasApplicants ? (
+            <Text style={styles.applicantInfo} numberOfLines={1}>
+              {`${firstApplicant?.renterFirstName} ${firstApplicant?.renterLastName}`}
+              {firstApplicant?.renterRole && ` (${firstApplicant.renterRole})`}
+            </Text>
+          ) : (
+            <Text style={styles.address} numberOfLines={1}>
+              {item.propertySummaryAddress}
+            </Text>
+          )}
+
+          {/* Always show address as secondary info if we're showing applicant name */}
+          {hasApplicants && (
+            <Text style={styles.secondaryInfo} numberOfLines={1}>
+              {item.propertySummaryAddress}
+            </Text>
+          )}
+
+          <View style={styles.footer}>
+            <View style={styles.leftFooter}>
+              <Text style={styles.applicantCount}>
+                {item.screeningRequestRenters.length} applicant
+              </Text>
+            </View>
+            <Text style={styles.dateInfo}>Submitted {formatTransunionDate(item.createdOn)}</Text>
+          </View>
           <Text style={styles.tapHint}>Tap for details →</Text>
-        </View>
-      </Card>
-    </TouchableOpacity>
-  );
+        </Card>
+      </TouchableOpacity>
+    );
+  };
 
   if (loading) {
-    return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#0066cc" />
-        <Text style={styles.loadingText}>Loading screening requests...</Text>
-      </View>
-    );
+    return <PageLoading />;
   }
 
   if (error) {
     return (
-      <View style={styles.centerContainer}>
-        <Text style={styles.errorText}>Error loading data: {error.message}</Text>
+      <View style={styles.errorState}>
+        <Text style={styles.errorIcon}>⚠️</Text>
+        <Text style={styles.errorTitle}>Unable to load screening requests</Text>
+        <Text style={styles.errorSubtitle}>Please check your connection and try again</Text>
       </View>
     );
   }
@@ -131,11 +159,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 16,
-    color: '#666',
-  },
   errorText: {
     fontSize: 16,
     color: '#f44336',
@@ -161,30 +184,22 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   propertyName: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     color: '#333',
     flex: 1,
     marginRight: 8,
   },
-  requestId: {
-    fontSize: 12,
-    color: '#666',
-    backgroundColor: '#f0f0f0',
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    borderRadius: 3,
-    fontWeight: '500',
-  },
   address: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#666',
     marginBottom: 12,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-end',
+    marginBottom: 10,
   },
   applicantCount: {
     fontSize: 14,
@@ -195,5 +210,61 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#0066cc',
     fontStyle: 'italic',
+    alignSelf: 'center',
+  },
+  errorState: {
+    alignItems: 'center',
+    padding: 32,
+    paddingTop: 64,
+  },
+  errorIcon: {
+    fontSize: 48,
+    marginBottom: 16,
+  },
+  errorTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#dc3545',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  errorSubtitle: {
+    fontSize: 14,
+    color: '#666666',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  headerRight: {
+    alignItems: 'flex-end',
+    gap: 4,
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusText: {
+    fontSize: 11,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  applicantInfo: {
+    fontSize: 13,
+    color: '#333',
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  secondaryInfo: {
+    fontSize: 12,
+    color: '#999',
+    marginBottom: 12,
+  },
+  leftFooter: {
+    flex: 1,
+  },
+  dateInfo: {
+    fontSize: 12,
+    color: '#999',
   },
 });

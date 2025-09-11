@@ -9,15 +9,15 @@ import {
   Modal,
   TouchableOpacity,
   Pressable,
+  SafeAreaView,
 } from 'react-native';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import { getTransunionPropertyQuery } from '~/custom_modules/tools/api/queries';
-import { ITransUnionProperty } from '../interfaces';
+import { ITransUnionProperty } from '../../interfaces';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { Search, ChevronDown, Plus, X } from 'lucide-react-native';
 import { PropertyForm } from './propertyForm';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '~/codidge_components/UI/header';
 import { theme } from '~/theme/theme';
 

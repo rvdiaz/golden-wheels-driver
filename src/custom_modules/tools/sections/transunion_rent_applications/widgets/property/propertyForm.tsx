@@ -13,7 +13,7 @@ import {
 import { Header } from '~/codidge_components/UI/header';
 import { createTransUnionPropertyMutation } from '~/custom_modules/tools/api/mutations';
 import { userData } from '~/store/user';
-import { ITransUnionProperty } from '../interfaces';
+import { ITransUnionProperty } from '../../interfaces';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 
 export const PropertyForm = ({

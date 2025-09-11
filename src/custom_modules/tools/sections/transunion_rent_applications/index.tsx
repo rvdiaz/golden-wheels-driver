@@ -4,9 +4,8 @@ import { SafeAreaView, StyleSheet, View } from 'react-native';
 import { Card } from '~/codidge_components/UI/card';
 import { Header } from '~/codidge_components/UI/header';
 import { TabHeader } from '~/codidge_components/UI/tabs';
-import { TransUnionPropertyList } from './widgets/propertyList';
-import { ScreenRequestList } from './widgets/screenRequestList';
-import { ScreenRentersList } from './widgets/rentersList';
+import { TransUnionPropertyList } from './widgets/property/propertyList';
+import { ScreenRequestList } from './widgets/screen_request/screenRequestList';
 
 enum RentalAppScreen {
   TransUnionPropertyList = 'TransUnionPropertyList',
@@ -23,10 +22,6 @@ export const TransunionRentsApplications = () => {
 
   if (screen === RentalAppScreen.TransUnionScreenRequestList) {
     body = <ScreenRequestList />;
-  }
-
-  if (screen === RentalAppScreen.TransUnionRentersList) {
-    body = <ScreenRentersList />;
   }
 
   return (

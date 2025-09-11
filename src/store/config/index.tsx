@@ -12,12 +12,12 @@ import { ProfileScreen } from '~/core_modules/profile';
 import { PropertyInfoScreen } from '~/custom_modules/tools/sections/owner_property_details';
 import { PrequalifiedLoanScreen } from '~/custom_modules/tools/sections/pre_qualified_tools';
 import { UserIncomes } from '~/core_modules/profile/income/widgets';
-import { PropertyEstimationsPage } from '~/custom_modules/tools/sections/propertyEstimations';
 import { ExpiredListingPage } from '~/custom_modules/tools/sections/mls_listing/expired_listing';
 import { DashboardBottomHeader } from '~/custom_modules/dashboard/widgets/headers';
 import { DailyTaskSelector } from '~/custom_modules/task/widgets/dailyTaskSelector';
 import { SearchCrmBoxIA } from '~/custom_modules/crm/widgets/searchCrmIABox';
 import { TransunionRentsApplications } from '~/custom_modules/tools/sections/transunion_rent_applications';
+import { PropertyEstimationsPage } from '~/custom_modules/tools/sections/property_estimations';
 
 export const moduleScreens: Record<
   ModuleKeys,

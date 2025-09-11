@@ -31,14 +31,25 @@ export const getRequestStatus = (
     };
   }
 
-  // Check if any renter has a pending status
-  const hasPendingStatus = renters.some(
+  // Check if any renter has submitted reports (with TransUnion)
+  const hasReportsRequested = renters.some((renter) => renter.renterStatus === 'ReportsRequested');
+
+  if (hasReportsRequested) {
+    return {
+      status: 'Submitted',
+      color: '#2196f3',
+      bgColor: '#e3f2fd',
+    };
+  }
+
+  // Check if any renter has other pending statuses
+  const hasOtherPending = renters.some(
     (renter) =>
       renter.renterStatus === 'IdentityVerificationPending' ||
       renter.renterStatus.toLowerCase().includes('pending')
   );
 
-  if (hasPendingStatus) {
+  if (hasOtherPending) {
     return {
       status: 'In Progress',
       color: '#ff9500',
@@ -59,9 +70,50 @@ export const getRequestStatus = (
     };
   }
 
+  // Default case for any other statuses
   return {
     status: 'In Progress',
     color: '#ff9500',
     bgColor: '#fff3e0',
   };
+};
+
+// Get individual applicant status
+export const getApplicantStatus = (
+  renterStatus: string
+): { status: string; color: string; bgColor: string } => {
+  switch (renterStatus) {
+    case 'ReportsRequested':
+      return {
+        status: 'Submitted',
+        color: '#2196f3',
+        bgColor: '#e3f2fd',
+      };
+    case 'Complete':
+    case 'Approved':
+      return {
+        status: 'Complete',
+        color: '#4caf50',
+        bgColor: '#e8f5e8',
+      };
+    case 'IdentityVerificationPending':
+      return {
+        status: 'In Progress',
+        color: '#ff9500',
+        bgColor: '#fff3e0',
+      };
+    default:
+      if (renterStatus.toLowerCase().includes('pending')) {
+        return {
+          status: 'In Progress',
+          color: '#ff9500',
+          bgColor: '#fff3e0',
+        };
+      }
+      return {
+        status: 'Not Started',
+        color: '#666',
+        bgColor: '#f5f5f5',
+      };
+  }
 };

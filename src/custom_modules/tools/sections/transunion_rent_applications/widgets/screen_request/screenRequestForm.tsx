@@ -4,9 +4,9 @@ import { SafeAreaView, StyleSheet, View, ScrollView } from 'react-native';
 import { Header } from '~/codidge_components/UI/header';
 import { createScreeningMutation } from '~/custom_modules/tools/api/mutations';
 import { userData } from '~/store/user';
-import { PropertySelectorWidget } from './propertySelector';
-import { ITransUnionProperty } from '../interfaces';
 import { MultipleContactEmails } from '~/custom_modules/crm/widgets/crmContactSelector';
+import { PropertySelectorWidget } from '../property/propertySelector';
+import { ITransUnionProperty } from '../../interfaces';
 
 // Contact Interface (adjust according to your contact structure)
 interface IContact {
@@ -26,38 +26,27 @@ export const ScreenRequestForm = ({
   disposeModalHandler: () => void;
   onAddScreenView: () => void;
 }) => {
-  const [emails, setEmails] = useState<string[]>(['']); // Start with
+  const [emails, setEmails] = useState<string[]>(); // Start with
   const user = useReactiveVar(userData);
   const [property, setProperty] = useState<ITransUnionProperty>();
-  const [contacts, setContacts] = useState<IContact[]>([null as any]); // Start with one empty contact slot
 
   const [createScreeningMutationFn, { loading }] = useMutation(createScreeningMutation);
 
   // Validation function
   const isFormValid = () => {
-    if (!property) return false;
-
-    // Check if we have at least one valid contact
-    const validContacts = contacts.filter((contact) => contact && contact.id);
-    return validContacts.length > 0;
-  };
-
-  // Get contact emails for submission
-  const getContactEmails = () => {
-    return contacts.filter((contact) => contact && contact.email).map((contact) => contact.email);
+    if (!property || !emails || emails?.length === 0) return false;
+    return true;
   };
 
   const onSave = async () => {
     if (!isFormValid()) return;
 
     try {
-      const contactEmails = getContactEmails();
-
       await createScreeningMutationFn({
         variables: {
           userId: user?.id,
           propertyId: property?.propertyId,
-          contactEmails: contactEmails, // Add this to your mutation variables
+          contactEmails: emails, // Add this to your mutation variables
           // or contacts: contacts.filter(c => c && c.id), if you want to send full contact objects
         },
       });
@@ -67,7 +56,7 @@ export const ScreenRequestForm = ({
 
       // Reset form
       setProperty(undefined);
-      setContacts([null as any]);
+      setEmails(undefined);
     } catch (error) {
       console.log('::error', error);
       // You might want to show an error alert here
@@ -100,7 +89,7 @@ export const ScreenRequestForm = ({
 
           {/* Email Selection */}
           <MultipleContactEmails
-            emails={emails}
+            emails={emails ?? []}
             onEmailsChange={setEmails}
             label="Contact Emails *"
             minEmails={1}

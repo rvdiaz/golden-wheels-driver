@@ -3,11 +3,12 @@ import { View, Text, StyleSheet, FlatList, ActivityIndicator, Alert, Modal } fro
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import { getTransunionPropertyQuery } from '~/custom_modules/tools/api/queries';
-import { ITransUnionProperty } from '../interfaces';
+import { ITransUnionProperty } from '../../interfaces';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { Search } from 'lucide-react-native';
 import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 import { PropertyForm } from './propertyForm';
+import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 
 export const TransUnionPropertyList = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -124,12 +125,7 @@ export const TransUnionPropertyList = () => {
     </View>
   );
 
-  const renderLoadingState = () => (
-    <View style={styles.loadingContainer}>
-      <ActivityIndicator size="large" color="#007AFF" />
-      <Text style={styles.loadingText}>Loading properties...</Text>
-    </View>
-  );
+  const renderLoadingState = () => <PageLoading />;
 
   const renderErrorState = () => (
     <View style={styles.errorState}>

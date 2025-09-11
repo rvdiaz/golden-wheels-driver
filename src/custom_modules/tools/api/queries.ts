@@ -72,3 +72,12 @@ export const getScreenRequestQuery = gql`
     }
   }
 `;
+
+export const getRenterRepostQuery = gql`
+  query getRenterRepost($screeningRequestRenterId: ID!) {
+    getRenterRepost(screeningRequestRenterId: $screeningRequestRenterId) {
+      providerName
+      reportData
+    }
+  }
+`;

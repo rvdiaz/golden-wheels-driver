@@ -71,7 +71,7 @@ export const ProfileScreen: React.FC = () => {
               navigation.navigate(ModuleKeys.goals as never);
             }}
             style={styles.menuItem}>
-            <Icons.DollarSign size={20} color="#374151" />
+            <Icons.TargetIcon size={20} color="#374151" />
             <Text style={styles.menuText}>Goals</Text>
             <Icons.ChevronRight size={20} color="#9CA3AF" />
           </TouchableOpacity>

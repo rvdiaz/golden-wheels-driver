@@ -8,14 +8,36 @@ export const createTransUnionPropertyMutation = gql`
   }
 `;
 
-export const createScreeningMutation = gql`
-  mutation createScreeningRequest($userId: ID!, $propertyId: ID!, $initialBundleId: ID) {
-    createScreeningRequest(
+export const initiateRentApplicationMutation = gql`
+  mutation initiateRentApplication(
+    $tenant: TenantData!
+    $userId: ID!
+    $property: PropertyInput!
+    $initialBundleId: ID
+    $contactEmails: [String!]!
+  ) {
+    initiateRentApplication(
+      tenant: $tenant
       userId: $userId
-      propertyId: $propertyId
+      property: $property
       initialBundleId: $initialBundleId
+      contactEmails: $contactEmails
     ) {
-      screeningRequestId
+      status
+      rentApplicationId
+      property {
+        addressLine1
+        locality
+        region
+        postalCode
+        country
+        propertyId
+        propertyName
+      }
+      applicants {
+        emailAddress
+      }
+      __typename
     }
   }
 `;

@@ -16,7 +16,9 @@ enum RentalAppScreen {
 export const TransunionRentsApplications = () => {
   const navigation = useNavigation();
 
-  const [screen, setScreen] = useState<RentalAppScreen>(RentalAppScreen.TransUnionPropertyList);
+  const [screen, setScreen] = useState<RentalAppScreen>(
+    RentalAppScreen.TransUnionScreenRequestList
+  );
 
   let body = <TransUnionPropertyList />;
 
@@ -38,12 +40,12 @@ export const TransunionRentsApplications = () => {
           <TabHeader
             tabs={[
               {
-                label: 'Properties',
-                key: RentalAppScreen.TransUnionPropertyList,
+                label: 'Screening',
+                key: RentalAppScreen.TransUnionScreenRequestList,
               },
               {
-                label: 'Screen Requests',
-                key: RentalAppScreen.TransUnionScreenRequestList,
+                label: 'Properties',
+                key: RentalAppScreen.TransUnionPropertyList,
               },
             ]}
             onTabChange={(tabKey) => {

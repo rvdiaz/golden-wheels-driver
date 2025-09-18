@@ -1,3 +1,5 @@
+import { string } from 'yup';
+
 export interface ITransUnionProperty {
   propertyName: string;
   rent?: number; // Nullable
@@ -17,28 +19,54 @@ export interface ITransUnionProperty {
   propertyId?: string;
 }
 
-export interface IScreeningRequestRenter {
-  bundleId: number;
-  renterRole: string;
-  renterStatus: string;
-  createdOn: string; // ISO datetime
-  modifiedOn: string; // ISO datetime
-  renterFirstName: string;
-  renterLastName: string;
-  renterMiddleName?: string;
-  screeningRequestRenterId: number;
-  landlordExternalReferenceId: string;
-  renterId: number;
+// Base renter input
+export interface INewRenterInput {
+  income: number;
+  incomeFrequency: string;
+  otherIncome: number;
+  otherIncomeFrequency: string;
+  assets: number;
+  employmentStatus: string;
+  multiShareExpirationDate?: string; // ISO datetime
+  emailAddress: string;
+  firstName: string;
+  middleName?: string;
+  lastName: string;
+  phoneNumber: string;
+  phoneType?: string;
+  homeAddress: ITransUnionProperty;
+  acceptedTermsAndConditions: boolean;
+  nationalId?: string;
+  dateOfBirth?: string; // ISO date
+  renterExternalReferenceId?: string;
 }
 
-export interface IScreeningRequest {
-  initialBundleId: number;
-  createdOn: string; // ISO datetime
-  modifiedOn: string; // ISO datetime
-  propertyName: string;
-  propertySummaryAddress: string;
-  screeningRequestRenters: IScreeningRequestRenter[];
-  screeningRequestId: number;
-  landlordExternalReferenceId: string;
-  propertyId: number;
+// Extended renter input with additional screening fields
+export interface IExtendedRenterInput extends INewRenterInput {
+  hasPets: boolean;
+  petDescription: string;
+  monthlyRent: number;
+  reasonForMoving: string;
+  landlordName: string;
+  landlordPhone: string;
+  hasEvicted: boolean;
+  evictedDescription: string;
+  hasCrimes: boolean;
+  crimesDescription: string;
+  screeningRequestId: string;
+  screeningRequestRenterId: string;
+  renterStatus: 'pending' | 'viewed' | 'in_progress' | 'completed';
+  reportPdfUrl: string;
+  renterReportItems: {
+    providerName: string;
+    reportData: string;
+  }[];
+}
+
+export interface IRentApplication {
+  rentApplicationId: string;
+  property: ITransUnionProperty;
+  applicants: IExtendedRenterInput[];
+  createdAt: string;
+  status: string;
 }

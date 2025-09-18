@@ -2,22 +2,14 @@ import { useMutation, useReactiveVar } from '@apollo/client';
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, View, ScrollView } from 'react-native';
 import { Header } from '~/codidge_components/UI/header';
-import { createScreeningMutation } from '~/custom_modules/tools/api/mutations';
+import Constants from 'expo-constants';
+import { initiateRentApplicationMutation } from '~/custom_modules/tools/api/mutations';
 import { userData } from '~/store/user';
 import { MultipleContactEmails } from '~/custom_modules/crm/widgets/crmContactSelector';
 import { PropertySelectorWidget } from '../property/propertySelector';
 import { ITransUnionProperty } from '../../interfaces';
 
-// Contact Interface (adjust according to your contact structure)
-interface IContact {
-  id: string;
-  name?: string;
-  firstName?: string;
-  lastName?: string;
-  email: string;
-  phone?: string;
-  company?: string;
-}
+const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const ScreenRequestForm = ({
   disposeModalHandler,
@@ -30,7 +22,7 @@ export const ScreenRequestForm = ({
   const user = useReactiveVar(userData);
   const [property, setProperty] = useState<ITransUnionProperty>();
 
-  const [createScreeningMutationFn, { loading }] = useMutation(createScreeningMutation);
+  const [initiateRentAppMutationFn, { loading }] = useMutation(initiateRentApplicationMutation);
 
   // Validation function
   const isFormValid = () => {
@@ -42,12 +34,15 @@ export const ScreenRequestForm = ({
     if (!isFormValid()) return;
 
     try {
-      await createScreeningMutationFn({
+      await initiateRentAppMutationFn({
         variables: {
+          tenant: {
+            tenantId,
+          },
+          property: property,
           userId: user?.id,
           propertyId: property?.propertyId,
           contactEmails: emails, // Add this to your mutation variables
-          // or contacts: contacts.filter(c => c && c.id), if you want to send full contact objects
         },
       });
 

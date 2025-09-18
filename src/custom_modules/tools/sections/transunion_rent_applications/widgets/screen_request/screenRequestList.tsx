@@ -2,18 +2,26 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Modal } from 'react-native';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
-import { getScreenRequestQuery } from '~/custom_modules/tools/api/queries';
+import { getRentApplications } from '~/custom_modules/tools/api/queries';
 import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 import { ScreenRequestForm } from './screenRequestForm';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
+import { IRentApplication } from '../../interfaces';
 import { ScreenRequestItem } from './screenRequestItem';
 
 export const ScreenRequestList = () => {
   const user = useReactiveVar(userData);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const { loading, error, data, refetch } = useQuery(getScreenRequestQuery, {
-    variables: { userId: user?.id },
+  const { loading, error, data, refetch } = useQuery<{
+    getUserRentApplications: {
+      items: IRentApplication[];
+      lastKey: any;
+    };
+  }>(getRentApplications, {
+    variables: {
+      userId: user?.id,
+    },
   });
 
   if (loading) {
@@ -30,10 +38,37 @@ export const ScreenRequestList = () => {
     );
   }
 
-  if (!data?.getScreeningRequest || data.getScreeningRequest.length === 0) {
+  const rentApplicationsList = data?.getUserRentApplications?.items ?? [];
+
+  if (!rentApplicationsList || rentApplicationsList.length === 0) {
     return (
       <View style={styles.centerContainer}>
         <Text style={styles.emptyText}>No screening requests found</Text>
+        <FloatingMenu
+          title="Screen Tenant"
+          icon="Plus"
+          onPress={() => {
+            setModalVisible(true);
+          }}
+        />
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(false);
+          }}>
+          <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+            <ScreenRequestForm
+              disposeModalHandler={() => {
+                setModalVisible(false);
+              }}
+              onAddScreenView={() => {
+                refetch();
+              }}
+            />
+          </View>
+        </Modal>
       </View>
     );
   }
@@ -41,9 +76,9 @@ export const ScreenRequestList = () => {
   return (
     <View style={styles.container}>
       <FlatList
-        data={data.getScreeningRequest}
-        renderItem={({ item }) => <ScreenRequestItem item={item} />}
-        keyExtractor={(item) => item.screeningRequestId.toString()}
+        data={rentApplicationsList}
+        renderItem={({ item }) => <ScreenRequestItem rentApp={item} />}
+        keyExtractor={(item) => item.rentApplicationId}
         showsVerticalScrollIndicator={false}
         onRefresh={refetch}
         refreshing={loading}

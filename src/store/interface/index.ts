@@ -18,7 +18,7 @@ export enum ModuleKeys {
   profile = 'Profile',
   income = 'Incomes',
   transUnionRentApplications = 'RentApplications',
-  /*   contentGallery = "contentGallery", */
+  goals = 'Goals',
 }
 
 export interface IFeatureModule {

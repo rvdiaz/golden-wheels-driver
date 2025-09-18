@@ -41,6 +41,11 @@ export const getTenantRoutes = (user: IUser | null) => {
           moduleKey: ModuleKeys.income,
           metaData: {},
         },
+        {
+          label: 'Goals',
+          moduleKey: ModuleKeys.goals,
+          metaData: {},
+        },
       ],
     },
     {

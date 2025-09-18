@@ -2,52 +2,28 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import React, { useState } from 'react';
 import { Card } from '~/codidge_components/UI/card';
 import { formatTransunionDate, getApplicantStatus, getRequestStatus } from '../../helpers';
-import { IScreeningRequest, IScreeningRequestRenter } from '../../interfaces';
+import { IExtendedRenterInput, IRentApplication } from '../../interfaces';
 import { theme } from '~/theme/theme';
-import { ApplicantReportsModal } from './applicantModal';
+import { PdfReportModal } from './applicantPdfViewer';
 
-interface ReportData {
-  providerName: string;
-  reportData: string;
-}
-
-interface ScreenRequestItemProps {
-  item: IScreeningRequest;
-}
-
-export const ScreenRequestItem: React.FC<ScreenRequestItemProps> = ({ item }) => {
+export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedApplicant, setSelectedApplicant] = useState<IScreeningRequestRenter | null>(null);
+  const [selectedApplicant, setSelectedApplicant] = useState<IExtendedRenterInput | null>(null);
 
-  const statusInfo = getRequestStatus(item.screeningRequestRenters);
-  const hasApplicants = item.screeningRequestRenters.length > 0;
+  const statusInfo = getRequestStatus(rentApp.applicants);
+  const hasApplicants = rentApp.applicants.length > 0;
 
-  // Format creation time to show hour
-  const formatCreationTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    });
-  };
-
-  // Generate mock email for demonstration (you'd get this from your API)
-  const getApplicantEmail = (firstName: string, lastName: string) => {
-    return `${firstName.toLowerCase()}.${lastName.toLowerCase()}@email.com`;
-  };
-
-  const handleRequestPress = (item: IScreeningRequest) => {
-    console.log('Navigate to details for:', item.screeningRequestId);
+  const handleRequestPress = (item: IRentApplication) => {
+    console.log('Navigate to details for:');
     // navigation.navigate('ScreeningRequestDetails', { requestId: item.screeningRequestId });
   };
 
-  const handleApplicantPress = (applicant: IScreeningRequestRenter, event: any) => {
+  const handleApplicantPress = (applicant: IExtendedRenterInput, event: any) => {
     // Stop event propagation to prevent triggering the parent TouchableOpacity
     event.stopPropagation();
 
     // Only allow press if applicant has submitted (ReportsRequested, Complete, or Approved)
-    const canViewReport = ['ReportsRequested', 'Complete', 'Approved'].includes(
+    const canViewReport = ['ReportsRequested', 'completed', 'Approved'].includes(
       applicant.renterStatus
     );
 
@@ -64,15 +40,14 @@ export const ScreenRequestItem: React.FC<ScreenRequestItemProps> = ({ item }) =>
 
   return (
     <>
-      <TouchableOpacity onPress={() => handleRequestPress(item)} activeOpacity={0.8}>
+      <TouchableOpacity onPress={() => handleRequestPress(rentApp)} activeOpacity={0.8}>
         <Card style={styles.requestCard}>
           {/* Header with Property Name and Overall Status */}
           <View style={styles.header}>
             <View style={styles.headerLeft}>
               <Text style={styles.propertyName} numberOfLines={1}>
-                {item.propertyName}
+                {rentApp.property.propertyName}
               </Text>
-              <Text style={styles.requestId}>ID: #{item.screeningRequestId}</Text>
             </View>
             <View style={[styles.statusBadge, { backgroundColor: statusInfo.bgColor }]}>
               <Text style={[styles.statusText, { color: statusInfo.color }]}>
@@ -85,7 +60,8 @@ export const ScreenRequestItem: React.FC<ScreenRequestItemProps> = ({ item }) =>
           <View style={styles.addressContainer}>
             <Text style={styles.addressIcon}>📍</Text>
             <Text style={styles.address} numberOfLines={2}>
-              {item.propertySummaryAddress}
+              {rentApp.property.addressLine1}, {rentApp.property.region},{' '}
+              {rentApp.property.postalCode}
             </Text>
           </View>
 
@@ -93,29 +69,21 @@ export const ScreenRequestItem: React.FC<ScreenRequestItemProps> = ({ item }) =>
           {hasApplicants && (
             <View>
               <Text style={styles.applicantsHeader}>Applicants</Text>
-              {item.screeningRequestRenters.map((applicant, index) => {
+              {rentApp.applicants.map((applicant) => {
                 const applicantStatus = getApplicantStatus(applicant.renterStatus);
-                const canViewReport = ['ReportsRequested', 'Complete', 'Approved'].includes(
-                  applicant.renterStatus
-                );
+                const canViewReport = !!applicant.reportPdfUrl;
+                const IconComponent = applicantStatus.icon;
 
                 return (
                   <TouchableOpacity
-                    key={applicant.screeningRequestRenterId}
+                    key={applicant.screeningRequestId}
                     style={[styles.applicantItem, canViewReport && styles.applicantItemPressable]}
                     onPress={(event) => handleApplicantPress(applicant, event)}
                     activeOpacity={canViewReport ? 0.7 : 1}
                     disabled={!canViewReport}>
                     <View style={styles.applicantContent}>
                       <View style={styles.applicantInfo}>
-                        <View style={styles.applicantHeader}>
-                          <Text style={styles.applicantName}>
-                            {`${applicant.renterFirstName} ${applicant.renterLastName}`}
-                          </Text>
-                        </View>
-                        <Text style={styles.applicantEmail}>
-                          {getApplicantEmail(applicant.renterFirstName, applicant.renterLastName)}
-                        </Text>
+                        <Text style={styles.applicantEmail}>{applicant.emailAddress}</Text>
                       </View>
 
                       <View style={styles.applicantStatusContainer}>
@@ -127,13 +95,20 @@ export const ScreenRequestItem: React.FC<ScreenRequestItemProps> = ({ item }) =>
                               styles.applicantStatusBadge,
                               { backgroundColor: applicantStatus.bgColor },
                             ]}>
-                            <Text
-                              style={[
-                                styles.applicantStatusText,
-                                { color: applicantStatus.color },
-                              ]}>
-                              {applicantStatus.status}
-                            </Text>
+                            <View style={styles.statusContent}>
+                              <IconComponent
+                                size={16}
+                                color={applicantStatus.color}
+                                style={styles.statusIcon}
+                              />
+                              <Text
+                                style={[
+                                  styles.applicantStatusText,
+                                  { color: applicantStatus.color },
+                                ]}>
+                                {applicantStatus.status}
+                              </Text>
+                            </View>
                           </View>
                         )}
                       </View>
@@ -147,14 +122,13 @@ export const ScreenRequestItem: React.FC<ScreenRequestItemProps> = ({ item }) =>
           {/* Footer with Count and Date/Time */}
           <View style={styles.footer}>
             <View style={styles.footerRight}>
-              <Text style={styles.dateText}>{formatTransunionDate(item.createdOn)}</Text>
+              <Text style={styles.dateText}>{formatTransunionDate(rentApp.createdAt)}</Text>
             </View>
           </View>
         </Card>
       </TouchableOpacity>
-
       {/* Reports Modal */}
-      <ApplicantReportsModal
+      <PdfReportModal
         visible={modalVisible}
         onClose={handleCloseModal}
         applicant={selectedApplicant}
@@ -186,12 +160,6 @@ const styles = StyleSheet.create({
     color: '#1A1A1A',
     marginBottom: 4,
     lineHeight: 22,
-  },
-  requestId: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: '#666666',
-    letterSpacing: 0.3,
   },
   statusBadge: {
     paddingHorizontal: 12,
@@ -305,5 +273,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#666666',
     fontWeight: '500',
+  },
+  statusContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  statusIcon: {
+    marginRight: 4,
   },
 });

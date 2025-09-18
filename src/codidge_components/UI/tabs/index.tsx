@@ -205,7 +205,7 @@ export const CompactTabHeader: React.FC<TabHeaderProps> = ({
             <View style={styles.compactIconContainer}>
               {tab.Icon && (
                 <tab.Icon
-                  size={20}
+                  size={16}
                   color={activeTab === tab.key ? theme.colors.primary : '#6B7280'}
                 />
               )}
@@ -350,6 +350,7 @@ const styles = StyleSheet.create({
   compactTab: {
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 12,
     paddingHorizontal: 8,
     borderRadius: 12,

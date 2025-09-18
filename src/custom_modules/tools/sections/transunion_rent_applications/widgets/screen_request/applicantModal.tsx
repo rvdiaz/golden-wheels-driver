@@ -4,57 +4,66 @@ import {
   Text,
   Modal,
   TouchableOpacity,
-  ScrollView,
   StyleSheet,
   ActivityIndicator,
   Dimensions,
   SafeAreaView,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { IScreeningRequestRenter } from '../../interfaces';
+import { IExtendedRenterInput, IRentApplication } from '../../interfaces';
 import { theme } from '~/theme/theme';
 import { useQuery } from '@apollo/client';
-import { getRenterRepostQuery } from '~/custom_modules/tools/api/queries';
+import { getApplicantReportQuery } from '~/custom_modules/tools/api/queries';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
+import { CompactTabHeader } from '~/codidge_components/UI/tabs';
 
 interface ReportData {
-  providerName: string;
-  reportData: string;
+  renterReportItems: {
+    providerName: string;
+    reportData: string;
+  }[];
+  fileUrl: string;
 }
 
 interface ApplicantReportsModalProps {
   visible: boolean;
   onClose: () => void;
-  applicant: IScreeningRequestRenter | null;
+  applicant: IExtendedRenterInput | null;
+  rentApp: IRentApplication;
 }
 
 export const ApplicantReportsModal: React.FC<ApplicantReportsModalProps> = ({
   visible,
   onClose,
   applicant,
+  rentApp,
 }) => {
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
+
+  const pdfReport = applicant?.reportPdfUrl;
 
   const {
     data: reportsData,
     loading,
     error,
     refetch,
-  } = useQuery<{ getRenterRepost: ReportData[] }>(getRenterRepostQuery, {
+  } = useQuery<{ getApplicantReport: ReportData }>(getApplicantReportQuery, {
     variables: {
       screeningRequestRenterId: applicant?.screeningRequestRenterId,
+      rentApplicationId: rentApp.rentApplicationId,
+      aplicantID: applicant?.emailAddress,
     },
     skip: !visible || !applicant?.screeningRequestRenterId,
     fetchPolicy: 'cache-and-network',
     errorPolicy: 'all',
   });
 
-  const reports = reportsData?.getRenterRepost || [];
+  const reports = reportsData?.getApplicantReport.renterReportItems || [];
 
   // Set default selected provider when reports load
   useEffect(() => {
     if (reports.length > 0 && !selectedProvider) {
-      setSelectedProvider(reports[0].providerName);
+      setSelectedProvider(reports[0]?.providerName);
     }
   }, [reports, selectedProvider]);
 
@@ -69,9 +78,9 @@ export const ApplicantReportsModal: React.FC<ApplicantReportsModalProps> = ({
 
   const getProviderDisplayName = (providerName: string) => {
     const providerMap: { [key: string]: string } = {
-      Credit: 'Credit Report',
-      Criminal: 'Criminal Background',
-      Eviction: 'Eviction History',
+      Credit: 'Credit',
+      Criminal: 'Criminal',
+      Eviction: 'Evictions',
       Employment: 'Employment Verification',
       Income: 'Income Verification',
     };
@@ -133,9 +142,7 @@ export const ApplicantReportsModal: React.FC<ApplicantReportsModalProps> = ({
     if (error) {
       return (
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>
-            {error.message || 'Failed to fetch reports. Please try again.'}
-          </Text>
+          <Text style={styles.errorText}>{'Failed to fetch reports. Please try again.'}</Text>
           <TouchableOpacity onPress={handleRetry} style={styles.retryButton}>
             <Text style={styles.retryButtonText}>Retry</Text>
           </TouchableOpacity>
@@ -153,33 +160,25 @@ export const ApplicantReportsModal: React.FC<ApplicantReportsModalProps> = ({
       );
     }
 
+    // Transform your reports data into the format expected by ScrollableTabHeader
+    const tabsData = reports.map((report) => ({
+      key: report.providerName,
+      label: getProviderDisplayName(report.providerName),
+      Icon: () => <Text style={styles.tabIcon}>{getProviderIcon(report.providerName)}</Text>,
+      // If you have any indexNumber/badge data, add it here:
+      // indexNumber: report.someCount || undefined
+    }));
+
     return (
       <View style={styles.content}>
         {/* Provider Tabs */}
         {reports.length > 1 && (
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.tabsContainer}
-            contentContainerStyle={styles.tabsContentContainer}>
-            {reports.map((report) => (
-              <TouchableOpacity
-                key={report.providerName}
-                style={[styles.tab, selectedProvider === report.providerName && styles.activeTab]}
-                onPress={() => setSelectedProvider(report.providerName)}
-                activeOpacity={0.7}>
-                <Text style={styles.tabIcon}>{getProviderIcon(report.providerName)}</Text>
-                <Text
-                  style={[
-                    styles.tabText,
-                    selectedProvider === report.providerName && styles.activeTabText,
-                  ]}
-                  numberOfLines={1}>
-                  {getProviderDisplayName(report.providerName)}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+          <CompactTabHeader
+            tabs={tabsData}
+            initialTabKey={selectedProvider!}
+            onTabChange={(providerName) => setSelectedProvider(providerName)}
+            containerStyle={styles.tabsContainer} // Optional: use your existing container style
+          />
         )}
 
         {/* Report Content */}
@@ -259,7 +258,7 @@ export const ApplicantReportsModal: React.FC<ApplicantReportsModalProps> = ({
             <Text style={styles.headerTitle}>Screening Reports</Text>
             {applicant && (
               <Text style={styles.headerSubtitle}>
-                {`${applicant.renterFirstName} ${applicant.renterLastName}`}
+                {`${applicant.firstName} ${applicant.lastName}`}
               </Text>
             )}
           </View>
@@ -422,7 +421,6 @@ const styles = StyleSheet.create({
   },
   tabIcon: {
     fontSize: 16,
-    marginRight: 8,
   },
   tabText: {
     fontSize: 13,

@@ -1,4 +1,5 @@
-import { IScreeningRequestRenter } from '../interfaces';
+import { IExtendedRenterInput } from '../interfaces';
+import { Minus, Eye, Clock, CheckCircle } from 'lucide-react-native';
 
 export const formatTransunionDate = (isoString: string): string => {
   const date = new Date(isoString);
@@ -21,7 +22,7 @@ export const formatTransunionDate = (isoString: string): string => {
 };
 
 export const getRequestStatus = (
-  renters: IScreeningRequestRenter[]
+  renters: IExtendedRenterInput[]
 ): { status: string; color: string; bgColor: string } => {
   if (renters.length === 0) {
     return {
@@ -32,7 +33,7 @@ export const getRequestStatus = (
   }
 
   // Check if any renter has submitted reports (with TransUnion)
-  const hasReportsRequested = renters.some((renter) => renter.renterStatus === 'ReportsRequested');
+  const hasReportsRequested = renters.some((renter) => renter.renterStatus === 'pending');
 
   if (hasReportsRequested) {
     return {
@@ -45,8 +46,8 @@ export const getRequestStatus = (
   // Check if any renter has other pending statuses
   const hasOtherPending = renters.some(
     (renter) =>
-      renter.renterStatus === 'IdentityVerificationPending' ||
-      renter.renterStatus.toLowerCase().includes('pending')
+      renter.renterStatus === 'in_progress' ||
+      renter.renterStatus.toLowerCase().includes('in_progress')
   );
 
   if (hasOtherPending) {
@@ -58,9 +59,7 @@ export const getRequestStatus = (
   }
 
   // If all renters are complete/approved
-  const allComplete = renters.every(
-    (renter) => renter.renterStatus === 'Complete' || renter.renterStatus === 'Approved'
-  );
+  const allComplete = renters.every((renter) => renter.renterStatus === 'completed');
 
   if (allComplete) {
     return {
@@ -81,39 +80,47 @@ export const getRequestStatus = (
 // Get individual applicant status
 export const getApplicantStatus = (
   renterStatus: string
-): { status: string; color: string; bgColor: string } => {
-  switch (renterStatus) {
-    case 'ReportsRequested':
-      return {
-        status: 'Submitted',
-        color: '#2196f3',
-        bgColor: '#e3f2fd',
-      };
-    case 'Complete':
-    case 'Approved':
-      return {
-        status: 'Complete',
-        color: '#4caf50',
-        bgColor: '#e8f5e8',
-      };
-    case 'IdentityVerificationPending':
-      return {
-        status: 'In Progress',
-        color: '#ff9500',
-        bgColor: '#fff3e0',
-      };
-    default:
-      if (renterStatus.toLowerCase().includes('pending')) {
-        return {
-          status: 'In Progress',
-          color: '#ff9500',
-          bgColor: '#fff3e0',
-        };
-      }
+): {
+  status: string;
+  color: string;
+  bgColor: string;
+  icon: React.ComponentType<any>;
+} => {
+  switch (renterStatus.toLowerCase()) {
+    case 'pending':
       return {
         status: 'Not Started',
         color: '#666',
         bgColor: '#f5f5f5',
+        icon: Minus,
+      };
+    case 'viewed':
+      return {
+        status: 'Viewed',
+        color: '#2196f3',
+        bgColor: '#e3f2fd',
+        icon: Eye,
+      };
+    case 'in_progress':
+      return {
+        status: 'In Progress',
+        color: '#ff9500',
+        bgColor: '#fff3e0',
+        icon: Clock,
+      };
+    case 'completed':
+      return {
+        status: 'Completed',
+        color: '#4caf50',
+        bgColor: '#e8f5e8',
+        icon: CheckCircle,
+      };
+    default:
+      return {
+        status: 'Not Started',
+        color: '#666',
+        bgColor: '#f5f5f5',
+        icon: Minus,
       };
   }
 };

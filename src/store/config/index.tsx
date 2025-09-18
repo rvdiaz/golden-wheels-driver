@@ -18,6 +18,7 @@ import { DailyTaskSelector } from '~/custom_modules/task/widgets/dailyTaskSelect
 import { SearchCrmBoxIA } from '~/custom_modules/crm/widgets/searchCrmIABox';
 import { TransunionRentsApplications } from '~/custom_modules/tools/sections/transunion_rent_applications';
 import { PropertyEstimationsPage } from '~/custom_modules/tools/sections/property_estimations';
+import { GoalsScreen } from '~/core_modules/profile/goals';
 
 export const moduleScreens: Record<
   ModuleKeys,
@@ -71,6 +72,9 @@ export const moduleScreens: Record<
   },
   Incomes: {
     body: UserIncomes,
+  },
+  Goals: {
+    body: GoalsScreen,
   },
   PropertyEstimations: {
     body: PropertyEstimationsPage,

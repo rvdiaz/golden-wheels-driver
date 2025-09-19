@@ -1,5 +1,15 @@
 {
   "build": {
+    "development": {
+      "distribution": "internal",
+      "ios": {
+        "buildType": "development" // this creates a development provisioning profile for Apple
+      },
+      "android": {
+        "buildType": "apk" // or "app-bundle" if you want internal testing
+      },
+      "channel": "development"
+    },
     "preview": {
       "distribution": "internal",
       "channel": "preview"

@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Card } from '../../codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
 import { ModuleKeys } from '~/store/interface';
 import { theme } from '~/theme/theme';
@@ -37,7 +36,7 @@ export const ToolsScreen: React.FC = () => {
       backgroundColor: '#ECFDF5',
       route: 'PrequalifiedLoan',
     },
-    {
+    /*  {
       id: ModuleKeys.propertyTools,
       title: 'Property-Owner Information',
       description: 'Get owner and property details by address',
@@ -63,7 +62,7 @@ export const ToolsScreen: React.FC = () => {
       color: '#EA580C',
       backgroundColor: '#FFF7ED',
       route: 'ExpiredListings',
-    },
+    }, */
   ];
 
   const documentationLinks = [
@@ -129,7 +128,7 @@ export const ToolsScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.headerSection}>
           <Text style={styles.headerTitle}>Real Estate Calculators</Text>
@@ -140,7 +139,7 @@ export const ToolsScreen: React.FC = () => {
 
         <View style={styles.toolsGrid}>{tools.map(renderTool)}</View>
 
-        <Card style={styles.featuredCard}>
+        {/* <Card style={styles.featuredCard}>
           <View style={styles.featuredHeader}>
             <Icons.Lightbulb size={24} color="#F59E0B" />
             <Text style={styles.featuredTitle}>Pro Tip</Text>
@@ -170,9 +169,9 @@ export const ToolsScreen: React.FC = () => {
             qualifications may vary based on lender requirements, credit scores, and other factors.
             Always consult with qualified mortgage professionals for accurate information.
           </Text>
-        </Card>
+        </Card> */}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

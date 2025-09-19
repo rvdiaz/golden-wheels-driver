@@ -4811,7 +4811,7 @@ expo-contacts@~15.0.8:
   resolved "https://registry.yarnpkg.com/expo-contacts/-/expo-contacts-15.0.8.tgz#fdc7fc063d6267b843a732753ac856cc93b0765e"
   integrity sha512-mKaRAAbfobniMYn5uuqQtF7onbbCjy3dwFq2Fy5jjEdU2PbAYVFVQEMo7gbffD4orMP16zbDxfGNhcDrre/XBQ==
 
-expo-dev-client@~6.0.12:
+expo-dev-client@^6.0.12:
   version "6.0.12"
   resolved "https://registry.yarnpkg.com/expo-dev-client/-/expo-dev-client-6.0.12.tgz#ac801a488dfde5fa2a782fc0c430d8996b128f63"
   integrity sha512-Knr2abq0r6ALASsZtrX9QD4V0vP4ZL18iDVF5lgr6iFYawbuqQHuJRktIUETimu6qLusJK8Z3kZRabAdNqT+qw==
@@ -4842,10 +4842,10 @@ expo-dev-menu@7.0.11:
   dependencies:
     expo-dev-menu-interface "2.0.0"
 
-expo-device@~8.0.7:
-  version "8.0.7"
-  resolved "https://registry.yarnpkg.com/expo-device/-/expo-device-8.0.7.tgz#38d1d2c2a8008631bada2d6dca0612f8d350b23a"
-  integrity sha512-4psIFiFQbkcr2VAaOgCBsC0q7FPLtqsd0gjJmpCccxstvHMd9dmh7A+jSIwkFkEAcrkz+t1KxTp7McJAL+8sYA==
+expo-device@^8.0.7:
+  version "8.0.8"
+  resolved "https://registry.yarnpkg.com/expo-device/-/expo-device-8.0.8.tgz#2d6e3dbc4e910fcffa90a371112d9da0001f0396"
+  integrity sha512-t515WOkeVgIeO3izj+FoXodKTHiSxZ2uF5E9YvCwiR4kANAjvyjFP3vSls2Utjx5ss8y652pZTgh3tOYQmwuZA==
   dependencies:
     ua-parser-js "^0.7.33"
 
@@ -4870,11 +4870,6 @@ expo-keep-awake@~15.0.7:
   version "15.0.7"
   resolved "https://registry.yarnpkg.com/expo-keep-awake/-/expo-keep-awake-15.0.7.tgz#4eada556e1cca6c9c2e5aa39478fd01816cd0bc9"
   integrity sha512-CgBNcWVPnrIVII5G54QDqoE125l+zmqR4HR8q+MQaCfHet+dYpS5vX5zii/RMayzGN4jPgA4XYIQ28ePKFjHoA==
-
-expo-linear-gradient@~15.0.7:
-  version "15.0.7"
-  resolved "https://registry.yarnpkg.com/expo-linear-gradient/-/expo-linear-gradient-15.0.7.tgz#d1ebbda5ecc58afb58398f5a06affd0e83894149"
-  integrity sha512-yF+y+9Shpr/OQFfy/wglB/0bykFMbwHBTuMRa5Of/r2P1wbkcacx8rg0JsUWkXH/rn2i2iWdubyqlxSJa3ggZA==
 
 expo-manifests@~1.0.8:
   version "1.0.8"
@@ -4903,7 +4898,7 @@ expo-modules-core@3.0.16:
   dependencies:
     invariant "^2.2.4"
 
-expo-notifications@~0.32.11:
+expo-notifications@^0.32.11:
   version "0.32.11"
   resolved "https://registry.yarnpkg.com/expo-notifications/-/expo-notifications-0.32.11.tgz#0d90d08efdf4693ceaa32ab8bb7455d56424c441"
   integrity sha512-4rLWC9Q4B7aQywXn9cKAlNY4p00CYKLJ23qZ0Pp/whkX0NxmI4MwJ20YhreV08gjHTTTWHpYU7jqYWpsjtPIxA==

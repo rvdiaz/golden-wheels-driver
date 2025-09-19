@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-  TextInput,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
 import { Header } from '~/codidge_components/UI/header';
 import { Card } from '~/codidge_components/UI/card';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { LoansPreqResults } from './widgets/loansPreqResults';
+import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
+import { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
+import InputField from '~/codidge_components/UI/form/inputs/inputField';
 
 interface PrequalifiedFormData {
   monthlyIncome: number;
@@ -25,12 +22,21 @@ interface PrequalifiedFormData {
 export const PrequalifiedLoanScreen: React.FC = () => {
   const navigation = useNavigation();
   const [result, setResult] = useState<any>(null);
+  const [showResults, setshowResults] = useState(false);
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<PrequalifiedFormData>({});
+  } = useForm<PrequalifiedFormData>({
+    defaultValues: {
+      monthlyIncome: 5000,
+      monthlyDebts: 500,
+      downPayment: 2,
+      interestRate: 7.25,
+      loanTerm: 30,
+    },
+  });
 
   const calculatePrequalification = (data: PrequalifiedFormData) => {
     const { monthlyIncome, monthlyDebts, downPayment, interestRate, loanTerm } = data;
@@ -68,7 +74,10 @@ export const PrequalifiedLoanScreen: React.FC = () => {
       availableForMortgage: availableForMortgage.toFixed(2),
       debtToIncomeRatio: debtToIncomeRatio.toFixed(1),
       isQualified,
+      // Add original form data for the results component
+      formData: data,
     });
+    setshowResults(true);
   };
 
   return (
@@ -77,7 +86,10 @@ export const PrequalifiedLoanScreen: React.FC = () => {
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <Card style={styles.formCard}>
-          <Text style={styles.cardTitle}>Loan Prequalification Calculator</Text>
+          <View style={styles.cardHeader}>
+            <Icons.BadgeCheck size={24} color="#2563EB" />
+            <Text style={styles.cardTitle}>Loan Prequalification Calculator</Text>
+          </View>
           <Text style={styles.cardSubtitle}>
             Calculate how much your client can potentially borrow
           </Text>
@@ -88,7 +100,7 @@ export const PrequalifiedLoanScreen: React.FC = () => {
               control={control}
               name="monthlyIncome"
               render={({ field: { onChange, value } }) => (
-                <TextInput
+                <InputField
                   style={[styles.input, errors.monthlyIncome && styles.inputError]}
                   placeholder="5,000"
                   value={value?.toString() || ''}
@@ -108,7 +120,7 @@ export const PrequalifiedLoanScreen: React.FC = () => {
               control={control}
               name="monthlyDebts"
               render={({ field: { onChange, value } }) => (
-                <TextInput
+                <InputField
                   style={[styles.input, errors.monthlyDebts && styles.inputError]}
                   placeholder="500"
                   value={value?.toString() || ''}
@@ -128,7 +140,7 @@ export const PrequalifiedLoanScreen: React.FC = () => {
               control={control}
               name="downPayment"
               render={({ field: { onChange, value } }) => (
-                <TextInput
+                <InputField
                   style={[styles.input, errors.downPayment && styles.inputError]}
                   placeholder="50,000"
                   value={value?.toString() || ''}
@@ -149,7 +161,7 @@ export const PrequalifiedLoanScreen: React.FC = () => {
                 control={control}
                 name="interestRate"
                 render={({ field: { onChange, value } }) => (
-                  <TextInput
+                  <InputField
                     style={[styles.input, errors.interestRate && styles.inputError]}
                     placeholder="3.5"
                     value={value?.toString() || ''}
@@ -169,7 +181,7 @@ export const PrequalifiedLoanScreen: React.FC = () => {
                 control={control}
                 name="loanTerm"
                 render={({ field: { onChange, value } }) => (
-                  <TextInput
+                  <InputField
                     style={[styles.input, errors.loanTerm && styles.inputError]}
                     placeholder="30"
                     value={value?.toString() || ''}
@@ -182,60 +194,29 @@ export const PrequalifiedLoanScreen: React.FC = () => {
             </View>
           </View>
 
-          <TouchableOpacity
-            style={styles.calculateButton}
-            onPress={handleSubmit(calculatePrequalification)}>
-            <Text style={styles.calculateButtonText}>Calculate Prequalification</Text>
-          </TouchableOpacity>
+          <PrimaryButton
+            onPress={handleSubmit(calculatePrequalification)}
+            size={ButtonSize.LARGE}
+            title="Calculate Prequalification"
+            rightWidget={<Icons.ChevronRight color="#FFF" />}
+          />
 
-          {result && (
-            <View style={styles.resultContainer}>
-              <View style={styles.resultHeader}>
-                <Icons.CheckCircle size={24} color={result.isQualified ? '#10B981' : '#EF4444'} />
-                <Text
-                  style={[
-                    styles.resultStatus,
-                    { color: result.isQualified ? '#10B981' : '#EF4444' },
-                  ]}>
-                  {result.isQualified ? 'Likely Qualified' : 'May Need Improvement'}
-                </Text>
-              </View>
-
-              <View style={styles.resultRow}>
-                <Text style={styles.resultLabel}>Maximum Home Price:</Text>
-                <Text style={styles.resultValue}>${result.maxHomePrice}</Text>
-              </View>
-              <View style={styles.resultRow}>
-                <Text style={styles.resultLabel}>Maximum Loan Amount:</Text>
-                <Text style={styles.resultValue}>${result.maxLoanAmount}</Text>
-              </View>
-              <View style={styles.resultRow}>
-                <Text style={styles.resultLabel}>Max Monthly Payment:</Text>
-                <Text style={styles.resultValue}>${result.maxMonthlyPayment}</Text>
-              </View>
-              <View style={styles.resultRow}>
-                <Text style={styles.resultLabel}>Available for Mortgage:</Text>
-                <Text style={styles.resultValue}>${result.availableForMortgage}</Text>
-              </View>
-              <View style={styles.resultRow}>
-                <Text style={styles.resultLabel}>Debt-to-Income Ratio:</Text>
-                <Text
-                  style={[
-                    styles.resultValue,
-                    { color: parseFloat(result.debtToIncomeRatio) <= 43 ? '#10B981' : '#EF4444' },
-                  ]}>
-                  {result.debtToIncomeRatio}%
-                </Text>
-              </View>
-
-              <View style={styles.tipsContainer}>
-                <Text style={styles.tipsTitle}>Tips for Improvement:</Text>
-                <Text style={styles.tipText}>• Keep debt-to-income ratio below 43%</Text>
-                <Text style={styles.tipText}>• Increase down payment to reduce loan amount</Text>
-                <Text style={styles.tipText}>• Pay down existing debts before applying</Text>
-              </View>
-            </View>
-          )}
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={showResults}
+            onRequestClose={() => {
+              setshowResults(false);
+            }}>
+            {showResults && (
+              <LoansPreqResults
+                result={result}
+                onDispose={() => {
+                  setshowResults(false);
+                }}
+              />
+            )}
+          </Modal>
         </Card>
       </ScrollView>
     </SafeAreaView>
@@ -258,7 +239,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#1F2937',
-    marginBottom: 8,
+    marginLeft: 8,
   },
   cardSubtitle: {
     fontSize: 14,
@@ -289,68 +270,14 @@ const styles = StyleSheet.create({
   inputError: {
     borderColor: '#EF4444',
   },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   errorText: {
     fontSize: 12,
     color: '#EF4444',
     marginTop: 4,
-  },
-  calculateButton: {
-    backgroundColor: '#2563EB',
-    paddingVertical: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  calculateButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  resultContainer: {
-    marginTop: 20,
-    padding: 16,
-    backgroundColor: '#F8FAFC',
-    borderRadius: 8,
-  },
-  resultHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  resultStatus: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
-  },
-  resultRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  resultLabel: {
-    fontSize: 14,
-    color: '#6B7280',
-  },
-  resultValue: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1F2937',
-  },
-  tipsContainer: {
-    marginTop: 16,
-    padding: 12,
-    backgroundColor: '#EEF2FF',
-    borderRadius: 6,
-  },
-  tipsTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#2563EB',
-    marginBottom: 8,
-  },
-  tipText: {
-    fontSize: 12,
-    color: '#374151',
-    marginBottom: 4,
   },
 });

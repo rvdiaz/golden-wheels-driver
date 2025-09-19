@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Modal } from 'react-native';
 import { Calculator, Info, DollarSign, TrendingUp, Share } from 'lucide-react-native';
 import { useFormContext } from 'react-hook-form';
 import { MortgageCalculation, MortgageFormValues } from '../interfaces';
@@ -9,6 +9,7 @@ import { Card } from '~/codidge_components/UI/card';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
 import { ShareModalMortgage } from './shareModal';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface MortgageCalculatorResultsProps {
   calculation: MortgageCalculation;
@@ -47,7 +48,8 @@ export const MortgageCalculatorResults: React.FC<MortgageCalculatorResultsProps>
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#F9FAFB', justifyContent: 'flex-end' }}>
+    <SafeAreaView
+      style={{ flex: 1, marginTop: 40, backgroundColor: '#F9FAFB', justifyContent: 'flex-end' }}>
       <Header title="Mortgage Results" rightText="Close" rightAction={onDispose} />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
@@ -197,7 +199,7 @@ export const MortgageCalculatorResults: React.FC<MortgageCalculatorResultsProps>
           </View>
         </View>
       </ScrollView>
-      <PrimaryButton
+      {/*  <PrimaryButton
         size={ButtonSize.LARGE}
         style={{
           paddingVertical: 16,
@@ -221,7 +223,7 @@ export const MortgageCalculatorResults: React.FC<MortgageCalculatorResultsProps>
           calculation={calculation}
           cancel={() => setShareModalVisible(false)}
         />
-      </Modal>
+      </Modal> */}
     </SafeAreaView>
   );
 };

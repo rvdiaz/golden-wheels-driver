@@ -10,7 +10,6 @@ import { ContactDetailsScreen } from '~/custom_modules/crm/widgets/contactDetail
 import { CourseDetailsScreen } from '~/custom_modules/training/sections/CourseDetailsScreen';
 import { ProfileScreen } from '~/core_modules/profile';
 import { PropertyInfoScreen } from '~/custom_modules/tools/sections/owner_property_details';
-import { PrequalifiedLoanScreen } from '~/custom_modules/tools/sections/pre_qualified_tools';
 import { UserIncomes } from '~/core_modules/profile/income/widgets';
 import { ExpiredListingPage } from '~/custom_modules/tools/sections/mls_listing/expired_listing';
 import { DashboardBottomHeader } from '~/custom_modules/dashboard/widgets/headers';
@@ -19,6 +18,7 @@ import { SearchCrmBoxIA } from '~/custom_modules/crm/widgets/searchCrmIABox';
 import { TransunionRentsApplications } from '~/custom_modules/tools/sections/transunion_rent_applications';
 import { PropertyEstimationsPage } from '~/custom_modules/tools/sections/property_estimations';
 import { GoalsScreen } from '~/core_modules/profile/goals';
+import { PrequalifiedLoanScreen } from '~/custom_modules/tools/sections/loan_prequalification';
 
 export const moduleScreens: Record<
   ModuleKeys,

@@ -1,11 +1,12 @@
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
-import { SafeAreaView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Card } from '~/codidge_components/UI/card';
 import { Header } from '~/codidge_components/UI/header';
 import { TabHeader } from '~/codidge_components/UI/tabs';
 import { TransUnionPropertyList } from './widgets/property/propertyList';
 import { ScreenRequestList } from './widgets/screen_request/screenRequestList';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 enum RentalAppScreen {
   TransUnionPropertyList = 'TransUnionPropertyList',

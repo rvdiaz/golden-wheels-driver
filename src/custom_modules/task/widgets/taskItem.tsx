@@ -186,7 +186,7 @@ export const TaskItem = ({ task }: { task: ITask }) => {
               </Text>
             </View>
             <View style={styles.rightFooter}>
-              <Image source={require('../../../assets/highPriority.png')} />
+              <Image source={require('assets/highPriority.png')} />
               <Text style={styles.taskTime}>
                 {formatTaskTime(task.startTime.toString())} -{' '}
                 {formatTaskTime(task.endTime.toString())}

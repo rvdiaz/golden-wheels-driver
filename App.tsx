@@ -4,7 +4,7 @@ import Constants from 'expo-constants';
 import Navigation from './src/navigation';
 import { Amplify } from 'aws-amplify';
 import { cognitoUserPoolsTokenProvider } from 'aws-amplify/auth/cognito';
-import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
+import { loadErrorMessages, loadDevMessages } from '@apollo/client/dev';
 
 if (Constants.expoConfig?.extra?.EAS_BUILD_PROFILE === 'development') {
   // Adds messages only in a dev environment

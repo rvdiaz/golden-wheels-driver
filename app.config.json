@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "My Virtual Boss",
+    "slug": "my-virtual-boss",
+    "version": "1.0.0",
+    "web": {
+      "favicon": "assets/favicon.png"
+    },
+    "experiments": {
+      "tsconfigPaths": true
+    },
+    "plugins": [
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "Allow $(PRODUCT_NAME) to access your contacts to import business contacts."
+        }
+      ],
+      "expo-notifications"
+    ],
+    "orientation": "portrait",
+    "icon": "assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.myvirtualboss.realestate"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "extra": {
+      /* "GRAPHQL_ENDPOINT": "http://localhost:4000/graphql", */
+      "GRAPHQL_ENDPOINT": "https://mliqeu5tf5hqnafxp55hwaekd4.appsync-api.us-east-1.amazonaws.com/graphql",
+      "COGNITO_USERPOOL_ID": "us-east-1_4aq3CuAAr",
+      "COGNITO_CLIENT_ID": "77e3rsh7jds1lmvsuq4jt8j0h0",
+      "TENANTID": "usa-my-own-boss",
+      "eas": {
+        "projectId": "0c8d8387-e1f1-449a-9f8e-a5e4c31fe6a3"
+      }
+    }
+  }
+}

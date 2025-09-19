@@ -1,7 +1,5 @@
-import { makeVar } from "@apollo/client";
+import { makeVar } from '@apollo/client';
 
-export const pushTokenVar = makeVar<string | null>(null);
+export const pushTokenVar = makeVar<string>('');
 
-export const setPushToken = (token: string) => {
-  pushTokenVar(token);
-}
+export const setPushToken = (token: string) => pushTokenVar(token);

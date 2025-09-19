@@ -84,6 +84,7 @@ export const AddTaskScreen = ({
       startTime: task?.startTime ?? null,
       endTime: task?.endTime ?? null,
       date: task?.date ?? defaultDate,
+      description: task?.description ?? '',
     },
   });
 
@@ -126,6 +127,7 @@ export const AddTaskScreen = ({
         startTime: null,
         endTime: null,
         date: defaultDate,
+        description: '',
       });
 
       disposeModalHandler();

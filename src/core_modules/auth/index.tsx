@@ -1,10 +1,12 @@
 import React from 'react';
 import { ConfirmResetPassword } from '~/codidge_components/auth/forms/confirm_reset_password';
 import { useAuthContext } from '~/codidge_components/auth/context';
+import { useReactiveVar } from '@apollo/client';
 import Constants from 'expo-constants';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { addUserMutation } from './graphql/mutations';
 import { updateUser } from '~/store/user';
+import { pushTokenVar } from '~/store/user/pushToken';
 import { IUser } from '~/store/interface';
 import { signOut } from 'aws-amplify/auth/cognito';
 import { getUserQuery } from './graphql/queries';
@@ -19,6 +21,7 @@ const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const AuthFormWrapper = () => {
   const { currentView } = useAuthContext();
+  const pushToken = useReactiveVar(pushTokenVar);
   const [addCustomerFn] = useMutation<{ addUser: IUser }>(addUserMutation);
   const [getCustomerFn] = useLazyQuery<{ getUser: IUser }>(getUserQuery);
 
@@ -29,6 +32,7 @@ export const AuthFormWrapper = () => {
           tenant: {
             tenantId,
           },
+          token: pushToken,
           userId,
         },
       });

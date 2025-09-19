@@ -6,6 +6,9 @@
     },
     "production": {
       "channel": "production"
+    },
+    "development": {
+      "channel": "development"
     }
   },
   "cli": {

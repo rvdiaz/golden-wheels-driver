@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "My Virtual Voss",
-    "slug": "my-own-boss",
+    "slug": "my-virtual-boss",
     "version": "1.0.0",
     "web": {
       "favicon": "./src/assets/favicon.png"
@@ -42,7 +42,7 @@
       "COGNITO_CLIENT_ID": "77e3rsh7jds1lmvsuq4jt8j0h0",
       "TENANTID": "usa-my-own-boss",
       "eas": {
-        "projectId": "777406c6-4dff-46d3-a876-88315ae37291"
+        "projectId": "0c8d8387-e1f1-449a-9f8e-a5e4c31fe6a3"
       }
     }
   }

@@ -14,7 +14,7 @@ export const DashboardBottomHeader = () => {
     <Card style={styles.bannerCard}>
       <View style={styles.bannerContent}>
         {/* Replace the text block with an image */}
-        <Image source={require('../../../assets/home-hand.png')} style={styles.bannerImage} />
+        <Image source={require('assets/home-hand.png')} style={styles.bannerImage} />
         <View
           style={{
             flex: 1,

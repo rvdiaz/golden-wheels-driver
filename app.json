@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "My Virtual Voss",
+    "name": "My Virtual Boss",
     "slug": "my-virtual-boss",
     "version": "1.0.0",
     "web": {
-      "favicon": "./src/assets/favicon.png"
+      "favicon": "assets/favicon.png"
     },
     "experiments": {
       "tsconfigPaths": true
@@ -15,23 +15,25 @@
         {
           "contactsPermission": "Allow $(PRODUCT_NAME) to access your contacts to import business contacts."
         }
-      ]
+      ],
+      "expo-notifications"
     ],
     "orientation": "portrait",
-    "icon": "./src/assets/icon.png",
+    "icon": "assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./src/assets/splash.png",
+      "image": "assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.myvirtualboss.realestate"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./src/assets/adaptive-icon.png",
+        "foregroundImage": "assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       }
     },

@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  StyleSheet,
-  FlatList,
-  Modal,
-  SafeAreaView,
-  View,
-  RefreshControl,
-  Text,
-} from 'react-native';
+import { StyleSheet, FlatList, Modal, View, RefreshControl, Text } from 'react-native';
 import { TaskItem } from './widgets/taskItem';
 import { ActiveTab, ITask } from './interfaces';
 import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
@@ -87,7 +79,7 @@ export const TasksScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <TabHeader
         tabs={[
           {
@@ -142,7 +134,7 @@ export const TasksScreen: React.FC = () => {
           <AddTaskScreen defaultDate={selectedDay} disposeModalHandler={disposeModalHandler} />
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 };
 

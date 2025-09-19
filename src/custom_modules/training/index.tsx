@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Card } from '../../codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
@@ -104,7 +104,7 @@ export const TrainingScreen: React.FC = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <Card style={styles.statsCard}>
           <Text style={styles.statsTitle}>Your Progress</Text>
@@ -145,7 +145,7 @@ export const TrainingScreen: React.FC = () => {
           </View>
         </Card>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

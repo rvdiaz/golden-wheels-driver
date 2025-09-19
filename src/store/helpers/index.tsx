@@ -140,24 +140,24 @@ export const getTenantRoutes = (user: IUser | null) => {
 
 export const customIcons: Record<string, { active: any; inactive: any }> = {
   dashboard: {
-    active: require('../../assets/icons/dashboard-active.png'),
-    inactive: require('../../assets/icons/dashboard-inactive.png'),
+    active: require('assets/icons/dashboard-active.png'),
+    inactive: require('assets/icons/dashboard-inactive.png'),
   },
   task: {
-    active: require('../../assets/icons/task-active.png'),
-    inactive: require('../../assets/icons/task-inactive.png'),
+    active: require('assets/icons/task-active.png'),
+    inactive: require('assets/icons/task-inactive.png'),
   },
   crm: {
-    active: require('../../assets/icons/crm-active.png'),
-    inactive: require('../../assets/icons/crm-inactive.png'),
+    active: require('assets/icons/crm-active.png'),
+    inactive: require('assets/icons/crm-inactive.png'),
   },
   tools: {
-    active: require('../../assets/icons/tools-active.png'),
-    inactive: require('../../assets/icons/tools-inactive.png'),
+    active: require('assets/icons/tools-active.png'),
+    inactive: require('assets/icons/tools-inactive.png'),
   },
   training: {
-    active: require('../../assets/icons/training-active.png'),
-    inactive: require('../../assets/icons/training-inactive.png'),
+    active: require('assets/icons/training-active.png'),
+    inactive: require('assets/icons/training-inactive.png'),
   },
 };
 

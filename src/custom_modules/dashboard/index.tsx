@@ -1,29 +1,21 @@
 import React from 'react';
-import { StyleSheet, ScrollView, SafeAreaView } from 'react-native';
+import { StyleSheet, ScrollView, View } from 'react-native';
 import { TaskMetricsStats } from './widgets/metricsStats';
 import { TodayTasks } from '../task/widgets/todayTasks';
 import { theme } from '~/theme/theme';
 import { ProfileCompletionWidget } from './widgets/setupStatusGraph';
-import { InfoWidget } from './widgets/rentApplication';
-import { SearchCrmBox } from '../crm/widgets/searchCrmBox';
-import { SearchCrmBoxIA } from '../crm/widgets/searchCrmIABox';
+import { RentAppShortcut } from '../tools/sections/transunion_rent_applications/widgets/rent_app_shortcut';
 
 export const Dashboard: React.FC = () => {
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <ProfileCompletionWidget completedSteps={2} totalSteps={10} />
-
         <TaskMetricsStats />
-        <InfoWidget
-          title="Rent Application"
-          description="Submit your rental application quickly and securely."
-          imageSource={require('../../assets/rentApplication.png')}
-          backgroundColor="#f5f7ff"
-        />
+        <RentAppShortcut />
         <TodayTasks />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

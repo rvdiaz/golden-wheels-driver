@@ -7,14 +7,7 @@ import { Card } from '~/codidge_components/UI/card';
 import { Home, Plus } from 'lucide-react-native';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import OutlineButton, { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
-import DropdownComponent from '~/codidge_components/UI/dropdown';
-import { RENOVATION_CATEGORIES } from '../interfaces';
-import ModalPickerComponent from '~/codidge_components/UI/modalSelector';
-import {
-  RenovationItemExpandable,
-  RenovationItemHorizontalCard,
-  RenovationItemVertical,
-} from './renovationItem';
+import { RenovationItemExpandable } from './renovationItem';
 
 interface PropertyFormProps {
   form: UseFormReturn<any>;
@@ -30,7 +23,6 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({
   form,
   renovationFieldArray,
   totalRenovationCost,
-  totalRepairCosts,
   onUpdateUnitsCount,
   onAddRenovationItem,
   onRemoveRenovationItem,
@@ -108,7 +100,7 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({
               <Controller
                 control={control}
                 name="downPayment"
-                render={({ field: { onChange, value } }) => (
+                render={({ field: { value } }) => (
                   <InputField
                     label="Down Payment"
                     placeholder="100000"

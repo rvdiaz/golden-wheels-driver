@@ -161,20 +161,22 @@ export const useInvestmentForm = (): UseInvestmentFormReturn => {
 
   const updateUnitsCount = useCallback(
     (count: number) => {
-      const currentUnits = form.getValues('units');
-      const newUnits: UnitData[] = [];
+      if (count > 0) {
+        const currentUnits = form.getValues('units');
+        const newUnits: UnitData[] = [];
 
-      // Keep existing units up to the new count
-      for (let i = 0; i < count; i++) {
-        if (i < currentUnits.length) {
-          newUnits.push(currentUnits[i]);
-        } else {
-          newUnits.push({ ...DEFAULT_UNIT, id: i + 1 });
+        // Keep existing units up to the new count
+        for (let i = 0; i < count; i++) {
+          if (i < currentUnits.length) {
+            newUnits.push(currentUnits[i]);
+          } else {
+            newUnits.push({ ...DEFAULT_UNIT, id: i + 1 });
+          }
         }
-      }
 
-      form.setValue('numberOfUnits', count);
-      form.setValue('units', newUnits);
+        form.setValue('numberOfUnits', count);
+        form.setValue('units', newUnits);
+      }
     },
     [form]
   );

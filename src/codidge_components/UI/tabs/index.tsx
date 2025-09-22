@@ -15,6 +15,7 @@ interface TabHeaderProps {
   initialTabKey?: string;
   onTabChange?: (key: string) => void;
   containerStyle?: ViewStyle; // <-- NEW PROP
+  activeTabBackground?: string;
 }
 
 export const TabHeader: React.FC<TabHeaderProps> = ({
@@ -174,7 +175,7 @@ export const ScrollableTabHeader: React.FC<TabHeaderProps> = ({
                 style={[
                   styles.scrollableBadge,
                   {
-                    backgroundColor: activeTab === tab.key ? 'rgba(255, 255, 255, 0.3)' : '#6B7280',
+                    backgroundColor: activeTab === tab.key ? 'rgba(255, 255, 255, 0.3)' : 'yellow',
                   },
                 ]}>
                 <Text style={styles.scrollableBadgeText}>{tab.indexNumber}</Text>
@@ -183,6 +184,58 @@ export const ScrollableTabHeader: React.FC<TabHeaderProps> = ({
           </TouchableOpacity>
         ))}
       </ScrollView>
+    </View>
+  );
+};
+
+export const GridTabs: React.FC<TabHeaderProps> = ({
+  tabs,
+  initialTabKey,
+  onTabChange,
+  containerStyle,
+  activeTabBackground = '#FFF',
+}) => {
+  const [activeTab, setActiveTab] = useState(initialTabKey || tabs[0].key);
+
+  const handleTabPress = (key: string) => {
+    setActiveTab(key);
+    onTabChange?.(key);
+  };
+
+  return (
+    <View style={[styles.compactHeader, containerStyle]}>
+      <View style={styles.compactTabContainer}>
+        {tabs.map((tab) => (
+          <TouchableOpacity
+            key={tab.key}
+            style={[
+              styles.compactTab,
+              activeTab === tab.key && styles.compactActiveTab,
+              {
+                backgroundColor: activeTab === tab.key ? activeTabBackground : '',
+              },
+            ]}
+            onPress={() => handleTabPress(tab.key)}>
+            <View style={styles.compactIconContainer}>
+              {tab.Icon && (
+                <tab.Icon
+                  size={16}
+                  color={activeTab === tab.key ? theme.colors.primary : '#6B7280'}
+                />
+              )}
+              {!!tab?.indexNumber && (
+                <View style={styles.compactBadge}>
+                  <Text style={styles.compactBadgeText}>{tab.indexNumber}</Text>
+                </View>
+              )}
+            </View>
+            <Text
+              style={[styles.compactTabText, activeTab === tab.key && styles.compactActiveTabText]}>
+              {tab.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
     </View>
   );
 };

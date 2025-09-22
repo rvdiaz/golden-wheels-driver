@@ -1,4 +1,3 @@
-// components/forms/MobileUnitsForm.tsx
 import {
   Building,
   Home,
@@ -262,8 +261,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
   },
   title: {
     fontSize: 18,
@@ -271,13 +268,12 @@ const styles = StyleSheet.create({
     color: '#1e293b',
   },
   content: {
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
   },
   unitsContainer: {
     gap: 16,
   },
-
-  // Unit Card Styles
   unitCard: {
     backgroundColor: '#ffffff',
     borderRadius: 12,

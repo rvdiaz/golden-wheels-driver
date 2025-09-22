@@ -7,17 +7,21 @@ import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
 import { Building, DollarSign, Edit, RotateCcw, Target, TrendingUp } from 'lucide-react-native';
 import { Card } from '~/codidge_components/UI/card';
 import { TargetAnalysis } from './targetAnalysis';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import { Header } from '~/codidge_components/UI/header';
 
 interface ResultsDisplayProps {
   results: CalculationResults;
   onEditInputs: () => void;
   onReset: () => void;
+  onDispose: () => void;
 }
 
 export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
   results,
   onEditInputs,
   onReset,
+  onDispose,
 }) => {
   const { formatCurrency, formatPercentage } = useFormatters();
 
@@ -25,231 +29,248 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
     useInvestmentForm();
 
   return (
-    <ScrollView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Investment Analysis Results</Text>
-        <View style={styles.buttonGroup}>
-          <OutlineButton
-            onPress={onEditInputs}
-            style={styles.headerButton}
-            title="Edit Inputs"
-            rightWidget={<Edit size={16} color="#3b82f6" />}
-          />
-          <OutlineButton
-            onPress={onReset}
-            style={styles.headerButton}
-            title="New Analysis"
-            rightWidget={<RotateCcw size={16} color="#3b82f6" />}
-          />
-        </View>
-      </View>
-
-      {/* Current vs Improved Comparison */}
-      <View style={styles.comparisonGrid}>
-        <Card style={[styles.comparisonCard, styles.currentCard]}>
-          <View style={styles.comparisonHeader}>
-            <Text style={styles.currentTitle}>Current Performance</Text>
-          </View>
-          <View style={styles.comparisonContent}>
-            <View style={styles.metricRow}>
-              <Text style={styles.metricLabel}>Cap Rate:</Text>
-              <Text style={styles.currentValue}>{formatPercentage(results.currentCapRate)}</Text>
-            </View>
-            <View style={styles.metricRow}>
-              <Text style={styles.metricLabel}>Annual Income:</Text>
-              <Text style={styles.metricValue}>
-                {formatCurrency(results.totalIncome - results.totalIncomeIncrease)}
-              </Text>
-            </View>
-          </View>
-        </Card>
-
-        <Card style={[styles.comparisonCard, styles.improvedCard]}>
-          <View style={styles.comparisonHeader}>
-            <Text style={styles.improvedTitle}>After Improvements</Text>
-          </View>
-          <View style={styles.comparisonContent}>
-            <View style={styles.metricRow}>
-              <Text style={styles.metricLabel}>Cap Rate:</Text>
-              <Text style={styles.improvedValue}>{formatPercentage(results.improvedCapRate)}</Text>
-            </View>
-            <View style={styles.metricRow}>
-              <Text style={styles.metricLabel}>Annual Income:</Text>
-              <Text style={styles.metricValue}>{formatCurrency(results.totalIncome)}</Text>
-            </View>
-          </View>
-        </Card>
-      </View>
-
-      {/* Value Gain Analysis */}
-      <Card style={styles.valueGainCard}>
-        <View>
-          <Text style={styles.valueGainTitle}>Investment Analysis Summary</Text>
-        </View>
-        <View style={styles.valueGainContent}>
-          <View style={styles.valueGainGrid}>
-            <View style={styles.valueGainItem}>
-              <Text style={styles.valueGainLabel}>Total Repair Investment</Text>
-              <Text style={styles.valueGainValue}>{formatCurrency(results.totalRepairCosts)}</Text>
-            </View>
-            <View style={styles.valueGainItem}>
-              <Text style={styles.valueGainLabel}>Annual Income Increase</Text>
-              <Text style={styles.valueGainValue}>
-                {formatCurrency(results.totalIncomeIncrease)}
-              </Text>
-            </View>
-            <View style={styles.valueGainItem}>
-              <Text style={styles.valueGainLabel}>Estimated Value Gain</Text>
-              <Text style={styles.valueGainValue}>{formatCurrency(results.valueGain)}</Text>
-            </View>
-          </View>
-          <Text style={styles.valueGainSubtext}>
-            *Property value increase based on improved income
-          </Text>
-        </View>
-      </Card>
-
-      {/* Performance Metrics */}
-      <View style={styles.metricsGrid}>
-        <Card style={styles.metricCard}>
-          <View style={styles.metricContent}>
-            <View style={styles.metricIconContainer}>
-              <TrendingUp size={20} color="#2563eb" />
-              <Text style={styles.metricTitle}>Cash-on-Cash Return</Text>
-            </View>
-            <Text style={styles.metricMainValue}>{formatPercentage(results.cashOnCashReturn)}</Text>
-            <Text style={styles.metricSubtext}>Annual return on cash invested</Text>
-          </View>
-        </Card>
-
-        <Card style={styles.metricCard}>
-          <View style={styles.metricContent}>
-            <View style={styles.metricIconContainer}>
-              <DollarSign size={20} color="#7c3aed" />
-              <Text style={styles.metricTitle}>Annual Cash Flow</Text>
-            </View>
-            <Text style={styles.metricMainValue}>{formatCurrency(results.annualCashFlow)}</Text>
-            <Text style={styles.metricSubtext}>
-              {formatCurrency(results.annualCashFlow / 12)}/month
-            </Text>
-          </View>
-        </Card>
-
-        <Card style={styles.metricCard}>
-          <View style={styles.metricContent}>
-            <View style={styles.metricIconContainer}>
-              <Target size={20} color="#16a34a" />
-              <Text style={styles.metricTitle}>Net Operating Income</Text>
-            </View>
-            <Text style={styles.metricMainValue}>{formatCurrency(results.netOperatingIncome)}</Text>
-            <Text style={styles.metricSubtext}>After all operating expenses</Text>
-          </View>
-        </Card>
-
-        <Card style={styles.metricCard}>
-          <View style={styles.metricContent}>
-            <View style={styles.metricIconContainer}>
-              <Building size={20} color="#ea580c" />
-              <Text style={styles.metricTitle}>Debt Service Coverage</Text>
-            </View>
-            <Text style={styles.metricMainValue}>
-              {results.debtServiceCoverageRatio.toFixed(2)}x
-            </Text>
-            <Text style={styles.metricSubtext}>
-              {results.debtServiceCoverageRatio >= 1.25
-                ? 'Strong Coverage'
-                : results.debtServiceCoverageRatio >= 1.0
-                  ? 'Adequate Coverage'
-                  : 'Insufficient Coverage'}
-            </Text>
-          </View>
-        </Card>
-      </View>
-
-      {/* Future Projections */}
-      <Card style={styles.projectionsCard}>
-        <View>
-          <Text style={styles.projectionsTitle}>Future Projections</Text>
-          <Text style={styles.projectionsSubtitle}>
-            Based on 5% annual rent growth and 3% property appreciation
-          </Text>
-        </View>
-        <View style={styles.projectionsContent}>
-          <View style={styles.projectionsGrid}>
-            {/* 3-Year Projection */}
-            <View style={styles.projectionSection}>
-              <Text style={styles.projectionTitle}>3-Year Projection</Text>
-              <View style={styles.projectionMetrics}>
-                <View style={styles.projectionMetric}>
-                  <Text style={styles.projectionLabel}>Annual Rental Income:</Text>
-                  <Text style={styles.projectionValue}>
-                    {formatCurrency(results.projections.year3.rent)}
-                  </Text>
-                </View>
-                <View style={styles.projectionMetric}>
-                  <Text style={styles.projectionLabel}>Property Value:</Text>
-                  <Text style={styles.projectionValue}>
-                    {formatCurrency(results.projections.year3.propertyValue)}
-                  </Text>
-                </View>
-                <View style={styles.projectionMetric}>
-                  <Text style={styles.projectionLabel}>Annual Cash Flow:</Text>
-                  <Text style={styles.projectionValue}>
-                    {formatCurrency(results.projections.year3.cashFlow)}
-                  </Text>
-                </View>
-                <View style={styles.projectionMetric}>
-                  <Text style={styles.projectionLabel}>Net Equity:</Text>
-                  <Text style={styles.projectionValue}>
-                    {formatCurrency(results.projections.year3.equity)}
-                  </Text>
-                </View>
-              </View>
-            </View>
-
-            {/* 5-Year Projection */}
-            <View style={styles.projectionSection}>
-              <Text style={styles.projectionTitle}>5-Year Projection</Text>
-              <View style={styles.projectionMetrics}>
-                <View style={styles.projectionMetric}>
-                  <Text style={styles.projectionLabel}>Annual Rental Income:</Text>
-                  <Text style={styles.projectionValue}>
-                    {formatCurrency(results.projections.year5.rent)}
-                  </Text>
-                </View>
-                <View style={styles.projectionMetric}>
-                  <Text style={styles.projectionLabel}>Property Value:</Text>
-                  <Text style={styles.projectionValue}>
-                    {formatCurrency(results.projections.year5.propertyValue)}
-                  </Text>
-                </View>
-                <View style={styles.projectionMetric}>
-                  <Text style={styles.projectionLabel}>Annual Cash Flow:</Text>
-                  <Text style={styles.projectionValue}>
-                    {formatCurrency(results.projections.year5.cashFlow)}
-                  </Text>
-                </View>
-                <View style={styles.projectionMetric}>
-                  <Text style={styles.projectionLabel}>Net Equity:</Text>
-                  <Text style={styles.projectionValue}>
-                    {formatCurrency(results.projections.year5.equity)}
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </View>
-        </View>
-      </Card>
-
-      {/* Target Analisyts */}
-      <TargetAnalysis
-        onCalculateTarget={calculateTarget}
-        targetResults={targetResults}
-        showTargetAnalysis={showTargetAnalysis}
-        onToggleTargetAnalysis={setShowTargetAnalysis}
+    <PageSafeContainer>
+      <Header
+        title="Results"
+        showBack={true}
+        onBack={() => {
+          onDispose();
+        }}
       />
-    </ScrollView>
+      <ScrollView style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.title}>Investment Analysis Results</Text>
+          <View style={styles.buttonGroup}>
+            <OutlineButton
+              onPress={onEditInputs}
+              style={styles.headerButton}
+              title="Edit Inputs"
+              rightWidget={<Edit size={16} color="#3b82f6" />}
+            />
+            <OutlineButton
+              onPress={onReset}
+              style={styles.headerButton}
+              title="New Analysis"
+              rightWidget={<RotateCcw size={16} color="#3b82f6" />}
+            />
+          </View>
+        </View>
+
+        {/* Current vs Improved Comparison */}
+        <View style={styles.comparisonGrid}>
+          <Card style={[styles.comparisonCard, styles.currentCard]}>
+            <View style={styles.comparisonHeader}>
+              <Text style={styles.currentTitle}>Current Performance</Text>
+            </View>
+            <View style={styles.comparisonContent}>
+              <View style={styles.metricRow}>
+                <Text style={styles.metricLabel}>Cap Rate:</Text>
+                <Text style={styles.currentValue}>{formatPercentage(results.currentCapRate)}</Text>
+              </View>
+              <View style={styles.metricRow}>
+                <Text style={styles.metricLabel}>Annual Income:</Text>
+                <Text style={styles.metricValue}>
+                  {formatCurrency(results.totalIncome - results.totalIncomeIncrease)}
+                </Text>
+              </View>
+            </View>
+          </Card>
+
+          <Card style={[styles.comparisonCard, styles.improvedCard]}>
+            <View style={styles.comparisonHeader}>
+              <Text style={styles.improvedTitle}>After Improvements</Text>
+            </View>
+            <View style={styles.comparisonContent}>
+              <View style={styles.metricRow}>
+                <Text style={styles.metricLabel}>Cap Rate:</Text>
+                <Text style={styles.improvedValue}>
+                  {formatPercentage(results.improvedCapRate)}
+                </Text>
+              </View>
+              <View style={styles.metricRow}>
+                <Text style={styles.metricLabel}>Annual Income:</Text>
+                <Text style={styles.metricValue}>{formatCurrency(results.totalIncome)}</Text>
+              </View>
+            </View>
+          </Card>
+        </View>
+
+        {/* Value Gain Analysis */}
+        <Card style={styles.valueGainCard}>
+          <View>
+            <Text style={styles.valueGainTitle}>Investment Analysis Summary</Text>
+          </View>
+          <View style={styles.valueGainContent}>
+            <View style={styles.valueGainGrid}>
+              <View style={styles.valueGainItem}>
+                <Text style={styles.valueGainLabel}>Total Repair Investment</Text>
+                <Text style={styles.valueGainValue}>
+                  {formatCurrency(results.totalRepairCosts)}
+                </Text>
+              </View>
+              <View style={styles.valueGainItem}>
+                <Text style={styles.valueGainLabel}>Annual Income Increase</Text>
+                <Text style={styles.valueGainValue}>
+                  {formatCurrency(results.totalIncomeIncrease)}
+                </Text>
+              </View>
+              <View style={styles.valueGainItem}>
+                <Text style={styles.valueGainLabel}>Estimated Value Gain</Text>
+                <Text style={styles.valueGainValue}>{formatCurrency(results.valueGain)}</Text>
+              </View>
+            </View>
+            <Text style={styles.valueGainSubtext}>
+              *Property value increase based on improved income
+            </Text>
+          </View>
+        </Card>
+
+        {/* Performance Metrics */}
+        <View style={styles.metricsGrid}>
+          <Card style={styles.metricCard}>
+            <View style={styles.metricContent}>
+              <View style={styles.metricIconContainer}>
+                <TrendingUp size={20} color="#2563eb" />
+                <Text style={styles.metricTitle}>Cash-on-Cash Return</Text>
+              </View>
+              <Text style={styles.metricMainValue}>
+                {formatPercentage(results.cashOnCashReturn)}
+              </Text>
+              <Text style={styles.metricSubtext}>Annual return on cash invested</Text>
+            </View>
+          </Card>
+
+          <Card style={styles.metricCard}>
+            <View style={styles.metricContent}>
+              <View style={styles.metricIconContainer}>
+                <DollarSign size={20} color="#7c3aed" />
+                <Text style={styles.metricTitle}>Annual Cash Flow</Text>
+              </View>
+              <Text style={styles.metricMainValue}>{formatCurrency(results.annualCashFlow)}</Text>
+              <Text style={styles.metricSubtext}>
+                {formatCurrency(results.annualCashFlow / 12)}/month
+              </Text>
+            </View>
+          </Card>
+
+          <Card style={styles.metricCard}>
+            <View style={styles.metricContent}>
+              <View style={styles.metricIconContainer}>
+                <Target size={20} color="#16a34a" />
+                <Text style={styles.metricTitle}>Net Operating Income</Text>
+              </View>
+              <Text style={styles.metricMainValue}>
+                {formatCurrency(results.netOperatingIncome)}
+              </Text>
+              <Text style={styles.metricSubtext}>After all operating expenses</Text>
+            </View>
+          </Card>
+
+          <Card style={styles.metricCard}>
+            <View style={styles.metricContent}>
+              <View style={styles.metricIconContainer}>
+                <Building size={20} color="#ea580c" />
+                <Text style={styles.metricTitle}>Debt Service Coverage</Text>
+              </View>
+              <Text style={styles.metricMainValue}>
+                {results.debtServiceCoverageRatio.toFixed(2)}x
+              </Text>
+              <Text style={styles.metricSubtext}>
+                {results.debtServiceCoverageRatio >= 1.25
+                  ? 'Strong Coverage'
+                  : results.debtServiceCoverageRatio >= 1.0
+                    ? 'Adequate Coverage'
+                    : 'Insufficient Coverage'}
+              </Text>
+            </View>
+          </Card>
+        </View>
+
+        {/* Future Projections */}
+        <Card style={styles.projectionsCard}>
+          <View>
+            <Text style={styles.projectionsTitle}>Future Projections</Text>
+            <Text style={styles.projectionsSubtitle}>
+              Based on 5% annual rent growth and 3% property appreciation
+            </Text>
+          </View>
+          <View style={styles.projectionsContent}>
+            <View style={styles.projectionsGrid}>
+              {/* 3-Year Projection */}
+              <View style={styles.projectionSection}>
+                <Text style={styles.projectionTitle}>3-Year Projection</Text>
+                <View style={styles.projectionMetrics}>
+                  <View style={styles.projectionMetric}>
+                    <Text style={styles.projectionLabel}>Annual Rental Income:</Text>
+                    <Text style={styles.projectionValue}>
+                      {formatCurrency(results.projections.year3.rent)}
+                    </Text>
+                  </View>
+                  <View style={styles.projectionMetric}>
+                    <Text style={styles.projectionLabel}>Property Value:</Text>
+                    <Text style={styles.projectionValue}>
+                      {formatCurrency(results.projections.year3.propertyValue)}
+                    </Text>
+                  </View>
+                  <View style={styles.projectionMetric}>
+                    <Text style={styles.projectionLabel}>Annual Cash Flow:</Text>
+                    <Text style={styles.projectionValue}>
+                      {formatCurrency(results.projections.year3.cashFlow)}
+                    </Text>
+                  </View>
+                  <View style={styles.projectionMetric}>
+                    <Text style={styles.projectionLabel}>Net Equity:</Text>
+                    <Text style={styles.projectionValue}>
+                      {formatCurrency(results.projections.year3.equity)}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+
+              {/* 5-Year Projection */}
+              <View style={styles.projectionSection}>
+                <Text style={styles.projectionTitle}>5-Year Projection</Text>
+                <View style={styles.projectionMetrics}>
+                  <View style={styles.projectionMetric}>
+                    <Text style={styles.projectionLabel}>Annual Rental Income:</Text>
+                    <Text style={styles.projectionValue}>
+                      {formatCurrency(results.projections.year5.rent)}
+                    </Text>
+                  </View>
+                  <View style={styles.projectionMetric}>
+                    <Text style={styles.projectionLabel}>Property Value:</Text>
+                    <Text style={styles.projectionValue}>
+                      {formatCurrency(results.projections.year5.propertyValue)}
+                    </Text>
+                  </View>
+                  <View style={styles.projectionMetric}>
+                    <Text style={styles.projectionLabel}>Annual Cash Flow:</Text>
+                    <Text style={styles.projectionValue}>
+                      {formatCurrency(results.projections.year5.cashFlow)}
+                    </Text>
+                  </View>
+                  <View style={styles.projectionMetric}>
+                    <Text style={styles.projectionLabel}>Net Equity:</Text>
+                    <Text style={styles.projectionValue}>
+                      {formatCurrency(results.projections.year5.equity)}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+        </Card>
+
+        {/* Target Analisyts */}
+        <TargetAnalysis
+          onCalculateTarget={calculateTarget}
+          targetResults={targetResults}
+          showTargetAnalysis={showTargetAnalysis}
+          onToggleTargetAnalysis={setShowTargetAnalysis}
+        />
+      </ScrollView>
+    </PageSafeContainer>
   );
 };
 

@@ -14,7 +14,7 @@ export default (arg: ConfigContext): ExpoConfig => {
     android: {
       ...config.android,
       googleServicesFile: process.env.GOOGLE_SERVICES_JSON || './google-services.json',
-      package: process.env.ANDROID_PACKAGE_NAME || 'com.myownboss.app',
+      package: process.env.ANDROID_PACKAGE_NAME || 'com.myvirtualboss.realestate',
     },
     extra: {
       ...config.extra,

@@ -133,7 +133,7 @@ export const GoalItem = ({ goal }: { goal: IGoalProgress }) => {
               {goal.value}/{goal.targetValue} {goal.unit}
             </Text>
             {/* Period */}
-            <Text style={styles.periodText}>{formatPeriod(goal.period)}</Text>
+            <Text style={styles.periodText}>{formatPeriod(goal.period, goal.frequency)}</Text>
           </View>
         </View>
       </View>

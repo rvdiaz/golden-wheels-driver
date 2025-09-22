@@ -18,6 +18,7 @@ import { usePushNotificationTokenSetup } from '~/core_modules/auth/hooks/usePush
 import { CustomHeader } from './header/customHeader';
 import { theme } from '~/theme/theme';
 import { View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -103,27 +104,29 @@ export default function Navigation() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {userInfo ? (
-          <>
-            <Stack.Screen name="MainTabs">
-              {() => <TabsWithCustomHeader tenantModules={tenantModules} />}
-            </Stack.Screen>
-            {nestedNav}
-          </>
-        ) : (
-          // Public/auth stack
-          <>
-            <Stack.Screen name="Auth">
-              {() => (
-                <AuthProvider>
-                  <AuthFormWrapper />
-                </AuthProvider>
-              )}
-            </Stack.Screen>
-          </>
-        )}
-      </Stack.Navigator>
+      <SafeAreaProvider>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          {userInfo ? (
+            <>
+              <Stack.Screen name="MainTabs">
+                {() => <TabsWithCustomHeader tenantModules={tenantModules} />}
+              </Stack.Screen>
+              {nestedNav}
+            </>
+          ) : (
+            // Public/auth stack
+            <>
+              <Stack.Screen name="Auth">
+                {() => (
+                  <AuthProvider>
+                    <AuthFormWrapper />
+                  </AuthProvider>
+                )}
+              </Stack.Screen>
+            </>
+          )}
+        </Stack.Navigator>
+      </SafeAreaProvider>
     </NavigationContainer>
   );
 }

@@ -1,6 +1,6 @@
 import { useMutation, useReactiveVar } from '@apollo/client';
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, View, ScrollView } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import { Header } from '~/codidge_components/UI/header';
 import Constants from 'expo-constants';
 import { initiateRentApplicationMutation } from '~/custom_modules/tools/api/mutations';
@@ -8,6 +8,9 @@ import { userData } from '~/store/user';
 import { MultipleContactEmails } from '~/custom_modules/crm/widgets/crmContactSelector';
 import { PropertySelectorWidget } from '../property/propertySelector';
 import { ITransUnionProperty } from '../../interfaces';
+import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import { Send } from 'lucide-react-native';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -18,7 +21,7 @@ export const ScreenRequestForm = ({
   disposeModalHandler: () => void;
   onAddScreenView: () => void;
 }) => {
-  const [emails, setEmails] = useState<string[]>(); // Start with
+  const [emails, setEmails] = useState<string[]>(['']); // Start with
   const user = useReactiveVar(userData);
   const [property, setProperty] = useState<ITransUnionProperty>();
 
@@ -51,7 +54,7 @@ export const ScreenRequestForm = ({
 
       // Reset form
       setProperty(undefined);
-      setEmails(undefined);
+      setEmails([]);
     } catch (error) {
       console.log('::error', error);
       // You might want to show an error alert here
@@ -59,16 +62,8 @@ export const ScreenRequestForm = ({
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Header
-        title="Add Screening Request"
-        showBack={true}
-        onBack={disposeModalHandler}
-        rightAction={onSave}
-        rightText="Save"
-        loadingRight={loading}
-        disabledRight={!isFormValid()}
-      />
+    <PageSafeContainer style={styles.container}>
+      <Header title="Screening Request" showBack={true} onBack={disposeModalHandler} />
 
       <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
         <View style={styles.bodyContainer}>
@@ -92,16 +87,34 @@ export const ScreenRequestForm = ({
           />
         </View>
       </ScrollView>
-    </SafeAreaView>
+      <View
+        style={{
+          padding: 15,
+        }}>
+        <PrimaryButton
+          title="Send Application"
+          disabled={!isFormValid()}
+          size={ButtonSize.LARGE}
+          onPress={onSave}
+          loading={loading}
+          rightWidget={
+            <Send
+              style={{
+                marginLeft: 5,
+              }}
+              size={20}
+              color={'#fff'}
+            />
+          }
+        />
+      </View>
+    </PageSafeContainer>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: '#ffffff',
-    paddingHorizontal: 16,
-    paddingTop: 40,
   },
   scrollContainer: {
     flex: 1,

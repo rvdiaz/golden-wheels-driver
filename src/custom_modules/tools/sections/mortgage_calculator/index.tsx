@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet,  ScrollView, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useForm, FormProvider } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
@@ -10,7 +10,7 @@ import { MortgageCalculatorResults } from './widgets/mortgageResults';
 import { MortgageCalculation, MortgageFormValues } from './interfaces';
 import { calculateMortgage } from './helpers';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 export const MortgageCalculatorScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -88,7 +88,7 @@ export const MortgageCalculatorScreen: React.FC = () => {
 
   return (
     <FormProvider {...methods}>
-      <SafeAreaView style={styles.container}>
+      <PageSafeContainer>
         <Header
           title="Mortgage Calculator"
           showBack={true}
@@ -134,16 +134,12 @@ export const MortgageCalculatorScreen: React.FC = () => {
             />
           )}
         </Modal>
-      </SafeAreaView>
+      </PageSafeContainer>
     </FormProvider>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F9FAFB',
-  },
   content: {
     flex: 1,
     padding: 16,

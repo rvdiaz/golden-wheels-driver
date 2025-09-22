@@ -19,6 +19,7 @@ import { TransunionRentsApplications } from '~/custom_modules/tools/sections/tra
 import { PropertyEstimationsPage } from '~/custom_modules/tools/sections/property_estimations';
 import { GoalsScreen } from '~/core_modules/profile/goals';
 import { PrequalifiedLoanScreen } from '~/custom_modules/tools/sections/loan_prequalification';
+import InvestmentCalculatorScreen from '~/custom_modules/tools/sections/investment_calculator';
 
 export const moduleScreens: Record<
   ModuleKeys,
@@ -81,5 +82,8 @@ export const moduleScreens: Record<
   },
   RentApplications: {
     body: TransunionRentsApplications,
+  },
+  InvestmentCalculator: {
+    body: InvestmentCalculatorScreen,
   },
 };

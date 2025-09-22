@@ -24,7 +24,7 @@ interface PrimaryButtonProps {
 const sizeStyles = {
   [ButtonSize.SMALL]: { paddingVertical: 6, paddingHorizontal: 12, fontSize: 12 },
   [ButtonSize.MEDIUM]: { paddingVertical: 10, paddingHorizontal: 16, fontSize: 12 },
-  [ButtonSize.LARGE]: { paddingVertical: 12, paddingHorizontal: 20, fontSize: 14 },
+  [ButtonSize.LARGE]: { paddingVertical: 12, paddingHorizontal: 20, fontSize: 16 },
 };
 
 const PrimaryButton: React.FC<PrimaryButtonProps> = ({

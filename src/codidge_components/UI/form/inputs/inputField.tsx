@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TextInputProps,
   TextStyle,
+  ViewStyle,
 } from 'react-native';
 import { X } from 'lucide-react-native'; // make sure you have RN version
 import { LoadingSpinner } from '../../loading/loadingSpinner';
@@ -24,6 +25,7 @@ interface InputProps extends TextInputProps {
   leftIcon?: ReactNode;
   labelStyle?: TextStyle;
   required?: boolean;
+  containerStyle?: ViewStyle;
 }
 
 const InputField = forwardRef<TextInput, InputProps>(
@@ -43,6 +45,7 @@ const InputField = forwardRef<TextInput, InputProps>(
       style,
       labelStyle,
       required,
+      containerStyle,
       ...rest
     },
     ref
@@ -65,7 +68,7 @@ const InputField = forwardRef<TextInput, InputProps>(
     const inputPaddingRight = rightIcon ? 38 : 12;
 
     return (
-      <View style={{ marginBottom: 12 }}>
+      <View style={[{ marginBottom: 12 }, containerStyle]}>
         {label && (
           <Text style={[styles.label, labelStyle]}>
             {label}

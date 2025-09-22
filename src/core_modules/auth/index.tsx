@@ -38,6 +38,7 @@ export const AuthFormWrapper = () => {
       });
 
       if (!user.data?.getUser) {
+        console.error(user.error);
         throw Error('Error getting user');
       }
 
@@ -58,6 +59,7 @@ export const AuthFormWrapper = () => {
           customer: {
             ...formData,
             id: userId,
+            notificationToken: pushToken,
           },
         },
       });

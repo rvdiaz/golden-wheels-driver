@@ -89,6 +89,7 @@ interface UseInvestmentFormReturn {
   addRenovationItem: () => void;
   removeRenovationItem: (index: number) => void;
   clearUnit: (index: number) => void;
+  removeUnit: (index: number) => void;
   setShowResults: (show: boolean) => void;
   setShowTargetAnalysis: (show: boolean) => void;
 
@@ -204,9 +205,25 @@ export const useInvestmentForm = (): UseInvestmentFormReturn => {
         ...DEFAULT_UNIT,
         id: index + 1,
       };
+
       form.setValue(`units.${index}`, clearedUnit);
     },
     [form]
+  );
+
+  const removeUnit = useCallback(
+    (index: number) => {
+      // Remove the unit at the specified index
+      unitsFieldArray.remove(index);
+
+      // Update the numberOfUnits count
+      const currentCount = form.getValues('numberOfUnits');
+      if (currentCount > 1) {
+        // Prevent going below 1 unit
+        form.setValue('numberOfUnits', currentCount - 1);
+      }
+    },
+    [unitsFieldArray, form]
   );
 
   const calculateAnalysis = useCallback(async () => {
@@ -276,6 +293,7 @@ export const useInvestmentForm = (): UseInvestmentFormReturn => {
     addRenovationItem,
     removeRenovationItem,
     clearUnit,
+    removeUnit,
     setShowResults,
     setShowTargetAnalysis,
 

@@ -19,7 +19,7 @@ import { UnitData } from '../interfaces';
 interface MobileUnitsFormProps {
   form: UseFormReturn<any>;
   unitsFieldArray: UseFieldArrayReturn<any, 'units'>;
-  onClearUnit: (index: number) => void;
+  removeUnit: (index: number) => void;
 }
 
 // Single Unit Card Component
@@ -27,8 +27,8 @@ const UnitCard: React.FC<{
   field: any;
   index: number;
   control: any;
-  onClearUnit: (index: number) => void;
-}> = ({ index, control, onClearUnit }) => {
+  removeUnit: (index: number) => void;
+}> = ({ index, control, removeUnit }) => {
   return (
     <View style={styles.unitCard}>
       {/* Card Header */}
@@ -39,7 +39,7 @@ const UnitCard: React.FC<{
           </View>
           <Text style={styles.cardTitle}>Unit {index + 1}</Text>
         </View>
-        <TouchableOpacity onPress={() => onClearUnit(index)} style={styles.deleteButton}>
+        <TouchableOpacity onPress={() => removeUnit(index)} style={styles.deleteButton}>
           <Trash2 size={16} color="#dc2626" />
         </TouchableOpacity>
       </View>
@@ -163,7 +163,7 @@ const UnitCard: React.FC<{
 export const MobileUnitsForm: React.FC<MobileUnitsFormProps> = ({
   form,
   unitsFieldArray,
-  onClearUnit,
+  removeUnit,
 }) => {
   const { formatCurrency } = useFormatters();
   const { control, watch } = form;
@@ -188,7 +188,7 @@ export const MobileUnitsForm: React.FC<MobileUnitsFormProps> = ({
                 field={field}
                 index={index}
                 control={control}
-                onClearUnit={onClearUnit}
+                removeUnit={removeUnit}
               />
             ))}
           </View>

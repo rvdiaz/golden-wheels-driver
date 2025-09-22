@@ -31,7 +31,7 @@ const InvestmentCalculatorScreen: React.FC = () => {
     updateUnitsCount,
     addRenovationItem,
     removeRenovationItem,
-    clearUnit,
+    removeUnit,
     setShowResults,
 
     // Computed values
@@ -81,7 +81,7 @@ const InvestmentCalculatorScreen: React.FC = () => {
         );
       case 'units':
         return (
-          <MobileUnitsForm form={form} unitsFieldArray={unitsFieldArray} onClearUnit={clearUnit} />
+          <MobileUnitsForm form={form} unitsFieldArray={unitsFieldArray} removeUnit={removeUnit} />
         );
       case 'expenses':
         return <ExpensesForm form={form} />;

@@ -85,7 +85,7 @@ export const ContactEmailInput: React.FC<ContactEmailInputProps> = ({
           </View>
           {showContactsButton && (
             <TouchableOpacity style={styles.contactsButton} onPress={() => setModalVisible(true)}>
-              <Users size={20} color="#007AFF" />
+              <UserPlus size={20} color="#007AFF" />
             </TouchableOpacity>
           )}
         </View>
@@ -167,7 +167,7 @@ export const MultipleContactEmails: React.FC<MultipleContactEmailsProps> = ({
         {emails.length < maxEmails && (
           <TouchableOpacity style={styles.addEmailButton} onPress={addEmailSlot}>
             <Plus size={16} color="#007AFF" />
-            <Text style={styles.addEmailText}>Add Email</Text>
+            <Text style={styles.addEmailText}>Add Applicant</Text>
           </TouchableOpacity>
         )}
       </View>

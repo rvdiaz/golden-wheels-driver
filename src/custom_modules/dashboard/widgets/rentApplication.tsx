@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, ImageSourcePropType } from 'react-native';
+import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 
 interface InfoWidgetProps {
@@ -7,6 +8,8 @@ interface InfoWidgetProps {
   description?: string;
   buttonText?: string;
   onButtonPress?: () => void;
+  secondButtonText?: string;
+  onSecondButtonPress?: () => void;
   imageSource?: ImageSourcePropType;
   imageSize?: number;
   backgroundColor?: string;
@@ -18,9 +21,11 @@ export const InfoWidget: React.FC<InfoWidgetProps> = ({
   title = 'Rent Application',
   description = '',
   buttonText = 'Get Started',
+  secondButtonText = '',
   onButtonPress,
+  onSecondButtonPress,
   imageSource,
-  imageSize = 110,
+  imageSize = 80,
   backgroundColor = '#EEF2FF',
   titleColor = '#3730A3',
   descriptionColor = '#4338CA',
@@ -34,15 +39,24 @@ export const InfoWidget: React.FC<InfoWidgetProps> = ({
           {description}
         </Text>
 
-        <PrimaryButton
-          style={{
-            width: 120,
-            paddingHorizontal: 10,
-          }}
-          onPress={onButtonPress}
-          size={ButtonSize.MEDIUM}
-          title={buttonText}
-        />
+        <View style={styles.buttonContainer}>
+          <PrimaryButton
+            style={{
+              width: 120,
+              paddingHorizontal: 10,
+            }}
+            onPress={onButtonPress}
+            size={ButtonSize.MEDIUM}
+            title={buttonText}
+          />
+          {secondButtonText && onSecondButtonPress && (
+            <OutlineButton
+              onPress={onSecondButtonPress}
+              size={ButtonSize.MEDIUM}
+              title={secondButtonText}
+            />
+          )}
+        </View>
       </View>
 
       {/* Right Side - Image */}
@@ -158,6 +172,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   rightContent: {
+    height: '100%',
     alignItems: 'center',
   },
   imageContainer: {
@@ -181,6 +196,10 @@ const styles = StyleSheet.create({
   placeholderText: {
     fontSize: 32,
     opacity: 0.5,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 8,
   },
 });
 

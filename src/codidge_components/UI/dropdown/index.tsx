@@ -63,9 +63,7 @@ const DropdownComponent: React.FC<DropdownProps> = ({
         value={value}
         onChange={(item) => onChange(item.value)}
         renderLeftIcon={() => (
-          <View style={styles.icon}>
-            {icon ? icon : <AntDesign color="black" name="Safety" size={16} />}
-          </View>
+          <View style={styles.icon}>{icon ? icon : <AntDesign color="black" size={16} />}</View>
         )} // <-
         renderItem={renderItem}
       />

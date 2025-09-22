@@ -100,6 +100,11 @@ export const getTenantRoutes = (user: IUser | null) => {
           metaData: {},
         },
         {
+          label: 'Investment Calculator',
+          moduleKey: ModuleKeys.investmentCalculator,
+          metaData: {},
+        },
+        {
           label: 'Prequalified Loan',
           moduleKey: ModuleKeys.prequalifiedTools,
           metaData: {},

@@ -8,6 +8,7 @@ export enum ModuleKeys {
   tools = 'Tools',
   training = 'Training',
   mortgageCalculator = 'MortgageCalculator',
+  investmentCalculator = 'InvestmentCalculator',
   propertyEstimations = 'PropertyEstimations',
   propertyTools = 'PropertyTools',
   prequalifiedTools = 'PrequalifiedTools',

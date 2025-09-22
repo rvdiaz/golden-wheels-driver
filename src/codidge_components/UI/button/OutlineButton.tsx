@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle, View } from 'react-native';
 import { LoadingSpinner } from '../loading/loadingSpinner';
+import { theme } from '~/theme/theme';
 
 export enum ButtonSize {
   SMALL = 'sm',
@@ -59,17 +60,19 @@ const OutlineButton: React.FC<OutlineButtonProps> = ({
       ) : (
         <View style={styles.buttonBody}>
           {leftWidget && leftWidget}
-          <Text
-            style={[
-              styles.text,
-              {
-                fontSize: sizeStyle.fontSize,
-                color: disabledAux ? '#9CA3AF' : '#2563EB', // gray-400 or brand-500
-              },
-              textStyle,
-            ]}>
-            {title}
-          </Text>
+          {title && (
+            <Text
+              style={[
+                styles.text,
+                {
+                  fontSize: sizeStyle.fontSize,
+                  color: disabledAux ? '#9CA3AF' : '#2563EB', // gray-400 or brand-500
+                },
+                textStyle,
+              ]}>
+              {title}
+            </Text>
+          )}
           {rightWidget && rightWidget}
         </View>
       )}
@@ -80,7 +83,7 @@ const OutlineButton: React.FC<OutlineButtonProps> = ({
 const styles = StyleSheet.create({
   button: {
     minWidth: 96,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.lg,
     borderWidth: 1,
     backgroundColor: 'transparent', // no fill
     alignItems: 'center',

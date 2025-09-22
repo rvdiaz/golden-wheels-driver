@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet, ViewStyle, ScrollView } from 'react-native';
 import React, { useState } from 'react';
 import { theme } from '~/theme/theme';
+import { ToyBrick } from 'lucide-react-native';
 
 interface Tab {
   key: string;
@@ -169,7 +170,13 @@ export const ScrollableTabHeader: React.FC<TabHeaderProps> = ({
               {tab.label}
             </Text>
             {!!tab?.indexNumber && (
-              <View style={styles.scrollableBadge}>
+              <View
+                style={[
+                  styles.scrollableBadge,
+                  {
+                    backgroundColor: activeTab === tab.key ? 'rgba(255, 255, 255, 0.3)' : '#6B7280',
+                  },
+                ]}>
                 <Text style={styles.scrollableBadgeText}>{tab.indexNumber}</Text>
               </View>
             )}
@@ -323,7 +330,6 @@ const styles = StyleSheet.create({
     color: '#FFF',
   },
   scrollableBadge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 10,

@@ -36,6 +36,15 @@ export const ToolsScreen: React.FC = () => {
       backgroundColor: '#ECFDF5',
       route: 'PrequalifiedLoan',
     },
+    {
+      id: ModuleKeys.investmentCalculator,
+      title: 'Investment Calculator',
+      description: 'Estimate potential returns on investments over time',
+      icon: 'LineChart',
+      color: '#9333EA',
+      backgroundColor: '#F5F3FF',
+      route: 'InvestmentCalculator',
+    },
     /*  {
       id: ModuleKeys.propertyTools,
       title: 'Property-Owner Information',

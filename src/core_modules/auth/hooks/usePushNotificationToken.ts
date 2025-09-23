@@ -33,6 +33,15 @@ const getPushNotificationToken = async (): Promise<string> => {
   return data;
 };
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
+
 export const usePushNotificationTokenSetup = () => {
   const pushToken = useReactiveVar(pushTokenVar);
   const userInfo = useReactiveVar(userData);

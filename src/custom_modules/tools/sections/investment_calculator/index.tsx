@@ -1,9 +1,8 @@
 // components/InvestmentCalculator.tsx
 import React, { useState } from 'react';
 import { View, StyleSheet, Modal, KeyboardAvoidingView, Platform } from 'react-native';
-import { Home, Building, Calculator, Percent } from 'lucide-react-native';
+import { Home, Building, Calculator, Percent, ClipboardList } from 'lucide-react-native';
 import { PropertyForm } from './widgets/propertyInformation';
-import { ExpensesForm } from './widgets/expensesForm';
 import { FinancingForm } from './widgets/financingForm';
 import { ResultsDisplay } from './widgets/resultsComponent';
 import { GridTabs } from '~/codidge_components/UI/tabs';
@@ -12,7 +11,7 @@ import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { Header } from '~/codidge_components/UI/header';
 import { useNavigation } from '@react-navigation/native';
 import { MobileUnitsForm } from './widgets/unitsForm';
-import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import { ExpensesForm } from './widgets/expenesForm';
 
 const InvestmentCalculatorScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -37,7 +36,6 @@ const InvestmentCalculatorScreen: React.FC = () => {
 
     // Computed values
     totalRenovationCost,
-    totalRepairCosts,
   } = useInvestmentForm();
 
   const tabs = [
@@ -60,46 +58,38 @@ const InvestmentCalculatorScreen: React.FC = () => {
       Icon: Calculator,
     },
     {
-      key: 'financing',
-      label: 'Financing',
-      Icon: Percent,
+      key: 'overview',
+      label: 'Overview',
+      Icon: ClipboardList,
     },
   ];
 
   const renderActiveScene = () => {
     switch (activeTab) {
       case 'property':
-        return (
-          <PropertyForm
-            form={form}
-            renovationFieldArray={renovationFieldArray}
-            totalRenovationCost={totalRenovationCost}
-            totalRepairCosts={totalRepairCosts}
-            onUpdateUnitsCount={updateUnitsCount}
-            onAddRenovationItem={addRenovationItem}
-            onRemoveRenovationItem={removeRenovationItem}
-          />
-        );
+        return <PropertyForm form={form} />;
       case 'units':
         return (
-          <MobileUnitsForm form={form} unitsFieldArray={unitsFieldArray} removeUnit={removeUnit} />
+          <MobileUnitsForm
+            form={form}
+            totalRenovationCost={totalRenovationCost}
+            renovationFieldArray={renovationFieldArray}
+            unitsFieldArray={unitsFieldArray}
+            removeUnit={removeUnit}
+            onAddRenovationItem={addRenovationItem}
+            onRemoveRenovationItem={removeRenovationItem}
+            onUpdateUnitsCount={updateUnitsCount}
+          />
         );
       case 'expenses':
         return <ExpensesForm form={form} />;
-      case 'financing':
-        return <FinancingForm form={form} isCalculating={isCalculating} />;
-      default:
+
+      case 'overview':
         return (
-          <PropertyForm
-            form={form}
-            renovationFieldArray={renovationFieldArray}
-            totalRenovationCost={totalRenovationCost}
-            totalRepairCosts={totalRepairCosts}
-            onUpdateUnitsCount={updateUnitsCount}
-            onAddRenovationItem={addRenovationItem}
-            onRemoveRenovationItem={removeRenovationItem}
-          />
+          <FinancingForm form={form} isCalculating={isCalculating} onSubmit={calculateAnalysis} />
         );
+      default:
+        return <PropertyForm form={form} />;
     }
   };
 
@@ -126,17 +116,6 @@ const InvestmentCalculatorScreen: React.FC = () => {
 
         <View style={styles.content}>{renderActiveScene()}</View>
       </KeyboardAvoidingView>
-
-      <View style={styles.buttonContainer}>
-        {/* Calculate Button */}
-        <PrimaryButton
-          onPress={calculateAnalysis}
-          disabled={isCalculating}
-          size={ButtonSize.LARGE}
-          rightWidget={<Calculator size={20} color="#ffffff" />}
-          title={isCalculating ? 'Calculating...' : 'Calculate Investment Analysis'}
-        />
-      </View>
       <Modal
         visible={showResults && !!results}
         animationType="slide"
@@ -169,10 +148,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 3, // Android shadow
     zIndex: 1, // make sure it stays above content
-  },
-  buttonContainer: {
-    paddingTop: 12,
-    paddingHorizontal: 16,
   },
 });
 

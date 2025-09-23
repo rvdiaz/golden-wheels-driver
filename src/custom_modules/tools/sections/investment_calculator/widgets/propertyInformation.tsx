@@ -1,43 +1,22 @@
 // components/forms/PropertyForm.tsx
 import React from 'react';
-import { Controller, UseFormReturn, UseFieldArrayReturn } from 'react-hook-form';
+import { Controller, UseFormReturn } from 'react-hook-form';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useFormatters } from '../custom_hooks';
 import { Card } from '~/codidge_components/UI/card';
-import { Home, Plus } from 'lucide-react-native';
+import { Home, Percent } from 'lucide-react-native';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
-import OutlineButton, { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
-import { RenovationItemExpandable } from './renovationItem';
 
 interface PropertyFormProps {
   form: UseFormReturn<any>;
-  renovationFieldArray: UseFieldArrayReturn<any, 'renovationItems'>;
-  totalRenovationCost: number;
-  totalRepairCosts: number;
-  onUpdateUnitsCount: (count: number) => void;
-  onAddRenovationItem: () => void;
-  onRemoveRenovationItem: (index: number) => void;
 }
 
-export const PropertyForm: React.FC<PropertyFormProps> = ({
-  form,
-  renovationFieldArray,
-  totalRenovationCost,
-  onUpdateUnitsCount,
-  onAddRenovationItem,
-  onRemoveRenovationItem,
-}) => {
+export const PropertyForm: React.FC<PropertyFormProps> = ({ form }) => {
   const { formatCurrency } = useFormatters();
-  const {
-    control,
-    setValue,
-    watch,
-    formState: { errors },
-  } = form;
+  const { control, setValue, watch } = form;
 
   const watchedPropertyValue = watch('propertyValue');
   const watchedDownPayment = watch('downPayment');
-  const watchedNumberOfUnits = watch('numberOfUnits');
 
   const handlePropertyValueChange = (value: string) => {
     const numValue = parseFloat(value) || 0;
@@ -75,6 +54,25 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({
 
         <View style={styles.content}>
           <View style={styles.grid}>
+            <View style={styles.inputContainer}>
+              <Controller
+                control={control}
+                name="address"
+                render={({ field: { value, onChange } }) => (
+                  <InputField
+                    label="Address (Optional)"
+                    placeholder="Main Street"
+                    value={value?.toString() || ''}
+                    onChangeText={(text) => onChange(text)}
+                    keyboardType="default"
+                  />
+                )}
+              />
+              {/*  {errors.address && (
+                <Text style={styles.errorText}>{errors.address.message}</Text>
+              )} */}
+            </View>
+
             {/* Asking Price */}
             <View style={styles.inputContainer}>
               <Controller
@@ -130,102 +128,83 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({
                   />
                 )}
               />
-              <Text style={styles.helperText}>
-                Auto-calculated at 3% of asking price (editable)
-              </Text>
             </View>
           </View>
+        </View>
+      </Card>
 
+      <Card style={styles.card}>
+        <View>
+          <View style={styles.headerContainer}>
+            <Percent size={20} color="#2563eb" />
+            <Text style={styles.title}>Financing</Text>
+          </View>
+        </View>
+
+        <View style={styles.content}>
           <View style={styles.grid}>
-            {/* Total Renovation Costs */}
+            {/* Loan Amount */}
             <View style={styles.inputContainer}>
+              <Text style={styles.label}>Loan Amount</Text>
               <Controller
                 control={control}
-                name="renovationCosts"
-                render={({ field: { value } }) => (
+                name="loanAmount"
+                render={({ field: { onChange, value } }) => (
                   <InputField
-                    label="Total Renovation Costs"
-                    value={formatCurrency(value || 0).replace(', ', '')}
-                    editable={false}
+                    style={[styles.input /* errors.loanAmount &&   styles.inputError*/]}
+                    placeholder="400000"
+                    value={value?.toString() || ''}
+                    onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                    keyboardType="numeric"
                   />
                 )}
               />
               <Text style={styles.helperText}>
-                Auto-calculated from unit repair costs + itemized renovation costs
+                Auto-calculated from property value - down payment
               </Text>
+              {/*    {errors.loanAmount && (
+                <Text style={styles.errorText}>{errors.loanAmount.message}</Text>
+              )} */}
             </View>
 
-            {/* Number of Units */}
+            {/* Interest Rate */}
             <View style={styles.inputContainer}>
+              <Text style={styles.label}>Interest Rate (%)</Text>
               <Controller
                 control={control}
-                name="numberOfUnits"
+                name="interestRate"
                 render={({ field: { onChange, value } }) => (
                   <InputField
-                    label="Number of Units (1-100)"
-                    placeholder="1"
+                    style={[styles.input /* errors.interestRate &&   styles.inputError*/]}
+                    placeholder="7.5"
                     value={value?.toString() || ''}
-                    onChangeText={(text) => {
-                      const numValue = parseInt(text) || 0;
-                      onChange(numValue);
-                      onUpdateUnitsCount(numValue);
-                    }}
+                    onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                    keyboardType="numeric"
+                  />
+                )}
+              />
+              {/*  {errors.interestRate && (
+                <Text style={styles.errorText}>{errors.interestRate.message}</Text>
+              )} */}
+            </View>
+
+            {/* Loan Term */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Loan Term (years)</Text>
+              <Controller
+                control={control}
+                name="loanTerm"
+                render={({ field: { onChange, value } }) => (
+                  <InputField
+                    style={[styles.input /* errors.loanTerm &&   styles.inputError*/]}
+                    placeholder="30"
+                    value={value?.toString() || ''}
+                    onChangeText={(text) => onChange(parseInt(text) || 0)}
                     keyboardType="numeric"
                   />
                 )}
               />
             </View>
-          </View>
-
-          <View style={styles.separator}></View>
-
-          {/* Itemized Renovation Costs */}
-          <View>
-            <View style={styles.renovationHeader}>
-              <View style={styles.headerItemsContainer}>
-                <Home size={18} color="#16a34a" />
-                <Text style={styles.sectionTitle}>Itemized Renovation Costs</Text>
-              </View>
-            </View>
-
-            {renovationFieldArray.fields.length > 0 ? (
-              <View style={styles.renovationList}>
-                {renovationFieldArray.fields.map((field, index) => (
-                  <RenovationItemExpandable
-                    key={field.id}
-                    field={field}
-                    index={index}
-                    control={control}
-                    onRemoveRenovationItem={onRemoveRenovationItem}
-                  />
-                ))}
-                <OutlineButton
-                  size={ButtonSize.MEDIUM}
-                  onPress={onAddRenovationItem}
-                  rightWidget={<Plus size={16} color="#3b82f6" />}
-                  title="Add Item"
-                />
-                <View style={styles.totalContainer}>
-                  <Text style={styles.totalLabel}>Total Itemized Costs:</Text>
-                  <Text style={styles.totalAmount}>{formatCurrency(totalRenovationCost)}</Text>
-                </View>
-              </View>
-            ) : (
-              <View style={styles.emptyState}>
-                <Home size={32} color="#9ca3af" />
-                <Text style={styles.emptyStateText}>No renovation items added yet</Text>
-                <Text style={styles.emptyStateSubtext}>
-                  Click "Add Item" to start itemizing your renovation costs
-                </Text>
-                <OutlineButton
-                  style={{ width: '100%' }}
-                  size={ButtonSize.MEDIUM}
-                  onPress={onAddRenovationItem}
-                  rightWidget={<Plus size={16} color="#3b82f6" />}
-                  title="Add Item"
-                />
-              </View>
-            )}
           </View>
         </View>
       </Card>
@@ -245,13 +224,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     gap: 8,
     padding: 16,
-  },
-  headerItemsContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    flex: 1,
-    width: '100%',
-    gap: 8,
   },
   title: {
     fontSize: 18,
@@ -284,21 +256,9 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#e5e7eb',
   },
-  renovationHeader: {
-    alignItems: 'flex-end',
-    gap: 8,
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
   addButtonText: {
     fontSize: 14,
     color: '#3b82f6',
-  },
-  renovationList: {
-    gap: 8,
   },
   renovationItem: {
     flexDirection: 'row',
@@ -326,37 +286,19 @@ const styles = StyleSheet.create({
     width: 30,
     minWidth: 30,
   },
-  totalContainer: {
-    alignItems: 'flex-end',
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
-  },
-  totalLabel: {
+  label: {
     fontSize: 14,
-    color: '#6b7280',
+    fontWeight: '500',
+    marginBottom: 4,
   },
-  totalAmount: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#16a34a',
-  },
-  emptyState: {
-    alignItems: 'center',
-    padding: 24,
-    borderWidth: 2,
-    borderStyle: 'dashed',
+  input: {
+    borderWidth: 1,
     borderColor: '#d1d5db',
-    borderRadius: 8,
-    gap: 8,
-  },
-  emptyStateText: {
-    color: '#6b7280',
+    borderRadius: 6,
+    padding: 12,
     fontSize: 16,
   },
-  emptyStateSubtext: {
-    color: '#9ca3af',
-    fontSize: 14,
-    textAlign: 'center',
+  inputError: {
+    borderColor: '#dc2626',
   },
 });

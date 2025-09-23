@@ -17,6 +17,7 @@ export interface RenovationItem {
 }
 
 export interface PropertyFormData {
+  address?: string;
   propertyValue: number;
   downPayment: number;
   closingCosts: number;

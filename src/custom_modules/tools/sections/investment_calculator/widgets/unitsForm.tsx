@@ -7,6 +7,7 @@ import {
   Wrench,
   TrendingUp,
   Trash2,
+  Plus,
 } from 'lucide-react-native';
 import React from 'react';
 import { Controller, UseFormReturn, UseFieldArrayReturn } from 'react-hook-form';
@@ -15,11 +16,19 @@ import { Card } from '~/codidge_components/UI/card';
 import { useFormatters } from '../custom_hooks';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { UnitData } from '../interfaces';
+import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
+import { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import { RenovationItemExpandable } from './renovationItem';
 
 interface MobileUnitsFormProps {
   form: UseFormReturn<any>;
   unitsFieldArray: UseFieldArrayReturn<any, 'units'>;
   removeUnit: (index: number) => void;
+  onUpdateUnitsCount: (count: number) => void;
+  renovationFieldArray: UseFieldArrayReturn<any, 'renovationItems'>;
+  totalRenovationCost: number;
+  onRemoveRenovationItem: (index: number) => void;
+  onAddRenovationItem: () => void;
 }
 
 // Single Unit Card Component
@@ -163,7 +172,12 @@ const UnitCard: React.FC<{
 export const MobileUnitsForm: React.FC<MobileUnitsFormProps> = ({
   form,
   unitsFieldArray,
+  renovationFieldArray,
+  onUpdateUnitsCount,
   removeUnit,
+  totalRenovationCost,
+  onRemoveRenovationItem,
+  onAddRenovationItem,
 }) => {
   const { formatCurrency } = useFormatters();
   const { control, watch } = form;
@@ -172,6 +186,83 @@ export const MobileUnitsForm: React.FC<MobileUnitsFormProps> = ({
 
   return (
     <ScrollView style={styles.container}>
+      <Card
+        style={[
+          styles.card,
+          {
+            marginBottom: 0,
+          },
+        ]}>
+        <View style={styles.inputContainer}>
+          <Controller
+            control={control}
+            name="numberOfUnits"
+            render={({ field: { onChange, value } }) => (
+              <InputField
+                label="Number of Units (1-100)"
+                placeholder="1"
+                value={value?.toString() || ''}
+                onChangeText={(text) => {
+                  const numValue = parseInt(text) || 0;
+                  onChange(numValue);
+                  onUpdateUnitsCount(numValue);
+                }}
+                keyboardType="numeric"
+              />
+            )}
+          />
+        </View>
+
+        {/* Itemized Renovation Costs */}
+        <View style={styles.itemsContainer}>
+          <View style={styles.renovationHeader}>
+            <View style={styles.headerItemsContainer}>
+              <Home size={18} color="#16a34a" />
+              <Text style={styles.sectionTitle}>Itemized Renovation Costs</Text>
+            </View>
+          </View>
+
+          {renovationFieldArray.fields.length > 0 ? (
+            <View style={styles.renovationList}>
+              {renovationFieldArray.fields.map((field, index) => (
+                <RenovationItemExpandable
+                  key={field.id}
+                  field={field}
+                  index={index}
+                  control={control}
+                  onRemoveRenovationItem={onRemoveRenovationItem}
+                />
+              ))}
+              <OutlineButton
+                size={ButtonSize.MEDIUM}
+                onPress={onAddRenovationItem}
+                rightWidget={<Plus size={16} color="#3b82f6" />}
+                title="Add Item"
+              />
+              <View style={styles.totalContainer}>
+                <Text style={styles.totalLabel}>Total Itemized Costs:</Text>
+                <Text style={styles.totalAmount}>{formatCurrency(totalRenovationCost)}</Text>
+              </View>
+            </View>
+          ) : (
+            <View style={styles.emptyState}>
+              <Home size={32} color="#9ca3af" />
+              <Text style={styles.emptyStateText}>No renovation items added yet</Text>
+              <Text style={styles.emptyStateSubtext}>
+                Click "Add Item" to start itemizing your renovation costs
+              </Text>
+              <OutlineButton
+                style={{ width: '100%' }}
+                size={ButtonSize.MEDIUM}
+                onPress={onAddRenovationItem}
+                rightWidget={<Plus size={16} color="#3b82f6" />}
+                title="Add Item"
+              />
+            </View>
+          )}
+        </View>
+      </Card>
+
       <Card style={styles.card}>
         {/* Header */}
         <View style={styles.headerContainer}>
@@ -438,5 +529,66 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 8,
     fontStyle: 'italic',
+  },
+  inputContainer: {
+    gap: 4,
+    padding: 16,
+  },
+  itemsContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+  },
+  renovationHeader: {
+    alignItems: 'flex-end',
+    gap: 8,
+    marginBottom: 16,
+  },
+  headerItemsContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    flex: 1,
+    width: '100%',
+    gap: 8,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  renovationList: {
+    gap: 8,
+  },
+  totalContainer: {
+    alignItems: 'flex-end',
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb',
+    marginTop: 8,
+  },
+  totalLabel: {
+    fontSize: 14,
+    color: '#6b7280',
+  },
+  totalAmount: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#16a34a',
+  },
+  emptyState: {
+    alignItems: 'center',
+    padding: 24,
+    borderWidth: 2,
+    borderStyle: 'dashed',
+    borderColor: '#d1d5db',
+    borderRadius: 8,
+    gap: 8,
+  },
+  emptyStateText: {
+    color: '#6b7280',
+    fontSize: 16,
+  },
+  emptyStateSubtext: {
+    color: '#9ca3af',
+    fontSize: 14,
+    textAlign: 'center',
   },
 });

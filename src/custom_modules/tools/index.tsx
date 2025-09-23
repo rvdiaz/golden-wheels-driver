@@ -2,77 +2,18 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as Icons from 'lucide-react-native';
-import { ModuleKeys } from '~/store/interface';
+import { IFeatureModule, ModuleKeys } from '~/store/interface';
 import { theme } from '~/theme/theme';
+import { useReactiveVar } from '@apollo/client';
+import { userData } from '~/store/user';
 
 export const ToolsScreen: React.FC = () => {
   const navigation = useNavigation();
 
-  const tools = [
-    {
-      id: ModuleKeys.transUnionRentApplications,
-      title: 'Rental Applications',
-      description: 'Send customer rental applications',
-      icon: 'FileSignature',
-      color: '#059669',
-      backgroundColor: '#ECFDF5',
-      route: 'RentApplications',
-    },
-    {
-      id: ModuleKeys.mortgageCalculator,
-      title: 'Mortgage Calculator',
-      description: 'Calculate monthly mortgage payments',
-      icon: 'Calculator',
-      color: '#2563EB',
-      backgroundColor: '#EEF2FF',
-      route: 'MortgageCalculator',
-    },
-    {
-      id: ModuleKeys.prequalifiedTools,
-      title: 'Loan Prequalification',
-      description: 'Calculate how much your client can borrow based on income',
-      icon: 'BadgeCheck',
-      color: '#059669',
-      backgroundColor: '#ECFDF5',
-      route: 'PrequalifiedLoan',
-    },
-    {
-      id: ModuleKeys.investmentCalculator,
-      title: 'Investment Calculator',
-      description: 'Estimate potential returns on investments over time',
-      icon: 'LineChart',
-      color: '#9333EA',
-      backgroundColor: '#F5F3FF',
-      route: 'InvestmentCalculator',
-    },
-    /*  {
-      id: ModuleKeys.propertyTools,
-      title: 'Property-Owner Information',
-      description: 'Get owner and property details by address',
-      icon: 'Home',
-      color: '#DC2626',
-      backgroundColor: '#FEF2F2',
-      route: 'PropertyInfo',
-    },
-    {
-      id: ModuleKeys.propertyEstimations,
-      title: 'Quick CMA Tool',
-      description: 'Generate comparative market analysis',
-      icon: 'TrendingUp', // better icon for market analysis
-      color: '#9333EA', // purple shade for a professional, analytical feel
-      backgroundColor: '#F3E8FF', // light lavender for contrast
-      route: 'PropertyEstimations',
-    },
-    {
-      id: ModuleKeys.expiredListing,
-      title: 'Expired Listings',
-      description: 'Find expired listings in your target area',
-      icon: 'ClockX',
-      color: '#EA580C',
-      backgroundColor: '#FFF7ED',
-      route: 'ExpiredListings',
-    }, */
-  ];
+  const currentUserData = useReactiveVar(userData);
+
+  const currentTools =
+    currentUserData?.modules.find((mod) => mod.moduleKey === ModuleKeys.tools)?.modules ?? [];
 
   const documentationLinks = [
     {
@@ -95,22 +36,27 @@ export const ToolsScreen: React.FC = () => {
     },
   ];
 
-  const renderTool = (tool: any) => {
-    const IconComponent = (Icons as any)[tool.icon] || Icons.Calculator;
+  const renderTool = (tool: IFeatureModule) => {
+    let IconComponent = Icons.Calculator; // default fallback
+    if (tool.icon && (Icons as any)[tool.icon]) {
+      IconComponent = (Icons as any)[tool.icon];
+    } else {
+      console.warn('Icon not found for', tool.icon);
+    }
 
     return (
       <TouchableOpacity
-        key={tool.id}
+        key={tool.moduleKey}
         style={styles.toolCard}
         onPress={() => {
-          navigation.navigate(tool.id as never);
+          navigation.navigate(tool.moduleKey as never);
         }}>
-        <View style={[styles.toolIcon, { backgroundColor: tool.backgroundColor }]}>
-          <IconComponent size={28} color={tool.color} />
+        <View style={[styles.toolIcon, { backgroundColor: tool?.backgroundColor ?? '#FFF' }]}>
+          <IconComponent size={28} />
         </View>
         <View style={styles.toolContent}>
-          <Text style={styles.toolTitle}>{tool.title}</Text>
-          <Text style={styles.toolDescription}>{tool.description}</Text>
+          <Text style={styles.toolTitle}>{tool?.label ?? ''}</Text>
+          <Text style={styles.toolDescription}>{tool?.description ?? ''}</Text>
         </View>
         <View style={styles.toolArrow}>
           <Icons.ChevronRight size={20} color="#9CA3AF" />
@@ -146,7 +92,7 @@ export const ToolsScreen: React.FC = () => {
           </Text>
         </View>
 
-        <View style={styles.toolsGrid}>{tools.map(renderTool)}</View>
+        <View style={styles.toolsGrid}>{currentTools.map((tool) => renderTool(tool))}</View>
 
         {/* <Card style={styles.featuredCard}>
           <View style={styles.featuredHeader}>

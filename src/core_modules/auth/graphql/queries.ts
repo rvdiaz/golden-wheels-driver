@@ -26,6 +26,10 @@ export const getUserQuery = gql`
         modules {
           label
           metaData
+          icon
+          description
+          color
+          backgroundColor
           moduleKey
         }
       }

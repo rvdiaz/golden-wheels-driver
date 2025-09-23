@@ -25,7 +25,11 @@ export enum ModuleKeys {
 export interface IFeatureModule {
   label?: string;
   moduleKey: ModuleKeys;
-  metaData: any;
+  metaData?: any;
+  description: string;
+  icon: string;
+  color: string;
+  backgroundColor: string;
   modules?: IFeatureModule[];
 }
 

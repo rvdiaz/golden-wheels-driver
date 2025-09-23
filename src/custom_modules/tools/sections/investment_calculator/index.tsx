@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Modal, KeyboardAvoidingView, Platform } from 'react-native';
 import { Home, Building, Calculator, Percent, ClipboardList } from 'lucide-react-native';
 import { PropertyForm } from './widgets/propertyInformation';
-import { FinancingForm } from './widgets/financingForm';
 import { ResultsDisplay } from './widgets/resultsComponent';
 import { GridTabs } from '~/codidge_components/UI/tabs';
 import { useInvestmentForm } from './custom_hooks';
@@ -57,11 +56,6 @@ const InvestmentCalculatorScreen: React.FC = () => {
       label: 'Expenses',
       Icon: Calculator,
     },
-    {
-      key: 'overview',
-      label: 'Overview',
-      Icon: ClipboardList,
-    },
   ];
 
   const renderActiveScene = () => {
@@ -72,22 +66,24 @@ const InvestmentCalculatorScreen: React.FC = () => {
         return (
           <MobileUnitsForm
             form={form}
-            totalRenovationCost={totalRenovationCost}
-            renovationFieldArray={renovationFieldArray}
             unitsFieldArray={unitsFieldArray}
             removeUnit={removeUnit}
-            onAddRenovationItem={addRenovationItem}
-            onRemoveRenovationItem={removeRenovationItem}
             onUpdateUnitsCount={updateUnitsCount}
           />
         );
       case 'expenses':
-        return <ExpensesForm form={form} />;
-
-      case 'overview':
         return (
-          <FinancingForm form={form} isCalculating={isCalculating} onSubmit={calculateAnalysis} />
+          <ExpensesForm
+            form={form}
+            totalRenovationCost={totalRenovationCost}
+            onAddRenovationItem={addRenovationItem}
+            onRemoveRenovationItem={removeRenovationItem}
+            renovationFieldArray={renovationFieldArray}
+            isCalculating={isCalculating}
+            onSubmit={calculateAnalysis}
+          />
         );
+
       default:
         return <PropertyForm form={form} />;
     }
@@ -113,7 +109,6 @@ const InvestmentCalculatorScreen: React.FC = () => {
         <View style={styles.tabHeaderWrapper}>
           <GridTabs tabs={tabs} initialTabKey="property" onTabChange={setActiveTab} />
         </View>
-
         <View style={styles.content}>{renderActiveScene()}</View>
       </KeyboardAvoidingView>
       <Modal

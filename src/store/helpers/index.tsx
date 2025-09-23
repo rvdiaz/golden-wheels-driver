@@ -1,146 +1,13 @@
 import { TypedNavigator } from '@react-navigation/native';
-import { IModule, IUser, ModuleKeys } from '../interface';
+import { IModule, IUser } from '../interface';
 import { Ionicons } from '@expo/vector-icons';
 import { moduleScreens } from '../config';
 import { Image } from 'react-native';
 
 export const getTenantRoutes = (user: IUser | null) => {
-  //  const modules = user?.tenantModules ?? [];
+  const userModules = user?.modules ?? [];
 
-  const modules: IModule[] = [
-    {
-      label: 'Dashboard',
-      moduleKey: ModuleKeys.dashboard,
-      path: '/dashboard',
-      type: 'main',
-      metaData: '{}',
-      icon: 'home-outline',
-      isBottomBar: true,
-      customIcon: 'dashboard',
-    },
-    {
-      label: 'Tasks',
-      moduleKey: ModuleKeys.tasks,
-      path: '/tasks',
-      type: 'main',
-      metaData: '{}',
-      icon: 'calendar-outline',
-      isBottomBar: true,
-      customIcon: 'task',
-    },
-    {
-      label: 'Profile',
-      moduleKey: ModuleKeys.profile,
-      path: '/profile',
-      type: 'main',
-      metaData: '{}',
-      icon: 'calendar-outline',
-      modules: [
-        {
-          label: 'Income',
-          moduleKey: ModuleKeys.income,
-          metaData: {},
-        },
-        {
-          label: 'Goals',
-          moduleKey: ModuleKeys.goals,
-          metaData: {},
-        },
-      ],
-    },
-    {
-      label: 'Notifications',
-      moduleKey: ModuleKeys.notifications,
-      path: '/notifications',
-      type: 'main',
-      metaData: '{}',
-      icon: 'calendar-outline',
-    },
-    {
-      label: 'CRM',
-      moduleKey: ModuleKeys.crm,
-      path: '/crm',
-      type: 'main',
-      metaData: '{}',
-      icon: 'people-outline',
-      modules: [
-        {
-          label: 'Contact Details',
-          moduleKey: ModuleKeys.contactDetals,
-          metaData: {},
-        },
-      ],
-      isBottomBar: true,
-      customIcon: 'crm',
-    },
-    {
-      label: 'Tools',
-      moduleKey: ModuleKeys.tools,
-      path: '/tools',
-      type: 'main',
-      metaData: '{}',
-      icon: 'hammer-outline',
-      isBottomBar: true,
-      customIcon: 'tools',
-      modules: [
-        {
-          label: 'Rent Applications',
-          moduleKey: ModuleKeys.transUnionRentApplications,
-          metaData: {},
-        },
-        {
-          label: 'Mortgage Calculator',
-          moduleKey: ModuleKeys.mortgageCalculator,
-          metaData: {},
-        },
-
-        {
-          label: 'Property Tools',
-          moduleKey: ModuleKeys.propertyTools,
-          metaData: {},
-        },
-        {
-          label: 'Investment Calculator',
-          moduleKey: ModuleKeys.investmentCalculator,
-          metaData: {},
-        },
-        {
-          label: 'Prequalified Loan',
-          moduleKey: ModuleKeys.prequalifiedTools,
-          metaData: {},
-        },
-        {
-          label: 'Expired Listings',
-          moduleKey: ModuleKeys.expiredListing,
-          metaData: {},
-        },
-        {
-          label: 'Quick CMA Tool',
-          moduleKey: ModuleKeys.propertyEstimations,
-          metaData: {},
-        },
-      ],
-    },
-    {
-      label: 'Training',
-      moduleKey: ModuleKeys.training,
-      path: '/training',
-      type: 'main',
-      metaData: '{}',
-      icon: 'school',
-      isBottomBar: true,
-      customIcon: 'training',
-      modules: [
-        {
-          label: 'Course Details',
-          moduleKey: ModuleKeys.trainingDetailPage,
-          metaData: {},
-        },
-      ],
-    },
-  ];
-
-  return modules;
+  return userModules;
 };
 
 export const customIcons: Record<string, { active: any; inactive: any }> = {
@@ -173,12 +40,13 @@ export const createNestedNavigationScreens = (modules: IModule[], stack: TypedNa
     // 1️⃣ Add main module if it does NOT have bottom tab navigation
     if (!mod.isBottomBar) {
       const Comp = moduleScreens[mod.moduleKey];
+
       if (Comp) {
         screens.push(
           <stack.Screen
             key={mod.moduleKey}
             name={mod.moduleKey}
-            component={moduleScreens[mod.moduleKey].body}
+            component={moduleScreens[mod.moduleKey]?.body}
             options={{ title: mod.label ?? mod.moduleKey }}
           />
         );
@@ -188,7 +56,7 @@ export const createNestedNavigationScreens = (modules: IModule[], stack: TypedNa
     // 2️⃣ Add nested feature modules
     if (mod.modules && mod.modules.length > 0) {
       mod.modules.forEach((feat) => {
-        const FeatureComp = moduleScreens[feat.moduleKey].body;
+        const FeatureComp = moduleScreens[feat.moduleKey]?.body;
         if (FeatureComp) {
           screens.push(
             <stack.Screen

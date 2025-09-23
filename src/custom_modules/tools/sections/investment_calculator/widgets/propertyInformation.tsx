@@ -2,7 +2,6 @@
 import React from 'react';
 import { Controller, UseFormReturn } from 'react-hook-form';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { useFormatters } from '../custom_hooks';
 import { Card } from '~/codidge_components/UI/card';
 import { Home, Percent } from 'lucide-react-native';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
@@ -12,7 +11,6 @@ interface PropertyFormProps {
 }
 
 export const PropertyForm: React.FC<PropertyFormProps> = ({ form }) => {
-  const { formatCurrency } = useFormatters();
   const { control, setValue, watch } = form;
 
   const watchedPropertyValue = watch('propertyValue');
@@ -44,7 +42,13 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({ form }) => {
 
   return (
     <ScrollView style={styles.container}>
-      <Card style={styles.card}>
+      <Card
+        style={[
+          styles.card,
+          {
+            marginTop: 16,
+          },
+        ]}>
         <View>
           <View style={styles.headerContainer}>
             <Home size={20} color="#3b82f6" />
@@ -217,7 +221,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   card: {
-    margin: 16,
+    marginVertical: 8,
+    marginHorizontal: 16,
   },
   headerContainer: {
     flexDirection: 'row',

@@ -22,6 +22,7 @@ export const getUserQuery = gql`
         metaData
         moduleKey
         path
+        customIcon
         modules {
           label
           metaData

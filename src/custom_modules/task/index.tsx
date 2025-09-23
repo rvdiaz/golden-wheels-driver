@@ -35,16 +35,6 @@ export const TasksScreen: React.FC = () => {
 
   // Separate active and inactive tasks based on tab
   const currentTabTasks = activeTab === ActiveTab.admin ? tasks : getCustomTasks(tasks);
-  const currentTabActiveTasks =
-    activeTab === ActiveTab.admin ? activeTasks : getCustomTasks(activeTasks);
-
-  // Split tasks into active and inactive
-  const activeTasksForTab = currentTabActiveTasks.filter((task) => task.isCompleted === false);
-  const inactiveTasksForTab = currentTabTasks.filter(
-    (task) =>
-      !currentTabActiveTasks.some((activeTask) => activeTask.id === task.id) ||
-      task.isCompleted === true
-  );
 
   //incomplete active schedule tasks
   const inCompleteScheduleTasks = activeTasks.filter((ta) => !ta.isCompleted).length;
@@ -59,14 +49,11 @@ export const TasksScreen: React.FC = () => {
     setRefreshing(false);
   };
 
-  const renderTaskSection = (title: string, data: ITask[], showCount: boolean = true) => {
+  const renderTaskSection = (data: ITask[], showCount: boolean = true) => {
     if (data.length === 0) return null;
 
     return (
       <View style={styles.sectionContainer}>
-        <Text style={styles.sectionHeader}>
-          {title} {showCount && `(${data.length})`}
-        </Text>
         <FlatList
           data={data}
           renderItem={({ item }: { item: ITask }) => <TaskItem task={item} />}
@@ -90,7 +77,7 @@ export const TasksScreen: React.FC = () => {
           },
           {
             key: ActiveTab.custom,
-            label: 'Custom Tasks',
+            label: 'My Tasks',
             Icon: Pencil,
             indexNumber: inCompleteCustomTask,
           },
@@ -109,8 +96,7 @@ export const TasksScreen: React.FC = () => {
               style={{
                 marginTop: 16,
               }}>
-              {renderTaskSection('Active Tasks', activeTasksForTab)}
-              {renderTaskSection('Past Tasks', inactiveTasksForTab)}
+              {renderTaskSection(currentTabTasks)}
             </View>
           }
           contentContainerStyle={styles.listContainer}

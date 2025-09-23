@@ -4,7 +4,7 @@ import { GoalType } from '~/custom_modules/task/interfaces';
 export enum ModuleKeys {
   dashboard = 'Dashboard',
   tasks = 'Tasks',
-  crm = 'CRM',
+  crm = 'Crm',
   tools = 'Tools',
   training = 'Training',
   mortgageCalculator = 'MortgageCalculator',

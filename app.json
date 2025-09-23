@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "My Virtual Boss",
-    "slug": "my-virtual-boss",
+    "slug": "my-own-boss",
     "version": "1.0.0",
     "web": {
       "favicon": "assets/favicon.png"

@@ -1,6 +1,6 @@
 // components/InvestmentCalculator.tsx
 import React, { useState } from 'react';
-import { View, StyleSheet, Modal } from 'react-native';
+import { View, StyleSheet, Modal, KeyboardAvoidingView, Platform } from 'react-native';
 import { Home, Building, Calculator, Percent } from 'lucide-react-native';
 import { PropertyForm } from './widgets/propertyInformation';
 import { ExpensesForm } from './widgets/expensesForm';
@@ -12,6 +12,7 @@ import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { Header } from '~/codidge_components/UI/header';
 import { useNavigation } from '@react-navigation/native';
 import { MobileUnitsForm } from './widgets/unitsForm';
+import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 
 const InvestmentCalculatorScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -86,13 +87,7 @@ const InvestmentCalculatorScreen: React.FC = () => {
       case 'expenses':
         return <ExpensesForm form={form} />;
       case 'financing':
-        return (
-          <FinancingForm
-            form={form}
-            onCalculate={calculateAnalysis}
-            isCalculating={isCalculating}
-          />
-        );
+        return <FinancingForm form={form} isCalculating={isCalculating} />;
       default:
         return (
           <PropertyForm
@@ -121,17 +116,30 @@ const InvestmentCalculatorScreen: React.FC = () => {
           navigation.goBack();
         }}
       />
-      <View style={styles.content}>
+      <KeyboardAvoidingView
+        style={styles.content}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
         <View style={styles.tabHeaderWrapper}>
           <GridTabs tabs={tabs} initialTabKey="property" onTabChange={setActiveTab} />
         </View>
-        <View style={styles.content}>{renderActiveScene()}</View>
-      </View>
 
+        <View style={styles.content}>{renderActiveScene()}</View>
+      </KeyboardAvoidingView>
+
+      <View style={styles.buttonContainer}>
+        {/* Calculate Button */}
+        <PrimaryButton
+          onPress={calculateAnalysis}
+          disabled={isCalculating}
+          size={ButtonSize.LARGE}
+          rightWidget={<Calculator size={20} color="#ffffff" />}
+          title={isCalculating ? 'Calculating...' : 'Calculate Investment Analysis'}
+        />
+      </View>
       <Modal
         visible={showResults && !!results}
         animationType="slide"
-        presentationStyle="pageSheet"
         onRequestClose={() => setShowResults(false)}>
         <ResultsDisplay
           onEditInputs={() => setShowResults(false)}
@@ -161,6 +169,10 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 3, // Android shadow
     zIndex: 1, // make sure it stays above content
+  },
+  buttonContainer: {
+    paddingTop: 12,
+    paddingHorizontal: 16,
   },
 });
 

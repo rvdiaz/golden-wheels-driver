@@ -66,12 +66,12 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
             <View style={styles.comparisonContent}>
               <View style={styles.metricRow}>
                 <Text style={styles.metricLabel}>Cap Rate:</Text>
-                <Text style={styles.currentValue}>{formatPercentage(results.currentCapRate)}</Text>
+                <Text style={styles.currentValue}>{formatPercentage(results?.currentCapRate)}</Text>
               </View>
               <View style={styles.metricRow}>
                 <Text style={styles.metricLabel}>Annual Income:</Text>
                 <Text style={styles.metricValue}>
-                  {formatCurrency(results.totalIncome - results.totalIncomeIncrease)}
+                  {formatCurrency(results?.totalIncome - results?.totalIncomeIncrease)}
                 </Text>
               </View>
             </View>
@@ -85,12 +85,12 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
               <View style={styles.metricRow}>
                 <Text style={styles.metricLabel}>Cap Rate:</Text>
                 <Text style={styles.improvedValue}>
-                  {formatPercentage(results.improvedCapRate)}
+                  {formatPercentage(results?.improvedCapRate)}
                 </Text>
               </View>
               <View style={styles.metricRow}>
                 <Text style={styles.metricLabel}>Annual Income:</Text>
-                <Text style={styles.metricValue}>{formatCurrency(results.totalIncome)}</Text>
+                <Text style={styles.metricValue}>{formatCurrency(results?.totalIncome)}</Text>
               </View>
             </View>
           </Card>
@@ -106,18 +106,18 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
               <View style={styles.valueGainItem}>
                 <Text style={styles.valueGainLabel}>Total Repair Investment</Text>
                 <Text style={styles.valueGainValue}>
-                  {formatCurrency(results.totalRepairCosts)}
+                  {formatCurrency(results?.totalRepairCosts)}
                 </Text>
               </View>
               <View style={styles.valueGainItem}>
                 <Text style={styles.valueGainLabel}>Annual Income Increase</Text>
                 <Text style={styles.valueGainValue}>
-                  {formatCurrency(results.totalIncomeIncrease)}
+                  {formatCurrency(results?.totalIncomeIncrease)}
                 </Text>
               </View>
               <View style={styles.valueGainItem}>
                 <Text style={styles.valueGainLabel}>Estimated Value Gain</Text>
-                <Text style={styles.valueGainValue}>{formatCurrency(results.valueGain)}</Text>
+                <Text style={styles.valueGainValue}>{formatCurrency(results?.valueGain)}</Text>
               </View>
             </View>
             <Text style={styles.valueGainSubtext}>
@@ -135,7 +135,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                 <Text style={styles.metricTitle}>Cash-on-Cash Return</Text>
               </View>
               <Text style={styles.metricMainValue}>
-                {formatPercentage(results.cashOnCashReturn)}
+                {formatPercentage(results?.cashOnCashReturn)}
               </Text>
               <Text style={styles.metricSubtext}>Annual return on cash invested</Text>
             </View>
@@ -147,9 +147,9 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                 <DollarSign size={20} color="#7c3aed" />
                 <Text style={styles.metricTitle}>Annual Cash Flow</Text>
               </View>
-              <Text style={styles.metricMainValue}>{formatCurrency(results.annualCashFlow)}</Text>
+              <Text style={styles.metricMainValue}>{formatCurrency(results?.annualCashFlow)}</Text>
               <Text style={styles.metricSubtext}>
-                {formatCurrency(results.annualCashFlow / 12)}/month
+                {formatCurrency(results?.annualCashFlow / 12)}/month
               </Text>
             </View>
           </Card>
@@ -161,7 +161,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                 <Text style={styles.metricTitle}>Net Operating Income</Text>
               </View>
               <Text style={styles.metricMainValue}>
-                {formatCurrency(results.netOperatingIncome)}
+                {formatCurrency(results?.netOperatingIncome)}
               </Text>
               <Text style={styles.metricSubtext}>After all operating expenses</Text>
             </View>
@@ -174,12 +174,12 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                 <Text style={styles.metricTitle}>Debt Service Coverage</Text>
               </View>
               <Text style={styles.metricMainValue}>
-                {results.debtServiceCoverageRatio.toFixed(2)}x
+                {results?.debtServiceCoverageRatio.toFixed(2)}x
               </Text>
               <Text style={styles.metricSubtext}>
-                {results.debtServiceCoverageRatio >= 1.25
+                {results?.debtServiceCoverageRatio >= 1.25
                   ? 'Strong Coverage'
-                  : results.debtServiceCoverageRatio >= 1.0
+                  : results?.debtServiceCoverageRatio >= 1.0
                     ? 'Adequate Coverage'
                     : 'Insufficient Coverage'}
               </Text>
@@ -204,25 +204,25 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                   <View style={styles.projectionMetric}>
                     <Text style={styles.projectionLabel}>Annual Rental Income:</Text>
                     <Text style={styles.projectionValue}>
-                      {formatCurrency(results.projections.year3.rent)}
+                      {formatCurrency(results?.projections.year3.rent)}
                     </Text>
                   </View>
                   <View style={styles.projectionMetric}>
                     <Text style={styles.projectionLabel}>Property Value:</Text>
                     <Text style={styles.projectionValue}>
-                      {formatCurrency(results.projections.year3.propertyValue)}
+                      {formatCurrency(results?.projections.year3.propertyValue)}
                     </Text>
                   </View>
                   <View style={styles.projectionMetric}>
                     <Text style={styles.projectionLabel}>Annual Cash Flow:</Text>
                     <Text style={styles.projectionValue}>
-                      {formatCurrency(results.projections.year3.cashFlow)}
+                      {formatCurrency(results?.projections.year3.cashFlow)}
                     </Text>
                   </View>
                   <View style={styles.projectionMetric}>
                     <Text style={styles.projectionLabel}>Net Equity:</Text>
                     <Text style={styles.projectionValue}>
-                      {formatCurrency(results.projections.year3.equity)}
+                      {formatCurrency(results?.projections.year3.equity)}
                     </Text>
                   </View>
                 </View>
@@ -235,25 +235,25 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                   <View style={styles.projectionMetric}>
                     <Text style={styles.projectionLabel}>Annual Rental Income:</Text>
                     <Text style={styles.projectionValue}>
-                      {formatCurrency(results.projections.year5.rent)}
+                      {formatCurrency(results?.projections.year5.rent)}
                     </Text>
                   </View>
                   <View style={styles.projectionMetric}>
                     <Text style={styles.projectionLabel}>Property Value:</Text>
                     <Text style={styles.projectionValue}>
-                      {formatCurrency(results.projections.year5.propertyValue)}
+                      {formatCurrency(results?.projections.year5.propertyValue)}
                     </Text>
                   </View>
                   <View style={styles.projectionMetric}>
                     <Text style={styles.projectionLabel}>Annual Cash Flow:</Text>
                     <Text style={styles.projectionValue}>
-                      {formatCurrency(results.projections.year5.cashFlow)}
+                      {formatCurrency(results?.projections.year5.cashFlow)}
                     </Text>
                   </View>
                   <View style={styles.projectionMetric}>
                     <Text style={styles.projectionLabel}>Net Equity:</Text>
                     <Text style={styles.projectionValue}>
-                      {formatCurrency(results.projections.year5.equity)}
+                      {formatCurrency(results?.projections.year5.equity)}
                     </Text>
                   </View>
                 </View>
@@ -263,12 +263,14 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
         </Card>
 
         {/* Target Analisyts */}
-        <TargetAnalysis
-          onCalculateTarget={calculateTarget}
-          targetResults={targetResults}
-          showTargetAnalysis={showTargetAnalysis}
-          onToggleTargetAnalysis={setShowTargetAnalysis}
-        />
+        {targetResults && (
+          <TargetAnalysis
+            onCalculateTarget={calculateTarget}
+            targetResults={targetResults}
+            showTargetAnalysis={showTargetAnalysis}
+            onToggleTargetAnalysis={setShowTargetAnalysis}
+          />
+        )}
       </ScrollView>
     </PageSafeContainer>
   );

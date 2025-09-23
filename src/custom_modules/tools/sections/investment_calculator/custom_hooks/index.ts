@@ -266,10 +266,10 @@ export const useInvestmentForm = (): UseInvestmentFormReturn => {
   );
 
   const resetForm = useCallback(() => {
+    setShowResults(false);
     form.reset(getDefaultFormValues());
     setResults(null);
     setTargetResults(null);
-    setShowResults(false);
     setShowTargetAnalysis(false);
     setNextRenovationId(1);
   }, [form]);
@@ -306,16 +306,22 @@ export const useInvestmentForm = (): UseInvestmentFormReturn => {
 
 // Hook for formatting utilities
 export const useFormatters = () => {
-  const formatCurrency = useCallback((amount: number): string => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0,
-    }).format(amount);
+  const formatCurrency = useCallback((amount: number) => {
+    if (amount) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0,
+      }).format(amount);
+    }
+    return '';
   }, []);
 
-  const formatPercentage = useCallback((ratio: number): string => {
-    return `${ratio.toFixed(2)}%`;
+  const formatPercentage = useCallback((ratio: number) => {
+    if (ratio) {
+      return `${ratio.toFixed(2)}%`;
+    }
+    return '';
   }, []);
 
   const formatNumber = useCallback((num: number, decimals = 0): string => {

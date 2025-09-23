@@ -2,22 +2,16 @@
 import React from 'react';
 import { Controller, UseFormReturn } from 'react-hook-form';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { Percent, Calculator } from 'lucide-react-native';
+import { Percent } from 'lucide-react-native';
 import { Card } from '~/codidge_components/UI/card';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
-import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 
 interface FinancingFormProps {
   form: UseFormReturn<any>;
-  onCalculate: () => void;
   isCalculating: boolean;
 }
 
-export const FinancingForm: React.FC<FinancingFormProps> = ({
-  form,
-  onCalculate,
-  isCalculating,
-}) => {
+export const FinancingForm: React.FC<FinancingFormProps> = ({ form }) => {
   const {
     control,
     formState: { errors },
@@ -99,17 +93,6 @@ export const FinancingForm: React.FC<FinancingFormProps> = ({
               {/*    {errors.loanTerm && <Text style={styles.errorText}>{errors.loanTerm.message}</Text>} */}
             </View>
           </View>
-
-          {/* Calculate Button */}
-          <View style={styles.buttonContainer}>
-            <PrimaryButton
-              onPress={onCalculate}
-              disabled={isCalculating}
-              size={ButtonSize.LARGE}
-              rightWidget={<Calculator size={20} color="#ffffff" />}
-              title={isCalculating ? 'Calculating...' : 'Calculate Investment Analysis'}
-            />
-          </View>
         </View>
       </Card>
     </ScrollView>
@@ -167,9 +150,6 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     fontSize: 12,
     marginTop: 2,
-  },
-  buttonContainer: {
-    paddingTop: 8,
   },
   buttonContent: {
     flexDirection: 'row',

@@ -1,5 +1,5 @@
 import { TypedNavigator } from '@react-navigation/native';
-import { IModule, IUser } from '../interface';
+import { IModule, IUser, ModuleKeys } from '../interface';
 import { Ionicons } from '@expo/vector-icons';
 import { moduleScreens } from '../config';
 import { Image } from 'react-native';
@@ -7,7 +7,140 @@ import { Image } from 'react-native';
 export const getTenantRoutes = (user: IUser | null) => {
   const userModules = user?.modules ?? [];
 
-  return userModules;
+  const modules: IModule[] = [
+    {
+      label: 'Dashboard',
+      moduleKey: ModuleKeys.dashboard,
+      path: '/dashboard',
+      type: 'main',
+      metaData: '{}',
+      icon: 'home-outline',
+      isBottomBar: true,
+      customIcon: 'dashboard',
+    },
+    {
+      label: 'Tasks',
+      moduleKey: ModuleKeys.tasks,
+      path: '/tasks',
+      type: 'main',
+      metaData: '{}',
+      icon: 'calendar-outline',
+      isBottomBar: true,
+      customIcon: 'task',
+    },
+    {
+      label: 'Profile',
+      moduleKey: ModuleKeys.profile,
+      path: '/profile',
+      type: 'main',
+      metaData: '{}',
+      icon: 'calendar-outline',
+      modules: [
+        {
+          label: 'Income',
+          moduleKey: ModuleKeys.income,
+          metaData: {},
+        },
+        {
+          label: 'Goals',
+          moduleKey: ModuleKeys.goals,
+          metaData: {},
+        },
+      ],
+    },
+    {
+      label: 'Notifications',
+      moduleKey: ModuleKeys.notifications,
+      path: '/notifications',
+      type: 'main',
+      metaData: '{}',
+      icon: 'calendar-outline',
+    },
+    {
+      label: 'Crm',
+      moduleKey: ModuleKeys.crm,
+      path: '/crm',
+      type: 'main',
+      metaData: '{}',
+      icon: 'people-outline',
+      modules: [
+        {
+          label: 'Contact Details',
+          moduleKey: ModuleKeys.contactDetals,
+          metaData: {},
+        },
+      ],
+      isBottomBar: true,
+      customIcon: 'crm',
+    },
+    {
+      label: 'Tools',
+      moduleKey: ModuleKeys.tools,
+      path: '/tools',
+      type: 'main',
+      metaData: '{}',
+      icon: 'hammer-outline',
+      isBottomBar: true,
+      customIcon: 'tools',
+      modules: [
+        {
+          label: 'Rent Applications',
+          moduleKey: ModuleKeys.transUnionRentApplications,
+          metaData: {},
+        },
+        {
+          label: 'Mortgage Calculator',
+          moduleKey: ModuleKeys.mortgageCalculator,
+          metaData: {},
+        },
+
+        {
+          label: 'Property Tools',
+          moduleKey: ModuleKeys.propertyTools,
+          metaData: {},
+        },
+        {
+          label: 'Investment Calculator',
+          moduleKey: ModuleKeys.investmentCalculator,
+          metaData: {},
+        },
+        {
+          label: 'Prequalified Loan',
+          moduleKey: ModuleKeys.prequalifiedTools,
+          metaData: {},
+        },
+        {
+          label: 'Expired Listings',
+          moduleKey: ModuleKeys.expiredListing,
+          metaData: {},
+        },
+        {
+          label: 'Quick CMA Tool',
+          moduleKey: ModuleKeys.propertyEstimations,
+          metaData: {},
+        },
+      ],
+    },
+    {
+      label: 'Training',
+      moduleKey: ModuleKeys.training,
+      path: '/training',
+      type: 'main',
+      metaData: '{}',
+      icon: 'school',
+      isBottomBar: true,
+      customIcon: 'training',
+      modules: [
+        {
+          label: 'Course Details',
+          moduleKey: ModuleKeys.trainingDetailPage,
+          metaData: {},
+        },
+      ],
+    },
+  ];
+
+  return modules;
 };
 
 export const customIcons: Record<string, { active: any; inactive: any }> = {
@@ -36,6 +169,10 @@ export const customIcons: Record<string, { active: any; inactive: any }> = {
 export const createNestedNavigationScreens = (modules: IModule[], stack: TypedNavigator<any>) => {
   return modules.flatMap((mod) => {
     const screens: React.ReactNode[] = [];
+
+    if (!moduleScreens[mod.moduleKey]?.body) {
+      console.log(':::', mod.moduleKey);
+    }
 
     // 1️⃣ Add main module if it does NOT have bottom tab navigation
     if (!mod.isBottomBar) {

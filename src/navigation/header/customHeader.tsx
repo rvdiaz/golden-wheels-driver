@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import * as Icons from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -22,7 +22,6 @@ interface CustomHeaderProps {
   widgetBackgroundColor?: string;
   borderRadius?: number;
   headerHeight?: number;
-  // Remove widgetHeight since we'll calculate it dynamically
 }
 
 export const CustomHeader: React.FC<CustomHeaderProps> = ({

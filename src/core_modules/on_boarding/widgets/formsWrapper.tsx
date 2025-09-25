@@ -34,15 +34,46 @@ export interface FormWrapperProps {
   footer: FooterConfig;
   children: React.ReactNode;
   currentStep: number;
+  totalSteps: number;
   showTransition?: boolean;
   props: any;
 }
+
+// New StepProgress component to show the progress line
+const StepProgress = ({
+  currentStep,
+  totalSteps,
+  icon,
+}: {
+  currentStep: number;
+  totalSteps: number;
+  icon: any;
+}) => {
+  const isFirstStep = currentStep === 0;
+  const isLastStep = currentStep === totalSteps - 1;
+
+  return (
+    <View style={styles.stepProgressContainer}>
+      {/* Left line - hidden on first step */}
+      <View style={[styles.progressLineLeft, isFirstStep && styles.hiddenLine]} />
+
+      {/* Icon container - always centered */}
+      <View style={styles.iconContainer}>
+        <StepIcon icon={icon} />
+      </View>
+
+      {/* Right line - hidden on last step */}
+      <View style={[styles.progressLineRight, isLastStep && styles.hiddenLine]} />
+    </View>
+  );
+};
 
 export const FormWrapper = ({
   header,
   footer,
   children,
   currentStep,
+  totalSteps,
   showTransition = true,
 }: FormWrapperProps) => {
   return (
@@ -50,8 +81,10 @@ export const FormWrapper = ({
       {/* Header Section */}
       <FadeTransition isVisible={true} style={styles.headerContainer}>
         <View style={styles.headerContent}>
-          <StepIcon icon={header.icon} />
-          <Text style={styles.mainTitle}>{currentStep + 1}</Text>
+          <StepProgress currentStep={currentStep} totalSteps={totalSteps} icon={header.icon} />
+          <Text style={styles.mainTitle}>
+            Step {currentStep + 1} of {totalSteps}
+          </Text>
           <Text style={styles.subtitle}>{header.subtitle}</Text>
         </View>
       </FadeTransition>
@@ -95,7 +128,7 @@ export const FormWrapper = ({
                       title={footer.nextTitle || 'Continue'}
                       rightWidget={<ArrowRight size={16} color="#FFF" />}
                       style={styles.nextButton}
-                      onPress={footer.onNext}
+                      onPress={footer.onComplete ?? footer.onNext}
                       disabled={footer.nextDisabled}
                     />
                   </View>
@@ -106,7 +139,7 @@ export const FormWrapper = ({
                     title={footer.nextTitle || 'Continue'}
                     rightWidget={<ArrowRight size={16} color="#FFF" />}
                     style={styles.fullWidthButton}
-                    onPress={footer.onNext}
+                    onPress={footer.onComplete ?? footer.onNext}
                     disabled={footer.nextDisabled}
                   />
                 ) : footer.showBack ? (
@@ -143,6 +176,36 @@ const styles = StyleSheet.create({
   headerContent: {
     alignItems: 'center',
   },
+
+  // Step Progress Styles
+  stepProgressContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    height: 60,
+    position: 'relative',
+    marginBottom: 16,
+  },
+  progressLineLeft: {
+    flex: 1,
+    height: 1,
+    backgroundColor: theme.colors.accent,
+  },
+  progressLineRight: {
+    flex: 1,
+    height: 1,
+    backgroundColor: theme.colors.accent,
+  },
+  iconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1,
+    paddingHorizontal: 0, // Add some padding around the icon
+  },
+  hiddenLine: {
+    opacity: 0, // Hide the line while maintaining layout
+  },
+
   mainTitle: {
     fontSize: 20,
     fontWeight: '700',

@@ -63,11 +63,13 @@ export const PersonalInformation = ({
   footer,
   props,
   currentStep,
+  totalSteps,
 }: {
   header: HeaderConfig;
   footer: FooterConfig;
   props: any;
   currentStep: number;
+  totalSteps: number;
 }) => {
   // Get form methods from context (provided by FormProvider in parent)
   const {
@@ -76,7 +78,12 @@ export const PersonalInformation = ({
   } = useFormContext<OnboardingFormData>();
 
   return (
-    <FormWrapper header={header} footer={footer} props={props} currentStep={currentStep}>
+    <FormWrapper
+      header={header}
+      footer={footer}
+      props={props}
+      currentStep={currentStep}
+      totalSteps={totalSteps}>
       <View style={styles.formContent}>
         <Text style={styles.sectionTitle}>Personal Information</Text>
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -93,7 +100,6 @@ export const PersonalInformation = ({
                   onChangeText={onChange}
                   onBlur={onBlur}
                   placeholder="Enter your first name"
-                  placeholderTextColor="#999"
                   errorMessage={errors.personalInfo?.firstName?.message}
                   error={!!errors.personalInfo?.firstName}
                 />
@@ -114,7 +120,6 @@ export const PersonalInformation = ({
                   onChangeText={onChange}
                   onBlur={onBlur}
                   placeholder="Enter your last name"
-                  placeholderTextColor="#999"
                   errorMessage={errors.personalInfo?.lastName?.message}
                   error={!!errors.personalInfo?.lastName}
                 />
@@ -135,7 +140,6 @@ export const PersonalInformation = ({
                   onChangeText={onChange}
                   onBlur={onBlur}
                   placeholder="Enter your mls number"
-                  placeholderTextColor="#999"
                   errorMessage={errors.personalInfo?.mlsNumber?.message}
                   error={!!errors.personalInfo?.mlsNumber}
                 />
@@ -156,7 +160,6 @@ export const PersonalInformation = ({
                   onChangeText={onChange}
                   onBlur={onBlur}
                   placeholder="Enter your zip code"
-                  placeholderTextColor="#999"
                   errorMessage={errors.personalInfo?.zipCode?.message}
                   error={!!errors.personalInfo?.zipCode}
                 />
@@ -177,7 +180,7 @@ export const PersonalInformation = ({
                   onChangeText={onChange}
                   onBlur={onBlur}
                   placeholder="Enter your email"
-                  placeholderTextColor="#999"
+                  
                   keyboardType="email-address"
                   autoCapitalize="none"
                   autoCorrect={false}
@@ -201,7 +204,7 @@ export const PersonalInformation = ({
                   onChangeText={onChange}
                   onBlur={onBlur}
                   placeholder="Enter your phone number"
-                  placeholderTextColor="#999"
+                  
                   keyboardType="phone-pad"
                   errorMessage={errors.personalInfo?.phone?.message}
                   error={!!errors.personalInfo?.phone}

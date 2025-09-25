@@ -35,7 +35,7 @@ const OutlineButton: React.FC<OutlineButtonProps> = ({
   title,
   style,
   textStyle,
-  rightWidget,
+  rightWidget, 
   leftWidget,
 }) => {
   const disabledAux = loading || disabled;
@@ -49,7 +49,7 @@ const OutlineButton: React.FC<OutlineButtonProps> = ({
       style={[
         styles.button,
         {
-          borderColor: disabledAux ? '#D1D5DB' : '#2563EB', // gray-300 or brand-500
+          borderColor: disabledAux ? '#D1D5DB' : theme.colors.primary, // gray-300 or brand-500
           paddingVertical: sizeStyle.paddingVertical,
           paddingHorizontal: sizeStyle.paddingHorizontal,
         },
@@ -66,7 +66,7 @@ const OutlineButton: React.FC<OutlineButtonProps> = ({
                 styles.text,
                 {
                   fontSize: sizeStyle.fontSize,
-                  color: disabledAux ? '#9CA3AF' : '#2563EB', // gray-400 or brand-500
+                  color: disabledAux ? '#9CA3AF' : theme.colors.primary, // gray-400 or brand-500
                 },
                 textStyle,
               ]}>

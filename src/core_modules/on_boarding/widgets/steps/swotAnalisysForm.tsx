@@ -31,9 +31,14 @@ const strengthsItems = [
   { id: 'local_expertise', label: 'Local Market Expertise', icon: Target },
 ];
 
-export const SwotStrengths = ({ header, footer, props, currentStep }: any) => {
+export const SwotStrengths = ({ header, footer, props, currentStep, totalSteps }: any) => {
   return (
-    <FormWrapper header={header} footer={footer} props={props} currentStep={currentStep}>
+    <FormWrapper
+      header={header}
+      footer={footer}
+      props={props}
+      currentStep={currentStep}
+      totalSteps={totalSteps}>
       <SelectableItemsList
         items={strengthsItems}
         fieldName="swotAnalysis.strengths"
@@ -55,9 +60,14 @@ const weaknessesItems = [
   { id: 'closing_deals', label: 'Closing Techniques', icon: AlertTriangle },
 ];
 
-export const SwotWeaknesses = ({ header, footer, props, currentStep }: any) => {
+export const SwotWeaknesses = ({ header, footer, props, currentStep, totalSteps }: any) => {
   return (
-    <FormWrapper header={header} footer={footer} props={props} currentStep={currentStep}>
+    <FormWrapper
+      header={header}
+      footer={footer}
+      props={props}
+      currentStep={currentStep}
+      totalSteps={totalSteps}>
       <SelectableItemsList
         items={weaknessesItems}
         fieldName="swotAnalysis.weaknesses"
@@ -79,9 +89,14 @@ const opportunitiesItems = [
   { id: 'new_developments', label: 'New Developments', icon: Home },
 ];
 
-export const SwotOpportunities = ({ header, footer, props, currentStep }: any) => {
+export const SwotOpportunities = ({ header, footer, props, currentStep, totalSteps }: any) => {
   return (
-    <FormWrapper header={header} footer={footer} props={props} currentStep={currentStep}>
+    <FormWrapper
+      header={header}
+      footer={footer}
+      props={props}
+      currentStep={currentStep}
+      totalSteps={totalSteps}>
       <SelectableItemsList
         items={opportunitiesItems}
         fieldName="swotAnalysis.opportunities"
@@ -103,9 +118,14 @@ const threatsItems = [
   { id: 'seasonal_slowdown', label: 'Seasonal Market Slowdown', icon: TrendingDown },
 ];
 
-export const SwotThreats = ({ header, footer, props, currentStep }: any) => {
+export const SwotThreats = ({ header, footer, props, currentStep, totalSteps }: any) => {
   return (
-    <FormWrapper header={header} footer={footer} props={props} currentStep={currentStep}>
+    <FormWrapper
+      header={header}
+      footer={footer}
+      props={props}
+      currentStep={currentStep}
+      totalSteps={totalSteps}>
       <SelectableItemsList
         items={threatsItems}
         fieldName="swotAnalysis.threats"
@@ -134,7 +154,7 @@ const subSteps = [
   },
 ];
 
-export const SwotAnalysisStep = ({ header, footer, props, currentStep }: any) => {
+export const SwotAnalysisStep = ({ header, footer, props, currentStep, totalSteps }: any) => {
   const [currentSubStep, setCurrentSubStep] = useState(0);
 
   const progressPercentage = footer.progressPercentage;
@@ -183,6 +203,7 @@ export const SwotAnalysisStep = ({ header, footer, props, currentStep }: any) =>
       footer={composedFooter}
       props={props}
       currentStep={currentStep}
+      totalSteps={totalSteps}
     />
   );
 };

@@ -39,6 +39,7 @@ export const MultiStepFormWrapper = ({ steps, currentStep, onStepChange }: Multi
   const stepsConfig = {
     ...currentStepConfig,
     currentStep,
+    totalSteps: steps.length,
     footerWithNavigation,
   };
 

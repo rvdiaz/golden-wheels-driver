@@ -1,12 +1,120 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { FormWrapper } from '../formsWrapper';
+import { Controller, useFormContext } from 'react-hook-form';
+import InputField from '~/codidge_components/UI/form/inputs/inputField';
+import { OnboardingFormData } from '../../interface';
+
+// Validation rules
+const validationRules = {
+  desiredAnnualIncome: {
+    required: 'Desired Annual Income is required',
+  },
+  avgCommissionBySales: {
+    required: 'Average Commissions on Sales',
+  },
+  avgCommissionByRents: {
+    required: 'Average Commissions on Rentals',
+  },
+};
 
 // Preferences Component Example
-export const FinantialGoals = ({ header, footer, props, currentStep }: any) => {
+export const FinantialGoals = ({ header, footer, props, currentStep, totalSteps }: any) => {
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext<OnboardingFormData>();
+
   return (
-    <FormWrapper header={header} footer={footer} props={props} currentStep={currentStep}>
-      <Text>Finantial Goals</Text>
+    <FormWrapper
+      header={header}
+      footer={footer}
+      props={props}
+      currentStep={currentStep}
+      totalSteps={totalSteps}>
+      <View style={styles.formContent}>
+        <Text style={styles.sectionTitle}>Finantial Goals</Text>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={styles.inputContainer}>
+            <Controller
+              name="financialGoals.desiredAnnualIncome"
+              control={control}
+              rules={validationRules.desiredAnnualIncome}
+              render={({ field: { onChange, value, onBlur } }) => (
+                <InputField
+                  label="Desired Annual Income"
+                  required={true}
+                  value={value?.toString() || ''}
+                  keyboardType="numeric"
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  placeholder="150"
+                  errorMessage={errors.financialGoals?.desiredAnnualIncome?.message}
+                  error={!!errors.financialGoals?.desiredAnnualIncome}
+                />
+              )}
+            />
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Controller
+              name="financialGoals.avgCommissionBySales"
+              control={control}
+              rules={validationRules.avgCommissionBySales}
+              render={({ field: { onChange, value, onBlur } }) => (
+                <InputField
+                  label="Average commission per sales"
+                  required={true}
+                  value={value?.toString() || ''}
+                  keyboardType="numeric"
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  placeholder="Enter your commissions in sales"
+                  errorMessage={errors.financialGoals?.avgCommissionBySales?.message}
+                  error={!!errors.financialGoals?.avgCommissionBySales}
+                />
+              )}
+            />
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Controller
+              name="financialGoals.avgCommissionByRents"
+              control={control}
+              rules={validationRules.avgCommissionByRents}
+              render={({ field: { onChange, value, onBlur } }) => (
+                <InputField
+                  label="Average commission per rental"
+                  required={true}
+                  keyboardType="numeric"
+                  value={value?.toString() || ''}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  placeholder="Enter your commissions in rentals"
+                  errorMessage={errors.financialGoals?.avgCommissionByRents?.message}
+                  error={!!errors.financialGoals?.avgCommissionByRents}
+                />
+              )}
+            />
+          </View>
+        </ScrollView>
+      </View>
     </FormWrapper>
   );
 };
+const styles = StyleSheet.create({
+  formContent: {
+    flex: 1,
+    paddingHorizontal: 24,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 24,
+    textAlign: 'center',
+    color: '#333',
+  },
+  inputContainer: {
+    marginBottom: 8,
+  },
+});

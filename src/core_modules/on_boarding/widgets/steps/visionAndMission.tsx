@@ -28,11 +28,13 @@ export const VisionAndMission = ({
   footer,
   props,
   currentStep,
+  totalSteps,
 }: {
   header: HeaderConfig;
   footer: FooterConfig;
   props: any;
   currentStep: number;
+  totalSteps: number;
 }) => {
   const {
     control,
@@ -40,7 +42,12 @@ export const VisionAndMission = ({
   } = useFormContext<OnboardingFormData>();
 
   return (
-    <FormWrapper header={header} footer={footer} props={props} currentStep={currentStep}>
+    <FormWrapper
+      header={header}
+      footer={footer}
+      props={props}
+      currentStep={currentStep}
+      totalSteps={totalSteps}>
       <View style={styles.formContent}>
         <Text style={styles.sectionTitle}>Vision and Mission</Text>
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -58,7 +65,6 @@ export const VisionAndMission = ({
                   onChangeText={onChange}
                   onBlur={onBlur}
                   placeholder="Where do you see yourself in 5 years?"
-                  placeholderTextColor="#999"
                   errorMessage={errors.visionMission?.fiveYear?.message}
                   error={!!errors.visionMission?.fiveYear}
                   numberOfLines={3}
@@ -83,7 +89,6 @@ export const VisionAndMission = ({
                   onChangeText={onChange}
                   onBlur={onBlur}
                   placeholder="What will you achieve this year?"
-                  placeholderTextColor="#999"
                   errorMessage={errors.visionMission?.oneYear?.message}
                   error={!!errors.visionMission?.oneYear}
                   numberOfLines={3}
@@ -108,7 +113,6 @@ export const VisionAndMission = ({
                   onChangeText={onChange}
                   onBlur={onBlur}
                   placeholder="What will you achieve this year?"
-                  placeholderTextColor="#999"
                   errorMessage={errors.visionMission?.statement?.message}
                   error={!!errors.visionMission?.statement}
                   numberOfLines={3}
@@ -133,7 +137,6 @@ export const VisionAndMission = ({
                   onChangeText={onChange}
                   onBlur={onBlur}
                   placeholder="What will you achieve this year?"
-                  placeholderTextColor="#999"
                   errorMessage={errors.visionMission?.drivesYou?.message}
                   error={!!errors.visionMission?.drivesYou}
                   numberOfLines={3}

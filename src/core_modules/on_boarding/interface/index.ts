@@ -22,9 +22,8 @@ export interface OnboardingFormData {
     threats?: string[];
   };
   financialGoals: {
-    // Add your financial goals fields here
-    shortTermGoals?: string;
-    longTermGoals?: string;
-    targetAmount?: number;
+    desiredAnnualIncome: number;
+    avgCommissionBySales: number;
+    avgCommissionByRents: number;
   };
 }

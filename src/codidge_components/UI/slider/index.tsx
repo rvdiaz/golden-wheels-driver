@@ -1,9 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { theme } from '~/theme/theme';
 
 export const Slider = ({
   progressPercentage,
-  primaryColor = '#3B82F6', // Default primary color, can be passed as prop
+  primaryColor = theme.colors.primary, // Default primary color, can be passed as prop
   progressBottomData,
 }: {
   progressPercentage: number;
@@ -21,7 +22,7 @@ export const Slider = ({
   const trackBackgroundColor = hexToRgba(primaryColor, 0.2);
 
   return (
-    <View style={styles.progressContainer}>
+    <View>
       <View style={[styles.progressTrack, { backgroundColor: trackBackgroundColor }]}>
         <View
           style={[
@@ -56,9 +57,6 @@ export const Slider = ({
 };
 
 const styles = StyleSheet.create({
-  progressContainer: {
-    marginBottom: 20,
-  },
   progressTrack: {
     height: 8,
     borderRadius: 4,

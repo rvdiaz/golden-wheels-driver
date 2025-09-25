@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import { theme } from '~/theme/theme';
 
 interface ProfileCompletionWidgetProps {
   completedSteps: number;
@@ -54,6 +55,7 @@ export const ProfileCompletionWidget: React.FC<ProfileCompletionWidgetProps> = (
         <PrimaryButton
           style={{
             width: 120,
+            backgroundColor: theme.colors.primary,
             paddingHorizontal: 10,
           }}
           onPress={onButtonPress}

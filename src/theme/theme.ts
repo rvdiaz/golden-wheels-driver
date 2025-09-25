@@ -1,6 +1,7 @@
 export const theme = {
   colors: {
     primary: '#4F46E5', // Indigo-600
+    accent: '#EA580C',
     primaryText: '#FFFFFF',
     secondary: '#F3F4F6',
     secondaryText: '#374151',
@@ -27,6 +28,7 @@ export const theme = {
     md: 8,
     lg: 14,
     xl: 20,
+    xxl: 24,
     full: 9999,
   },
 } as const;

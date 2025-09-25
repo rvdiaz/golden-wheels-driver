@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useReactiveVar } from '@apollo/client';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -17,6 +17,8 @@ import { AuthProvider } from '~/codidge_components/auth/context';
 import { CustomHeader } from './header/customHeader';
 import { theme } from '~/theme/theme';
 import { View } from 'react-native';
+import { OnboardingFlow } from '~/core_modules/on_boarding';
+import { LoadingSpinner } from '~/codidge_components/UI/loading/loadingSpinner';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -98,6 +100,37 @@ export default function Navigation() {
   const tenantModules = getTenantRoutes(userInfo);
   const nestedNav = createNestedNavigationScreens(tenantModules, Stack);
 
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingLoading, setOnboardingLoading] = useState(true);
+
+  useEffect(() => {
+    if (userInfo) {
+      checkOnboardingStatus();
+    } else {
+      setOnboardingLoading(false);
+    }
+  }, [userInfo]);
+
+  const checkOnboardingStatus = async () => {
+    try {
+      const isCompleted = false;
+      setShowOnboarding(!isCompleted);
+    } catch (error) {
+      console.error('Error checking onboarding status:', error);
+      setShowOnboarding(false);
+    } finally {
+      setOnboardingLoading(false);
+    }
+  };
+
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+  };
+
+  if (onboardingLoading) {
+    return <LoadingSpinner />;
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -109,15 +142,20 @@ export default function Navigation() {
             {nestedNav}
           </>
         ) : (
-          // Public/auth stack
           <>
-            <Stack.Screen name="Auth">
-              {() => (
-                <AuthProvider>
-                  <AuthFormWrapper />
-                </AuthProvider>
-              )}
-            </Stack.Screen>
+            {showOnboarding ? (
+              <Stack.Screen name="Auth">
+                {() => (
+                  <AuthProvider>
+                    <AuthFormWrapper />
+                  </AuthProvider>
+                )}
+              </Stack.Screen>
+            ) : (
+              <Stack.Screen name="Onboarding">
+                {() => <OnboardingFlow onComplete={handleOnboardingComplete} />}
+              </Stack.Screen>
+            )}
           </>
         )}
       </Stack.Navigator>

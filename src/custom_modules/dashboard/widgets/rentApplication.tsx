@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, ImageSourcePropType } from 'react-native';
 import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import { theme } from '~/theme/theme';
 
 interface InfoWidgetProps {
   title?: string;
@@ -13,6 +14,7 @@ interface InfoWidgetProps {
   imageSource?: ImageSourcePropType;
   imageSize?: number;
   backgroundColor?: string;
+  backgroundButtonColor?: string;
   titleColor?: string;
   descriptionColor?: string;
 }
@@ -29,6 +31,7 @@ export const InfoWidget: React.FC<InfoWidgetProps> = ({
   backgroundColor = '#EEF2FF',
   titleColor = '#3730A3',
   descriptionColor = '#4338CA',
+  backgroundButtonColor = theme.colors.primary,
 }) => {
   return (
     <View style={[styles.container, { backgroundColor }]}>
@@ -43,6 +46,7 @@ export const InfoWidget: React.FC<InfoWidgetProps> = ({
           <PrimaryButton
             style={{
               width: 120,
+              backgroundColor: backgroundButtonColor ?? theme.colors.primary,
               paddingHorizontal: 10,
             }}
             onPress={onButtonPress}

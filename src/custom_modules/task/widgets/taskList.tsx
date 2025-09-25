@@ -34,7 +34,10 @@ export const TaskList = ({
         </Text>
       </View>
       <Slider progressPercentage={progressPercentage} primaryColor={theme.colors.primary} />
-      <View>
+      <View
+        style={{
+          marginTop: 16,
+        }}>
         {displayList.map((task) => (
           <TaskItem key={task.id} task={task} />
         ))}

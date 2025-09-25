@@ -49,7 +49,7 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
       style={[
         styles.button,
         {
-          backgroundColor: disabledAux ? '#D1D5DB' : theme.colors.primary, // gray-300 or brand-500
+          backgroundColor: disabledAux ? '#D1D5DB' : theme.colors.accent, // gray-300 or brand-500
           paddingVertical: sizeStyle.paddingVertical,
           paddingHorizontal: sizeStyle.paddingHorizontal,
         },

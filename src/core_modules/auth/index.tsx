@@ -106,7 +106,7 @@ export const AuthWrapper = ({
         <Image style={styles.image} source={require('assets/auth.png')} resizeMode="contain" />
       </View>
 
-      <Text style={styles.mainTitle}>Your journey starts here</Text>
+      <Text style={styles.mainTitle}>Account Creation</Text>
 
       <Text style={styles.subtitle}>
         Save your progress by creating your account so you won’t lose what you’ve already built.

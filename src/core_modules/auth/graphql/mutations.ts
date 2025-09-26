@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const addUserMutation = gql`
-  mutation addUser($tenant: TenantData!, $user: UserInput!) {
-    addUser(tenant: $tenant, user: $user) {
+  mutation addUser($tenant: TenantData!, $user: UserInput!, $userId: ID!) {
+    addUser(tenant: $tenant, user: $user, userId: $userId) {
       email
       id
       activeTemplateId

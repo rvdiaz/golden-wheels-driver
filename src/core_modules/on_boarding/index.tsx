@@ -9,17 +9,19 @@ import { FinantialGoals } from './widgets/steps/finantialGoals';
 import { FormProvider, useForm } from 'react-hook-form';
 import { OnboardingFormData } from './interface';
 import { SwotAnalysisStep } from './widgets/steps/swotAnalisysForm';
+import { StartPointScreen } from './widgets/startScreen';
 
 // Storage keys
 const STORAGE_KEYS = {
   ONBOARDING_DATA: '@onboarding_data',
   ONBOARDING_STEP: '@onboarding_current_step',
   ONBOARDING_COMPLETED: '@onboarding_completed',
+  ACCOUNT_CREATED: 'ACCOUNT_CREATED',
 };
 
 // Complete onboarding flow using the MultiStepFormWrapper
 export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(-1);
   const [isLoading, setIsLoading] = useState(true);
 
   const methods = useForm<OnboardingFormData>({
@@ -171,10 +173,8 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
   };
 
   const handleFinalSubmit = handleSubmit(async (data) => {
-    console.log('Complete form data:', data);
-
     // Mark onboarding as completed
-    //await markOnboardingComplete();
+    await markOnboardingComplete();
 
     // Optionally clear the form data after completion
     // await clearOnboardingData();
@@ -284,6 +284,16 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
     return null; // Or return a loading component
   }
 
+  if (currentStep === -1) {
+    return (
+      <StartPointScreen
+        onNext={() => {
+          setCurrentStep(0);
+        }}
+      />
+    );
+  }
+
   return (
     <FormProvider {...methods}>
       <MultiStepFormWrapper
@@ -329,6 +339,26 @@ export const OnboardingStorage = {
     } catch (error) {
       console.error('Error getting saved data:', error);
       return null;
+    }
+  },
+
+  // Save that the user has created an account
+  setAccountCreated: async (): Promise<void> => {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEYS.ACCOUNT_CREATED, 'true');
+    } catch (error) {
+      console.error('Error setting account created flag:', error);
+    }
+  },
+
+  // Check if the user already created an account
+  isAccountCreated: async (): Promise<boolean> => {
+    try {
+      const isCreated = await AsyncStorage.getItem(STORAGE_KEYS.ACCOUNT_CREATED);
+      return isCreated === 'true';
+    } catch (error) {
+      console.error('Error checking account created flag:', error);
+      return false;
     }
   },
 };

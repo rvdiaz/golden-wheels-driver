@@ -3,9 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
   TouchableOpacity,
-  TextInput,
   Alert,
   KeyboardAvoidingView,
   Platform,
@@ -15,8 +13,9 @@ import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
 import { useAuthContext } from '../context';
 import { ChangePasswordFormData, IAuthModuleKeys } from '../interfaces';
-import { Card } from '~/codidge_components/UI/card';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import InputField from '~/codidge_components/UI/form/inputs/inputField';
+import TextButton from '~/codidge_components/UI/button/TextButton';
 
 export const ForcePasswordChange = ({
   onSignUpSuccess,
@@ -82,265 +81,235 @@ export const ForcePasswordChange = ({
   const passwordStrength = getPasswordStrength(newPassword);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => {
-          setCurrentView(IAuthModuleKeys.signIn);
-        }}>
-        <Icons.ArrowLeft size={24} color="#374151" />
-      </TouchableOpacity>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.header}>
-            <View style={styles.logoContainer}>
-              <Icons.Lock size={40} color="#F59E0B" />
-            </View>
-            <Text style={styles.title}>Change Password</Text>
-            <Text style={styles.subtitle}>
-              Your password has expired. Please create a new secure password.
-            </Text>
-          </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.keyboardView}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.header}>
+          <Icons.HelpCircle size={16} color="#6B7280" />
+          <Text style={styles.subtitle}>
+            Your password has expired. Please create a new secure password.
+          </Text>
+        </View>
 
-          <Card style={styles.formCard}>
-            <View style={styles.form}>
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Current Password</Text>
-                <Controller
-                  control={control}
-                  name="currentPassword"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <View style={styles.inputContainer}>
-                      <Icons.Lock size={20} color="#6B7280" />
-                      <TextInput
-                        style={[styles.input, errors.currentPassword && styles.inputError]}
-                        placeholder="Enter current password"
-                        value={value}
-                        onChangeText={onChange}
-                        onBlur={onBlur}
-                        secureTextEntry={!showCurrentPassword}
-                      />
+        <View style={styles.formCard}>
+          <View style={styles.form}>
+            <View style={styles.inputGroup}>
+              <Controller
+                control={control}
+                name="currentPassword"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    containerStyle={{
+                      flex: 1,
+                      width: '100%',
+                    }}
+                    label="Current Password"
+                    placeholder="Enter current password"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    secureTextEntry={!showCurrentPassword}
+                    leftIcon={<Icons.Lock size={16} color="#6B7280" />}
+                    rightIcon={
                       <TouchableOpacity
                         onPress={() => setShowCurrentPassword(!showCurrentPassword)}
                         style={styles.eyeIcon}>
                         {showCurrentPassword ? (
-                          <Icons.EyeOff size={20} color="#6B7280" />
+                          <Icons.EyeOff size={16} color="#6B7280" />
                         ) : (
-                          <Icons.Eye size={20} color="#6B7280" />
+                          <Icons.Eye size={16} color="#6B7280" />
                         )}
                       </TouchableOpacity>
-                    </View>
-                  )}
-                />
-                {errors.currentPassword && (
-                  <Text style={styles.errorText}>{errors.currentPassword.message}</Text>
+                    }
+                    error={!!errors.currentPassword}
+                    errorMessage={errors?.currentPassword?.message}
+                  />
                 )}
-              </View>
+              />
+            </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>New Password</Text>
-                <Controller
-                  control={control}
-                  name="newPassword"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <View style={styles.inputContainer}>
-                      <Icons.Lock size={20} color="#6B7280" />
-                      <TextInput
-                        style={[styles.input, errors.newPassword && styles.inputError]}
-                        placeholder="Create new password"
-                        value={value}
-                        onChangeText={onChange}
-                        onBlur={onBlur}
-                        secureTextEntry={!showNewPassword}
-                      />
+            <View style={styles.inputGroup}>
+              <Controller
+                control={control}
+                name="newPassword"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    containerStyle={{
+                      flex: 1,
+                      width: '100%',
+                    }}
+                    label="Create new Password"
+                    placeholder="Create new password"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    secureTextEntry={!showNewPassword}
+                    leftIcon={<Icons.Lock size={16} color="#6B7280" />}
+                    rightIcon={
                       <TouchableOpacity
                         onPress={() => setShowNewPassword(!showNewPassword)}
                         style={styles.eyeIcon}>
                         {showNewPassword ? (
-                          <Icons.EyeOff size={20} color="#6B7280" />
+                          <Icons.EyeOff size={16} color="#6B7280" />
                         ) : (
-                          <Icons.Eye size={20} color="#6B7280" />
+                          <Icons.Eye size={16} color="#6B7280" />
                         )}
                       </TouchableOpacity>
-                    </View>
-                  )}
-                />
-                {errors.newPassword && (
-                  <Text style={styles.errorText}>{errors.newPassword.message}</Text>
+                    }
+                    error={!!errors.newPassword}
+                    errorMessage={errors?.newPassword?.message}
+                  />
                 )}
+              />
 
-                {newPassword && (
-                  <View style={styles.strengthContainer}>
-                    <View style={styles.strengthBar}>
-                      <View
-                        style={[
-                          styles.strengthFill,
-                          {
-                            width: `${(passwordStrength / 5) * 100}%`,
-                            backgroundColor: getStrengthColor(passwordStrength),
-                          },
-                        ]}
-                      />
-                    </View>
-                    <Text
-                      style={[styles.strengthText, { color: getStrengthColor(passwordStrength) }]}>
-                      {getStrengthText(passwordStrength)}
-                    </Text>
+              {newPassword && (
+                <View style={styles.strengthContainer}>
+                  <View style={styles.strengthBar}>
+                    <View
+                      style={[
+                        styles.strengthFill,
+                        {
+                          width: `${(passwordStrength / 5) * 100}%`,
+                          backgroundColor: getStrengthColor(passwordStrength),
+                        },
+                      ]}
+                    />
                   </View>
-                )}
-              </View>
+                  <Text
+                    style={[styles.strengthText, { color: getStrengthColor(passwordStrength) }]}>
+                    {getStrengthText(passwordStrength)}
+                  </Text>
+                </View>
+              )}
+            </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Confirm New Password</Text>
-                <Controller
-                  control={control}
-                  name="confirmPassword"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <View style={styles.inputContainer}>
-                      <Icons.Lock size={20} color="#6B7280" />
-                      <TextInput
-                        style={[styles.input, errors.confirmPassword && styles.inputError]}
-                        placeholder="Confirm new password"
-                        value={value}
-                        onChangeText={onChange}
-                        onBlur={onBlur}
-                        secureTextEntry={!showConfirmPassword}
-                      />
+            <View style={styles.inputGroup}>
+              <Controller
+                control={control}
+                name="confirmPassword"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    containerStyle={{
+                      flex: 1,
+                      width: '100%',
+                    }}
+                    label="Confirm new Password"
+                    placeholder="Confirm new password"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    secureTextEntry={!showNewPassword}
+                    leftIcon={<Icons.Lock size={16} color="#6B7280" />}
+                    rightIcon={
                       <TouchableOpacity
-                        onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                        onPress={() => setShowConfirmPassword(!showNewPassword)}
                         style={styles.eyeIcon}>
-                        {showConfirmPassword ? (
-                          <Icons.EyeOff size={20} color="#6B7280" />
+                        {showNewPassword ? (
+                          <Icons.EyeOff size={16} color="#6B7280" />
                         ) : (
-                          <Icons.Eye size={20} color="#6B7280" />
+                          <Icons.Eye size={16} color="#6B7280" />
                         )}
                       </TouchableOpacity>
-                    </View>
-                  )}
-                />
-                {errors.confirmPassword && (
-                  <Text style={styles.errorText}>{errors.confirmPassword.message}</Text>
+                    }
+                    error={!!errors.confirmPassword}
+                    errorMessage={errors?.confirmPassword?.message}
+                  />
                 )}
-              </View>
-
-              <View style={styles.requirementsContainer}>
-                <Text style={styles.requirementsTitle}>Password Requirements:</Text>
-                <View style={styles.requirement}>
-                  <Icons.Check size={16} color={newPassword.length >= 8 ? '#10B981' : '#D1D5DB'} />
-                  <Text
-                    style={[
-                      styles.requirementText,
-                      newPassword.length >= 8 && styles.requirementMet,
-                    ]}>
-                    At least 8 characters
-                  </Text>
-                </View>
-                <View style={styles.requirement}>
-                  <Icons.Check
-                    size={16}
-                    color={/[A-Z]/.test(newPassword) ? '#10B981' : '#D1D5DB'}
-                  />
-                  <Text
-                    style={[
-                      styles.requirementText,
-                      /[A-Z]/.test(newPassword) && styles.requirementMet,
-                    ]}>
-                    One uppercase letter
-                  </Text>
-                </View>
-                <View style={styles.requirement}>
-                  <Icons.Check
-                    size={16}
-                    color={/[a-z]/.test(newPassword) ? '#10B981' : '#D1D5DB'}
-                  />
-                  <Text
-                    style={[
-                      styles.requirementText,
-                      /[a-z]/.test(newPassword) && styles.requirementMet,
-                    ]}>
-                    One lowercase letter
-                  </Text>
-                </View>
-                <View style={styles.requirement}>
-                  <Icons.Check size={16} color={/\d/.test(newPassword) ? '#10B981' : '#D1D5DB'} />
-                  <Text
-                    style={[
-                      styles.requirementText,
-                      /\d/.test(newPassword) && styles.requirementMet,
-                    ]}>
-                    One number
-                  </Text>
-                </View>
-                <View style={styles.requirement}>
-                  <Icons.Check
-                    size={16}
-                    color={/[!@#$%^&*(),.?":{}|<>]/.test(newPassword) ? '#10B981' : '#D1D5DB'}
-                  />
-                  <Text
-                    style={[
-                      styles.requirementText,
-                      /[!@#$%^&*(),.?":{}|<>]/.test(newPassword) && styles.requirementMet,
-                    ]}>
-                    One special character
-                  </Text>
-                </View>
-              </View>
-
-              <PrimaryButton
-                onPress={handleSubmit(onSubmit)}
-                title="Change Password"
-                loading={isLoading}
-                style={styles.changeButton}
-                size={ButtonSize.LARGE}
               />
             </View>
-          </Card>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+
+            <View style={styles.requirementsContainer}>
+              <Text style={styles.requirementsTitle}>Password Requirements:</Text>
+              <View style={styles.requirement}>
+                <Icons.Check size={16} color={newPassword.length >= 8 ? '#10B981' : '#D1D5DB'} />
+                <Text
+                  style={[
+                    styles.requirementText,
+                    newPassword.length >= 8 && styles.requirementMet,
+                  ]}>
+                  At least 8 characters
+                </Text>
+              </View>
+              <View style={styles.requirement}>
+                <Icons.Check size={16} color={/[A-Z]/.test(newPassword) ? '#10B981' : '#D1D5DB'} />
+                <Text
+                  style={[
+                    styles.requirementText,
+                    /[A-Z]/.test(newPassword) && styles.requirementMet,
+                  ]}>
+                  One uppercase letter
+                </Text>
+              </View>
+              <View style={styles.requirement}>
+                <Icons.Check size={16} color={/[a-z]/.test(newPassword) ? '#10B981' : '#D1D5DB'} />
+                <Text
+                  style={[
+                    styles.requirementText,
+                    /[a-z]/.test(newPassword) && styles.requirementMet,
+                  ]}>
+                  One lowercase letter
+                </Text>
+              </View>
+              <View style={styles.requirement}>
+                <Icons.Check size={16} color={/\d/.test(newPassword) ? '#10B981' : '#D1D5DB'} />
+                <Text
+                  style={[styles.requirementText, /\d/.test(newPassword) && styles.requirementMet]}>
+                  One number
+                </Text>
+              </View>
+              <View style={styles.requirement}>
+                <Icons.Check
+                  size={16}
+                  color={/[!@#$%^&*(),.?":{}|<>]/.test(newPassword) ? '#10B981' : '#D1D5DB'}
+                />
+                <Text
+                  style={[
+                    styles.requirementText,
+                    /[!@#$%^&*(),.?":{}|<>]/.test(newPassword) && styles.requirementMet,
+                  ]}>
+                  One special character
+                </Text>
+              </View>
+            </View>
+
+            <PrimaryButton
+              onPress={handleSubmit(onSubmit)}
+              title="Change Password"
+              loading={isLoading}
+              style={styles.changeButton}
+              size={ButtonSize.LARGE}
+            />
+
+            <TextButton
+              style={{
+                marginTop: 5,
+              }}
+              title="Back to Sign In"
+              onPress={() => {
+                setCurrentView(IAuthModuleKeys.signIn);
+              }}
+            />
+          </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F9FAFB',
-  },
   keyboardView: {
     flex: 1,
   },
-  backButton: {
-    position: 'absolute',
-    top: 60,
-    left: 20,
-    padding: 8,
-    zIndex: 1,
+  header: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
   },
   scrollContent: {
     flexGrow: 1,
-    padding: 20,
+    paddingVertical: 24,
     justifyContent: 'center',
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  logoContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#FFFBEB',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#1F2937',
-    marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
@@ -355,7 +324,7 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   inputGroup: {
-    marginBottom: 20,
+    marginBottom: 8,
   },
   label: {
     fontSize: 16,
@@ -363,26 +332,11 @@ const styles = StyleSheet.create({
     color: '#374151',
     marginBottom: 8,
   },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 12,
-    backgroundColor: 'white',
-  },
-  input: {
-    flex: 1,
-    paddingVertical: 16,
-    paddingHorizontal: 12,
-    fontSize: 16,
-    color: '#1F2937',
-  },
   inputError: {
     borderColor: '#EF4444',
   },
   eyeIcon: {
-    padding: 16,
+    paddingHorizontal: 10,
   },
   errorText: {
     fontSize: 14,

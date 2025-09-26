@@ -6,7 +6,8 @@ export const getUserQuery = gql`
       email
       id
       activeTemplateId
-      name
+      firstName
+      lastName
       phone
       address {
         addressLine1

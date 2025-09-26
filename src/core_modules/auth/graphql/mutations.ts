@@ -6,11 +6,12 @@ export const addUserMutation = gql`
       email
       id
       activeTemplateId
-      name
+      firstName
+      lastName
       phone
       address {
         addressLine1
-        locality
+        localityva
         region
         postalCode
         country

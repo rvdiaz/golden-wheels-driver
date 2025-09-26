@@ -44,9 +44,12 @@ export const FinantialGoals = ({ header, footer, props, currentStep, totalSteps 
                 <InputField
                   label="Desired Annual Income"
                   required={true}
-                  value={value?.toString() || ''}
+                  value={value !== undefined && value !== null ? value.toString() : ''}
                   keyboardType="numeric"
-                  onChangeText={onChange}
+                  onChangeText={(text) => {
+                    const parsed = text.replace(/[^0-9]/g, ''); // keep only digits
+                    onChange(parsed ? Number(parsed) : undefined);
+                  }}
                   onBlur={onBlur}
                   placeholder="150"
                   errorMessage={errors.financialGoals?.desiredAnnualIncome?.message}
@@ -65,9 +68,12 @@ export const FinantialGoals = ({ header, footer, props, currentStep, totalSteps 
                 <InputField
                   label="Average commission per sales"
                   required={true}
-                  value={value?.toString() || ''}
+                  value={value !== undefined && value !== null ? value.toString() : ''}
                   keyboardType="numeric"
-                  onChangeText={onChange}
+                  onChangeText={(text) => {
+                    const parsed = text.replace(/[^0-9]/g, ''); // keep only digits
+                    onChange(parsed ? Number(parsed) : undefined);
+                  }}
                   onBlur={onBlur}
                   placeholder="Enter your commissions in sales"
                   errorMessage={errors.financialGoals?.avgCommissionBySales?.message}
@@ -87,8 +93,11 @@ export const FinantialGoals = ({ header, footer, props, currentStep, totalSteps 
                   label="Average commission per rental"
                   required={true}
                   keyboardType="numeric"
-                  value={value?.toString() || ''}
-                  onChangeText={onChange}
+                  value={value !== undefined && value !== null ? value.toString() : ''}
+                  onChangeText={(text) => {
+                    const parsed = text.replace(/[^0-9]/g, ''); // keep only digits
+                    onChange(parsed ? Number(parsed) : undefined);
+                  }}
                   onBlur={onBlur}
                   placeholder="Enter your commissions in rentals"
                   errorMessage={errors.financialGoals?.avgCommissionByRents?.message}

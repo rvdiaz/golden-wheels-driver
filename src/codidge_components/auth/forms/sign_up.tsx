@@ -4,7 +4,6 @@ import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
   TouchableOpacity,
   Alert,
   KeyboardAvoidingView,
@@ -18,16 +17,11 @@ import * as yup from 'yup';
 import { signUp } from 'aws-amplify/auth/cognito';
 import { useAuthContext } from '../context';
 import { IAuthModuleKeys, RegisterFormData } from '../interfaces';
-import { Card } from '~/codidge_components/UI/card';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 
 const schema = yup.object({
-  name: yup
-    .string()
-    .required('Full name is required')
-    .min(2, 'Full name must be at least 2 characters'),
   email: yup.string().email('Please enter a valid email').required('Email is required'),
   phone: yup
     .string()
@@ -68,7 +62,6 @@ export const SignUpForm = ({
   } = useForm<RegisterFormData>({
     resolver: yupResolver(schema),
     defaultValues: {
-      name: '',
       email: '',
       phone: '',
       password: '',
@@ -80,6 +73,7 @@ export const SignUpForm = ({
   const onSubmit = async (data: RegisterFormData) => {
     try {
       const tenantId = Constants.expoConfig?.extra?.TENANTID;
+
       setloading(true);
       const result = await signUp({
         username: data.email,
@@ -96,14 +90,16 @@ export const SignUpForm = ({
       });
 
       const needsVerification = result.nextStep.signUpStep === 'CONFIRM_SIGN_UP';
+
       if (needsVerification) {
         setTempData({
           email: data.email,
           password: data.password,
-          name: data.name,
+          phone: data.phone,
         });
-        setCurrentView(IAuthModuleKeys.verifyEmail);
 
+        setCurrentView(IAuthModuleKeys.verifyEmail);
+        setloading(false);
         return;
       }
 
@@ -111,9 +107,8 @@ export const SignUpForm = ({
         throw Error('Error sign up');
       }
 
-      await onSignUpSuccess('userhwreee', {
+      await onSignUpSuccess(result.userId, {
         email: data.email,
-        name: data.name,
         phone: data.phone,
       });
       setloading(false);
@@ -124,169 +119,137 @@ export const SignUpForm = ({
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.header}>
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => {
-                setCurrentView(IAuthModuleKeys.signIn);
-              }}>
-              <Icons.ArrowLeft size={24} color="#374151" />
-            </TouchableOpacity>
-            <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Join Real Estate Pro today</Text>
-          </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.keyboardView}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.formCard}>
+          <View style={styles.form}>
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <InputField
+                  leftIcon={<Icons.Mail size={16} color="#6B7280" />}
+                  label="Email"
+                  placeholder="Enter your email"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  keyboardType="email-address"
+                  error={!!errors.email}
+                  errorMessage={errors.email?.message}
+                  autoCapitalize="none"
+                />
+              )}
+            />
 
-          <Card style={styles.formCard}>
-            <View style={styles.form}>
-              <Controller
-                control={control}
-                name="name"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <InputField
-                    leftIcon={<Icons.User size={16} color="#6B7280" />}
-                    label="Full name"
-                    placeholder="Full name"
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    autoCapitalize="words"
-                    error={!!errors.name}
-                    errorMessage={errors.name?.message}
-                  />
-                )}
-              />
-              <Controller
-                control={control}
-                name="email"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <InputField
-                    leftIcon={<Icons.Mail size={16} color="#6B7280" />}
-                    label="Email"
-                    placeholder="Enter your email"
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    keyboardType="email-address"
-                    error={!!errors.email}
-                    errorMessage={errors.email?.message}
-                    autoCapitalize="none"
-                  />
-                )}
-              />
+            <Controller
+              control={control}
+              name="phone"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <InputField
+                  leftIcon={<Icons.Phone size={16} color="#6B7280" />}
+                  label="Phone Number"
+                  placeholder="Enter your phone number"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  keyboardType="phone-pad"
+                  error={!!errors.phone}
+                  errorMessage={errors.phone?.message}
+                />
+              )}
+            />
 
-              <Controller
-                control={control}
-                name="phone"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <InputField
-                    leftIcon={<Icons.Phone size={16} color="#6B7280" />}
-                    label="Phone Number"
-                    placeholder="Enter your phone number"
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    keyboardType="phone-pad"
-                    error={!!errors.phone}
-                    errorMessage={errors.phone?.message}
-                  />
-                )}
-              />
-
-              <Controller
-                control={control}
-                name="password"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <InputField
-                    leftIcon={<Icons.Lock size={16} color="#6B7280" />}
-                    label="Password"
-                    placeholder="Create a password"
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    error={!!errors.password}
-                    errorMessage={errors.password?.message}
-                    secureTextEntry={!showPassword}
-                    rightIcon={
-                      <TouchableOpacity
-                        onPress={() => setShowPassword(!showPassword)}
-                        style={styles.eyeIcon}>
-                        {showPassword ? (
-                          <Icons.EyeOff size={16} color="#6B7280" />
-                        ) : (
-                          <Icons.Eye size={16} color="#6B7280" />
-                        )}
-                      </TouchableOpacity>
-                    }
-                  />
-                )}
-              />
-
-              <Controller
-                control={control}
-                name="confirmPassword"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <InputField
-                    leftIcon={<Icons.Lock size={16} color="#6B7280" />}
-                    label="Confirm Password"
-                    placeholder="Confirm your password"
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    error={!!errors.confirmPassword}
-                    errorMessage={errors.confirmPassword?.message}
-                    secureTextEntry={!showConfirmPassword}
-                    rightIcon={
-                      <TouchableOpacity
-                        onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                        style={styles.eyeIcon}>
-                        {showConfirmPassword ? (
-                          <Icons.EyeOff size={16} color="#6B7280" />
-                        ) : (
-                          <Icons.Eye size={16} color="#6B7280" />
-                        )}
-                      </TouchableOpacity>
-                    }
-                  />
-                )}
-              />
-
-              <Controller
-                control={control}
-                name="agreeToTerms"
-                render={({ field: { onChange, value } }) => (
-                  <View style={styles.termsContainer}>
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <InputField
+                  leftIcon={<Icons.Lock size={16} color="#6B7280" />}
+                  label="Password"
+                  placeholder="Create a password"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={!!errors.password}
+                  errorMessage={errors.password?.message}
+                  secureTextEntry={!showPassword}
+                  rightIcon={
                     <TouchableOpacity
-                      style={styles.checkboxContainer}
-                      onPress={() => onChange(!value)}>
-                      <View style={[styles.checkbox, value && styles.checkboxChecked]}>
-                        {value && <Icons.Check size={16} color="white" />}
-                      </View>
-                      <Text style={styles.termsText}>
-                        I agree to the <Text style={styles.termsLink}>Terms of Service</Text> and{' '}
-                        <Text style={styles.termsLink}>Privacy Policy</Text>
-                      </Text>
+                      onPress={() => setShowPassword(!showPassword)}
+                      style={styles.eyeIcon}>
+                      {showPassword ? (
+                        <Icons.EyeOff size={16} color="#6B7280" />
+                      ) : (
+                        <Icons.Eye size={16} color="#6B7280" />
+                      )}
                     </TouchableOpacity>
-                    {errors.agreeToTerms && (
-                      <Text style={styles.errorText}>{errors.agreeToTerms.message}</Text>
-                    )}
-                  </View>
-                )}
-              />
+                  }
+                />
+              )}
+            />
 
-              <PrimaryButton
-                onPress={handleSubmit(onSubmit)}
-                title="Create Account"
-                loading={loading}
-                size={ButtonSize.LARGE}
-              />
-            </View>
-          </Card>
+            <Controller
+              control={control}
+              name="confirmPassword"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <InputField
+                  leftIcon={<Icons.Lock size={16} color="#6B7280" />}
+                  label="Confirm Password"
+                  placeholder="Confirm your password"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={!!errors.confirmPassword}
+                  errorMessage={errors.confirmPassword?.message}
+                  secureTextEntry={!showConfirmPassword}
+                  rightIcon={
+                    <TouchableOpacity
+                      onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                      style={styles.eyeIcon}>
+                      {showConfirmPassword ? (
+                        <Icons.EyeOff size={16} color="#6B7280" />
+                      ) : (
+                        <Icons.Eye size={16} color="#6B7280" />
+                      )}
+                    </TouchableOpacity>
+                  }
+                />
+              )}
+            />
 
+            <Controller
+              control={control}
+              name="agreeToTerms"
+              render={({ field: { onChange, value } }) => (
+                <View style={styles.termsContainer}>
+                  <TouchableOpacity
+                    style={styles.checkboxContainer}
+                    onPress={() => onChange(!value)}>
+                    <View style={[styles.checkbox, value && styles.checkboxChecked]}>
+                      {value && <Icons.Check size={16} color="white" />}
+                    </View>
+                    <Text style={styles.termsText}>
+                      I agree to the <Text style={styles.termsLink}>Terms of Service</Text> and{' '}
+                      <Text style={styles.termsLink}>Privacy Policy</Text>
+                    </Text>
+                  </TouchableOpacity>
+                  {errors.agreeToTerms && (
+                    <Text style={styles.errorText}>{errors.agreeToTerms.message}</Text>
+                  )}
+                </View>
+              )}
+            />
+
+            <PrimaryButton
+              onPress={handleSubmit(onSubmit)}
+              title="Create Account"
+              loading={loading}
+              size={ButtonSize.LARGE}
+            />
+          </View>
           <View style={styles.footer}>
             <Text style={styles.footerText}>Already have an account? </Text>
             <TextButton
@@ -298,23 +261,20 @@ export const SignUpForm = ({
               }}
             />
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F9FAFB',
-  },
   keyboardView: {
     flex: 1,
+    paddingVertical: 32,
+    paddingTop: 40,
   },
   scrollContent: {
     flexGrow: 1,
-    padding: 20,
   },
   header: {
     alignItems: 'center',
@@ -342,8 +302,8 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   form: {
-    padding: 24,
-    gap: 12,
+    paddingHorizontal: 24,
+    gap: 8,
   },
   inputError: {
     borderColor: '#EF4444',
@@ -357,7 +317,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   termsContainer: {
-    marginBottom: 24,
+    marginBottom: 12,
   },
   checkboxContainer: {
     flexDirection: 'row',
@@ -406,7 +366,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 16,
+    paddingTop: 10,
   },
   footerText: {
     fontSize: 16,

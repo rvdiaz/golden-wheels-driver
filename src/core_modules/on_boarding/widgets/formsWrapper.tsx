@@ -74,12 +74,11 @@ export const FormWrapper = ({
   children,
   currentStep,
   totalSteps,
-  showTransition = true,
 }: FormWrapperProps) => {
   return (
     <View style={styles.container}>
       {/* Header Section */}
-      <FadeTransition isVisible={true} style={styles.headerContainer}>
+      <View style={styles.headerContainer}>
         <View style={styles.headerContent}>
           <StepProgress currentStep={currentStep} totalSteps={totalSteps} icon={header.icon} />
           <Text style={styles.mainTitle}>
@@ -87,13 +86,13 @@ export const FormWrapper = ({
           </Text>
           <Text style={styles.subtitle}>{header.subtitle}</Text>
         </View>
-      </FadeTransition>
+      </View>
 
       {/* Form Container */}
       <View style={styles.formContainer}>
         {/* Form Content */}
         <View style={styles.contentContainer}>
-          <FadeTransition isVisible={showTransition} style={{ flex: 1 }}>
+          <FadeTransition isVisible={true} style={{ flex: 1 }}>
             {children}
           </FadeTransition>
         </View>
@@ -101,17 +100,17 @@ export const FormWrapper = ({
         {/* Footer Section */}
         <View style={styles.footerContainer}>
           {footer.showSlider && (
-            <FadeTransition isVisible={true}>
+            <View>
               <View style={styles.sliderContainer}>
                 <Slider progressPercentage={footer.progressPercentage || 0} />
               </View>
-            </FadeTransition>
+            </View>
           )}
 
           {footer.customFooter ? (
-            <FadeTransition isVisible={true}>{footer.customFooter}</FadeTransition>
+            <View>{footer.customFooter}</View>
           ) : (
-            <FadeTransition isVisible={true}>
+            <View>
               <View style={styles.footer}>
                 {footer.showBack && footer.showNext ? (
                   // Both buttons
@@ -153,7 +152,7 @@ export const FormWrapper = ({
                   />
                 ) : null}
               </View>
-            </FadeTransition>
+            </View>
           )}
         </View>
       </View>

@@ -14,17 +14,26 @@ import { ForcePasswordChange } from '~/codidge_components/auth/forms/force_passw
 import { ResetPassword } from '~/codidge_components/auth/forms/reset_password';
 import { VerifyEmail } from '~/codidge_components/auth/forms/verify_email';
 import { SignInForm } from '~/codidge_components/auth/forms/sign_in';
+import { AuthFormWrapper } from './authContainer';
+import { Image, StyleSheet, Text, View } from 'react-native';
+import { OnboardingStorage } from '../on_boarding';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
-export const AuthFormWrapper = () => {
+export const AuthWrapper = ({
+  firstRender,
+  onRegister,
+}: {
+  firstRender: boolean;
+  onRegister: () => void;
+}) => {
   const { currentView } = useAuthContext();
-  const [addCustomerFn] = useMutation<{ addUser: IUser }>(addUserMutation);
-  const [getCustomerFn] = useLazyQuery<{ getUser: IUser }>(getUserQuery);
+  const [addUserFn] = useMutation<{ addUser: IUser }>(addUserMutation);
+  const [getUserFn] = useLazyQuery<{ getUser: IUser }>(getUserQuery);
 
   const handleLoginSuccess = async (userId: string) => {
     try {
-      const user = await getCustomerFn({
+      const user = await getUserFn({
         variables: {
           tenant: {
             tenantId,
@@ -46,46 +55,143 @@ export const AuthFormWrapper = () => {
 
   const handleRegisterSuccess = async (userId: string, formData: any) => {
     try {
-      const customerData = await addCustomerFn({
+      const onBoargingData = await OnboardingStorage.getSavedData();
+
+      const personalInfo = onBoargingData?.personalInfo;
+      const financialGoals = onBoargingData?.financialGoals;
+      const swotAnalysis = onBoargingData?.swotAnalysis;
+      const visionMission = onBoargingData?.visionMission;
+
+      const userData = await addUserFn({
         variables: {
           tenant: {
             tenantId: tenantId,
           },
-          customer: {
-            ...formData,
-            id: userId,
+          user: {
+            firstName: personalInfo?.firstName,
+            lastName: personalInfo?.lastName,
+            email: formData.email,
+            phone: formData.phone,
+            address: {
+              postalCode: onBoargingData?.personalInfo.zipCode,
+            },
+            financialGoals,
+            swotAnalysis,
+            visionMission,
           },
         },
       });
 
-      if (!customerData.data?.addUser) {
+      await OnboardingStorage.setAccountCreated();
+
+      if (!userData.data?.addUser) {
         throw Error('Error getting user');
       }
 
-      updateUser(customerData.data?.addUser);
+      updateUser(userData.data?.addUser);
+      onRegister();
     } catch (error) {
       await signOut();
       console.log(':::error', error);
     }
   };
 
+  const header = (
+    <View style={styles.headerContainer}>
+      <View>
+        <Image style={styles.image} source={require('assets/auth.png')} resizeMode="contain" />
+      </View>
+
+      <Text style={styles.mainTitle}>Your journey starts here</Text>
+
+      <Text style={styles.subtitle}>
+        Share your goals and vision so we can build the perfect plan for you.
+      </Text>
+    </View>
+  );
+
+  if (firstRender && currentView === IAuthModuleKeys.signIn) {
+    return (
+      <AuthFormWrapper header={header}>
+        <SignUpForm onSignUpSuccess={handleRegisterSuccess} />
+      </AuthFormWrapper>
+    );
+  }
+
   switch (currentView) {
     case IAuthModuleKeys.signUp:
-      return <SignUpForm onSignUpSuccess={handleRegisterSuccess} />;
+      return (
+        <AuthFormWrapper header={header}>
+          <SignUpForm onSignUpSuccess={handleRegisterSuccess} />
+        </AuthFormWrapper>
+      );
 
     case IAuthModuleKeys.forcePasswordChange:
-      return <ForcePasswordChange onSignUpSuccess={handleRegisterSuccess} />;
+      return (
+        <AuthFormWrapper header={header}>
+          <ForcePasswordChange onSignUpSuccess={handleRegisterSuccess} />
+        </AuthFormWrapper>
+      );
 
     case IAuthModuleKeys.resetPassword:
-      return <ResetPassword onSignUpSuccess={handleRegisterSuccess} />;
+      return (
+        <AuthFormWrapper header={header}>
+          <ResetPassword onSignUpSuccess={handleRegisterSuccess} />
+        </AuthFormWrapper>
+      );
 
     case IAuthModuleKeys.confirmResetPassword:
-      return <ConfirmResetPassword />;
+      return (
+        <AuthFormWrapper header={header}>
+          <ConfirmResetPassword />
+        </AuthFormWrapper>
+      );
 
     case IAuthModuleKeys.verifyEmail:
-      return <VerifyEmail onSignUpSuccess={handleRegisterSuccess} />;
+      return (
+        <AuthFormWrapper header={header}>
+          <VerifyEmail onSignUpSuccess={handleRegisterSuccess} />
+        </AuthFormWrapper>
+      );
 
     default:
-      return <SignInForm onLoginSuccess={handleLoginSuccess} />;
+      return (
+        <AuthFormWrapper header={header}>
+          <SignInForm onLoginSuccess={handleLoginSuccess} />
+        </AuthFormWrapper>
+      );
   }
 };
+
+const styles = StyleSheet.create({
+  headerContainer: {
+    paddingTop: 80,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+  },
+  image: {
+    width: 180,
+  },
+  mainTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    marginVertical: 8,
+    letterSpacing: -0.5,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#fff',
+    textAlign: 'center',
+    lineHeight: 24,
+    fontWeight: '400',
+    paddingHorizontal: 20,
+  },
+  iconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1,
+    paddingHorizontal: 0,
+  },
+});

@@ -6,7 +6,12 @@ import { Rocket } from 'lucide-react-native';
 import { StepIcon } from './stepIcon';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 
-export const StartPointScreen = ({ onNext, onSave }: any) => {
+interface StartScreenProps {
+  onNext: () => void;
+  onSave?: ({ started, timestamp }: { started: boolean; timestamp: string }) => void;
+}
+
+export const StartPointScreen = ({ onNext, onSave }: StartScreenProps) => {
   const handleGetStarted = () => {
     // Save any initial data if needed
     if (onSave) {
@@ -38,7 +43,12 @@ export const StartPointScreen = ({ onNext, onSave }: any) => {
         />
       </View>
 
-      <PrimaryButton size={ButtonSize.LARGE} title="Start now" style={styles.buttonStyle} />
+      <PrimaryButton
+        onPress={handleGetStarted}
+        size={ButtonSize.LARGE}
+        title="Start now"
+        style={styles.buttonStyle}
+      />
 
       <TermsAndPrivacy />
     </View>

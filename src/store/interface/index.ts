@@ -76,7 +76,8 @@ export interface IUser {
   email: string;
   phone: string;
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   metaData: any;
   modules: IModule[];
   activeTemplateId: string;

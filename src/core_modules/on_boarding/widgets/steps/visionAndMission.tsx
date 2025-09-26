@@ -1,5 +1,14 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Platform,
+  KeyboardAvoidingView,
+} from 'react-native';
 import { useFormContext, Controller } from 'react-hook-form';
 import { FooterConfig, FormWrapper, HeaderConfig } from '../formsWrapper';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
@@ -48,106 +57,113 @@ export const VisionAndMission = ({
       props={props}
       currentStep={currentStep}
       totalSteps={totalSteps}>
-      <View style={styles.formContent}>
-        <Text style={styles.sectionTitle}>Vision and Mission</Text>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {/* 5-Year Vision */}
-          <View style={styles.inputContainer}>
-            <Controller
-              name="visionMission.fiveYear"
-              control={control}
-              rules={validationRules.vision.fiveYear}
-              render={({ field: { onChange, value, onBlur } }) => (
-                <InputField
-                  label="5-Year Vision"
-                  required
-                  value={value || ''}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  placeholder="Where do you see yourself in 5 years?"
-                  errorMessage={errors.visionMission?.fiveYear?.message}
-                  error={!!errors.visionMission?.fiveYear}
-                  numberOfLines={3}
-                  multiline
-                  style={styles.textArea}
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoidingView}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 280 : 0}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.formContent}>
+            <Text style={styles.sectionTitle}>Vision and Mission</Text>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {/* 5-Year Vision */}
+              <View style={styles.inputContainer}>
+                <Controller
+                  name="visionMission.fiveYear"
+                  control={control}
+                  rules={validationRules.vision.fiveYear}
+                  render={({ field: { onChange, value, onBlur } }) => (
+                    <InputField
+                      label="5-Year Vision"
+                      required
+                      value={value || ''}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      placeholder="Where do you see yourself in 5 years?"
+                      errorMessage={errors.visionMission?.fiveYear?.message}
+                      error={!!errors.visionMission?.fiveYear}
+                      numberOfLines={3}
+                      multiline
+                      style={styles.textArea}
+                    />
+                  )}
                 />
-              )}
-            />
-          </View>
+              </View>
 
-          {/* 1-Year Mission */}
-          <View style={styles.inputContainer}>
-            <Controller
-              name="visionMission.oneYear"
-              control={control}
-              rules={validationRules.vision.oneYear}
-              render={({ field: { onChange, value, onBlur } }) => (
-                <InputField
-                  label="1-Year Mission"
-                  required
-                  value={value || ''}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  placeholder="What will you achieve this year?"
-                  errorMessage={errors.visionMission?.oneYear?.message}
-                  error={!!errors.visionMission?.oneYear}
-                  numberOfLines={3}
-                  multiline
-                  style={styles.textArea}
+              {/* 1-Year Mission */}
+              <View style={styles.inputContainer}>
+                <Controller
+                  name="visionMission.oneYear"
+                  control={control}
+                  rules={validationRules.vision.oneYear}
+                  render={({ field: { onChange, value, onBlur } }) => (
+                    <InputField
+                      label="1-Year Mission"
+                      required
+                      value={value || ''}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      placeholder="What will you achieve this year?"
+                      errorMessage={errors.visionMission?.oneYear?.message}
+                      error={!!errors.visionMission?.oneYear}
+                      numberOfLines={3}
+                      multiline
+                      style={styles.textArea}
+                    />
+                  )}
                 />
-              )}
-            />
-          </View>
+              </View>
 
-          {/* Mission Statement */}
-          <View style={styles.inputContainer}>
-            <Controller
-              name="visionMission.statement"
-              control={control}
-              rules={validationRules.vision.statement}
-              render={({ field: { onChange, value, onBlur } }) => (
-                <InputField
-                  label="Mission Statement"
-                  required
-                  value={value || ''}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  placeholder="What will you achieve this year?"
-                  errorMessage={errors.visionMission?.statement?.message}
-                  error={!!errors.visionMission?.statement}
-                  numberOfLines={3}
-                  multiline
-                  style={styles.textArea}
+              {/* Mission Statement */}
+              <View style={styles.inputContainer}>
+                <Controller
+                  name="visionMission.statement"
+                  control={control}
+                  rules={validationRules.vision.statement}
+                  render={({ field: { onChange, value, onBlur } }) => (
+                    <InputField
+                      label="Mission Statement"
+                      required
+                      value={value || ''}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      placeholder="What will you achieve this year?"
+                      errorMessage={errors.visionMission?.statement?.message}
+                      error={!!errors.visionMission?.statement}
+                      numberOfLines={3}
+                      multiline
+                      style={styles.textArea}
+                    />
+                  )}
                 />
-              )}
-            />
-          </View>
+              </View>
 
-          {/* What Drives You */}
-          <View style={styles.inputContainer}>
-            <Controller
-              name="visionMission.drivesYou"
-              control={control}
-              rules={validationRules.vision.drivesYou}
-              render={({ field: { onChange, value, onBlur } }) => (
-                <InputField
-                  label="What Drives You?"
-                  required
-                  value={value || ''}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  placeholder="What will you achieve this year?"
-                  errorMessage={errors.visionMission?.drivesYou?.message}
-                  error={!!errors.visionMission?.drivesYou}
-                  numberOfLines={3}
-                  multiline
-                  style={styles.textArea}
+              {/* What Drives You */}
+              <View style={styles.inputContainer}>
+                <Controller
+                  name="visionMission.drivesYou"
+                  control={control}
+                  rules={validationRules.vision.drivesYou}
+                  render={({ field: { onChange, value, onBlur } }) => (
+                    <InputField
+                      label="What Drives You?"
+                      required
+                      value={value || ''}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      placeholder="What will you achieve this year?"
+                      errorMessage={errors.visionMission?.drivesYou?.message}
+                      error={!!errors.visionMission?.drivesYou}
+                      numberOfLines={3}
+                      multiline
+                      style={styles.textArea}
+                    />
+                  )}
                 />
-              )}
-            />
+              </View>
+            </ScrollView>
           </View>
-        </ScrollView>
-      </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </FormWrapper>
   );
 };
@@ -156,6 +172,9 @@ const styles = StyleSheet.create({
   formContent: {
     flex: 1,
     paddingHorizontal: 24,
+  },
+  keyboardAvoidingView: {
+    flex: 1,
   },
   sectionTitle: {
     fontSize: 20,

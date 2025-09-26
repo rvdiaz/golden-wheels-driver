@@ -16,7 +16,6 @@ import { CustomHeader } from './header/customHeader';
 import { theme } from '~/theme/theme';
 import { View } from 'react-native';
 import { OnboardingFlow, OnboardingStorage } from '~/core_modules/on_boarding';
-import { LoadingSpinner } from '~/codidge_components/UI/loading/loadingSpinner';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();

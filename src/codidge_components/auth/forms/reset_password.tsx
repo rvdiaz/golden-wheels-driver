@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  TextInput,
   Alert,
   KeyboardAvoidingView,
   Platform,
@@ -13,8 +12,6 @@ import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
 import { useAuthContext } from '../context';
 import { IAuthModuleKeys, ResetPasswordFormData } from '../interfaces';
-import { Card } from '~/codidge_components/UI/card';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 

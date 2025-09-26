@@ -1,5 +1,14 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { useFormContext, Controller } from 'react-hook-form';
 import { FooterConfig, FormWrapper, HeaderConfig } from '../formsWrapper';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
@@ -41,20 +50,6 @@ const validationRules = {
       message: 'Last name must be at least 2 characters',
     },
   },
-  /*  email: {
-    required: 'Email is required',
-    pattern: {
-      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-      message: 'Please enter a valid email address',
-    },
-  },
-  phone: {
-    required: 'Phone number is required',
-    minLength: {
-      value: 10,
-      message: 'Phone number must be at least 10 digits',
-    },
-  }, */
 };
 
 // Main Personal Information Component
@@ -71,7 +66,6 @@ export const PersonalInformation = ({
   currentStep: number;
   totalSteps: number;
 }) => {
-  // Get form methods from context (provided by FormProvider in parent)
   const {
     control,
     formState: { errors },
@@ -84,136 +78,97 @@ export const PersonalInformation = ({
       props={props}
       currentStep={currentStep}
       totalSteps={totalSteps}>
-      <View style={styles.formContent}>
-        <Text style={styles.sectionTitle}>Personal Information</Text>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.inputContainer}>
-            <Controller
-              name="personalInfo.firstName"
-              control={control}
-              rules={validationRules.firstName}
-              render={({ field: { onChange, value, onBlur } }) => (
-                <InputField
-                  label="First Name"
-                  required={true}
-                  value={value || ''}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  placeholder="Enter your first name"
-                  errorMessage={errors.personalInfo?.firstName?.message}
-                  error={!!errors.personalInfo?.firstName}
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoidingView}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 280 : 0}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.formContent}>
+            <Text style={styles.sectionTitle}>Personal Information</Text>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <View style={styles.inputContainer}>
+                <Controller
+                  name="personalInfo.firstName"
+                  control={control}
+                  rules={validationRules.firstName}
+                  render={({ field: { onChange, value, onBlur } }) => (
+                    <InputField
+                      label="First Name"
+                      required={true}
+                      value={value || ''}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      placeholder="Enter your first name"
+                      errorMessage={errors.personalInfo?.firstName?.message}
+                      error={!!errors.personalInfo?.firstName}
+                    />
+                  )}
                 />
-              )}
-            />
-          </View>
+              </View>
 
-          <View style={styles.inputContainer}>
-            <Controller
-              name="personalInfo.lastName"
-              control={control}
-              rules={validationRules.lastName}
-              render={({ field: { onChange, value, onBlur } }) => (
-                <InputField
-                  label="Last Name"
-                  required={true}
-                  value={value || ''}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  placeholder="Enter your last name"
-                  errorMessage={errors.personalInfo?.lastName?.message}
-                  error={!!errors.personalInfo?.lastName}
+              <View style={styles.inputContainer}>
+                <Controller
+                  name="personalInfo.lastName"
+                  control={control}
+                  rules={validationRules.lastName}
+                  render={({ field: { onChange, value, onBlur } }) => (
+                    <InputField
+                      label="Last Name"
+                      required={true}
+                      value={value || ''}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      placeholder="Enter your last name"
+                      errorMessage={errors.personalInfo?.lastName?.message}
+                      error={!!errors.personalInfo?.lastName}
+                    />
+                  )}
                 />
-              )}
-            />
-          </View>
+              </View>
 
-          <View style={styles.inputContainer}>
-            <Controller
-              name="personalInfo.mlsNumber"
-              control={control}
-              rules={validationRules.mlsNumber}
-              render={({ field: { onChange, value, onBlur } }) => (
-                <InputField
-                  label="License Number"
-                  required={true}
-                  value={value || ''}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  placeholder="Enter your mls number"
-                  errorMessage={errors.personalInfo?.mlsNumber?.message}
-                  error={!!errors.personalInfo?.mlsNumber}
+              <View style={styles.inputContainer}>
+                <Controller
+                  name="personalInfo.mlsNumber"
+                  control={control}
+                  rules={validationRules.mlsNumber}
+                  render={({ field: { onChange, value, onBlur } }) => (
+                    <InputField
+                      label="License Number"
+                      required={true}
+                      value={value || ''}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      placeholder="Enter your mls number"
+                      errorMessage={errors.personalInfo?.mlsNumber?.message}
+                      error={!!errors.personalInfo?.mlsNumber}
+                    />
+                  )}
                 />
-              )}
-            />
-          </View>
+              </View>
 
-          <View style={styles.inputContainer}>
-            <Controller
-              name="personalInfo.zipCode"
-              control={control}
-              rules={validationRules.zipCode}
-              render={({ field: { onChange, value, onBlur } }) => (
-                <InputField
-                  label="Zip Code"
-                  required={true}
-                  value={value || ''}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  placeholder="Enter your zip code"
-                  errorMessage={errors.personalInfo?.zipCode?.message}
-                  error={!!errors.personalInfo?.zipCode}
+              <View style={styles.inputContainer}>
+                <Controller
+                  name="personalInfo.zipCode"
+                  control={control}
+                  rules={validationRules.zipCode}
+                  render={({ field: { onChange, value, onBlur } }) => (
+                    <InputField
+                      label="Zip Code"
+                      required={true}
+                      value={value || ''}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      placeholder="Enter your zip code"
+                      errorMessage={errors.personalInfo?.zipCode?.message}
+                      error={!!errors.personalInfo?.zipCode}
+                    />
+                  )}
                 />
-              )}
-            />
+              </View>
+            </ScrollView>
           </View>
-
-          {/* <View style={styles.inputContainer}>
-            <Controller
-              name="personalInfo.email"
-              control={control}
-              rules={validationRules.email}
-              render={({ field: { onChange, value, onBlur } }) => (
-                <InputField
-                  label="Email"
-                  required={true}
-                  value={value || ''}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  placeholder="Enter your email"
-                  
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  errorMessage={errors.personalInfo?.email?.message}
-                  error={!!errors.personalInfo?.email}
-                />
-              )}
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Controller
-              name="personalInfo.phone"
-              control={control}
-              rules={validationRules.phone}
-              render={({ field: { onChange, value, onBlur } }) => (
-                <InputField
-                  label="Phone"
-                  required={true}
-                  value={value || ''}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  placeholder="Enter your phone number"
-                  
-                  keyboardType="phone-pad"
-                  errorMessage={errors.personalInfo?.phone?.message}
-                  error={!!errors.personalInfo?.phone}
-                />
-              )}
-            />
-          </View> */}
-        </ScrollView>
-      </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </FormWrapper>
   );
 };
@@ -222,6 +177,9 @@ const styles = StyleSheet.create({
   formContent: {
     flex: 1,
     paddingHorizontal: 24,
+  },
+  keyboardAvoidingView: {
+    flex: 1,
   },
   sectionTitle: {
     fontSize: 20,

@@ -165,7 +165,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.headerBackground,
   },
-
   // Header Styles
   headerContainer: {
     paddingTop: 80,
@@ -183,7 +182,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 60,
     position: 'relative',
-    marginBottom: 16,
   },
   progressLineLeft: {
     flex: 1,
@@ -214,7 +212,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#fff',
     textAlign: 'center',
     lineHeight: 24,
@@ -226,7 +224,7 @@ const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
     backgroundColor: '#fff',
-    marginTop: 32,
+    marginTop: 24,
     borderTopLeftRadius: theme.borderRadius.xxl,
     borderTopRightRadius: theme.borderRadius.xxl,
     overflow: 'hidden',
@@ -235,7 +233,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 24,
   },
-
   // Footer Styles
   footerContainer: {
     marginTop: 'auto',

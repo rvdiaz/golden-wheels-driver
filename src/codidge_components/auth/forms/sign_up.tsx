@@ -9,6 +9,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
@@ -26,7 +28,7 @@ const schema = yup.object({
   phone: yup
     .string()
     .required('Phone number is required')
-    .matches(/^\+?[\d\s\-\(\)]+$/, 'Please enter a valid phone number'),
+    .matches(/^\+1\d{10}$/, 'Phone number must start with +1 and be 11 digits total'),
   password: yup
     .string()
     .min(8, 'Password must be at least 8 characters')
@@ -46,8 +48,10 @@ const schema = yup.object({
 
 export const SignUpForm = ({
   onSignUpSuccess,
+  strictView,
 }: {
   onSignUpSuccess: (userId: string, formData: any) => void;
+  strictView?: boolean;
 }) => {
   const { setCurrentView, setTempData } = useAuthContext();
 
@@ -81,7 +85,7 @@ export const SignUpForm = ({
         options: {
           userAttributes: {
             email: data.email,
-            phone_number: `+1${data.phone}`,
+            phone_number: `${data.phone}`,
             'custom:user_type': 'customer',
             'custom:role': 'admin',
             'custom:tenantId': tenantId,
@@ -121,148 +125,155 @@ export const SignUpForm = ({
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 280 : 0}
       style={styles.keyboardView}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.formCard}>
-          <View style={styles.form}>
-            <Controller
-              control={control}
-              name="email"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <InputField
-                  leftIcon={<Icons.Mail size={16} color="#6B7280" />}
-                  label="Email"
-                  placeholder="Enter your email"
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  keyboardType="email-address"
-                  error={!!errors.email}
-                  errorMessage={errors.email?.message}
-                  autoCapitalize="none"
-                />
-              )}
-            />
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.formCard}>
+            <View style={styles.form}>
+              <Controller
+                control={control}
+                name="email"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    leftIcon={<Icons.Mail size={16} color="#6B7280" />}
+                    label="Email"
+                    required={true}
+                    placeholder="Enter your email"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    keyboardType="email-address"
+                    error={!!errors.email}
+                    errorMessage={errors.email?.message}
+                    autoCapitalize="none"
+                  />
+                )}
+              />
 
-            <Controller
-              control={control}
-              name="phone"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <InputField
-                  leftIcon={<Icons.Phone size={16} color="#6B7280" />}
-                  label="Phone Number"
-                  placeholder="Enter your phone number"
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  keyboardType="phone-pad"
-                  error={!!errors.phone}
-                  errorMessage={errors.phone?.message}
-                />
-              )}
-            />
+              <Controller
+                control={control}
+                name="phone"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    leftIcon={<Icons.Phone size={16} color="#6B7280" />}
+                    label="Phone Number"
+                    placeholder="e.g. +12345678901"
+                    required={true}
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    keyboardType="phone-pad"
+                    error={!!errors.phone}
+                    errorMessage={errors.phone?.message}
+                  />
+                )}
+              />
 
-            <Controller
-              control={control}
-              name="password"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <InputField
-                  leftIcon={<Icons.Lock size={16} color="#6B7280" />}
-                  label="Password"
-                  placeholder="Create a password"
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  error={!!errors.password}
-                  errorMessage={errors.password?.message}
-                  secureTextEntry={!showPassword}
-                  rightIcon={
+              <Controller
+                control={control}
+                name="password"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    leftIcon={<Icons.Lock size={16} color="#6B7280" />}
+                    label="Password"
+                    placeholder="Create a password"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    error={!!errors.password}
+                    errorMessage={errors.password?.message}
+                    secureTextEntry={!showPassword}
+                    rightIcon={
+                      <TouchableOpacity
+                        onPress={() => setShowPassword(!showPassword)}
+                        style={styles.eyeIcon}>
+                        {showPassword ? (
+                          <Icons.EyeOff size={16} color="#6B7280" />
+                        ) : (
+                          <Icons.Eye size={16} color="#6B7280" />
+                        )}
+                      </TouchableOpacity>
+                    }
+                  />
+                )}
+              />
+
+              <Controller
+                control={control}
+                name="confirmPassword"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    leftIcon={<Icons.Lock size={16} color="#6B7280" />}
+                    label="Confirm Password"
+                    placeholder="Confirm your password"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    error={!!errors.confirmPassword}
+                    errorMessage={errors.confirmPassword?.message}
+                    secureTextEntry={!showConfirmPassword}
+                    rightIcon={
+                      <TouchableOpacity
+                        onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                        style={styles.eyeIcon}>
+                        {showConfirmPassword ? (
+                          <Icons.EyeOff size={16} color="#6B7280" />
+                        ) : (
+                          <Icons.Eye size={16} color="#6B7280" />
+                        )}
+                      </TouchableOpacity>
+                    }
+                  />
+                )}
+              />
+
+              <Controller
+                control={control}
+                name="agreeToTerms"
+                render={({ field: { onChange, value } }) => (
+                  <View style={styles.termsContainer}>
                     <TouchableOpacity
-                      onPress={() => setShowPassword(!showPassword)}
-                      style={styles.eyeIcon}>
-                      {showPassword ? (
-                        <Icons.EyeOff size={16} color="#6B7280" />
-                      ) : (
-                        <Icons.Eye size={16} color="#6B7280" />
-                      )}
+                      style={styles.checkboxContainer}
+                      onPress={() => onChange(!value)}>
+                      <View style={[styles.checkbox, value && styles.checkboxChecked]}>
+                        {value && <Icons.Check size={16} color="white" />}
+                      </View>
+                      <Text style={styles.termsText}>
+                        I agree to the <Text style={styles.termsLink}>Terms of Service</Text> and{' '}
+                        <Text style={styles.termsLink}>Privacy Policy</Text>
+                      </Text>
                     </TouchableOpacity>
-                  }
+                    {errors.agreeToTerms && (
+                      <Text style={styles.errorText}>{errors.agreeToTerms.message}</Text>
+                    )}
+                  </View>
+                )}
+              />
+
+              <PrimaryButton
+                onPress={handleSubmit(onSubmit)}
+                title="Create Account"
+                loading={loading}
+                size={ButtonSize.LARGE}
+              />
+            </View>
+            {!strictView && (
+              <View style={styles.footer}>
+                <Text style={styles.footerText}>Already have an account? </Text>
+                <TextButton
+                  textStyle={styles.signInLink}
+                  title="Sign In"
+                  size={ButtonSize.SMALL}
+                  onPress={() => {
+                    setCurrentView(IAuthModuleKeys.signIn);
+                  }}
                 />
-              )}
-            />
-
-            <Controller
-              control={control}
-              name="confirmPassword"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <InputField
-                  leftIcon={<Icons.Lock size={16} color="#6B7280" />}
-                  label="Confirm Password"
-                  placeholder="Confirm your password"
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  error={!!errors.confirmPassword}
-                  errorMessage={errors.confirmPassword?.message}
-                  secureTextEntry={!showConfirmPassword}
-                  rightIcon={
-                    <TouchableOpacity
-                      onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                      style={styles.eyeIcon}>
-                      {showConfirmPassword ? (
-                        <Icons.EyeOff size={16} color="#6B7280" />
-                      ) : (
-                        <Icons.Eye size={16} color="#6B7280" />
-                      )}
-                    </TouchableOpacity>
-                  }
-                />
-              )}
-            />
-
-            <Controller
-              control={control}
-              name="agreeToTerms"
-              render={({ field: { onChange, value } }) => (
-                <View style={styles.termsContainer}>
-                  <TouchableOpacity
-                    style={styles.checkboxContainer}
-                    onPress={() => onChange(!value)}>
-                    <View style={[styles.checkbox, value && styles.checkboxChecked]}>
-                      {value && <Icons.Check size={16} color="white" />}
-                    </View>
-                    <Text style={styles.termsText}>
-                      I agree to the <Text style={styles.termsLink}>Terms of Service</Text> and{' '}
-                      <Text style={styles.termsLink}>Privacy Policy</Text>
-                    </Text>
-                  </TouchableOpacity>
-                  {errors.agreeToTerms && (
-                    <Text style={styles.errorText}>{errors.agreeToTerms.message}</Text>
-                  )}
-                </View>
-              )}
-            />
-
-            <PrimaryButton
-              onPress={handleSubmit(onSubmit)}
-              title="Create Account"
-              loading={loading}
-              size={ButtonSize.LARGE}
-            />
+              </View>
+            )}
           </View>
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Already have an account? </Text>
-            <TextButton
-              textStyle={styles.signInLink}
-              title="Sign In"
-              size={ButtonSize.SMALL}
-              onPress={() => {
-                setCurrentView(IAuthModuleKeys.signIn);
-              }}
-            />
-          </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 };

@@ -1,5 +1,14 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import { FormWrapper } from '../formsWrapper';
 import { Controller, useFormContext } from 'react-hook-form';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
@@ -32,82 +41,89 @@ export const FinantialGoals = ({ header, footer, props, currentStep, totalSteps 
       props={props}
       currentStep={currentStep}
       totalSteps={totalSteps}>
-      <View style={styles.formContent}>
-        <Text style={styles.sectionTitle}>Finantial Goals</Text>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.inputContainer}>
-            <Controller
-              name="financialGoals.desiredAnnualIncome"
-              control={control}
-              rules={validationRules.desiredAnnualIncome}
-              render={({ field: { onChange, value, onBlur } }) => (
-                <InputField
-                  label="Desired Annual Income"
-                  required={true}
-                  value={value !== undefined && value !== null ? value.toString() : ''}
-                  keyboardType="numeric"
-                  onChangeText={(text) => {
-                    const parsed = text.replace(/[^0-9]/g, ''); // keep only digits
-                    onChange(parsed ? Number(parsed) : undefined);
-                  }}
-                  onBlur={onBlur}
-                  placeholder="150"
-                  errorMessage={errors.financialGoals?.desiredAnnualIncome?.message}
-                  error={!!errors.financialGoals?.desiredAnnualIncome}
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoidingView}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 280 : 0}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.formContent}>
+            <Text style={styles.sectionTitle}>Finantial Goals</Text>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <View style={styles.inputContainer}>
+                <Controller
+                  name="financialGoals.desiredAnnualIncome"
+                  control={control}
+                  rules={validationRules.desiredAnnualIncome}
+                  render={({ field: { onChange, value, onBlur } }) => (
+                    <InputField
+                      label="Desired Annual Income"
+                      required={true}
+                      value={value !== undefined && value !== null ? value.toString() : ''}
+                      keyboardType="numeric"
+                      onChangeText={(text) => {
+                        const parsed = text.replace(/[^0-9]/g, ''); // keep only digits
+                        onChange(parsed ? Number(parsed) : undefined);
+                      }}
+                      onBlur={onBlur}
+                      placeholder="150"
+                      errorMessage={errors.financialGoals?.desiredAnnualIncome?.message}
+                      error={!!errors.financialGoals?.desiredAnnualIncome}
+                    />
+                  )}
                 />
-              )}
-            />
-          </View>
+              </View>
 
-          <View style={styles.inputContainer}>
-            <Controller
-              name="financialGoals.avgCommissionBySales"
-              control={control}
-              rules={validationRules.avgCommissionBySales}
-              render={({ field: { onChange, value, onBlur } }) => (
-                <InputField
-                  label="Average commission per sales"
-                  required={true}
-                  value={value !== undefined && value !== null ? value.toString() : ''}
-                  keyboardType="numeric"
-                  onChangeText={(text) => {
-                    const parsed = text.replace(/[^0-9]/g, ''); // keep only digits
-                    onChange(parsed ? Number(parsed) : undefined);
-                  }}
-                  onBlur={onBlur}
-                  placeholder="Enter your commissions in sales"
-                  errorMessage={errors.financialGoals?.avgCommissionBySales?.message}
-                  error={!!errors.financialGoals?.avgCommissionBySales}
+              <View style={styles.inputContainer}>
+                <Controller
+                  name="financialGoals.avgCommissionBySales"
+                  control={control}
+                  rules={validationRules.avgCommissionBySales}
+                  render={({ field: { onChange, value, onBlur } }) => (
+                    <InputField
+                      label="Average commission per sales"
+                      required={true}
+                      value={value !== undefined && value !== null ? value.toString() : ''}
+                      keyboardType="numeric"
+                      onChangeText={(text) => {
+                        const parsed = text.replace(/[^0-9]/g, ''); // keep only digits
+                        onChange(parsed ? Number(parsed) : undefined);
+                      }}
+                      onBlur={onBlur}
+                      placeholder="Enter your commissions in sales"
+                      errorMessage={errors.financialGoals?.avgCommissionBySales?.message}
+                      error={!!errors.financialGoals?.avgCommissionBySales}
+                    />
+                  )}
                 />
-              )}
-            />
-          </View>
+              </View>
 
-          <View style={styles.inputContainer}>
-            <Controller
-              name="financialGoals.avgCommissionByRents"
-              control={control}
-              rules={validationRules.avgCommissionByRents}
-              render={({ field: { onChange, value, onBlur } }) => (
-                <InputField
-                  label="Average commission per rental"
-                  required={true}
-                  keyboardType="numeric"
-                  value={value !== undefined && value !== null ? value.toString() : ''}
-                  onChangeText={(text) => {
-                    const parsed = text.replace(/[^0-9]/g, ''); // keep only digits
-                    onChange(parsed ? Number(parsed) : undefined);
-                  }}
-                  onBlur={onBlur}
-                  placeholder="Enter your commissions in rentals"
-                  errorMessage={errors.financialGoals?.avgCommissionByRents?.message}
-                  error={!!errors.financialGoals?.avgCommissionByRents}
+              <View style={styles.inputContainer}>
+                <Controller
+                  name="financialGoals.avgCommissionByRents"
+                  control={control}
+                  rules={validationRules.avgCommissionByRents}
+                  render={({ field: { onChange, value, onBlur } }) => (
+                    <InputField
+                      label="Average commission per rental"
+                      required={true}
+                      keyboardType="numeric"
+                      value={value !== undefined && value !== null ? value.toString() : ''}
+                      onChangeText={(text) => {
+                        const parsed = text.replace(/[^0-9]/g, ''); // keep only digits
+                        onChange(parsed ? Number(parsed) : undefined);
+                      }}
+                      onBlur={onBlur}
+                      placeholder="Enter your commissions in rentals"
+                      errorMessage={errors.financialGoals?.avgCommissionByRents?.message}
+                      error={!!errors.financialGoals?.avgCommissionByRents}
+                    />
+                  )}
                 />
-              )}
-            />
+              </View>
+            </ScrollView>
           </View>
-        </ScrollView>
-      </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </FormWrapper>
   );
 };
@@ -115,6 +131,9 @@ const styles = StyleSheet.create({
   formContent: {
     flex: 1,
     paddingHorizontal: 24,
+  },
+  keyboardAvoidingView: {
+    flex: 1,
   },
   sectionTitle: {
     fontSize: 20,

@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   TextInput,
   Alert,
   KeyboardAvoidingView,
@@ -124,7 +123,7 @@ export const VerifyEmail = ({
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.keyboardView}>
       <View style={styles.content}>
-        <View style={styles.formCard}>
+        <View>
           <View style={styles.helpContainer}>
             <Icons.HelpCircle size={16} color="#6B7280" />
             <Text style={styles.subtitle}>A code has being sent to your email</Text>
@@ -169,6 +168,12 @@ export const VerifyEmail = ({
             />
 
             <View style={styles.resendContainer}>
+              <TextButton
+                title="Back to Sign in"
+                onPress={() => {
+                  setCurrentView(IAuthModuleKeys.signIn);
+                }}
+              />
               {canResend ? (
                 <TextButton title="Resend Code" onPress={handleResendCode} />
               ) : (
@@ -177,16 +182,6 @@ export const VerifyEmail = ({
             </View>
           </View>
         </View>
-
-        <TextButton
-          style={{
-            marginTop: 5,
-          }}
-          title="Back to Sign In"
-          onPress={() => {
-            setCurrentView(IAuthModuleKeys.signIn);
-          }}
-        />
       </View>
     </KeyboardAvoidingView>
   );
@@ -198,8 +193,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 20,
-    justifyContent: 'center',
+    paddingTop: 40,
   },
   header: {
     alignItems: 'center',
@@ -225,9 +219,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#6B7280',
     textAlign: 'center',
-  },
-  formCard: {
-    marginBottom: 24,
   },
   form: {
     padding: 24,
@@ -268,7 +259,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   resendContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginTop: 10,
   },
   countdownText: {

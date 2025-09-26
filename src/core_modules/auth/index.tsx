@@ -98,14 +98,18 @@ export const AuthWrapper = ({
 
   const header = (
     <View style={styles.headerContainer}>
-      <View>
+      <View
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
         <Image style={styles.image} source={require('assets/auth.png')} resizeMode="contain" />
       </View>
 
       <Text style={styles.mainTitle}>Your journey starts here</Text>
 
       <Text style={styles.subtitle}>
-        Share your goals and vision so we can build the perfect plan for you.
+        Save your progress by creating your account so you won’t lose what you’ve already built.
       </Text>
     </View>
   );
@@ -113,7 +117,7 @@ export const AuthWrapper = ({
   if (firstRender && currentView === IAuthModuleKeys.signIn) {
     return (
       <AuthFormWrapper header={header}>
-        <SignUpForm onSignUpSuccess={handleRegisterSuccess} />
+        <SignUpForm strictView={true} onSignUpSuccess={handleRegisterSuccess} />
       </AuthFormWrapper>
     );
   }
@@ -165,15 +169,15 @@ export const AuthWrapper = ({
 
 const styles = StyleSheet.create({
   headerContainer: {
-    paddingTop: 80,
+    paddingTop: 60,
     paddingHorizontal: 24,
     alignItems: 'center',
   },
   image: {
-    width: 180,
+    width: 90,
   },
   mainTitle: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: '700',
     color: '#FFFFFF',
     textAlign: 'center',
@@ -181,12 +185,12 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   subtitle: {
-    fontSize: 16,
+    width: '100%',
+    fontSize: 14,
     color: '#fff',
     textAlign: 'center',
     lineHeight: 24,
     fontWeight: '400',
-    paddingHorizontal: 20,
   },
   iconContainer: {
     alignItems: 'center',

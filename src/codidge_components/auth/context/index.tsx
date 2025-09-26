@@ -4,8 +4,6 @@ import { IAuthModuleKeys } from '../interfaces';
 interface AuthContextState {
   currentView: IAuthModuleKeys;
   setCurrentView: (view: IAuthModuleKeys) => void;
-
-  // Data to pass between screens (like email for verification)
   tempData: Partial<{
     email: string;
     userId: string;

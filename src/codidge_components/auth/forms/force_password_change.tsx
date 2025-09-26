@@ -83,10 +83,11 @@ export const ForcePasswordChange = ({
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 280 : 0}
       style={styles.keyboardView}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
-          <Icons.HelpCircle size={16} color="#6B7280" />
+          <Icons.HelpCircle size={20} color="#6B7280" />
           <Text style={styles.subtitle}>
             Your password has expired. Please create a new secure password.
           </Text>
@@ -277,7 +278,6 @@ export const ForcePasswordChange = ({
               onPress={handleSubmit(onSubmit)}
               title="Change Password"
               loading={isLoading}
-              style={styles.changeButton}
               size={ButtonSize.LARGE}
             />
 
@@ -304,7 +304,8 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 4,
+    gap: 8,
+    paddingHorizontal: 20,
   },
   scrollContent: {
     flexGrow: 1,
@@ -312,10 +313,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#6B7280',
-    textAlign: 'center',
-    lineHeight: 24,
+    textAlign: 'left',
   },
   formCard: {
     marginBottom: 24,
@@ -384,9 +384,6 @@ const styles = StyleSheet.create({
   },
   requirementMet: {
     color: '#10B981',
-  },
-  changeButton: {
-    backgroundColor: '#F59E0B',
   },
   changeButtonDisabled: {
     opacity: 0.6,

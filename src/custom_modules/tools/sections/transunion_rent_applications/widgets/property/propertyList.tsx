@@ -136,7 +136,7 @@ export const TransUnionPropertyList = () => {
   );
 
   if (loading) return renderLoadingState();
-  if (error && !data) return renderErrorState();
+  if (error) return renderErrorState();
 
   return (
     <View style={styles.container}>

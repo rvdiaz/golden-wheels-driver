@@ -28,7 +28,7 @@ const schema = yup.object({
   phone: yup
     .string()
     .required('Phone number is required')
-    .matches(/^\+1\d{10}$/, 'Phone number must start with +1 and be 11 digits total'),
+    .matches(/^[2-9]\d{2}[2-9]\d{6}$/, 'Enter a valid 10-digit US phone number'),
   password: yup
     .string()
     .min(8, 'Password must be at least 8 characters')
@@ -85,7 +85,7 @@ export const SignUpForm = ({
         options: {
           userAttributes: {
             email: data.email,
-            phone_number: `${data.phone}`,
+            phone_number: `+1${data.phone}`,
             'custom:user_type': 'customer',
             'custom:role': 'admin',
             'custom:tenantId': tenantId,
@@ -158,7 +158,7 @@ export const SignUpForm = ({
                   <InputField
                     leftIcon={<Icons.Phone size={16} color="#6B7280" />}
                     label="Phone Number"
-                    placeholder="e.g. +12345678901"
+                    placeholder="e.g. 2345678901"
                     required={true}
                     value={value}
                     onChangeText={onChange}

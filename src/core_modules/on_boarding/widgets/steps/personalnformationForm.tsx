@@ -54,6 +54,9 @@ const validationRules = {
   addressLine1: {
     required: 'Address is required',
   },
+  city: {
+    required: 'City is required',
+  },
   region: {
     required: 'Region is required',
   },
@@ -171,6 +174,26 @@ export const PersonalInformation = ({
                       placeholder="Enter your address"
                       errorMessage={errors.personalInfo?.addressLine1?.message}
                       error={!!errors.personalInfo?.addressLine1}
+                    />
+                  )}
+                />
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Controller
+                  name="personalInfo.city"
+                  control={control}
+                  rules={validationRules.addressLine1}
+                  render={({ field: { onChange, value, onBlur } }) => (
+                    <InputField
+                      label="City"
+                      required={true}
+                      value={value || ''}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      placeholder="Enter your city"
+                      errorMessage={errors.personalInfo?.city?.message}
+                      error={!!errors.personalInfo?.city}
                     />
                   )}
                 />

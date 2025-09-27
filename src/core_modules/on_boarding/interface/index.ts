@@ -7,7 +7,7 @@ export interface OnboardingFormData {
     email: string;
     phone: string;
     addressLine1: string;
-    locality: string;
+    city: string;
     region: string;
     country: string;
     postalCode: string;

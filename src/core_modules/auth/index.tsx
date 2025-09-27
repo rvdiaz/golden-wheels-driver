@@ -77,6 +77,7 @@ export const AuthWrapper = ({
               postalCode: onBoargingData?.personalInfo.postalCode,
               region: onBoargingData?.personalInfo.region,
               country: onBoargingData?.personalInfo.country,
+              locality: onBoargingData?.personalInfo.city,
             },
             financialGoals,
             swotAnalysis,

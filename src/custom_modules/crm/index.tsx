@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
-  SafeAreaView,
   ScrollView,
   Modal,
   RefreshControl,
@@ -19,7 +18,7 @@ import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import Constants from 'expo-constants';
 import { userData } from '~/store/user';
 import { theme } from '~/theme/theme';
-import { CircleUser, Clock, Users } from 'lucide-react-native';
+import { CircleUser, Clock } from 'lucide-react-native';
 import { crmTabSelection } from './hooks/tabSelectionVar';
 import { CompactTabHeader } from '~/codidge_components/UI/tabs';
 import { FollowUpList } from './widgets/followUps/followUpList';
@@ -118,10 +117,7 @@ export const CRMScreen: React.FC = () => {
   });
 
   const existingPhones = contacts.flatMap((c) => c.phone);
-  /* 
-  const leads = contacts.filter((ctc) => ctc.type === ContactType.LEAD);
-  const pureContacts = contacts.filter((ctc) => ctc.type === ContactType.CLIENT);
- */
+
   return (
     <View style={styles.container}>
       <CompactTabHeader

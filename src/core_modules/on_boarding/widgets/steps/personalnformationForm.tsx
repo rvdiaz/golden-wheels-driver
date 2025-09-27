@@ -13,6 +13,7 @@ import { useFormContext, Controller } from 'react-hook-form';
 import { FooterConfig, FormWrapper, HeaderConfig } from '../formsWrapper';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { OnboardingFormData } from '../../interface';
+import { Flag } from 'lucide-react-native';
 
 // Validation rules
 const validationRules = {
@@ -49,6 +50,12 @@ const validationRules = {
       value: 2,
       message: 'Last name must be at least 2 characters',
     },
+  },
+  addressLine1: {
+    required: 'Address is required',
+  },
+  region: {
+    required: 'Region is required',
   },
 };
 
@@ -145,25 +152,83 @@ export const PersonalInformation = ({
                   )}
                 />
               </View>
-
+              <View style={styles.usaNotice}>
+                <Flag size={16} color="#1F2937" />
+                <Text style={styles.usaNoticeText}>This service is available for US only</Text>
+              </View>
               <View style={styles.inputContainer}>
                 <Controller
-                  name="personalInfo.zipCode"
+                  name="personalInfo.addressLine1"
                   control={control}
-                  rules={validationRules.zipCode}
+                  rules={validationRules.addressLine1}
                   render={({ field: { onChange, value, onBlur } }) => (
                     <InputField
-                      label="Zip Code"
+                      label="Address"
                       required={true}
                       value={value || ''}
                       onChangeText={onChange}
                       onBlur={onBlur}
-                      placeholder="Enter your zip code"
-                      errorMessage={errors.personalInfo?.zipCode?.message}
-                      error={!!errors.personalInfo?.zipCode}
+                      placeholder="Enter your address"
+                      errorMessage={errors.personalInfo?.addressLine1?.message}
+                      error={!!errors.personalInfo?.addressLine1}
                     />
                   )}
                 />
+              </View>
+
+              <View
+                style={[
+                  styles.inputContainer,
+                  {
+                    flexDirection: 'row',
+                    gap: 8,
+                  },
+                ]}>
+                <View
+                  style={{
+                    flex: 1,
+                  }}>
+                  <Controller
+                    name="personalInfo.postalCode"
+                    control={control}
+                    rules={validationRules.zipCode}
+                    render={({ field: { onChange, value, onBlur } }) => (
+                      <InputField
+                        label="Zip Code"
+                        required={true}
+                        value={value || ''}
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                        placeholder="Enter your zip code"
+                        errorMessage={errors.personalInfo?.postalCode?.message}
+                        error={!!errors.personalInfo?.postalCode}
+                      />
+                    )}
+                  />
+                </View>
+
+                <View
+                  style={{
+                    flex: 1,
+                  }}>
+                  <Controller
+                    name="personalInfo.region"
+                    control={control}
+                    rules={validationRules.region}
+                    render={({ field: { onChange, value, onBlur } }) => (
+                      <InputField
+                        label="Region"
+                        required={true}
+                        value={value || ''}
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                        placeholder="Ex: FL"
+                        errorMessage={errors.personalInfo?.region?.message}
+                        error={!!errors.personalInfo?.region}
+                      />
+                    )}
+                  />
+                </View>
               </View>
             </ScrollView>
           </View>
@@ -190,5 +255,19 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginBottom: 8,
+  },
+  usaNotice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F3F4F6',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  usaNoticeText: {
+    marginLeft: 8,
+    fontSize: 14,
+    color: '#1F2937',
+    fontWeight: '500',
   },
 });

@@ -73,7 +73,10 @@ export const AuthWrapper = ({
             email: formData.email,
             phone: formData.phone,
             address: {
-              postalCode: onBoargingData?.personalInfo.zipCode,
+              addressLine1: onBoargingData?.personalInfo.addressLine1,
+              postalCode: onBoargingData?.personalInfo.postalCode,
+              region: onBoargingData?.personalInfo.region,
+              country: onBoargingData?.personalInfo.country,
             },
             financialGoals,
             swotAnalysis,

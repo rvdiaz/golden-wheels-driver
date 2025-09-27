@@ -3,10 +3,14 @@ export interface OnboardingFormData {
     firstName: string;
     lastName: string;
     mlsNumber: string;
-    zipCode: string;
     brokerage: string;
     email: string;
     phone: string;
+    addressLine1: string;
+    locality: string;
+    region: string;
+    country: string;
+    postalCode: string;
   };
   visionMission: {
     fiveYear: string;

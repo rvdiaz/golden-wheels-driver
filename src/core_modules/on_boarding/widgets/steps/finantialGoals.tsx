@@ -70,7 +70,7 @@ export const FinantialGoals = ({ header, footer, props, currentStep, totalSteps 
                         onChange(parsed ? Number(parsed) : undefined);
                       }}
                       onBlur={onBlur}
-                      placeholder="150"
+                      placeholder="Ex: 150000"
                       errorMessage={errors.financialGoals?.desiredAnnualIncome?.message}
                       error={!!errors.financialGoals?.desiredAnnualIncome}
                     />

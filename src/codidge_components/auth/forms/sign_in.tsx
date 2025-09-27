@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   Alert,
@@ -142,18 +141,6 @@ export const SignInForm = ({ onLoginSuccess }: { onLoginSuccess: (userId: string
             title="Sign In"
             loading={loading}
             size={ButtonSize.LARGE}
-          />
-        </View>
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Don't have an account? </Text>
-
-          <TextButton
-            textStyle={styles.signUpLink}
-            title="Sign Up"
-            size={ButtonSize.SMALL}
-            onPress={() => {
-              setCurrentView(IAuthModuleKeys.signUp);
-            }}
           />
         </View>
       </View>

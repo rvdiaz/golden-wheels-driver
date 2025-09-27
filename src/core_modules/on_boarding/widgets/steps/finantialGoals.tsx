@@ -34,10 +34,15 @@ export const FinantialGoals = ({ header, footer, props, currentStep, totalSteps 
     formState: { errors },
   } = useFormContext<OnboardingFormData>();
 
+  const updatedFooter = {
+    ...footer,
+    progressPercentage: 100,
+  };
+
   return (
     <FormWrapper
       header={header}
-      footer={footer}
+      footer={updatedFooter}
       props={props}
       currentStep={currentStep}
       totalSteps={totalSteps}>

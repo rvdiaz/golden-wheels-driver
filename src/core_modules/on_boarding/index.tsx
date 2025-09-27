@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { User, Settings, CheckCircle, TrendingUp } from 'lucide-react-native';
+import {
+  User,
+  Settings,
+  CheckCircle,
+  TrendingUp,
+  Star,
+  AlertTriangle,
+  Target,
+  Eye,
+} from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FooterConfig, HeaderConfig } from './widgets/formsWrapper';
 import { PersonalInformation } from './widgets/steps/personalnformationForm';
@@ -8,7 +17,12 @@ import { VisionAndMission } from './widgets/steps/visionAndMission';
 import { FinantialGoals } from './widgets/steps/finantialGoals';
 import { FormProvider, useForm } from 'react-hook-form';
 import { OnboardingFormData } from './interface';
-import { SwotAnalysisStep } from './widgets/steps/swotAnalisysForm';
+import {
+  SwotStrengths,
+  SwotWeaknesses,
+  SwotOpportunities,
+  SwotThreats,
+} from './widgets/steps/swotAnalisysForm';
 import { StartPointScreen } from './widgets/startScreen';
 
 // Storage keys
@@ -53,7 +67,7 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
         avgCommissionByRents: undefined,
       },
     },
-    mode: 'onChange', // Validate on change for better UX
+    mode: 'onChange',
   });
 
   const {
@@ -115,7 +129,6 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
       // Check if onboarding is already completed
       const isCompleted = await AsyncStorage.getItem(STORAGE_KEYS.ONBOARDING_COMPLETED);
       if (isCompleted === 'true') {
-        // Skip onboarding and call onComplete
         onComplete();
         return;
       }
@@ -139,7 +152,7 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
     }
   };
 
-  // Clear onboarding data (useful for testing or reset functionality)
+  // Clear onboarding data
   const clearOnboardingData = async () => {
     try {
       await AsyncStorage.multiRemove([
@@ -154,7 +167,6 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
 
   // Handle step navigation with validation and persistence
   const handleStepNext = async (stepName?: keyof OnboardingFormData) => {
-    // Validate current step fields
     const isValid = await trigger(stepName);
 
     if (isValid) {
@@ -172,13 +184,13 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
     handleStepNext('visionMission');
   };
 
+  // SWOT step handlers - no validation needed as they're selection-based
+  const handleSwotNext = () => {
+    handleStepNext();
+  };
+
   const handleFinalSubmit = handleSubmit(async (data) => {
-    // Mark onboarding as completed
     await markOnboardingComplete();
-
-    // Optionally clear the form data after completion
-    // await clearOnboardingData();
-
     onComplete();
   });
 
@@ -188,13 +200,16 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
     await saveCurrentStep(prevStep);
   };
 
-  // Update step change handler to save step
   const handleStepChange = async (step: number) => {
     setCurrentStep(step);
     await saveCurrentStep(step);
   };
 
+  // Calculate progress percentage for each step
+  const totalSteps = 7; // Personal Info + Vision/Mission + 4 SWOT steps + Financial Goals
+
   const steps = [
+    // Step 1: Personal Information
     {
       header: {
         icon: User,
@@ -205,7 +220,7 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
         showNext: true,
         nextTitle: 'Continue',
         showSlider: true,
-        progressPercentage: 25,
+        progressPercentage: (1 / totalSteps) * 100,
         onNext: handlePersonalInfoNext,
       } as FooterConfig,
       component: PersonalInformation,
@@ -213,9 +228,10 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
         errors: errors.personalInfo,
       },
     },
+    // Step 2: Vision and Mission
     {
       header: {
-        icon: Settings,
+        icon: Eye,
         title: 'Vision and Mission',
         subtitle: 'Define your vision and mission for success',
       } as HeaderConfig,
@@ -225,7 +241,7 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
         backTitle: 'Back',
         nextTitle: 'Continue',
         showSlider: true,
-        progressPercentage: 50,
+        progressPercentage: (2 / totalSteps) * 100,
         onBack: stepBack,
         onNext: handleVisionMissionNext,
       } as FooterConfig,
@@ -234,27 +250,95 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
         errors: errors.visionMission,
       },
     },
-    // SWOT Analysis - Strengths
+    // Step 3: SWOT - Strengths
     {
       header: {
-        icon: TrendingUp,
-        title: 'SWOT Analysis',
-        subtitle: 'Assess your strengths, weaknesses, opportunities, and threats',
+        icon: Star,
+        title: 'SWOT Analysis - Strengths',
+        subtitle: 'What are your key strengths as a real estate professional?',
       } as HeaderConfig,
       footer: {
         showBack: true,
         showNext: true,
         backTitle: 'Back',
         nextTitle: 'Continue',
-        progressPercentage: 75,
+        showSlider: true,
+        progressPercentage: (3 / totalSteps) * 100,
         onBack: stepBack,
-        onNext: handleStepNext, // No validation per substep
+        onNext: handleSwotNext,
       } as FooterConfig,
-      component: SwotAnalysisStep, // 👈 New single component for all SWOT
+      component: SwotStrengths,
       props: {
         errors: errors.swotAnalysis,
       },
     },
+    // Step 4: SWOT - Weaknesses
+    {
+      header: {
+        icon: AlertTriangle,
+        title: 'SWOT Analysis - Weaknesses',
+        subtitle: 'What areas would you like to improve or develop?',
+      } as HeaderConfig,
+      footer: {
+        showBack: true,
+        showNext: true,
+        backTitle: 'Back',
+        nextTitle: 'Continue',
+        showSlider: true,
+        progressPercentage: (4 / totalSteps) * 100,
+        onBack: stepBack,
+        onNext: handleSwotNext,
+      } as FooterConfig,
+      component: SwotWeaknesses,
+      props: {
+        errors: errors.swotAnalysis,
+      },
+    },
+    // Step 5: SWOT - Opportunities
+    {
+      header: {
+        icon: TrendingUp,
+        title: 'SWOT Analysis - Opportunities',
+        subtitle: 'What opportunities do you see in your market?',
+      } as HeaderConfig,
+      footer: {
+        showBack: true,
+        showNext: true,
+        backTitle: 'Back',
+        nextTitle: 'Continue',
+        showSlider: true,
+        progressPercentage: (5 / totalSteps) * 100,
+        onBack: stepBack,
+        onNext: handleSwotNext,
+      } as FooterConfig,
+      component: SwotOpportunities,
+      props: {
+        errors: errors.swotAnalysis,
+      },
+    },
+    // Step 6: SWOT - Threats
+    {
+      header: {
+        icon: Target,
+        title: 'SWOT Analysis - Threats',
+        subtitle: 'What challenges or threats do you need to consider?',
+      } as HeaderConfig,
+      footer: {
+        showBack: true,
+        showNext: true,
+        backTitle: 'Back',
+        nextTitle: 'Continue',
+        showSlider: true,
+        progressPercentage: (6 / totalSteps) * 100,
+        onBack: stepBack,
+        onNext: handleSwotNext,
+      } as FooterConfig,
+      component: SwotThreats,
+      props: {
+        errors: errors.swotAnalysis,
+      },
+    },
+    // Step 7: Financial Goals
     {
       header: {
         icon: CheckCircle,
@@ -267,21 +351,20 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
         backTitle: 'Back',
         nextTitle: 'Complete Setup',
         showSlider: true,
-        progressPercentage: 100,
+        progressPercentage: (7 / totalSteps) * 100,
         onBack: stepBack,
         onComplete: handleFinalSubmit,
       } as FooterConfig,
       component: FinantialGoals,
       props: {
         errors: errors.financialGoals,
-        allData: getValues(), // Pass all form data if needed
+        allData: getValues(),
       },
     },
   ];
 
-  // Show loading state while checking saved data
   if (isLoading) {
-    return null; // Or return a loading component
+    return null;
   }
 
   if (currentStep === -1) {
@@ -307,7 +390,6 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
 
 // Export utility functions for external use
 export const OnboardingStorage = {
-  // Check if onboarding is completed
   isOnboardingCompleted: async (): Promise<boolean> => {
     try {
       const isCompleted = await AsyncStorage.getItem(STORAGE_KEYS.ONBOARDING_COMPLETED);
@@ -318,7 +400,6 @@ export const OnboardingStorage = {
     }
   },
 
-  // Reset onboarding (for testing or user request)
   resetOnboarding: async (): Promise<void> => {
     try {
       await AsyncStorage.multiRemove([
@@ -331,7 +412,6 @@ export const OnboardingStorage = {
     }
   },
 
-  // Get saved onboarding data
   getSavedData: async (): Promise<OnboardingFormData | null> => {
     try {
       const savedData = await AsyncStorage.getItem(STORAGE_KEYS.ONBOARDING_DATA);
@@ -342,7 +422,6 @@ export const OnboardingStorage = {
     }
   },
 
-  // Save that the user has created an account
   setAccountCreated: async (): Promise<void> => {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.ACCOUNT_CREATED, 'true');
@@ -351,7 +430,6 @@ export const OnboardingStorage = {
     }
   },
 
-  // Check if the user already created an account
   isAccountCreated: async (): Promise<boolean> => {
     try {
       const isCreated = await AsyncStorage.getItem(STORAGE_KEYS.ACCOUNT_CREATED);

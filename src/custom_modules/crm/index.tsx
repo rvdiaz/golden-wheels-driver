@@ -118,25 +118,19 @@ export const CRMScreen: React.FC = () => {
   });
 
   const existingPhones = contacts.flatMap((c) => c.phone);
-
+  /* 
   const leads = contacts.filter((ctc) => ctc.type === ContactType.LEAD);
   const pureContacts = contacts.filter((ctc) => ctc.type === ContactType.CLIENT);
-
+ */
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <CompactTabHeader
         tabs={[
-          {
-            key: ActiveCrmTabs.lead,
-            label: 'Leads',
-            Icon: Users,
-            indexNumber: leads.length,
-          },
           {
             key: ActiveCrmTabs.contact,
             label: 'Contacts',
             Icon: CircleUser,
-            indexNumber: pureContacts.length,
+            indexNumber: contacts.length,
           },
           {
             key: ActiveCrmTabs.followUp,
@@ -155,7 +149,7 @@ export const CRMScreen: React.FC = () => {
           showsVerticalScrollIndicator={false}>
           <ContactList
             title={crmTab === ActiveCrmTabs.contact ? 'Contacts' : 'Follow Ups'}
-            contacts={crmTab === ActiveCrmTabs.contact ? pureContacts : leads}
+            contacts={contacts}
           />
         </ScrollView>
       ) : (
@@ -247,7 +241,7 @@ export const CRMScreen: React.FC = () => {
           existingContactPhones={existingPhones}
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 };
 

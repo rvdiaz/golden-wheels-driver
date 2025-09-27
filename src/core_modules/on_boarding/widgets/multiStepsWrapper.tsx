@@ -29,18 +29,21 @@ export const MultiStepFormWrapper = ({ steps, currentStep, onStepChange }: Multi
     currentStepConfig.footer.onBack?.();
   };
 
+  const percentByTotalSteps = steps.length;
+
   // Create footer with navigation handlers
   const footerWithNavigation = {
-    ...currentStepConfig.props,
-    onNext: currentStepConfig.props.onNext || handleNext,
-    onBack: currentStepConfig.props.onBack || handleBack,
+    ...currentStepConfig.footer,
+    progressPercentage: (currentStep / percentByTotalSteps) * 100,
+    onNext: currentStepConfig.footer.onNext || handleNext,
+    onBack: currentStepConfig.footer.onBack || handleBack,
   };
 
   const stepsConfig = {
     ...currentStepConfig,
     currentStep,
     totalSteps: steps.length,
-    footerWithNavigation,
+    footer: footerWithNavigation,
   };
 
   const CurrentComponent = stepsConfig.component;

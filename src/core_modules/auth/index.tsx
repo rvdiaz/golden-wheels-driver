@@ -79,6 +79,7 @@ export const AuthWrapper = ({
             swotAnalysis,
             visionMission,
           },
+          userId,
         },
       });
 

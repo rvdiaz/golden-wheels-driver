@@ -1,5 +1,5 @@
-// SwotStrengths.tsx
-import React, { useState } from 'react';
+// SWOT Analysis Components - Individual Steps
+import React from 'react';
 import {
   Star,
   Award,
@@ -20,6 +20,7 @@ import {
 import { FormWrapper } from '../formsWrapper';
 import { SelectableItemsList } from '../selectableList';
 
+// Strengths items data
 const strengthsItems = [
   { id: 'communication', label: 'Excellent Communication Skills', icon: Users },
   { id: 'networking', label: 'Strong Network', icon: Users },
@@ -31,24 +32,7 @@ const strengthsItems = [
   { id: 'local_expertise', label: 'Local Market Expertise', icon: Target },
 ];
 
-export const SwotStrengths = ({ header, footer, props, currentStep, totalSteps }: any) => {
-  return (
-    <FormWrapper
-      header={header}
-      footer={footer}
-      props={props}
-      currentStep={currentStep}
-      totalSteps={totalSteps}>
-      <SelectableItemsList
-        items={strengthsItems}
-        fieldName="swotAnalysis.strengths"
-        title="Swot Strengths"
-      />
-    </FormWrapper>
-  );
-};
-
-// SwotWeaknesses.tsx
+// Weaknesses items data
 const weaknessesItems = [
   { id: 'time_management', label: 'Time Management', icon: Clock },
   { id: 'follow_up', label: 'Follow-up Process', icon: AlertTriangle },
@@ -60,24 +44,7 @@ const weaknessesItems = [
   { id: 'closing_deals', label: 'Closing Techniques', icon: AlertTriangle },
 ];
 
-export const SwotWeaknesses = ({ header, footer, props, currentStep, totalSteps }: any) => {
-  return (
-    <FormWrapper
-      header={header}
-      footer={footer}
-      props={props}
-      currentStep={currentStep}
-      totalSteps={totalSteps}>
-      <SelectableItemsList
-        items={weaknessesItems}
-        fieldName="swotAnalysis.weaknesses"
-        title="Swot Weaknesses"
-      />
-    </FormWrapper>
-  );
-};
-
-// SwotOpportunities.tsx
+// Opportunities items data
 const opportunitiesItems = [
   { id: 'market_growth', label: 'Growing Market Demand', icon: TrendingUp },
   { id: 'first_time_buyers', label: 'First-Time Homebuyers', icon: Home },
@@ -89,24 +56,7 @@ const opportunitiesItems = [
   { id: 'new_developments', label: 'New Developments', icon: Home },
 ];
 
-export const SwotOpportunities = ({ header, footer, props, currentStep, totalSteps }: any) => {
-  return (
-    <FormWrapper
-      header={header}
-      footer={footer}
-      props={props}
-      currentStep={currentStep}
-      totalSteps={totalSteps}>
-      <SelectableItemsList
-        items={opportunitiesItems}
-        fieldName="swotAnalysis.opportunities"
-        title="Swot Opportunities"
-      />
-    </FormWrapper>
-  );
-};
-
-// SwotThreats.tsx
+// Threats items data
 const threatsItems = [
   { id: 'market_downturn', label: 'Market Downturn', icon: TrendingDown },
   { id: 'interest_rates', label: 'Rising Interest Rates', icon: DollarSign },
@@ -118,6 +68,61 @@ const threatsItems = [
   { id: 'seasonal_slowdown', label: 'Seasonal Market Slowdown', icon: TrendingDown },
 ];
 
+// SWOT Strengths Component
+export const SwotStrengths = ({ header, footer, props, currentStep, totalSteps }: any) => {
+  return (
+    <FormWrapper
+      header={header}
+      footer={footer}
+      props={props}
+      currentStep={currentStep}
+      totalSteps={totalSteps}>
+      <SelectableItemsList
+        items={strengthsItems}
+        fieldName="swotAnalysis.strengths"
+        title="Select Your Strengths"
+      />
+    </FormWrapper>
+  );
+};
+
+// SWOT Weaknesses Component
+export const SwotWeaknesses = ({ header, footer, props, currentStep, totalSteps }: any) => {
+  return (
+    <FormWrapper
+      header={header}
+      footer={footer}
+      props={props}
+      currentStep={currentStep}
+      totalSteps={totalSteps}>
+      <SelectableItemsList
+        items={weaknessesItems}
+        fieldName="swotAnalysis.weaknesses"
+        title="Areas for Improvement"
+      />
+    </FormWrapper>
+  );
+};
+
+// SWOT Opportunities Component
+export const SwotOpportunities = ({ header, footer, props, currentStep, totalSteps }: any) => {
+  return (
+    <FormWrapper
+      header={header}
+      footer={footer}
+      props={props}
+      currentStep={currentStep}
+      totalSteps={totalSteps}>
+      <SelectableItemsList
+        items={opportunitiesItems}
+        fieldName="swotAnalysis.opportunities"
+        title="Market Opportunities"
+      />
+    </FormWrapper>
+  );
+};
+
+// SWOT Threats Component
 export const SwotThreats = ({ header, footer, props, currentStep, totalSteps }: any) => {
   return (
     <FormWrapper
@@ -129,81 +134,8 @@ export const SwotThreats = ({ header, footer, props, currentStep, totalSteps }: 
       <SelectableItemsList
         items={threatsItems}
         fieldName="swotAnalysis.threats"
-        title="Swot Threats"
+        title="Potential Challenges"
       />
     </FormWrapper>
-  );
-};
-
-const subSteps = [
-  {
-    component: SwotStrengths,
-    title: 'Strengths',
-  },
-  {
-    component: SwotWeaknesses,
-    title: 'Weaknesses',
-  },
-  {
-    component: SwotOpportunities,
-    title: 'Opportunities',
-  },
-  {
-    component: SwotThreats,
-    title: 'Threats',
-  },
-];
-
-export const SwotAnalysisStep = ({ header, footer, props, currentStep, totalSteps }: any) => {
-  const [currentSubStep, setCurrentSubStep] = useState(0);
-
-  const progressPercentage = footer.progressPercentage;
-
-  const CurrentComponent = subSteps[currentSubStep].component;
-  const isFirst = currentSubStep === 0;
-  const isLast = currentSubStep === subSteps.length - 1;
-
-  const handleNext = () => {
-    if (!isLast) {
-      setCurrentSubStep((prev) => prev + 1);
-    } else {
-      footer?.onNext(); // call the main form's next step
-    }
-  };
-
-  const handleBack = () => {
-    if (!isFirst) {
-      setCurrentSubStep((prev) => prev - 1);
-    } else {
-      footer?.onBack(); // go to the previous main step
-    }
-  };
-
-  const composedFooter = {
-    ...footer,
-    progressPercentage: progressPercentage,
-    onNext: handleNext,
-    onBack: handleBack,
-    showBack: true,
-    showNext: true,
-    showSlider: true,
-    nextTitle: isLast ? 'Continue' : 'Next',
-    backTitle: isFirst ? 'Back' : 'Previous',
-  };
-
-  const composedHeader = {
-    ...header,
-    title: `SWOT Analysis - ${subSteps[currentSubStep].title}`,
-    subtitle: `Please fill out your ${subSteps[currentSubStep].title.toLowerCase()}`,
-  };
-
-  return (
-    <CurrentComponent
-      header={composedHeader}
-      footer={composedFooter}
-      props={props}
-      currentStep={currentStep}
-      totalSteps={totalSteps}
-    />
   );
 };

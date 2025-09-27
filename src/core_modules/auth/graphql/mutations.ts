@@ -11,7 +11,7 @@ export const addUserMutation = gql`
       phone
       address {
         addressLine1
-        localityva
+        locality
         region
         postalCode
         country

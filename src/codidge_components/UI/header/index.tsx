@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ViewStyle, TextStyle } from 'react-native';
 import * as Icons from 'lucide-react-native';
 import TextButton from '../button/TextButton';
 import { theme } from '~/theme/theme';
@@ -11,8 +11,14 @@ interface HeaderProps {
   onBack?: () => void;
   rightAction?: () => void;
   rightText?: string;
+  leftText?: string;
   loadingRight?: boolean;
   disabledRight?: boolean;
+  contentContainerStyle?: ViewStyle;
+  contentStyle?: ViewStyle;
+  leftWidget?: React.ReactNode;
+  titleStyles?: TextStyle;
+  rightWidget?: React.ReactNode;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -21,39 +27,55 @@ export const Header: React.FC<HeaderProps> = ({
   onBack,
   rightAction,
   rightText,
+  leftText,
   loadingRight,
   disabledRight,
+  contentContainerStyle,
+  contentStyle,
+  leftWidget,
+  titleStyles,
+  rightWidget,
 }) => {
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="white" />
-      <View style={styles.content}>
+    <View style={[styles.container, contentContainerStyle]}>
+      <View style={[styles.content, contentStyle]}>
         {/* Left section */}
         <View style={styles.leftSection}>
-          {showBack && (
-            <TouchableOpacity onPress={onBack} style={styles.backButton}>
-              <Icons.ArrowLeft size={20} color={theme.colors.primary} />
-            </TouchableOpacity>
-          )}
+          <View style={{ flexDirection: 'row', gap: 2 }}>
+            {showBack && (
+              <TouchableOpacity onPress={onBack} style={styles.backButton}>
+                {leftWidget ? (
+                  leftWidget
+                ) : (
+                  <Icons.ArrowLeft size={20} color={theme.colors.primary} />
+                )}
+              </TouchableOpacity>
+            )}
+            {leftText && <Text style={styles.title}>{leftText}</Text>}
+          </View>
         </View>
 
         {/* Center section */}
         <View style={styles.centerSection}>
-          <Text style={styles.title}>{title}</Text>
+          <Text style={[styles.title, titleStyles]} numberOfLines={1}>
+            {title}
+          </Text>
         </View>
 
         {/* Right section */}
         <View style={styles.rightSection}>
-          {rightAction && (
-            <TextButton
-              disabled={disabledRight}
-              loading={loadingRight}
-              size={ButtonSize.MEDIUM}
-              textStyle={styles.rightButtonText}
-              onPress={rightAction}
-              title={rightText ?? ''}
-            />
-          )}
+          {rightWidget
+            ? rightWidget
+            : rightAction && (
+                <TextButton
+                  disabled={disabledRight}
+                  loading={loadingRight}
+                  size={ButtonSize.MEDIUM}
+                  textStyle={styles.rightButtonText}
+                  onPress={rightAction}
+                  title={rightText ?? ''}
+                />
+              )}
         </View>
       </View>
     </View>
@@ -71,7 +93,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 14,
-    backgroundColor: theme.colors.headerModal,
   },
   leftSection: {
     flexDirection: 'row',

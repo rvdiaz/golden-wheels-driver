@@ -85,6 +85,11 @@ export interface IUser {
   systemData: {
     tasksConfiguration: ITaskSchemaItem[];
   };
+  profileSteps: {
+    id: string;
+    title: string;
+    subSteps: string[];
+  }[];
 }
 
 export interface ITaskSchemaItem {

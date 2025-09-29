@@ -69,7 +69,7 @@ export const CustomHeader: React.FC<CustomHeaderProps> = ({
             )}
             {isDashboard ? (
               <Text style={[styles.welcomeText, { color: textColor }]} numberOfLines={1}>
-                {`Welcome, ${userInfo?.email}`}
+                {`Welcome, ${userInfo?.firstName}`}
               </Text>
             ) : (
               <Text

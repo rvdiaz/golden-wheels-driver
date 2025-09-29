@@ -16,6 +16,11 @@ export const addUserMutation = gql`
         postalCode
         country
       }
+      profileSteps {
+        id
+        title
+        subSteps
+      }
       modules {
         icon
         label

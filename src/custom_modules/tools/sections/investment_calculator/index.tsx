@@ -1,7 +1,7 @@
 // components/InvestmentCalculator.tsx
 import React, { useState } from 'react';
 import { View, StyleSheet, Modal, KeyboardAvoidingView, Platform } from 'react-native';
-import { Home, Building, Calculator, Percent, ClipboardList } from 'lucide-react-native';
+import { Home, Building, Calculator } from 'lucide-react-native';
 import { PropertyForm } from './widgets/propertyInformation';
 import { ResultsDisplay } from './widgets/resultsComponent';
 import { GridTabs } from '~/codidge_components/UI/tabs';

@@ -10,7 +10,7 @@ export const Dashboard: React.FC = () => {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <ProfileCompletionWidget completedSteps={2} totalSteps={10} />
+        <ProfileCompletionWidget />
         <TaskMetricsStats />
         <RentAppShortcut />
         <TodayTasks />

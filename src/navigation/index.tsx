@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useQuery, useReactiveVar } from '@apollo/client';
+import { useReactiveVar } from '@apollo/client';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -16,6 +16,8 @@ import { CustomHeader } from './header/customHeader';
 import { theme } from '~/theme/theme';
 import { View } from 'react-native';
 import { OnboardingFlow, OnboardingStorage } from '~/core_modules/on_boarding';
+import { useSystemSettings } from '~/system_setting/customHook';
+import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -93,6 +95,7 @@ function TabsWithCustomHeader({ tenantModules }: { tenantModules: IModule[] }) {
 
 export default function Navigation() {
   const userInfo = useReactiveVar(userData);
+  const { loading } = useSystemSettings();
 
   const tenantModules = getTenantRoutes(userInfo);
   const nestedNav = createNestedNavigationScreens(tenantModules, Stack);
@@ -119,6 +122,14 @@ export default function Navigation() {
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
   };
+
+  if (loading) {
+    return (
+      <NavigationContainer>
+        <PageLoading />
+      </NavigationContainer>
+    );
+  }
 
   return (
     <NavigationContainer>

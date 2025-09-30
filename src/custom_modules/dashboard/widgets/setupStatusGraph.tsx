@@ -14,6 +14,10 @@ export const ProfileCompletionWidget = () => {
   const user = useReactiveVar(userData);
   const userStepsCompleted = user?.profileSteps?.length ?? 0;
 
+  if (userStepsCompleted === allTasks.length) {
+    return;
+  }
+
   return (
     <View>
       <ProfileSetupShortcut

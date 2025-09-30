@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
-import { useReactiveVar } from '@apollo/client';
+import { useMutation, useReactiveVar } from '@apollo/client';
 import * as Icons from 'lucide-react-native';
 import { WebView } from 'react-native-webview';
 import { userData, updateUser } from '~/store/user';
@@ -9,15 +9,20 @@ import { IProfileTask } from '../interfaces';
 import { Header } from '~/codidge_components/UI/header';
 import { ProfileScreensWrapper } from './wrapper';
 import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
+import { updateUserMutation } from '~/core_modules/auth/graphql/mutations';
+import Constants from 'expo-constants';
 
 interface TaskDetailScreenProps {
   task: IProfileTask;
   onBack: () => void;
 }
 
+const tenantId = Constants.expoConfig?.extra?.TENANTID;
+
 export const TaskDetailScreen = ({ task, onBack }: TaskDetailScreenProps) => {
   const user = useReactiveVar(userData);
-  const [isUpdating, setIsUpdating] = useState(false);
+
+  const [updateUserFn, { loading: isUpdating }] = useMutation(updateUserMutation);
 
   // Get current progress for this task
   const taskProgress = user?.profileSteps?.find((step) => step.id === task.id);
@@ -33,7 +38,6 @@ export const TaskDetailScreen = ({ task, onBack }: TaskDetailScreenProps) => {
   // Toggle individual subitem
   const toggleSubitem = async (subitemId: string) => {
     if (!user) return;
-    setIsUpdating(true);
 
     try {
       const updatedProfileSteps = [...(user.profileSteps || [])];
@@ -60,21 +64,31 @@ export const TaskDetailScreen = ({ task, onBack }: TaskDetailScreenProps) => {
         }
       }
 
-      await updateUser({
+      await updateUserFn({
+        variables: {
+          tenant: {
+            tenantId: tenantId,
+          },
+          updates: {
+            profileSteps: updatedProfileSteps,
+          },
+          userId: user.id,
+        },
+      });
+
+      updateUser({
         ...user,
         profileSteps: updatedProfileSteps,
       });
     } catch (error) {
       console.error('Error updating subitem:', error);
-    } finally {
-      setIsUpdating(false);
     }
   };
 
   // Complete all subitems at once
   const completeAllTask = async () => {
     if (!user) return;
-    setIsUpdating(true);
+    // setIsUpdating(true);
 
     try {
       const updatedProfileSteps = [...(user.profileSteps || [])];
@@ -94,14 +108,24 @@ export const TaskDetailScreen = ({ task, onBack }: TaskDetailScreenProps) => {
         updatedProfileSteps[taskIndex].subSteps = allSubitemIds;
       }
 
-      await updateUser({
+      await updateUserFn({
+        variables: {
+          tenant: {
+            tenantId: tenantId,
+          },
+          updates: {
+            profileSteps: updatedProfileSteps,
+          },
+          userId: user.id,
+        },
+      });
+
+      updateUser({
         ...user,
         profileSteps: updatedProfileSteps,
       });
     } catch (error) {
       console.error('Error completing all tasks:', error);
-    } finally {
-      setIsUpdating(false);
     }
   };
 
@@ -145,7 +169,14 @@ export const TaskDetailScreen = ({ task, onBack }: TaskDetailScreenProps) => {
         </View>
       )}
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={[
+          styles.content,
+          isTaskCompleted && {
+            paddingTop: 10,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}>
         {/* Task Title & Status */}
         <View style={styles.sectionCard}>
           <View style={styles.taskHeader}>

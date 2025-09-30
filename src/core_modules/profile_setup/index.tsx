@@ -2,22 +2,70 @@ import React, { useState } from 'react';
 import { useProfileSetupConfig } from './customHook';
 import { SetupItem } from './widgets/setup_list_item';
 import { theme } from '~/theme/theme';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal } from 'react-native';
 import { IProfileTask } from './interfaces';
 import { PageTransition } from '~/codidge_components/UI/pageTransition';
 import { TaskDetailScreen } from './widgets/setup_item_detail';
 import { Slider } from '~/codidge_components/UI/slider';
-import { userData } from '~/store/user';
-import { useReactiveVar } from '@apollo/client';
+import { userData, updateUser } from '~/store/user';
+import { useReactiveVar, useMutation } from '@apollo/client';
 import { ProfileScreensWrapper } from './widgets/wrapper';
-import { ArrowLeft } from 'lucide-react-native';
+import { ArrowLeft, ChevronLast, AlertCircle, X } from 'lucide-react-native';
+import TextButton from '~/codidge_components/UI/button/TextButton';
+import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
+import { updateUserMutation } from '~/core_modules/auth/graphql/mutations';
+import Constants from 'expo-constants';
+import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
+
+const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const SetupProfile = ({ dispose }: { dispose: () => void }) => {
   const { allTasks } = useProfileSetupConfig();
   const [selectedTask, setSelectedTask] = useState<IProfileTask | null>(null);
+  const [showSkipModal, setShowSkipModal] = useState(false);
 
   const user = useReactiveVar(userData);
   const userStepsCompleted = user?.profileSteps?.length ?? 0;
+
+  const [updateUserFn, { loading: isSkipping }] = useMutation(updateUserMutation);
+
+  const handleSkipAll = async () => {
+    if (!user) return;
+
+    try {
+      // Create profile steps for all tasks with all subitems marked as completed
+      // and add a skip flag
+      const skippedProfileSteps = allTasks.map((task) => ({
+        id: task.id,
+        title: task.title,
+        subSteps: task.subitems.map((subitem) => subitem.id),
+        skipped: true, // Add skip flag
+      }));
+
+      await updateUserFn({
+        variables: {
+          tenant: {
+            tenantId: tenantId,
+          },
+          updates: {
+            profileSteps: skippedProfileSteps,
+          },
+          userId: user.id,
+        },
+      });
+
+      updateUser({
+        ...user,
+        profileSteps: skippedProfileSteps,
+      });
+
+      setShowSkipModal(false);
+      // Optionally close the setup screen after skipping
+      dispose();
+    } catch (error) {
+      console.error('Error skipping all tasks:', error);
+    }
+  };
 
   return (
     <>
@@ -63,13 +111,70 @@ export const SetupProfile = ({ dispose }: { dispose: () => void }) => {
               <SetupItem key={task.id} task={task} onPress={() => setSelectedTask(task)} />
             ))}
           </ScrollView>
+          <View style={styles.footer}>
+            <TextButton
+              style={{
+                marginLeft: 'auto',
+                gap: 8,
+              }}
+              textStyle={{ color: theme.colors.primary }}
+              title="Skip All"
+              onPress={() => setShowSkipModal(true)}
+              rightWidget={<ChevronLast size={16} color={theme.colors.primary} />}
+            />
+          </View>
         </View>
       </ProfileScreensWrapper>
+
       <PageTransition isVisible={!!selectedTask} duration={350}>
         {selectedTask && (
           <TaskDetailScreen task={selectedTask} onBack={() => setSelectedTask(null)} />
         )}
       </PageTransition>
+
+      {/* Skip All Confirmation Modal */}
+      <Modal
+        visible={showSkipModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowSkipModal(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity
+              style={styles.modalCloseButton}
+              onPress={() => setShowSkipModal(false)}>
+              <X size={24} color="#6B7280" />
+            </TouchableOpacity>
+
+            <View style={styles.modalIconContainer}>
+              <AlertCircle size={48} color={theme.colors.primary} />
+            </View>
+
+            <Text style={styles.modalTitle}>Skip All Setup Tasks?</Text>
+            <Text style={styles.modalDescription}>
+              Are you sure you want to skip all remaining setup tasks? You can always complete them
+              later from your profile settings.
+            </Text>
+
+            <View style={styles.modalButtons}>
+              <OutlineButton
+                title="Cancel"
+                onPress={() => setShowSkipModal(false)}
+                style={styles.modalButton}
+              />
+              <PrimaryButton
+                style={{
+                  backgroundColor: theme.colors.primary,
+                  ...styles.modalButton,
+                }}
+                loading={isSkipping}
+                onPress={handleSkipAll}
+                title="Yes, Skip All"
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 };
@@ -115,5 +220,69 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#0A0A0A',
     fontWeight: '400',
+  },
+  footer: {
+    padding: 16,
+    justifyContent: 'flex-end',
+  },
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 24,
+    width: '100%',
+    maxWidth: 400,
+    position: 'relative',
+  },
+  modalCloseButton: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    zIndex: 1,
+  },
+  modalIconContainer: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#1F2937',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  modalDescription: {
+    fontSize: 14,
+    color: '#6B7280',
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 24,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  modalButton: {
+    flex: 1,
+  },
+  confirmButton: {
+    backgroundColor: theme.colors.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  confirmButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

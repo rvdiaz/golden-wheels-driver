@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import {
   TouchableOpacity,
   Text,
@@ -17,6 +17,7 @@ interface TextButtonProps {
   title: string;
   style?: ViewStyle;
   textStyle?: TextStyle;
+  rightWidget?: ReactNode;
 }
 
 const sizeStyles = {
@@ -33,6 +34,7 @@ const TextButton: React.FC<TextButtonProps> = ({
   title,
   style,
   textStyle,
+  rightWidget,
 }) => {
   const disabledAux = loading || disabled;
   const sizeStyle = sizeStyles[size];
@@ -55,6 +57,7 @@ const TextButton: React.FC<TextButtonProps> = ({
       ) : (
         <Text style={[styles.text, { fontSize: sizeStyle.fontSize }, textStyle]}>{title}</Text>
       )}
+      {rightWidget && rightWidget}
     </TouchableOpacity>
   );
 };

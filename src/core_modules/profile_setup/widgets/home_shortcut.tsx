@@ -32,7 +32,6 @@ export const ProfileSetupShortcut: React.FC<ProfileCompletionWidgetProps> = ({
 
   // SVG circle calculations
   const radius = (size - strokeWidth) / 2;
-  const circumference = 2 * Math.PI * radius;
 
   // Determine if profile is complete
   const isComplete = completedSteps === totalSteps;

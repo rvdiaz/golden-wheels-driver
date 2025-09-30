@@ -56,3 +56,60 @@ export const addUserMutation = gql`
     }
   }
 `;
+
+export const updateUserMutation = gql`
+  mutation updateUser($tenant: TenantData!, $updates: UserUpdateInput!, $userId: ID!) {
+    updateUser(tenant: $tenant, updates: $updates, userId: $userId) {
+      email
+      id
+      activeTemplateId
+      firstName
+      lastName
+      phone
+      address {
+        addressLine1
+        locality
+        region
+        postalCode
+        country
+      }
+      profileSteps {
+        id
+        title
+        subSteps
+      }
+      modules {
+        icon
+        label
+        isBottomBar
+        metaData
+        moduleKey
+        path
+        customIcon
+        modules {
+          label
+          metaData
+          icon
+          description
+          color
+          backgroundColor
+          moduleKey
+        }
+      }
+      systemData {
+        tasksConfiguration {
+          key
+          description
+          goalKey
+          goalType
+          label
+          fields {
+            goalKey
+            goalType
+            label
+          }
+        }
+      }
+    }
+  }
+`;

@@ -23,8 +23,8 @@ const unitSchema = z.object({
   repairCosts: z.number().min(0),
   potentialRent: z.number().min(0),
   marketValue: z.number().min(0),
-  bedrooms: z.number().min(0).max(10),
-  bathrooms: z.number().min(0).max(10),
+  bedrooms: z.number().min(0).max(10).optional(),
+  bathrooms: z.number().min(0).max(10).optional(),
 });
 
 const renovationItemSchema = z.object({

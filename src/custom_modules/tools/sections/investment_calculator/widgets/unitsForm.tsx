@@ -23,6 +23,19 @@ interface MobileUnitsFormProps {
   onUpdateUnitsCount: (count: number) => void;
 }
 
+// Helper function to convert value for display
+const toDisplayValue = (value: any): string => {
+  if (value === null || value === undefined || value === '') return '';
+  return value.toString();
+};
+
+// Helper function to parse input value
+const parseNumericInput = (text: string, isInteger = false): number | string => {
+  if (text === '') return '';
+  const num = isInteger ? parseInt(text) : parseFloat(text);
+  return isNaN(num) ? '' : num;
+};
+
 // Single Unit Card Component
 const UnitCard: React.FC<{
   field: any;
@@ -61,8 +74,8 @@ const UnitCard: React.FC<{
                   }}
                   style={styles.bedBathInput}
                   placeholder="0"
-                  value={value?.toString() || ''}
-                  onChangeText={(text) => onChange(parseInt(text) || 0)}
+                  value={toDisplayValue(value)}
+                  onChangeText={(text) => onChange(parseNumericInput(text, true))}
                   keyboardType="numeric"
                 />
               )}
@@ -82,8 +95,8 @@ const UnitCard: React.FC<{
                   }}
                   style={styles.bedBathInput}
                   placeholder="0"
-                  value={value?.toString() || ''}
-                  onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                  value={toDisplayValue(value)}
+                  onChangeText={(text) => onChange(parseNumericInput(text))}
                   keyboardType="numeric"
                 />
               )}
@@ -109,8 +122,8 @@ const UnitCard: React.FC<{
             render={({ field: { onChange, value } }) => (
               <InputField
                 placeholder="0"
-                value={value?.toString() || ''}
-                onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                value={toDisplayValue(value)}
+                onChangeText={(text) => onChange(parseNumericInput(text))}
                 keyboardType="numeric"
               />
             )}
@@ -129,8 +142,8 @@ const UnitCard: React.FC<{
             render={({ field: { onChange, value } }) => (
               <InputField
                 placeholder="0"
-                value={value?.toString() || ''}
-                onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                value={toDisplayValue(value)}
+                onChangeText={(text) => onChange(parseNumericInput(text))}
                 keyboardType="numeric"
               />
             )}
@@ -149,8 +162,8 @@ const UnitCard: React.FC<{
             render={({ field: { onChange, value } }) => (
               <InputField
                 placeholder="0"
-                value={value?.toString() || ''}
-                onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                value={toDisplayValue(value)}
+                onChangeText={(text) => onChange(parseNumericInput(text))}
                 keyboardType="numeric"
               />
             )}
@@ -172,6 +185,15 @@ export const MobileUnitsForm: React.FC<MobileUnitsFormProps> = ({
 
   const units: UnitData[] = watch('units') || [];
 
+  // Helper to safely sum values, treating empty strings as 0
+  const safeSum = (units: UnitData[], field: keyof UnitData): number => {
+    return units.reduce((sum, unit) => {
+      const value = unit?.[field] as string | number;
+      const numValue = value === '' || value === null || value === undefined ? 0 : Number(value);
+      return sum + (isNaN(numValue) ? 0 : numValue);
+    }, 0);
+  };
+
   return (
     <ScrollView style={styles.container}>
       <Card
@@ -189,11 +211,13 @@ export const MobileUnitsForm: React.FC<MobileUnitsFormProps> = ({
               <InputField
                 label="Number of Units (1-100)"
                 placeholder="1"
-                value={value?.toString() || ''}
+                value={toDisplayValue(value)}
                 onChangeText={(text) => {
-                  const numValue = parseInt(text) || 0;
+                  const numValue = parseNumericInput(text, true);
                   onChange(numValue);
-                  onUpdateUnitsCount(numValue);
+                  if (typeof numValue === 'number') {
+                    onUpdateUnitsCount(numValue);
+                  }
                 }}
                 keyboardType="numeric"
               />
@@ -236,19 +260,19 @@ export const MobileUnitsForm: React.FC<MobileUnitsFormProps> = ({
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Total Current Rent:</Text>
                 <Text style={styles.summaryValue}>
-                  {formatCurrency(units.reduce((sum, unit) => sum + (unit?.currentRent || 0), 0))}
+                  {formatCurrency(safeSum(units, 'currentRent'))}
                 </Text>
               </View>
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Total Repair Costs:</Text>
                 <Text style={[styles.summaryValue, styles.expenseValue]}>
-                  {formatCurrency(units.reduce((sum, unit) => sum + (unit?.repairCosts || 0), 0))}
+                  {formatCurrency(safeSum(units, 'repairCosts'))}
                 </Text>
               </View>
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Total Potential Rent:</Text>
                 <Text style={[styles.summaryValue, styles.potentialValue]}>
-                  {formatCurrency(units.reduce((sum, unit) => sum + (unit?.potentialRent || 0), 0))}
+                  {formatCurrency(safeSum(units, 'potentialRent'))}
                 </Text>
               </View>
             </View>
@@ -266,8 +290,8 @@ export const MobileUnitsForm: React.FC<MobileUnitsFormProps> = ({
               render={({ field: { onChange, value } }) => (
                 <InputField
                   placeholder="0"
-                  value={value?.toString() || ''}
-                  onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                  value={toDisplayValue(value)}
+                  onChangeText={(text) => onChange(parseNumericInput(text))}
                   keyboardType="numeric"
                 />
               )}
@@ -359,7 +383,7 @@ const styles = StyleSheet.create({
   },
   bedBathRow: {
     flexDirection: 'row',
-    gap: 16,
+    gap: 8,
   },
   bedBathItem: {
     flex: 1,
@@ -371,7 +395,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   bedBathInput: {
-    width: 50,
+    width: 60,
     height: 36,
     textAlign: 'center',
     fontSize: 14,
@@ -389,7 +413,6 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     fontWeight: '500',
   },
-
   // Financial Section
   financialSection: {
     gap: 8,

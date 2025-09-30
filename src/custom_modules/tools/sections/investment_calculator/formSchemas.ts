@@ -1,89 +1,110 @@
 // schemas/investmentSchemas.ts
 import { z } from 'zod';
 
+// Helper to transform empty strings to 0
+const numberOrEmpty = z.union([z.number(), z.string()]).transform((val) => {
+  if (val === '' || val === null || val === undefined) return 0;
+  const num = typeof val === 'string' ? parseFloat(val) : val;
+  return isNaN(num) ? 0 : num;
+});
+
 // Property Information Schema
 export const propertyFormSchema = z.object({
-  propertyValue: z.number().min(1, 'Property value must be greater than 0'),
-  downPayment: z.number().min(0, 'Down payment cannot be negative'),
-  closingCosts: z.number().min(0, 'Closing costs cannot be negative'),
-  renovationCosts: z.number().min(0, 'Renovation costs cannot be negative'),
-  numberOfUnits: z.number().int().min(1, 'Must have at least 1 unit').max(100, 'Maximum 100 units'),
-  otherIncome: z.number().min(0, 'Other income cannot be negative'),
+  propertyValue: numberOrEmpty.pipe(z.number().min(1, 'Property value must be greater than 0')),
+  downPayment: numberOrEmpty.pipe(z.number().min(0, 'Down payment cannot be negative')),
+  closingCosts: numberOrEmpty.pipe(z.number().min(0, 'Closing costs cannot be negative')),
+  renovationCosts: numberOrEmpty.pipe(z.number().min(0, 'Renovation costs cannot be negative')),
+  numberOfUnits: numberOrEmpty.pipe(
+    z.number().int().min(1, 'Must have at least 1 unit').max(100, 'Maximum 100 units')
+  ),
+  otherIncome: numberOrEmpty.pipe(z.number().min(0, 'Other income cannot be negative')),
 });
 
 // Unit Schema
 export const unitSchema = z.object({
   id: z.number(),
-  currentRent: z.number().min(0, 'Current rent cannot be negative'),
-  repairCosts: z.number().min(0, 'Repair costs cannot be negative'),
-  potentialRent: z.number().min(0, 'Potential rent cannot be negative'),
-  marketValue: z.number().min(0, 'Market value cannot be negative'),
-  bedrooms: z.number().int().min(0, 'Bedrooms cannot be negative').max(10, 'Maximum 10 bedrooms'),
-  bathrooms: z.number().min(0, 'Bathrooms cannot be negative').max(10, 'Maximum 10 bathrooms'),
+  currentRent: numberOrEmpty.pipe(z.number().min(0, 'Current rent cannot be negative')),
+  repairCosts: numberOrEmpty.pipe(z.number().min(0, 'Repair costs cannot be negative')),
+  potentialRent: numberOrEmpty.pipe(z.number().min(0, 'Potential rent cannot be negative')),
+  marketValue: numberOrEmpty.pipe(z.number().min(0, 'Market value cannot be negative')),
+  bedrooms: numberOrEmpty.pipe(
+    z.number().int().min(0, 'Bedrooms cannot be negative').max(10, 'Maximum 10 bedrooms')
+  ),
+  bathrooms: numberOrEmpty.pipe(
+    z.number().min(0, 'Bathrooms cannot be negative').max(10, 'Maximum 10 bathrooms')
+  ),
 });
 
 // Renovation Item Schema
 export const renovationItemSchema = z.object({
   id: z.number(),
   category: z.string().min(1, 'Category is required'),
-  cost: z.number().min(0, 'Cost cannot be negative'),
+  cost: numberOrEmpty.pipe(z.number().min(0, 'Cost cannot be negative')),
 });
 
 // Expenses Schema
 export const expensesFormSchema = z.object({
   // Current Expenses
-  currentInsurance: z.number().min(0, 'Insurance cannot be negative'),
-  currentPropertyTaxes: z.number().min(0, 'Property taxes cannot be negative'),
-  currentMaintenance: z.number().min(0, 'Maintenance cannot be negative'),
-  currentManagementPercent: z
-    .number()
-    .min(0, 'Management percent cannot be negative')
-    .max(50, 'Management percent seems too high'),
-  currentVacancy: z
-    .number()
-    .min(0, 'Vacancy rate cannot be negative')
-    .max(100, 'Vacancy rate cannot exceed 100%'),
-  currentOtherExpenses: z.number().min(0, 'Other expenses cannot be negative'),
+  currentInsurance: numberOrEmpty.pipe(z.number().min(0, 'Insurance cannot be negative')),
+  currentPropertyTaxes: numberOrEmpty.pipe(z.number().min(0, 'Property taxes cannot be negative')),
+  currentMaintenance: numberOrEmpty.pipe(z.number().min(0, 'Maintenance cannot be negative')),
+  currentManagementPercent: numberOrEmpty.pipe(
+    z
+      .number()
+      .min(0, 'Management percent cannot be negative')
+      .max(50, 'Management percent seems too high')
+  ),
+  currentVacancy: numberOrEmpty.pipe(
+    z.number().min(0, 'Vacancy rate cannot be negative').max(100, 'Vacancy rate cannot exceed 100%')
+  ),
+  currentOtherExpenses: numberOrEmpty.pipe(z.number().min(0, 'Other expenses cannot be negative')),
 
   // Projected Expenses
-  projectedInsurance: z.number().min(0, 'Insurance cannot be negative'),
-  projectedPropertyTaxes: z.number().min(0, 'Property taxes cannot be negative'),
-  projectedMaintenance: z.number().min(0, 'Maintenance cannot be negative'),
-  projectedManagementPercent: z
-    .number()
-    .min(0, 'Management percent cannot be negative')
-    .max(50, 'Management percent seems too high'),
-  projectedVacancy: z
-    .number()
-    .min(0, 'Vacancy rate cannot be negative')
-    .max(100, 'Vacancy rate cannot exceed 100%'),
-  projectedOtherExpenses: z.number().min(0, 'Other expenses cannot be negative'),
+  projectedInsurance: numberOrEmpty.pipe(z.number().min(0, 'Insurance cannot be negative')),
+  projectedPropertyTaxes: numberOrEmpty.pipe(
+    z.number().min(0, 'Property taxes cannot be negative')
+  ),
+  projectedMaintenance: numberOrEmpty.pipe(z.number().min(0, 'Maintenance cannot be negative')),
+  projectedManagementPercent: numberOrEmpty.pipe(
+    z
+      .number()
+      .min(0, 'Management percent cannot be negative')
+      .max(50, 'Management percent seems too high')
+  ),
+  projectedVacancy: numberOrEmpty.pipe(
+    z.number().min(0, 'Vacancy rate cannot be negative').max(100, 'Vacancy rate cannot exceed 100%')
+  ),
+  projectedOtherExpenses: numberOrEmpty.pipe(
+    z.number().min(0, 'Other expenses cannot be negative')
+  ),
 });
 
 // Financing Schema
 export const financingFormSchema = z.object({
-  loanAmount: z.number().min(0, 'Loan amount cannot be negative'),
-  interestRate: z
-    .number()
-    .min(0, 'Interest rate cannot be negative')
-    .max(30, 'Interest rate seems too high'),
-  loanTerm: z
-    .number()
-    .int()
-    .min(1, 'Loan term must be at least 1 year')
-    .max(50, 'Loan term cannot exceed 50 years'),
+  loanAmount: numberOrEmpty.pipe(z.number().min(0, 'Loan amount cannot be negative')),
+  interestRate: numberOrEmpty.pipe(
+    z.number().min(0, 'Interest rate cannot be negative').max(30, 'Interest rate seems too high')
+  ),
+  loanTerm: numberOrEmpty.pipe(
+    z
+      .number()
+      .int()
+      .min(1, 'Loan term must be at least 1 year')
+      .max(50, 'Loan term cannot exceed 50 years')
+  ),
 });
 
 // Target Analysis Schema
 export const targetAnalysisSchema = z.object({
-  targetCapRate: z
-    .number()
-    .min(0, 'Cap rate cannot be negative')
-    .max(50, 'Cap rate seems too high'),
-  targetCashOnCash: z
-    .number()
-    .min(0, 'Cash on cash return cannot be negative')
-    .max(100, 'Cash on cash return seems too high'),
+  targetCapRate: numberOrEmpty.pipe(
+    z.number().min(0, 'Cap rate cannot be negative').max(50, 'Cap rate seems too high')
+  ),
+  targetCashOnCash: numberOrEmpty.pipe(
+    z
+      .number()
+      .min(0, 'Cash on cash return cannot be negative')
+      .max(100, 'Cash on cash return seems too high')
+  ),
 });
 
 // Combined form schema for complete investment analysis
@@ -96,53 +117,53 @@ export const completeInvestmentSchema = z.object({
   targetAnalysis: targetAnalysisSchema.optional(),
 });
 
-// Default values
+// Default values - now using empty strings for optional fields
 export const defaultPropertyValues = {
-  propertyValue: 500000,
-  downPayment: 100000,
-  closingCosts: 15000,
-  renovationCosts: 0,
+  propertyValue: '',
+  downPayment: '',
+  closingCosts: '',
+  renovationCosts: '',
   numberOfUnits: 1,
-  otherIncome: 0,
+  otherIncome: '',
 };
 
 export const defaultExpensesValues = {
   // Current Expenses
-  currentInsurance: 200,
-  currentPropertyTaxes: 400,
-  currentMaintenance: 300,
-  currentManagementPercent: 8,
-  currentVacancy: 5,
-  currentOtherExpenses: 100,
+  currentInsurance: '',
+  currentPropertyTaxes: '',
+  currentMaintenance: '',
+  currentManagementPercent: '',
+  currentVacancy: '',
+  currentOtherExpenses: '',
 
   // Projected Expenses
-  projectedInsurance: 250,
-  projectedPropertyTaxes: 500,
-  projectedMaintenance: 400,
-  projectedManagementPercent: 8,
-  projectedVacancy: 3,
-  projectedOtherExpenses: 150,
+  projectedInsurance: '',
+  projectedPropertyTaxes: '',
+  projectedMaintenance: '',
+  projectedManagementPercent: '',
+  projectedVacancy: '',
+  projectedOtherExpenses: '',
 };
 
 export const defaultFinancingValues = {
-  loanAmount: 400000,
-  interestRate: 7.5,
-  loanTerm: 30,
+  loanAmount: '',
+  interestRate: '',
+  loanTerm: '',
 };
 
 export const defaultUnitValues = {
   id: 1,
-  currentRent: 0,
-  repairCosts: 0,
-  potentialRent: 0,
-  marketValue: 0,
-  bedrooms: 0,
-  bathrooms: 0,
+  currentRent: '',
+  repairCosts: '',
+  potentialRent: '',
+  marketValue: '',
+  bedrooms: '',
+  bathrooms: '',
 };
 
 export const defaultTargetAnalysisValues = {
-  targetCapRate: 8,
-  targetCashOnCash: 12,
+  targetCapRate: '',
+  targetCashOnCash: '',
 };
 
 // Type inference from schemas

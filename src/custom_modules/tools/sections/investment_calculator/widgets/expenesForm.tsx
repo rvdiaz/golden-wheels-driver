@@ -3,7 +3,7 @@ import React from 'react';
 import { Controller, UseFieldArrayReturn, UseFormReturn } from 'react-hook-form';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
-import { Building, Calculator, Home, Plus } from 'lucide-react-native';
+import { Building, Calculator, Home, Plus, AlertCircle } from 'lucide-react-native';
 import { Card } from '~/codidge_components/UI/card';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
@@ -21,6 +21,19 @@ interface ExpensesFormProps {
   isCalculating: boolean;
 }
 
+// Helper function to convert value for display
+const toDisplayValue = (value: any): string => {
+  if (value === null || value === undefined || value === '') return '';
+  return value.toString();
+};
+
+// Helper function to parse input value
+const parseNumericInput = (text: string): number | string => {
+  if (text === '') return '';
+  const num = parseFloat(text);
+  return isNaN(num) ? '' : num;
+};
+
 export const ExpensesForm: React.FC<ExpensesFormProps> = ({
   form,
   renovationFieldArray,
@@ -30,7 +43,11 @@ export const ExpensesForm: React.FC<ExpensesFormProps> = ({
   onSubmit,
   isCalculating,
 }) => {
-  const { control, watch } = form;
+  const {
+    control,
+    watch,
+    formState: { errors },
+  } = form;
 
   const renovationCosts = watch('renovationCosts') || 0;
 
@@ -40,32 +57,47 @@ export const ExpensesForm: React.FC<ExpensesFormProps> = ({
     placeholder: string,
     helperText?: string,
     isProjected: boolean = false
-  ) => (
-    <View style={styles.inputContainer}>
-      <Controller
-        control={control}
-        name={fieldName}
-        render={({ field: { onChange, value } }) => (
-          <InputField
-            label={label}
-            placeholder={placeholder}
-            value={value?.toString() || ''}
-            onChangeText={(text) => onChange(parseFloat(text) || 0)}
-            keyboardType="numeric"
-          />
+  ) => {
+    // Get error for this field
+    const error = errors[fieldName];
+    const errorMessage = error?.message as string | undefined;
+
+    return (
+      <View style={styles.inputContainer}>
+        <Controller
+          control={control}
+          name={fieldName}
+          render={({ field: { onChange, value } }) => (
+            <InputField
+              label={label}
+              placeholder={placeholder}
+              value={toDisplayValue(value)}
+              onChangeText={(text) => onChange(parseNumericInput(text))}
+              keyboardType="numeric"
+            />
+          )}
+        />
+        {errorMessage && (
+          <View style={styles.errorContainer}>
+            <AlertCircle size={12} color="#dc2626" />
+            <Text style={styles.errorText}>{errorMessage}</Text>
+          </View>
         )}
-      />
-      {helperText && (
-        <Text
-          style={[
-            styles.helperText,
-            isProjected ? styles.helperTextProjected : styles.helperTextCurrent,
-          ]}>
-          {helperText}
-        </Text>
-      )}
-    </View>
-  );
+        {!errorMessage && helperText && (
+          <Text
+            style={[
+              styles.helperText,
+              isProjected ? styles.helperTextProjected : styles.helperTextCurrent,
+            ]}>
+            {helperText}
+          </Text>
+        )}
+      </View>
+    );
+  };
+
+  // Check if there are any errors in the form
+  const hasErrors = Object.keys(errors).length > 0;
 
   return (
     <View
@@ -73,11 +105,42 @@ export const ExpensesForm: React.FC<ExpensesFormProps> = ({
         flex: 1,
       }}>
       <ScrollView style={styles.container}>
+        {/* Error Summary Banner */}
+        {hasErrors && (
+          <Card style={[styles.card, styles.errorBanner]}>
+            <View style={styles.errorBannerContent}>
+              <AlertCircle size={20} color="#dc2626" />
+              <View style={styles.errorBannerTextContainer}>
+                <Text style={styles.errorBannerTitle}>Please fix the following errors:</Text>
+                <View style={styles.errorList}>
+                  {Object.entries(errors).map(([fieldName, error]) => {
+                    const errorMessage = (error as any)?.message;
+                    // Convert field names to readable labels
+                    const fieldLabel = fieldName
+                      .replace(/([A-Z])/g, ' $1')
+                      .replace(/^./, (str) => str.toUpperCase())
+                      .trim();
+
+                    return (
+                      <View key={fieldName} style={styles.errorListItem}>
+                        <Text style={styles.errorBullet}>•</Text>
+                        <Text style={styles.errorListText}>
+                          <Text style={styles.errorFieldName}>{fieldLabel}:</Text> {errorMessage}
+                        </Text>
+                      </View>
+                    );
+                  })}
+                </View>
+              </View>
+            </View>
+          </Card>
+        )}
+
         <Card
           style={[
             styles.card,
             {
-              marginTop: 16,
+              marginTop: hasErrors ? 8 : 16,
             },
           ]}>
           <View style={styles.itemsContainer}>
@@ -454,5 +517,65 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: 'center',
     gap: 5,
+  },
+  // Error styles
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 4,
+  },
+  errorText: {
+    fontSize: 12,
+    color: '#dc2626',
+    flex: 1,
+  },
+  errorBanner: {
+    backgroundColor: '#fef2f2',
+    borderWidth: 1,
+    borderColor: '#fecaca',
+    marginTop: 16,
+  },
+  errorBannerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    padding: 16,
+  },
+  errorBannerTextContainer: {
+    flex: 1,
+  },
+  errorBannerTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#991b1b',
+    marginBottom: 4,
+  },
+  errorBannerSubtext: {
+    fontSize: 14,
+    color: '#dc2626',
+  },
+  errorList: {
+    gap: 6,
+  },
+  errorListItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 6,
+  },
+  errorBullet: {
+    fontSize: 14,
+    color: '#dc2626',
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  errorListText: {
+    fontSize: 13,
+    color: '#dc2626',
+    flex: 1,
+    lineHeight: 18,
+  },
+  errorFieldName: {
+    fontWeight: '600',
   },
 });

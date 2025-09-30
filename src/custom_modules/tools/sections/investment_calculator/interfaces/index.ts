@@ -6,8 +6,8 @@ export interface UnitData {
   repairCosts: number;
   potentialRent: number;
   marketValue: number;
-  bedrooms: number;
-  bathrooms: number;
+  bedrooms?: number;
+  bathrooms?: number;
 }
 
 export interface RenovationItem {
@@ -150,6 +150,4 @@ export const DEFAULT_UNIT: Omit<UnitData, 'id'> = {
   repairCosts: 0,
   potentialRent: 0,
   marketValue: 0,
-  bedrooms: 0,
-  bathrooms: 0,
 };

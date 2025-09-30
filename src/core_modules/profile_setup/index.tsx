@@ -33,13 +33,10 @@ export const SetupProfile = ({ dispose }: { dispose: () => void }) => {
     if (!user) return;
 
     try {
-      // Create profile steps for all tasks with all subitems marked as completed
-      // and add a skip flag
       const skippedProfileSteps = allTasks.map((task) => ({
         id: task.id,
         title: task.title,
         subSteps: task.subitems.map((subitem) => subitem.id),
-        skipped: true, // Add skip flag
       }));
 
       await updateUserFn({
@@ -49,6 +46,7 @@ export const SetupProfile = ({ dispose }: { dispose: () => void }) => {
           },
           updates: {
             profileSteps: skippedProfileSteps,
+            profileSetupSkipped: true,
           },
           userId: user.id,
         },
@@ -57,11 +55,10 @@ export const SetupProfile = ({ dispose }: { dispose: () => void }) => {
       updateUser({
         ...user,
         profileSteps: skippedProfileSteps,
+        profileSetupSkipped: true,
       });
 
       setShowSkipModal(false);
-      // Optionally close the setup screen after skipping
-      dispose();
     } catch (error) {
       console.error('Error skipping all tasks:', error);
     }
@@ -132,7 +129,6 @@ export const SetupProfile = ({ dispose }: { dispose: () => void }) => {
         )}
       </PageTransition>
 
-      {/* Skip All Confirmation Modal */}
       <Modal
         visible={showSkipModal}
         transparent={true}

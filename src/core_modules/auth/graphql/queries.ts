@@ -21,6 +21,8 @@ export const getUserQuery = gql`
         title
         subSteps
       }
+      profileSetupSkipped
+      hasSeenProfileCompletionCongrats
       modules {
         icon
         label

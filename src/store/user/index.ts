@@ -6,7 +6,6 @@ const USER_STORAGE_KEY = 'signinUser';
 
 export const userData = makeVar<IUser | null>(null);
 
-// Load stored user at startup
 (async () => {
   try {
     const storedUser = await AsyncStorage.getItem(USER_STORAGE_KEY);
@@ -24,7 +23,6 @@ export const updateUser = async (user: IUser | null) => {
       await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
     } else {
       await AsyncStorage.removeItem(USER_STORAGE_KEY);
-      // You can store brand color in some global theme store instead of document
     }
     userData(user);
   } catch (error) {

@@ -21,6 +21,8 @@ export const addUserMutation = gql`
         title
         subSteps
       }
+      profileSetupSkipped
+      hasSeenProfileCompletionCongrats
       modules {
         icon
         label
@@ -78,6 +80,8 @@ export const updateUserMutation = gql`
         title
         subSteps
       }
+      profileSetupSkipped
+      hasSeenProfileCompletionCongrats
       modules {
         icon
         label

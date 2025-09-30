@@ -30,9 +30,6 @@ export const ProfileSetupShortcut: React.FC<ProfileCompletionWidgetProps> = ({
   const progress = completedSteps / totalSteps;
   const percentage = Math.round(progress * 100);
 
-  // SVG circle calculations
-  const radius = (size - strokeWidth) / 2;
-
   // Determine if profile is complete
   const isComplete = completedSteps === totalSteps;
 

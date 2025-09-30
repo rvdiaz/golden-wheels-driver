@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { useMutation, useReactiveVar } from '@apollo/client';
 import * as Icons from 'lucide-react-native';
@@ -8,9 +8,10 @@ import { theme } from '~/theme/theme';
 import { IProfileTask } from '../interfaces';
 import { Header } from '~/codidge_components/UI/header';
 import { ProfileScreensWrapper } from './wrapper';
-import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
+import OutlineButton, { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
 import { updateUserMutation } from '~/core_modules/auth/graphql/mutations';
 import Constants from 'expo-constants';
+import { ShimmerPlaceholder } from '~/codidge_components/UI/skeleton/shimmerPlaceholder';
 
 interface TaskDetailScreenProps {
   task: IProfileTask;
@@ -21,6 +22,7 @@ const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const TaskDetailScreen = ({ task, onBack }: TaskDetailScreenProps) => {
   const user = useReactiveVar(userData);
+  const [subItemLoading, setsubItemLoading] = useState<string[]>([]);
 
   const [updateUserFn, { loading: isUpdating }] = useMutation(updateUserMutation);
 
@@ -38,7 +40,7 @@ export const TaskDetailScreen = ({ task, onBack }: TaskDetailScreenProps) => {
   // Toggle individual subitem
   const toggleSubitem = async (subitemId: string) => {
     if (!user) return;
-
+    setsubItemLoading([subitemId]);
     try {
       const updatedProfileSteps = [...(user.profileSteps || [])];
       const taskIndex = updatedProfileSteps.findIndex((step) => step.id === task.id);
@@ -80,7 +82,10 @@ export const TaskDetailScreen = ({ task, onBack }: TaskDetailScreenProps) => {
         ...user,
         profileSteps: updatedProfileSteps,
       });
+
+      setsubItemLoading([]);
     } catch (error) {
+      setsubItemLoading([]);
       console.error('Error updating subitem:', error);
     }
   };
@@ -88,7 +93,8 @@ export const TaskDetailScreen = ({ task, onBack }: TaskDetailScreenProps) => {
   // Complete all subitems at once
   const completeAllTask = async () => {
     if (!user) return;
-    // setIsUpdating(true);
+    const subItemsIds = task.subitems.map((sub) => sub.id);
+    setsubItemLoading(subItemsIds);
 
     try {
       const updatedProfileSteps = [...(user.profileSteps || [])];
@@ -124,7 +130,10 @@ export const TaskDetailScreen = ({ task, onBack }: TaskDetailScreenProps) => {
         ...user,
         profileSteps: updatedProfileSteps,
       });
+
+      setsubItemLoading([]);
     } catch (error) {
+      setsubItemLoading([]);
       console.error('Error completing all tasks:', error);
     }
   };
@@ -210,24 +219,38 @@ export const TaskDetailScreen = ({ task, onBack }: TaskDetailScreenProps) => {
         {task.subitems.length > 0 && (
           <View style={styles.sectionCard}>
             <Text style={styles.sectionTitle}>Steps to Complete</Text>
-            {task.subitems.map((subitem, index) => {
+            {task.subitems.map((subitem) => {
               const isCompleted = completedSubSteps.includes(subitem.id);
+              const isLoadingItem = subItemLoading.includes(subitem.id);
 
               return (
                 <TouchableOpacity
                   key={subitem.id}
-                  style={[styles.subitemContainer, isCompleted && styles.itemContainerSelected]}
+                  style={[
+                    styles.subitemContainer,
+                    isCompleted && styles.itemContainerSelected,
+                    isLoadingItem && styles.itemContainerLoading,
+                  ]}
                   onPress={() => toggleSubitem(subitem.id)}
-                  activeOpacity={0.7}>
+                  activeOpacity={0.7}
+                  disabled={isLoadingItem}>
                   <View style={styles.rightSection}>
-                    <View style={[styles.checkbox, isCompleted && styles.checkboxSelected]}>
-                      {isCompleted && <Icons.Check size={16} color="#FFFFFF" />}
-                    </View>
+                    {isLoadingItem ? (
+                      <ShimmerPlaceholder width={20} height={20} borderRadius={12} />
+                    ) : (
+                      <View style={[styles.checkbox, isCompleted && styles.checkboxSelected]}>
+                        {isCompleted && <Icons.Check size={16} color="#FFFFFF" />}
+                      </View>
+                    )}
                   </View>
                   <View style={styles.middleSection}>
-                    <Text style={[styles.itemLabel, isCompleted && styles.itemLabelSelected]}>
-                      {subitem.title}
-                    </Text>
+                    {isLoadingItem ? (
+                      <ShimmerPlaceholder width="80%" height={16} borderRadius={4} />
+                    ) : (
+                      <Text style={[styles.itemLabel, isCompleted && styles.itemLabelSelected]}>
+                        {subitem.title}
+                      </Text>
+                    )}
                   </View>
                 </TouchableOpacity>
               );
@@ -236,9 +259,9 @@ export const TaskDetailScreen = ({ task, onBack }: TaskDetailScreenProps) => {
             {!isTaskCompleted && task.subitems.length > 0 && (
               <View>
                 <OutlineButton
-                  loading={isUpdating}
+                  size={ButtonSize.LARGE}
                   title="Complete full task"
-                  onPress={completeAllTask}
+                  onPress={isUpdating ? () => {} : completeAllTask}
                 />
               </View>
             )}
@@ -515,5 +538,8 @@ const styles = StyleSheet.create({
   },
   bottomPadding: {
     height: 20,
+  },
+  itemContainerLoading: {
+    opacity: 0.6,
   },
 });

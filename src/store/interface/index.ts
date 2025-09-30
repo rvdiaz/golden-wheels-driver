@@ -90,6 +90,8 @@ export interface IUser {
     title: string;
     subSteps: string[];
   }[];
+  profileSetupSkipped: boolean;
+  hasSeenProfileCompletionCongrats: boolean;
 }
 
 export interface ITaskSchemaItem {

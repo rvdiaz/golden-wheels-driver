@@ -1,9 +1,9 @@
 import { useMutation, useReactiveVar } from '@apollo/client';
 import React, { useState, useEffect, useRef } from 'react';
-import { Modal, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, Text, View } from 'react-native';
 import { updateUserMutation } from '~/core_modules/auth/graphql/mutations';
 import { SetupProfile } from '~/core_modules/profile_setup';
-import { useProfileSetupConfig } from '~/core_modules/profile_setup/customHook';
+import { useSystemSettings } from '~/system_setting/customHook';
 import { ProfileSetupShortcut } from '~/core_modules/profile_setup/widgets/home_shortcut';
 import { updateUser, userData } from '~/store/user';
 import Constants from 'expo-constants';
@@ -12,7 +12,7 @@ import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const ProfileCompletionWidget = () => {
-  const { allTasks } = useProfileSetupConfig();
+  const { allTasks } = useSystemSettings();
 
   const [modal, setModal] = useState(false);
   const [showCongrats, setShowCongrats] = useState(false);

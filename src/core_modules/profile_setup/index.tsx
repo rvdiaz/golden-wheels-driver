@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useProfileSetupConfig } from './customHook';
+import { useSystemSettings } from '../../system_setting/customHook';
 import { SetupItem } from './widgets/setup_list_item';
 import { theme } from '~/theme/theme';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal } from 'react-native';
-import { IProfileTask } from './interfaces';
+import { IProfileTask } from '../../system_setting/interfaces';
 import { PageTransition } from '~/codidge_components/UI/pageTransition';
 import { TaskDetailScreen } from './widgets/setup_item_detail';
 import { Slider } from '~/codidge_components/UI/slider';
@@ -20,7 +20,7 @@ import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const SetupProfile = ({ dispose }: { dispose: () => void }) => {
-  const { allTasks } = useProfileSetupConfig();
+  const { allTasks } = useSystemSettings();
   const [selectedTask, setSelectedTask] = useState<IProfileTask | null>(null);
   const [showSkipModal, setShowSkipModal] = useState(false);
 

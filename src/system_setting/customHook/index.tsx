@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import { IProfileCategory, IProfileTask } from '../interfaces';
+import { IProfileCategory, IProfileTask, ISystemSetting, OnBoardingSchema } from '../interfaces';
 import { getSystemConfig } from '~/system_setting/graphql/queries';
 import { apiKeyClient } from '~/store/config/apolloClient';
 
@@ -7,16 +7,13 @@ interface UseProfileSetupConfigResult {
   loading: boolean;
   categories: IProfileCategory[];
   allTasks: IProfileTask[];
+  onBoardingSchema: OnBoardingSchema;
 }
 
-export const useProfileSetupConfig = (): UseProfileSetupConfigResult => {
+export const useSystemSettings = (): UseProfileSetupConfigResult => {
   const { data, loading } = useQuery<{
     getSystemConfig: {
-      config:
-        | {
-            categories: IProfileCategory[];
-          }
-        | string;
+      config: ISystemSetting | string;
     };
   }>(getSystemConfig, {
     client: apiKeyClient,
@@ -31,9 +28,12 @@ export const useProfileSetupConfig = (): UseProfileSetupConfigResult => {
 
   const allTasks: IProfileTask[] = categories.flatMap((category) => category.tasks || []);
 
+  const onBoardingSchema = parsedConfig.onBoardingSchema;
+
   return {
     loading,
     categories,
     allTasks,
+    onBoardingSchema,
   };
 };

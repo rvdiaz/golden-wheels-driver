@@ -2,17 +2,12 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useController, useFormContext } from 'react-hook-form';
-import { Check } from 'lucide-react-native';
+import { Check, Users } from 'lucide-react-native';
 import { theme } from '~/theme/theme';
-
-interface SelectableItem {
-  id: string;
-  label: string;
-  icon: React.ComponentType<any>;
-}
+import { iconMap, SwottItem } from '~/system_setting/interfaces';
 
 interface SelectableItemsListProps {
-  items: SelectableItem[];
+  items: SwottItem[];
   fieldName: string;
   title?: string;
   maxSelections?: number;
@@ -57,8 +52,7 @@ export const SelectableItemsList: React.FC<SelectableItemsListProps> = ({
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {items.map((item) => {
           const isSelected = selectedItems.includes(item.id);
-          const IconComponent = item.icon;
-
+          const IconComponent = iconMap[item.icon] ?? Users; // fallback if missing
           return (
             <TouchableOpacity
               key={item.id}

@@ -5,7 +5,7 @@ import * as Icons from 'lucide-react-native';
 import { WebView } from 'react-native-webview';
 import { userData, updateUser } from '~/store/user';
 import { theme } from '~/theme/theme';
-import { IProfileTask } from '../interfaces';
+import { IProfileTask } from '../../../system_setting/interfaces';
 import { Header } from '~/codidge_components/UI/header';
 import { ProfileScreensWrapper } from './wrapper';
 import OutlineButton, { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';

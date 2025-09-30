@@ -5,7 +5,7 @@ import * as Icons from 'lucide-react-native';
 import { useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import { theme } from '~/theme/theme';
-import { IProfileTask } from '../interfaces';
+import { IProfileTask } from '../../../system_setting/interfaces';
 import { ProgressRing } from './ring_status_circle';
 
 interface SetupItemProps {

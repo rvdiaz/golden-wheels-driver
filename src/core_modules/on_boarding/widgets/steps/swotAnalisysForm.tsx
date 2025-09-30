@@ -19,8 +19,9 @@ import {
 } from 'lucide-react-native';
 import { FormWrapper } from '../formsWrapper';
 import { SelectableItemsList } from '../selectableList';
+import { useSystemSettings } from '~/system_setting/customHook';
 
-// Strengths items data
+/* // Strengths items data
 const strengthsItems = [
   { id: 'communication', label: 'Excellent Communication Skills', icon: Users },
   { id: 'networking', label: 'Strong Network', icon: Users },
@@ -66,10 +67,14 @@ const threatsItems = [
   { id: 'regulation_changes', label: 'Regulatory Changes', icon: Zap },
   { id: 'technology_disruption', label: 'Technology Disruption', icon: Smartphone },
   { id: 'seasonal_slowdown', label: 'Seasonal Market Slowdown', icon: TrendingDown },
-];
+]; */
 
 // SWOT Strengths Component
 export const SwotStrengths = ({ header, footer, props, currentStep, totalSteps }: any) => {
+  const { onBoardingSchema } = useSystemSettings();
+
+  const strengthsItems = onBoardingSchema.swottAnalysis.strengthsItems;
+
   return (
     <FormWrapper
       header={header}
@@ -88,6 +93,10 @@ export const SwotStrengths = ({ header, footer, props, currentStep, totalSteps }
 
 // SWOT Weaknesses Component
 export const SwotWeaknesses = ({ header, footer, props, currentStep, totalSteps }: any) => {
+  const { onBoardingSchema } = useSystemSettings();
+
+  const weaknessesItems = onBoardingSchema.swottAnalysis.weaknessesItems;
+
   return (
     <FormWrapper
       header={header}
@@ -106,6 +115,10 @@ export const SwotWeaknesses = ({ header, footer, props, currentStep, totalSteps 
 
 // SWOT Opportunities Component
 export const SwotOpportunities = ({ header, footer, props, currentStep, totalSteps }: any) => {
+  const { onBoardingSchema } = useSystemSettings();
+
+  const opportunitiesItems = onBoardingSchema.swottAnalysis.opportunitiesItems;
+
   return (
     <FormWrapper
       header={header}
@@ -124,6 +137,10 @@ export const SwotOpportunities = ({ header, footer, props, currentStep, totalSte
 
 // SWOT Threats Component
 export const SwotThreats = ({ header, footer, props, currentStep, totalSteps }: any) => {
+  const { onBoardingSchema } = useSystemSettings();
+
+  const threatsItems = onBoardingSchema.swottAnalysis.threatsItems;
+
   return (
     <FormWrapper
       header={header}

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useSystemSettings } from '../../system_setting/customHook';
-import { SetupItem } from './widgets/setup_list_item';
 import { theme } from '~/theme/theme';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal } from 'react-native';
 import { IProfileTask } from '../../system_setting/interfaces';
@@ -16,6 +15,7 @@ import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
 import { updateUserMutation } from '~/core_modules/auth/graphql/mutations';
 import Constants from 'expo-constants';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
+import { SetupItem } from './widgets/setup_list_item';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -28,6 +28,13 @@ export const SetupProfile = ({ dispose }: { dispose: () => void }) => {
   const userStepsCompleted = user?.profileSteps?.length ?? 0;
 
   const [updateUserFn, { loading: isSkipping }] = useMutation(updateUserMutation);
+
+  // Get current task index
+  const currentTaskIndex = selectedTask
+    ? allTasks.findIndex((task) => task.id === selectedTask.id)
+    : -1;
+  const isFirstTask = currentTaskIndex === 0;
+  const isLastTask = currentTaskIndex === allTasks.length - 1;
 
   const handleSkipAll = async () => {
     if (!user) return;
@@ -61,6 +68,18 @@ export const SetupProfile = ({ dispose }: { dispose: () => void }) => {
       setShowSkipModal(false);
     } catch (error) {
       console.error('Error skipping all tasks:', error);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentTaskIndex < allTasks.length - 1) {
+      setSelectedTask(allTasks[currentTaskIndex + 1]);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentTaskIndex > 0) {
+      setSelectedTask(allTasks[currentTaskIndex - 1]);
     }
   };
 
@@ -125,7 +144,12 @@ export const SetupProfile = ({ dispose }: { dispose: () => void }) => {
 
       <PageTransition isVisible={!!selectedTask} duration={350}>
         {selectedTask && (
-          <TaskDetailScreen task={selectedTask} onBack={() => setSelectedTask(null)} />
+          <TaskDetailScreen
+            task={selectedTask}
+            onBack={() => setSelectedTask(null)}
+            onNext={!isLastTask ? handleNext : undefined}
+            onPreview={!isFirstTask ? handlePrevious : undefined}
+          />
         )}
       </PageTransition>
 
@@ -148,8 +172,8 @@ export const SetupProfile = ({ dispose }: { dispose: () => void }) => {
 
             <Text style={styles.modalTitle}>Skip All Setup Tasks?</Text>
             <Text style={styles.modalDescription}>
-              Are you sure you want to skip all remaining setup tasks? You can always complete them
-              later from your profile settings.
+              These are very important steps to build yur real estate career, this is the
+              foundation. Are you sure you want to skip these steps?
             </Text>
 
             <View style={styles.modalButtons}>

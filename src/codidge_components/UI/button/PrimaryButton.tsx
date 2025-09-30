@@ -2,6 +2,7 @@ import React, { ReactNode } from 'react';
 import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle, View } from 'react-native';
 import { LoadingSpinner } from '../loading/loadingSpinner';
 import { theme } from '~/theme/theme';
+import { sizeStyles } from './types';
 
 export enum ButtonSize {
   SMALL = 'sm',
@@ -20,12 +21,6 @@ interface PrimaryButtonProps {
   style?: ViewStyle;
   textStyle?: TextStyle;
 }
-
-const sizeStyles = {
-  [ButtonSize.SMALL]: { paddingVertical: 6, paddingHorizontal: 12, fontSize: 12 },
-  [ButtonSize.MEDIUM]: { paddingVertical: 10, paddingHorizontal: 16, fontSize: 12 },
-  [ButtonSize.LARGE]: { paddingVertical: 12, paddingHorizontal: 20, fontSize: 16 },
-};
 
 const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   loading = false,

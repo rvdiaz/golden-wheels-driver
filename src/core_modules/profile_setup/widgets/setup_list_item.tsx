@@ -5,8 +5,8 @@ import * as Icons from 'lucide-react-native';
 import { useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import { theme } from '~/theme/theme';
-import { IProfileTask } from '../../../system_setting/interfaces';
 import { ProgressRing } from './ring_status_circle';
+import { IProfileTask } from '~/system_setting/interfaces';
 
 interface SetupItemProps {
   task: IProfileTask;
@@ -40,7 +40,7 @@ export const SetupItem = ({ task, onPress }: SetupItemProps) => {
           backgroundColor="#C7D2FE"
           showStatusText={false}
           numberStyle={{
-            fontSize: 16,
+            fontSize: 15,
           }}
           numberCompleteStyle={{
             fontSize: 12,

@@ -56,7 +56,7 @@ export interface IProfileTask {
   id: string;
   title: string;
   description: string;
-  fullDescriptionHtml: string;
+  htmlDescription: string;
   recommendations: string; // HTML string
   subitems: IProfileSubitem[];
 }

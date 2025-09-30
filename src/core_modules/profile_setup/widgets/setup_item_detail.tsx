@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Animated } from 'react-native';
 import { useMutation, useReactiveVar } from '@apollo/client';
 import * as Icons from 'lucide-react-native';
 import { WebView } from 'react-native-webview';
@@ -12,17 +12,25 @@ import OutlineButton, { ButtonSize } from '~/codidge_components/UI/button/Outlin
 import { updateUserMutation } from '~/core_modules/auth/graphql/mutations';
 import Constants from 'expo-constants';
 import { ShimmerPlaceholder } from '~/codidge_components/UI/skeleton/shimmerPlaceholder';
+import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
+import TextButton from '~/codidge_components/UI/button/TextButton';
+import DescriptionSection from './description_section';
 
 interface TaskDetailScreenProps {
   task: IProfileTask;
   onBack: () => void;
+  onPreview?: () => void;
+  onNext?: () => void;
 }
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
-export const TaskDetailScreen = ({ task, onBack }: TaskDetailScreenProps) => {
+export const TaskDetailScreen = ({ task, onBack, onPreview, onNext }: TaskDetailScreenProps) => {
   const user = useReactiveVar(userData);
   const [subItemLoading, setsubItemLoading] = useState<string[]>([]);
+  const [fadeAnim] = useState(new Animated.Value(1));
+  const [slideAnim] = useState(new Animated.Value(0));
+  const [currentTaskId, setCurrentTaskId] = useState(task.id);
 
   const [updateUserFn, { loading: isUpdating }] = useMutation(updateUserMutation);
 
@@ -138,6 +146,41 @@ export const TaskDetailScreen = ({ task, onBack }: TaskDetailScreenProps) => {
     }
   };
 
+  useEffect(() => {
+    if (task.id !== currentTaskId) {
+      // Parallel fade out and slide
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 150,
+          useNativeDriver: true,
+        }),
+        Animated.timing(slideAnim, {
+          toValue: -20,
+          duration: 150,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        setCurrentTaskId(task.id);
+        slideAnim.setValue(20);
+
+        // Parallel fade in and slide
+        Animated.parallel([
+          Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: true,
+          }),
+          Animated.timing(slideAnim, {
+            toValue: 0,
+            duration: 200,
+            useNativeDriver: true,
+          }),
+        ]).start();
+      });
+    }
+  }, [task.id]);
+
   // Calculate progress percentage
   const progressPercentage =
     task.subitems.length > 0
@@ -170,157 +213,122 @@ export const TaskDetailScreen = ({ task, onBack }: TaskDetailScreenProps) => {
       }>
       {/* Completed Badge */}
       {isTaskCompleted && (
-        <View style={styles.footer}>
+        <View style={styles.completionHeader}>
           <View style={styles.completedBadge}>
             <Icons.Award size={20} color={theme.colors.primary} />
             <Text style={styles.completedBadgeText}>All Steps Completed!</Text>
           </View>
         </View>
       )}
-
-      <ScrollView
-        style={[
-          styles.content,
-          isTaskCompleted && {
-            paddingTop: 10,
-          },
-        ]}
-        showsVerticalScrollIndicator={false}>
-        {/* Task Title & Status */}
-        <View style={styles.sectionCard}>
-          <View style={styles.taskHeader}>
-            <View style={styles.taskIconContainer}>
-              <Icons.CheckCircle2 size={32} color={theme.colors.primary} />
-            </View>
-            <View style={styles.taskTitleContainer}>
-              <Text style={styles.taskTitle}>{task.title}</Text>
-              <Text style={styles.taskDescription}>{task.description}</Text>
-            </View>
-          </View>
-
-          {/* Progress Bar */}
-          {task.subitems.length > 0 && (
-            <View style={styles.progressContainer}>
-              <View style={styles.progressHeader}>
-                <Text style={styles.progressLabel}>Progress</Text>
-                <Text style={styles.progressPercentage}>{progressPercentage}%</Text>
-              </View>
-              <View style={styles.progressBarBackground}>
-                <View style={[styles.progressBarFill, { width: `${progressPercentage}%` }]} />
-              </View>
-              <Text style={styles.progressText}>
-                {completedSubSteps.length} of {task.subitems.length} completed
-              </Text>
-            </View>
-          )}
-        </View>
-
-        {/* Subitems Checklist */}
-        {task.subitems.length > 0 && (
+      <Animated.View
+        style={{
+          flex: 1,
+          opacity: fadeAnim,
+          transform: [{ translateX: slideAnim }],
+        }}>
+        <ScrollView
+          style={[
+            styles.content,
+            isTaskCompleted && {
+              paddingTop: 10,
+            },
+          ]}
+          showsVerticalScrollIndicator={false}>
+          {/* Task Title & Status */}
           <View style={styles.sectionCard}>
-            <Text style={styles.sectionTitle}>Steps to Complete</Text>
-            {task.subitems.map((subitem) => {
-              const isCompleted = completedSubSteps.includes(subitem.id);
-              const isLoadingItem = subItemLoading.includes(subitem.id);
+            <View style={styles.taskHeader}>
+              <View style={styles.taskIconContainer}>
+                <Icons.CheckCircle2 size={32} color={theme.colors.primary} />
+              </View>
+              <View style={styles.taskTitleContainer}>
+                <Text style={styles.taskTitle}>{task.title}</Text>
+                <Text style={styles.taskDescription}>{task.description}</Text>
+              </View>
+            </View>
 
-              return (
-                <TouchableOpacity
-                  key={subitem.id}
-                  style={[
-                    styles.subitemContainer,
-                    isCompleted && styles.itemContainerSelected,
-                    isLoadingItem && styles.itemContainerLoading,
-                  ]}
-                  onPress={() => toggleSubitem(subitem.id)}
-                  activeOpacity={0.7}
-                  disabled={isLoadingItem}>
-                  <View style={styles.rightSection}>
-                    {isLoadingItem ? (
-                      <ShimmerPlaceholder width={20} height={20} borderRadius={12} />
-                    ) : (
-                      <View style={[styles.checkbox, isCompleted && styles.checkboxSelected]}>
-                        {isCompleted && <Icons.Check size={16} color="#FFFFFF" />}
-                      </View>
-                    )}
-                  </View>
-                  <View style={styles.middleSection}>
-                    {isLoadingItem ? (
-                      <ShimmerPlaceholder width="80%" height={16} borderRadius={4} />
-                    ) : (
-                      <Text style={[styles.itemLabel, isCompleted && styles.itemLabelSelected]}>
-                        {subitem.title}
-                      </Text>
-                    )}
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
-            {/* Complete All Button */}
-            {!isTaskCompleted && task.subitems.length > 0 && (
-              <View>
-                <OutlineButton
-                  size={ButtonSize.LARGE}
-                  title="Complete full task"
-                  onPress={isUpdating ? () => {} : completeAllTask}
-                />
+            {/* Progress Bar */}
+            {task.subitems.length > 0 && (
+              <View style={styles.progressContainer}>
+                <View style={styles.progressHeader}>
+                  <Text style={styles.progressLabel}>Progress</Text>
+                  <Text style={styles.progressPercentage}>{progressPercentage}%</Text>
+                </View>
+                <View style={styles.progressBarBackground}>
+                  <View style={[styles.progressBarFill, { width: `${progressPercentage}%` }]} />
+                </View>
+                <Text style={styles.progressText}>
+                  {completedSubSteps.length} of {task.subitems.length} completed
+                </Text>
               </View>
             )}
           </View>
-        )}
 
-        {/* Full Description */}
-        {task.fullDescriptionHtml && (
-          <View style={styles.sectionCard}>
-            <Text style={styles.sectionTitle}>Description</Text>
-            <WebView
-              style={styles.webview}
-              originWhitelist={['*']}
-              source={{
-                html: `
-                  <!DOCTYPE html>
-                  <html>
-                    <head>
-                      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-                      <style>
-                        body {
-                          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-                          font-size: 14px;
-                          color: #4B5563;
-                          line-height: 1.6;
-                          margin: 0;
-                          padding: 0;
-                        }
-                        p { margin: 8px 0; }
-                        ul, ol { margin: 8px 0; padding-left: 20px; }
-                        li { margin: 4px 0; }
-                        h1, h2, h3, h4, h5, h6 { color: #1F2937; margin: 12px 0 8px 0; }
-                        a { color: ${theme.colors.primary}; }
-                      </style>
-                    </head>
-                    <body>
-                      ${task.fullDescriptionHtml}
-                    </body>
-                  </html>
-                `,
-              }}
-              scrollEnabled={false}
-              showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
-              androidLayerType="hardware"
-              javaScriptEnabled={false}
-            />
-          </View>
-        )}
+          {/* Subitems Checklist */}
+          {task.subitems.length > 0 && (
+            <View style={styles.sectionCard}>
+              <Text style={styles.sectionTitle}>Steps to Complete</Text>
+              {task.subitems.map((subitem) => {
+                const isCompleted = completedSubSteps.includes(subitem.id);
+                const isLoadingItem = subItemLoading.includes(subitem.id);
 
-        {/* Recommendations */}
-        {task.recommendations && (
-          <View style={styles.sectionCard}>
-            <Text style={styles.sectionTitle}>Recommendations</Text>
-            <WebView
-              style={styles.webview}
-              originWhitelist={['*']}
-              source={{
-                html: `
+                return (
+                  <TouchableOpacity
+                    key={subitem.id}
+                    style={[
+                      styles.subitemContainer,
+                      isCompleted && styles.itemContainerSelected,
+                      isLoadingItem && styles.itemContainerLoading,
+                    ]}
+                    onPress={() => toggleSubitem(subitem.id)}
+                    activeOpacity={0.7}
+                    disabled={isLoadingItem}>
+                    <View style={styles.rightSection}>
+                      {isLoadingItem ? (
+                        <ShimmerPlaceholder width={20} height={20} borderRadius={12} />
+                      ) : (
+                        <View style={[styles.checkbox, isCompleted && styles.checkboxSelected]}>
+                          {isCompleted && <Icons.Check size={16} color="#FFFFFF" />}
+                        </View>
+                      )}
+                    </View>
+                    <View style={styles.middleSection}>
+                      {isLoadingItem ? (
+                        <ShimmerPlaceholder width="80%" height={16} borderRadius={4} />
+                      ) : (
+                        <Text style={[styles.itemLabel, isCompleted && styles.itemLabelSelected]}>
+                          {subitem.title}
+                        </Text>
+                      )}
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+              {/* Complete All Button */}
+              {!isTaskCompleted && task.subitems.length > 0 && (
+                <View>
+                  <OutlineButton
+                    size={ButtonSize.LARGE}
+                    title="Complete full task"
+                    onPress={isUpdating ? () => {} : completeAllTask}
+                  />
+                </View>
+              )}
+            </View>
+          )}
+
+          {/* Full Description */}
+          {task.htmlDescription && <DescriptionSection htmlDescription={task.htmlDescription} />}
+
+          {/* Recommendations */}
+          {task.recommendations && (
+            <View style={styles.sectionCard}>
+              <Text style={styles.sectionTitle}>Recommendations</Text>
+              <WebView
+                style={styles.webview}
+                originWhitelist={['*']}
+                scrollEnabled={true}
+                source={{
+                  html: `
                   <!DOCTYPE html>
                   <html>
                     <head>
@@ -346,18 +354,46 @@ export const TaskDetailScreen = ({ task, onBack }: TaskDetailScreenProps) => {
                     </body>
                   </html>
                 `,
-              }}
-              scrollEnabled={false}
-              showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
-              androidLayerType="hardware"
-              javaScriptEnabled={false}
+                }}
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
+                androidLayerType="hardware"
+                javaScriptEnabled={false}
+              />
+            </View>
+          )}
+        </ScrollView>
+      </Animated.View>
+      {(onPreview || onNext) && (
+        <View style={styles.footer}>
+          {onPreview && (
+            <TextButton
+              onPress={onPreview}
+              title="Back"
+              size={ButtonSize.MEDIUM}
+              style={styles.footerButtons}
             />
-          </View>
-        )}
-
-        <View style={styles.bottomPadding} />
-      </ScrollView>
+          )}
+          {onNext &&
+            (isTaskCompleted ? (
+              <PrimaryButton
+                onPress={onNext}
+                rightWidget={<Icons.ArrowRight color="#FFF" size={16} />}
+                title="Next"
+                size={ButtonSize.MEDIUM}
+                style={styles.footerButtons}
+              />
+            ) : (
+              <OutlineButton
+                onPress={onNext}
+                rightWidget={<Icons.ChevronLast color={theme.colors.primary} size={16} />}
+                title="Skip"
+                size={ButtonSize.MEDIUM}
+                style={styles.footerButtons}
+              />
+            ))}
+        </View>
+      )}
     </ProfileScreensWrapper>
   );
 };
@@ -506,11 +542,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#6B7280',
   },
-  footer: {
+  completionHeader: {
     paddingTop: 16,
     paddingBottom: 8,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
     marginHorizontal: 16,
   },
   completeButtonText: {
@@ -541,5 +576,18 @@ const styles = StyleSheet.create({
   },
   itemContainerLoading: {
     opacity: 0.6,
+  },
+  footer: {
+    paddingTop: 16,
+    paddingBottom: 32,
+    borderTopWidth: 1,
+    backgroundColor: '#FFF',
+    borderTopColor: '#E5E7EB',
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    gap: 16,
+  },
+  footerButtons: {
+    flex: 1,
   },
 });

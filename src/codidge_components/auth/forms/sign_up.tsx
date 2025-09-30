@@ -35,6 +35,10 @@ const schema = yup.object({
     .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
     .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
     .matches(/\d/, 'Password must contain at least one number')
+    .matches(
+      /[!@#$%^&*(),.?":{}|<>_\-+=[\]\\/'`~]/,
+      'Password must contain at least one special character'
+    )
     .required('Password is required'),
   confirmPassword: yup
     .string()
@@ -177,6 +181,7 @@ export const SignUpForm = ({
                   <InputField
                     leftIcon={<Icons.Lock size={16} color="#6B7280" />}
                     label="Password"
+                    required={true}
                     placeholder="Create a password"
                     value={value}
                     onChangeText={onChange}
@@ -186,6 +191,7 @@ export const SignUpForm = ({
                     secureTextEntry={!showPassword}
                     autoComplete="off"
                     textContentType="none"
+                    hint="At least 8 characters with uppercase, lowercase, number, and special character"
                     rightIcon={
                       <TouchableOpacity
                         onPress={() => setShowPassword(!showPassword)}
@@ -210,6 +216,7 @@ export const SignUpForm = ({
                     label="Confirm Password"
                     placeholder="Confirm your password"
                     value={value}
+                    required={true}
                     onChangeText={onChange}
                     onBlur={onBlur}
                     error={!!errors.confirmPassword}

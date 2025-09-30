@@ -8,6 +8,7 @@ import {
   TextStyle,
 } from 'react-native';
 import { ButtonSize } from './PrimaryButton';
+import { sizeStyles } from './types';
 
 interface TextButtonProps {
   loading?: boolean;
@@ -19,12 +20,6 @@ interface TextButtonProps {
   textStyle?: TextStyle;
   rightWidget?: ReactNode;
 }
-
-const sizeStyles = {
-  [ButtonSize.SMALL]: { paddingVertical: 4, paddingHorizontal: 4, fontSize: 12 },
-  [ButtonSize.MEDIUM]: { paddingVertical: 8, paddingHorizontal: 16, fontSize: 14 },
-  [ButtonSize.LARGE]: { paddingVertical: 12, paddingHorizontal: 20, fontSize: 16 },
-};
 
 const TextButton: React.FC<TextButtonProps> = ({
   loading = false,

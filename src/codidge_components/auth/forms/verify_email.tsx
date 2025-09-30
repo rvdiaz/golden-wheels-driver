@@ -10,12 +10,20 @@ import {
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
-import { confirmSignUp, fetchUserAttributes, signIn, signOut } from 'aws-amplify/auth/cognito';
+import {
+  confirmSignUp,
+  fetchUserAttributes,
+  resendSignUpCode,
+  signIn,
+  signOut,
+} from 'aws-amplify/auth/cognito';
 import { useAuthContext } from '../context';
 import { IAuthModuleKeys, MfaFormData } from '../interfaces';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
+
+const EXPIRATION_COGNITO_TOKEN = 180;
 
 export const VerifyEmail = ({
   onSignUpSuccess,
@@ -26,7 +34,7 @@ export const VerifyEmail = ({
 
   const [loading, setloading] = useState(false);
 
-  const [countdown, setCountdown] = useState(30);
+  const [countdown, setCountdown] = useState(EXPIRATION_COGNITO_TOKEN);
   const [canResend, setCanResend] = useState(false);
   const inputRefs = useRef<TextInput[]>([]);
 
@@ -112,10 +120,17 @@ export const VerifyEmail = ({
     }
   };
 
-  const handleResendCode = () => {
-    setCountdown(30);
-    setCanResend(false);
-    Alert.alert('Code Sent', 'A new verification code has been sent');
+  const handleResendCode = async () => {
+    try {
+      await resendSignUpCode({
+        username: tempData.email!,
+      });
+      setCountdown(EXPIRATION_COGNITO_TOKEN);
+      setCanResend(false);
+      Alert.alert('Code Sent', 'A new verification code has been sent');
+    } catch (error) {
+      console.log(':::error', error);
+    }
   };
 
   return (
@@ -168,17 +183,7 @@ export const VerifyEmail = ({
             />
 
             <View style={styles.resendContainer}>
-              <TextButton
-                title="Back to Sign in"
-                onPress={() => {
-                  setCurrentView(IAuthModuleKeys.signIn);
-                }}
-              />
-              {canResend ? (
-                <TextButton title="Resend Code" onPress={handleResendCode} />
-              ) : (
-                <Text style={styles.countdownText}>Resend code in {countdown}s</Text>
-              )}
+              {canResend && <TextButton title="Resend Code" onPress={handleResendCode} />}
             </View>
           </View>
         </View>

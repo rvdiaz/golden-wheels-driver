@@ -5,7 +5,7 @@ import { updateUserMutation } from '~/core_modules/auth/graphql/mutations';
 import { SetupProfile } from '~/core_modules/profile_setup';
 import { useProfileSetupConfig } from '~/core_modules/profile_setup/customHook';
 import { ProfileSetupShortcut } from '~/core_modules/profile_setup/widgets/home_shortcut';
-import { userData } from '~/store/user';
+import { updateUser, userData } from '~/store/user';
 import Constants from 'expo-constants';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 
@@ -42,7 +42,7 @@ export const ProfileCompletionWidget = () => {
 
   // Check if profile was just completed and show congratulations
   useEffect(() => {
-    const updateUser = async (hasSeenProfileCompletionCongrats: boolean) => {
+    const updateUserAux = async (hasSeenProfileCompletionCongrats: boolean) => {
       try {
         await updateUserFn({
           variables: {
@@ -55,6 +55,10 @@ export const ProfileCompletionWidget = () => {
             userId: user?.id,
           },
         });
+        updateUser({
+          ...user!,
+          hasSeenProfileCompletionCongrats: hasSeenProfileCompletionCongrats,
+        });
       } catch (error) {
         console.log('::error updatuing user', error);
       }
@@ -65,11 +69,11 @@ export const ProfileCompletionWidget = () => {
 
     // Check if user has already been congratulated (you'll need to store this)
     const hasBeenCongratulated = user?.hasSeenProfileCompletionCongrats === true;
-    updateUser(hasBeenCongratulated);
 
     if (justCompleted && !hasBeenCongratulated && !hasShownCongratsRef.current) {
       if (!user?.profileSetupSkipped && !user?.hasSeenProfileCompletionCongrats) {
         setShowCongrats(true);
+        updateUserAux(true);
       }
 
       hasShownCongratsRef.current = true;

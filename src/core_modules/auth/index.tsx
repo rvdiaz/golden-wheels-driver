@@ -165,7 +165,24 @@ export const AuthWrapper = ({
 
     default:
       return (
-        <AuthFormWrapper header={header}>
+        <AuthFormWrapper
+          header={
+            <View style={styles.headerContainer}>
+              <View
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Image
+                  style={styles.image}
+                  source={require('assets/auth.png')}
+                  resizeMode="contain"
+                />
+              </View>
+
+              <Text style={styles.mainTitle}>Sign In</Text>
+            </View>
+          }>
           <SignInForm onLoginSuccess={handleLoginSuccess} />
         </AuthFormWrapper>
       );

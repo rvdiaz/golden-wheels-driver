@@ -68,14 +68,20 @@ export const ProfileCompletionWidget = () => {
     const justCompleted = isProfileComplete && !previousCompletionRef.current;
 
     // Check if user has already been congratulated (you'll need to store this)
+    // Only show congrats if explicitly set to false (not null/undefined)
     const hasBeenCongratulated = user?.hasSeenProfileCompletionCongrats === true;
+    const shouldShowCongrats = user?.hasSeenProfileCompletionCongrats === false;
+    const isProfileSetupNotSkipped = user?.profileSetupSkipped === false;
 
-    if (justCompleted && !hasBeenCongratulated && !hasShownCongratsRef.current) {
-      if (!user?.profileSetupSkipped && !user?.hasSeenProfileCompletionCongrats) {
-        setShowCongrats(true);
-        updateUserAux(true);
-      }
-
+    if (
+      justCompleted &&
+      !hasBeenCongratulated &&
+      !hasShownCongratsRef.current &&
+      shouldShowCongrats &&
+      isProfileSetupNotSkipped
+    ) {
+      setShowCongrats(true);
+      updateUserAux(true);
       hasShownCongratsRef.current = true;
     }
 

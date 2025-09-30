@@ -4,12 +4,13 @@ import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
   TouchableOpacity,
   Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
@@ -18,27 +19,26 @@ import * as yup from 'yup';
 import { signUp } from 'aws-amplify/auth/cognito';
 import { useAuthContext } from '../context';
 import { IAuthModuleKeys, RegisterFormData } from '../interfaces';
-import { Card } from '~/codidge_components/UI/card';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 
 const schema = yup.object({
-  name: yup
-    .string()
-    .required('Full name is required')
-    .min(2, 'Full name must be at least 2 characters'),
   email: yup.string().email('Please enter a valid email').required('Email is required'),
   phone: yup
     .string()
     .required('Phone number is required')
-    .matches(/^\+?[\d\s\-\(\)]+$/, 'Please enter a valid phone number'),
+    .matches(/^[2-9]\d{2}[2-9]\d{6}$/, 'Enter a valid 10-digit US phone number'),
   password: yup
     .string()
     .min(8, 'Password must be at least 8 characters')
     .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
     .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
     .matches(/\d/, 'Password must contain at least one number')
+    .matches(
+      /[!@#$%^&*(),.?":{}|<>_\-+=[\]\\/'`~]/,
+      'Password must contain at least one special character'
+    )
     .required('Password is required'),
   confirmPassword: yup
     .string()
@@ -52,8 +52,10 @@ const schema = yup.object({
 
 export const SignUpForm = ({
   onSignUpSuccess,
+  strictView,
 }: {
   onSignUpSuccess: (userId: string, formData: any) => void;
+  strictView?: boolean;
 }) => {
   const { setCurrentView, setTempData } = useAuthContext();
 
@@ -68,7 +70,6 @@ export const SignUpForm = ({
   } = useForm<RegisterFormData>({
     resolver: yupResolver(schema),
     defaultValues: {
-      name: '',
       email: '',
       phone: '',
       password: '',
@@ -80,6 +81,7 @@ export const SignUpForm = ({
   const onSubmit = async (data: RegisterFormData) => {
     try {
       const tenantId = Constants.expoConfig?.extra?.TENANTID;
+
       setloading(true);
       const result = await signUp({
         username: data.email,
@@ -96,14 +98,16 @@ export const SignUpForm = ({
       });
 
       const needsVerification = result.nextStep.signUpStep === 'CONFIRM_SIGN_UP';
+
       if (needsVerification) {
         setTempData({
           email: data.email,
           password: data.password,
-          name: data.name,
+          phone: data.phone,
         });
-        setCurrentView(IAuthModuleKeys.verifyEmail);
 
+        setCurrentView(IAuthModuleKeys.verifyEmail);
+        setloading(false);
         return;
       }
 
@@ -111,9 +115,8 @@ export const SignUpForm = ({
         throw Error('Error sign up');
       }
 
-      await onSignUpSuccess('userhwreee', {
+      await onSignUpSuccess(result.userId, {
         email: data.email,
-        name: data.name,
         phone: data.phone,
       });
       setloading(false);
@@ -124,42 +127,14 @@ export const SignUpForm = ({
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 280 : 0}
+      style={styles.keyboardView}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.header}>
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => {
-                setCurrentView(IAuthModuleKeys.signIn);
-              }}>
-              <Icons.ArrowLeft size={24} color="#374151" />
-            </TouchableOpacity>
-            <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Join Real Estate Pro today</Text>
-          </View>
-
-          <Card style={styles.formCard}>
+          <View style={styles.formCard}>
             <View style={styles.form}>
-              <Controller
-                control={control}
-                name="name"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <InputField
-                    leftIcon={<Icons.User size={16} color="#6B7280" />}
-                    label="Full name"
-                    placeholder="Full name"
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    autoCapitalize="words"
-                    error={!!errors.name}
-                    errorMessage={errors.name?.message}
-                  />
-                )}
-              />
               <Controller
                 control={control}
                 name="email"
@@ -167,6 +142,7 @@ export const SignUpForm = ({
                   <InputField
                     leftIcon={<Icons.Mail size={16} color="#6B7280" />}
                     label="Email"
+                    required={true}
                     placeholder="Enter your email"
                     value={value}
                     onChangeText={onChange}
@@ -186,7 +162,8 @@ export const SignUpForm = ({
                   <InputField
                     leftIcon={<Icons.Phone size={16} color="#6B7280" />}
                     label="Phone Number"
-                    placeholder="Enter your phone number"
+                    placeholder="e.g. 2345678901"
+                    required={true}
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -204,6 +181,7 @@ export const SignUpForm = ({
                   <InputField
                     leftIcon={<Icons.Lock size={16} color="#6B7280" />}
                     label="Password"
+                    required={true}
                     placeholder="Create a password"
                     value={value}
                     onChangeText={onChange}
@@ -211,6 +189,9 @@ export const SignUpForm = ({
                     error={!!errors.password}
                     errorMessage={errors.password?.message}
                     secureTextEntry={!showPassword}
+                    autoComplete="off"
+                    textContentType="none"
+                    hint="At least 8 characters with uppercase, lowercase, number, and special character"
                     rightIcon={
                       <TouchableOpacity
                         onPress={() => setShowPassword(!showPassword)}
@@ -235,11 +216,14 @@ export const SignUpForm = ({
                     label="Confirm Password"
                     placeholder="Confirm your password"
                     value={value}
+                    required={true}
                     onChangeText={onChange}
                     onBlur={onBlur}
                     error={!!errors.confirmPassword}
                     errorMessage={errors.confirmPassword?.message}
                     secureTextEntry={!showConfirmPassword}
+                    autoComplete="off"
+                    textContentType="none"
                     rightIcon={
                       <TouchableOpacity
                         onPress={() => setShowConfirmPassword(!showConfirmPassword)}
@@ -285,36 +269,34 @@ export const SignUpForm = ({
                 size={ButtonSize.LARGE}
               />
             </View>
-          </Card>
-
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Already have an account? </Text>
-            <TextButton
-              textStyle={styles.signInLink}
-              title="Sign In"
-              size={ButtonSize.SMALL}
-              onPress={() => {
-                setCurrentView(IAuthModuleKeys.signIn);
-              }}
-            />
+            {!strictView && (
+              <View style={styles.footer}>
+                <Text style={styles.footerText}>Already have an account? </Text>
+                <TextButton
+                  textStyle={styles.signInLink}
+                  title="Sign In"
+                  size={ButtonSize.SMALL}
+                  onPress={() => {
+                    setCurrentView(IAuthModuleKeys.signIn);
+                  }}
+                />
+              </View>
+            )}
           </View>
         </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F9FAFB',
-  },
   keyboardView: {
     flex: 1,
+    paddingVertical: 32,
+    paddingTop: 40,
   },
   scrollContent: {
     flexGrow: 1,
-    padding: 20,
   },
   header: {
     alignItems: 'center',
@@ -342,8 +324,8 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   form: {
-    padding: 24,
-    gap: 12,
+    paddingHorizontal: 24,
+    gap: 8,
   },
   inputError: {
     borderColor: '#EF4444',
@@ -357,7 +339,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   termsContainer: {
-    marginBottom: 24,
+    marginBottom: 12,
   },
   checkboxContainer: {
     flexDirection: 'row',
@@ -406,7 +388,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 16,
+    paddingTop: 10,
   },
   footerText: {
     fontSize: 16,

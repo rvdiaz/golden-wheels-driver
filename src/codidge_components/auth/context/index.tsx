@@ -4,11 +4,15 @@ import { IAuthModuleKeys } from '../interfaces';
 interface AuthContextState {
   currentView: IAuthModuleKeys;
   setCurrentView: (view: IAuthModuleKeys) => void;
-
-  // Data to pass between screens (like email for verification)
-  tempData: Partial<{ email: string; userId: string; password: string; name: string }>;
+  tempData: Partial<{
+    email: string;
+    userId: string;
+    password: string;
+    name: string;
+    phone: string;
+  }>;
   setTempData: (
-    data: Partial<{ email: string; userId: string; password: string; name: string }>
+    data: Partial<{ email: string; userId: string; password: string; name: string; phone: string }>
   ) => void;
 }
 
@@ -17,10 +21,10 @@ const AuthContext = createContext<AuthContextState | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [currentView, setCurrentView] = useState<IAuthModuleKeys>(IAuthModuleKeys.signIn);
   const [tempData, setTempDataState] = useState<
-    Partial<{ email: string; userId: string; password: string }>
+    Partial<{ email: string; userId: string; password: string; phone: string }>
   >({});
 
-  const setTempData = (data: Partial<{ email: string; userId: string }>) => {
+  const setTempData = (data: Partial<{ email: string; userId: string; phone: string }>) => {
     setTempDataState((prev) => ({ ...prev, ...data }));
   };
 

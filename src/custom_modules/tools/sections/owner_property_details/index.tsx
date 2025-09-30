@@ -53,8 +53,6 @@ export const PropertyInfoScreen: React.FC = () => {
     }
   };
 
-  console.log('::::error', error);
-
   return (
     <SafeAreaView style={styles.container}>
       <Header title="Property/Owner Information" showBack onBack={() => navigation.goBack()} />

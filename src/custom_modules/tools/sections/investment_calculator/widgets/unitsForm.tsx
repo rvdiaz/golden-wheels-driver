@@ -19,16 +19,30 @@ import { UnitData } from '../interfaces';
 interface MobileUnitsFormProps {
   form: UseFormReturn<any>;
   unitsFieldArray: UseFieldArrayReturn<any, 'units'>;
-  onClearUnit: (index: number) => void;
+  removeUnit: (index: number) => void;
+  onUpdateUnitsCount: (count: number) => void;
 }
+
+// Helper function to convert value for display
+const toDisplayValue = (value: any): string => {
+  if (value === null || value === undefined || value === '') return '';
+  return value.toString();
+};
+
+// Helper function to parse input value
+const parseNumericInput = (text: string, isInteger = false): number | string => {
+  if (text === '') return '';
+  const num = isInteger ? parseInt(text) : parseFloat(text);
+  return isNaN(num) ? '' : num;
+};
 
 // Single Unit Card Component
 const UnitCard: React.FC<{
   field: any;
   index: number;
   control: any;
-  onClearUnit: (index: number) => void;
-}> = ({ index, control, onClearUnit }) => {
+  removeUnit: (index: number) => void;
+}> = ({ index, control, removeUnit }) => {
   return (
     <View style={styles.unitCard}>
       {/* Card Header */}
@@ -39,7 +53,7 @@ const UnitCard: React.FC<{
           </View>
           <Text style={styles.cardTitle}>Unit {index + 1}</Text>
         </View>
-        <TouchableOpacity onPress={() => onClearUnit(index)} style={styles.deleteButton}>
+        <TouchableOpacity onPress={() => removeUnit(index)} style={styles.deleteButton}>
           <Trash2 size={16} color="#dc2626" />
         </TouchableOpacity>
       </View>
@@ -60,8 +74,8 @@ const UnitCard: React.FC<{
                   }}
                   style={styles.bedBathInput}
                   placeholder="0"
-                  value={value?.toString() || ''}
-                  onChangeText={(text) => onChange(parseInt(text) || 0)}
+                  value={toDisplayValue(value)}
+                  onChangeText={(text) => onChange(parseNumericInput(text, true))}
                   keyboardType="numeric"
                 />
               )}
@@ -81,8 +95,8 @@ const UnitCard: React.FC<{
                   }}
                   style={styles.bedBathInput}
                   placeholder="0"
-                  value={value?.toString() || ''}
-                  onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                  value={toDisplayValue(value)}
+                  onChangeText={(text) => onChange(parseNumericInput(text))}
                   keyboardType="numeric"
                 />
               )}
@@ -108,8 +122,8 @@ const UnitCard: React.FC<{
             render={({ field: { onChange, value } }) => (
               <InputField
                 placeholder="0"
-                value={value?.toString() || ''}
-                onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                value={toDisplayValue(value)}
+                onChangeText={(text) => onChange(parseNumericInput(text))}
                 keyboardType="numeric"
               />
             )}
@@ -128,8 +142,8 @@ const UnitCard: React.FC<{
             render={({ field: { onChange, value } }) => (
               <InputField
                 placeholder="0"
-                value={value?.toString() || ''}
-                onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                value={toDisplayValue(value)}
+                onChangeText={(text) => onChange(parseNumericInput(text))}
                 keyboardType="numeric"
               />
             )}
@@ -148,8 +162,8 @@ const UnitCard: React.FC<{
             render={({ field: { onChange, value } }) => (
               <InputField
                 placeholder="0"
-                value={value?.toString() || ''}
-                onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                value={toDisplayValue(value)}
+                onChangeText={(text) => onChange(parseNumericInput(text))}
                 keyboardType="numeric"
               />
             )}
@@ -163,15 +177,57 @@ const UnitCard: React.FC<{
 export const MobileUnitsForm: React.FC<MobileUnitsFormProps> = ({
   form,
   unitsFieldArray,
-  onClearUnit,
+  onUpdateUnitsCount,
+  removeUnit,
 }) => {
   const { formatCurrency } = useFormatters();
   const { control, watch } = form;
 
   const units: UnitData[] = watch('units') || [];
 
+  // Helper to safely sum values, treating empty strings as 0
+  const safeSum = (units: UnitData[], field: keyof UnitData): number => {
+    return units.reduce((sum, unit) => {
+      const value = unit?.[field] as string | number;
+      const numValue = value === '' || value === null || value === undefined ? 0 : Number(value);
+      return sum + (isNaN(numValue) ? 0 : numValue);
+    }, 0);
+  };
+
   return (
     <ScrollView style={styles.container}>
+      <Card
+        style={[
+          styles.card,
+          {
+            marginBottom: 0,
+          },
+        ]}>
+        <View style={styles.inputContainer}>
+          <Controller
+            control={control}
+            name="numberOfUnits"
+            render={({ field: { onChange, value } }) => (
+              <InputField
+                label="Number of Units (1-100)"
+                placeholder="1"
+                value={toDisplayValue(value)}
+                onChangeText={(text) => {
+                  const numValue = parseNumericInput(text, true);
+                  onChange(numValue);
+                  if (typeof numValue === 'number') {
+                    onUpdateUnitsCount(numValue);
+                  }
+                }}
+                keyboardType="numeric"
+              />
+            )}
+          />
+        </View>
+
+        {/* Itemized Renovation Costs */}
+      </Card>
+
       <Card style={styles.card}>
         {/* Header */}
         <View style={styles.headerContainer}>
@@ -188,7 +244,7 @@ export const MobileUnitsForm: React.FC<MobileUnitsFormProps> = ({
                 field={field}
                 index={index}
                 control={control}
-                onClearUnit={onClearUnit}
+                removeUnit={removeUnit}
               />
             ))}
           </View>
@@ -204,19 +260,19 @@ export const MobileUnitsForm: React.FC<MobileUnitsFormProps> = ({
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Total Current Rent:</Text>
                 <Text style={styles.summaryValue}>
-                  {formatCurrency(units.reduce((sum, unit) => sum + (unit?.currentRent || 0), 0))}
+                  {formatCurrency(safeSum(units, 'currentRent'))}
                 </Text>
               </View>
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Total Repair Costs:</Text>
                 <Text style={[styles.summaryValue, styles.expenseValue]}>
-                  {formatCurrency(units.reduce((sum, unit) => sum + (unit?.repairCosts || 0), 0))}
+                  {formatCurrency(safeSum(units, 'repairCosts'))}
                 </Text>
               </View>
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Total Potential Rent:</Text>
                 <Text style={[styles.summaryValue, styles.potentialValue]}>
-                  {formatCurrency(units.reduce((sum, unit) => sum + (unit?.potentialRent || 0), 0))}
+                  {formatCurrency(safeSum(units, 'potentialRent'))}
                 </Text>
               </View>
             </View>
@@ -234,8 +290,8 @@ export const MobileUnitsForm: React.FC<MobileUnitsFormProps> = ({
               render={({ field: { onChange, value } }) => (
                 <InputField
                   placeholder="0"
-                  value={value?.toString() || ''}
-                  onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                  value={toDisplayValue(value)}
+                  onChangeText={(text) => onChange(parseNumericInput(text))}
                   keyboardType="numeric"
                 />
               )}
@@ -251,7 +307,6 @@ export const MobileUnitsForm: React.FC<MobileUnitsFormProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
   },
   card: {
     margin: 16,
@@ -328,7 +383,7 @@ const styles = StyleSheet.create({
   },
   bedBathRow: {
     flexDirection: 'row',
-    gap: 16,
+    gap: 8,
   },
   bedBathItem: {
     flex: 1,
@@ -340,7 +395,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   bedBathInput: {
-    width: 50,
+    width: 60,
     height: 36,
     textAlign: 'center',
     fontSize: 14,
@@ -358,7 +413,6 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     fontWeight: '500',
   },
-
   // Financial Section
   financialSection: {
     gap: 8,
@@ -438,5 +492,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 8,
     fontStyle: 'italic',
+  },
+  inputContainer: {
+    gap: 4,
+    padding: 16,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

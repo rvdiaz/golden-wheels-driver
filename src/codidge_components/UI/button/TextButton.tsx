@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import {
   TouchableOpacity,
   Text,
@@ -8,6 +8,7 @@ import {
   TextStyle,
 } from 'react-native';
 import { ButtonSize } from './PrimaryButton';
+import { sizeStyles } from './types';
 
 interface TextButtonProps {
   loading?: boolean;
@@ -17,13 +18,8 @@ interface TextButtonProps {
   title: string;
   style?: ViewStyle;
   textStyle?: TextStyle;
+  rightWidget?: ReactNode;
 }
-
-const sizeStyles = {
-  [ButtonSize.SMALL]: { paddingVertical: 4, paddingHorizontal: 4, fontSize: 12 },
-  [ButtonSize.MEDIUM]: { paddingVertical: 8, paddingHorizontal: 16, fontSize: 12 },
-  [ButtonSize.LARGE]: { paddingVertical: 12, paddingHorizontal: 20, fontSize: 14 },
-};
 
 const TextButton: React.FC<TextButtonProps> = ({
   loading = false,
@@ -33,6 +29,7 @@ const TextButton: React.FC<TextButtonProps> = ({
   title,
   style,
   textStyle,
+  rightWidget,
 }) => {
   const disabledAux = loading || disabled;
   const sizeStyle = sizeStyles[size];
@@ -55,6 +52,7 @@ const TextButton: React.FC<TextButtonProps> = ({
       ) : (
         <Text style={[styles.text, { fontSize: sizeStyle.fontSize }, textStyle]}>{title}</Text>
       )}
+      {rightWidget && rightWidget}
     </TouchableOpacity>
   );
 };

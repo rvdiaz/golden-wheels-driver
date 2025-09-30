@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
-  SafeAreaView,
   TouchableOpacity,
-  TextInput,
   Alert,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -18,7 +14,6 @@ import * as Icons from 'lucide-react-native';
 import { fetchUserAttributes, signIn, signOut } from 'aws-amplify/auth/cognito';
 import { useAuthContext } from '../context';
 import { IAuthModuleKeys, LoginFormData } from '../interfaces';
-import { Card } from '~/codidge_components/UI/card';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
@@ -76,119 +71,88 @@ export const SignInForm = ({ onLoginSuccess }: { onLoginSuccess: (userId: string
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.header}>
-            <View style={styles.logoContainer}>
-              <Icons.Home size={40} color="#2563EB" />
-            </View>
-            <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>Sign in to your Real Estate Pro account</Text>
-          </View>
-
-          <Card style={styles.formCard}>
-            <View style={styles.form}>
-              <Controller
-                control={control}
-                name="email"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <InputField
-                    label="Email"
-                    placeholder="Enter your email"
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    keyboardType="email-address"
-                    error={!!errors.email}
-                    errorMessage={errors.email?.message}
-                    autoCapitalize="none"
-                    autoComplete="email"
-                  />
-                )}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.keyboardView}>
+      <View style={styles.formCard}>
+        <View style={styles.form}>
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <InputField
+                leftIcon={<Icons.Mail size={16} color="#6B7280" />}
+                label="Email"
+                placeholder="Enter your email"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                keyboardType="email-address"
+                error={!!errors.email}
+                errorMessage={errors.email?.message}
+                autoCapitalize="none"
+                autoComplete="email"
               />
+            )}
+          />
 
-              <Controller
-                control={control}
-                name="password"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <InputField
-                    leftIcon={<Icons.Lock size={16} color="#6B7280" />}
-                    label="Password"
-                    placeholder="Enter your password"
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    secureTextEntry={!showPassword}
-                    error={!!errors.password}
-                    errorMessage={errors.password?.message}
-                    autoComplete="password"
-                    rightIcon={
-                      <TouchableOpacity
-                        onPress={() => setShowPassword(!showPassword)}
-                        style={styles.eyeIcon}>
-                        {showPassword ? (
-                          <Icons.EyeOff size={16} color="#6B7280" />
-                        ) : (
-                          <Icons.Eye size={16} color="#6B7280" />
-                        )}
-                      </TouchableOpacity>
-                    }
-                  />
-                )}
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <InputField
+                leftIcon={<Icons.Lock size={16} color="#6B7280" />}
+                label="Password"
+                placeholder="Enter your password"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                secureTextEntry={!showPassword}
+                error={!!errors.password}
+                errorMessage={errors.password?.message}
+                autoComplete="password"
+                rightIcon={
+                  <TouchableOpacity
+                    onPress={() => setShowPassword(!showPassword)}
+                    style={styles.eyeIcon}>
+                    {showPassword ? (
+                      <Icons.EyeOff size={16} color="#6B7280" />
+                    ) : (
+                      <Icons.Eye size={16} color="#6B7280" />
+                    )}
+                  </TouchableOpacity>
+                }
               />
+            )}
+          />
 
-              <View style={styles.optionsRow}>
-                <TextButton
-                  textStyle={styles.forgotPassword}
-                  title="Forgot Password?"
-                  onPress={() => {
-                    setCurrentView(IAuthModuleKeys.forcePasswordChange);
-                  }}
-                />
-              </View>
-
-              <PrimaryButton
-                onPress={handleSubmit(onSubmit)}
-                title="Sign In"
-                loading={loading}
-                size={ButtonSize.LARGE}
-              />
-            </View>
-          </Card>
-
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Don't have an account? </Text>
-
+          <View style={styles.optionsRow}>
             <TextButton
-              textStyle={styles.signUpLink}
-              title="Sign Up"
-              size={ButtonSize.SMALL}
+              textStyle={styles.forgotPassword}
+              title="Forgot Password?"
               onPress={() => {
-                setCurrentView(IAuthModuleKeys.signUp);
+                setCurrentView(IAuthModuleKeys.forcePasswordChange);
               }}
             />
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+
+          <PrimaryButton
+            onPress={handleSubmit(onSubmit)}
+            title="Sign In"
+            loading={loading}
+            size={ButtonSize.LARGE}
+          />
+        </View>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F9FAFB',
-  },
   keyboardView: {
     flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    padding: 20,
-    justifyContent: 'center',
+    paddingVertical: 40,
+    paddingBottom: 32,
   },
   header: {
     alignItems: 'center',
@@ -216,10 +180,11 @@ const styles = StyleSheet.create({
   },
   formCard: {
     marginBottom: 24,
+    flex: 1,
   },
   form: {
-    padding: 24,
-    gap: 12,
+    paddingHorizontal: 24,
+    gap: 8,
   },
   eyeIcon: {
     paddingHorizontal: 10,
@@ -228,7 +193,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 10,
   },
   checkboxContainer: {
     flexDirection: 'row',
@@ -275,6 +240,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 8,
   },
   footerText: {
     fontSize: 16,

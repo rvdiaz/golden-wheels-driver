@@ -23,8 +23,8 @@ const unitSchema = z.object({
   repairCosts: z.number().min(0),
   potentialRent: z.number().min(0),
   marketValue: z.number().min(0),
-  bedrooms: z.number().min(0).max(10),
-  bathrooms: z.number().min(0).max(10),
+  bedrooms: z.number().min(0).max(10).optional(),
+  bathrooms: z.number().min(0).max(10).optional(),
 });
 
 const renovationItemSchema = z.object({
@@ -89,6 +89,7 @@ interface UseInvestmentFormReturn {
   addRenovationItem: () => void;
   removeRenovationItem: (index: number) => void;
   clearUnit: (index: number) => void;
+  removeUnit: (index: number) => void;
   setShowResults: (show: boolean) => void;
   setShowTargetAnalysis: (show: boolean) => void;
 
@@ -204,9 +205,25 @@ export const useInvestmentForm = (): UseInvestmentFormReturn => {
         ...DEFAULT_UNIT,
         id: index + 1,
       };
+
       form.setValue(`units.${index}`, clearedUnit);
     },
     [form]
+  );
+
+  const removeUnit = useCallback(
+    (index: number) => {
+      // Remove the unit at the specified index
+      unitsFieldArray.remove(index);
+
+      // Update the numberOfUnits count
+      const currentCount = form.getValues('numberOfUnits');
+      if (currentCount > 1) {
+        // Prevent going below 1 unit
+        form.setValue('numberOfUnits', currentCount - 1);
+      }
+    },
+    [unitsFieldArray, form]
   );
 
   const calculateAnalysis = useCallback(async () => {
@@ -249,10 +266,10 @@ export const useInvestmentForm = (): UseInvestmentFormReturn => {
   );
 
   const resetForm = useCallback(() => {
+    setShowResults(false);
     form.reset(getDefaultFormValues());
     setResults(null);
     setTargetResults(null);
-    setShowResults(false);
     setShowTargetAnalysis(false);
     setNextRenovationId(1);
   }, [form]);
@@ -276,6 +293,7 @@ export const useInvestmentForm = (): UseInvestmentFormReturn => {
     addRenovationItem,
     removeRenovationItem,
     clearUnit,
+    removeUnit,
     setShowResults,
     setShowTargetAnalysis,
 
@@ -288,16 +306,22 @@ export const useInvestmentForm = (): UseInvestmentFormReturn => {
 
 // Hook for formatting utilities
 export const useFormatters = () => {
-  const formatCurrency = useCallback((amount: number): string => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0,
-    }).format(amount);
+  const formatCurrency = useCallback((amount: number) => {
+    if (amount) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0,
+      }).format(amount);
+    }
+    return '';
   }, []);
 
-  const formatPercentage = useCallback((ratio: number): string => {
-    return `${ratio.toFixed(2)}%`;
+  const formatPercentage = useCallback((ratio: number) => {
+    if (ratio) {
+      return `${ratio.toFixed(2)}%`;
+    }
+    return '';
   }, []);
 
   const formatNumber = useCallback((num: number, decimals = 0): string => {

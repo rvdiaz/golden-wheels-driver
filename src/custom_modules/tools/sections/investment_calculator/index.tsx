@@ -1,10 +1,8 @@
 // components/InvestmentCalculator.tsx
 import React, { useState } from 'react';
-import { View, StyleSheet, Modal } from 'react-native';
-import { Home, Building, Calculator, Percent } from 'lucide-react-native';
+import { View, StyleSheet, Modal, KeyboardAvoidingView, Platform } from 'react-native';
+import { Home, Building, Calculator } from 'lucide-react-native';
 import { PropertyForm } from './widgets/propertyInformation';
-import { ExpensesForm } from './widgets/expensesForm';
-import { FinancingForm } from './widgets/financingForm';
 import { ResultsDisplay } from './widgets/resultsComponent';
 import { GridTabs } from '~/codidge_components/UI/tabs';
 import { useInvestmentForm } from './custom_hooks';
@@ -12,6 +10,7 @@ import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { Header } from '~/codidge_components/UI/header';
 import { useNavigation } from '@react-navigation/native';
 import { MobileUnitsForm } from './widgets/unitsForm';
+import { ExpensesForm } from './widgets/expenesForm';
 
 const InvestmentCalculatorScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -31,12 +30,11 @@ const InvestmentCalculatorScreen: React.FC = () => {
     updateUnitsCount,
     addRenovationItem,
     removeRenovationItem,
-    clearUnit,
+    removeUnit,
     setShowResults,
 
     // Computed values
     totalRenovationCost,
-    totalRepairCosts,
   } = useInvestmentForm();
 
   const tabs = [
@@ -58,53 +56,36 @@ const InvestmentCalculatorScreen: React.FC = () => {
       label: 'Expenses',
       Icon: Calculator,
     },
-    {
-      key: 'financing',
-      label: 'Financing',
-      Icon: Percent,
-    },
   ];
 
   const renderActiveScene = () => {
     switch (activeTab) {
       case 'property':
-        return (
-          <PropertyForm
-            form={form}
-            renovationFieldArray={renovationFieldArray}
-            totalRenovationCost={totalRenovationCost}
-            totalRepairCosts={totalRepairCosts}
-            onUpdateUnitsCount={updateUnitsCount}
-            onAddRenovationItem={addRenovationItem}
-            onRemoveRenovationItem={removeRenovationItem}
-          />
-        );
+        return <PropertyForm form={form} />;
       case 'units':
         return (
-          <MobileUnitsForm form={form} unitsFieldArray={unitsFieldArray} onClearUnit={clearUnit} />
+          <MobileUnitsForm
+            form={form}
+            unitsFieldArray={unitsFieldArray}
+            removeUnit={removeUnit}
+            onUpdateUnitsCount={updateUnitsCount}
+          />
         );
       case 'expenses':
-        return <ExpensesForm form={form} />;
-      case 'financing':
         return (
-          <FinancingForm
+          <ExpensesForm
             form={form}
-            onCalculate={calculateAnalysis}
-            isCalculating={isCalculating}
-          />
-        );
-      default:
-        return (
-          <PropertyForm
-            form={form}
-            renovationFieldArray={renovationFieldArray}
             totalRenovationCost={totalRenovationCost}
-            totalRepairCosts={totalRepairCosts}
-            onUpdateUnitsCount={updateUnitsCount}
             onAddRenovationItem={addRenovationItem}
             onRemoveRenovationItem={removeRenovationItem}
+            renovationFieldArray={renovationFieldArray}
+            isCalculating={isCalculating}
+            onSubmit={calculateAnalysis}
           />
         );
+
+      default:
+        return <PropertyForm form={form} />;
     }
   };
 
@@ -121,17 +102,18 @@ const InvestmentCalculatorScreen: React.FC = () => {
           navigation.goBack();
         }}
       />
-      <View style={styles.content}>
+      <KeyboardAvoidingView
+        style={styles.content}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
         <View style={styles.tabHeaderWrapper}>
           <GridTabs tabs={tabs} initialTabKey="property" onTabChange={setActiveTab} />
         </View>
         <View style={styles.content}>{renderActiveScene()}</View>
-      </View>
-
+      </KeyboardAvoidingView>
       <Modal
         visible={showResults && !!results}
         animationType="slide"
-        presentationStyle="pageSheet"
         onRequestClose={() => setShowResults(false)}>
         <ResultsDisplay
           onEditInputs={() => setShowResults(false)}

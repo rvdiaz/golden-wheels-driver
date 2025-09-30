@@ -4,7 +4,7 @@ import { GoalType } from '~/custom_modules/task/interfaces';
 export enum ModuleKeys {
   dashboard = 'Dashboard',
   tasks = 'Tasks',
-  crm = 'CRM',
+  crm = 'Crm',
   tools = 'Tools',
   training = 'Training',
   mortgageCalculator = 'MortgageCalculator',
@@ -25,7 +25,11 @@ export enum ModuleKeys {
 export interface IFeatureModule {
   label?: string;
   moduleKey: ModuleKeys;
-  metaData: any;
+  metaData?: any;
+  description: string;
+  icon: string;
+  color: string;
+  backgroundColor: string;
   modules?: IFeatureModule[];
 }
 
@@ -72,7 +76,8 @@ export interface IUser {
   email: string;
   phone: string;
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   metaData: any;
   modules: IModule[];
   activeTemplateId: string;
@@ -80,6 +85,13 @@ export interface IUser {
   systemData: {
     tasksConfiguration: ITaskSchemaItem[];
   };
+  profileSteps: {
+    id: string;
+    title: string;
+    subSteps: string[];
+  }[];
+  profileSetupSkipped: boolean;
+  hasSeenProfileCompletionCongrats: boolean;
 }
 
 export interface ITaskSchemaItem {

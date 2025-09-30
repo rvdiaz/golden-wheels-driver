@@ -81,98 +81,92 @@ export const MfaAuth = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}>
-        <View style={styles.content}>
-          <View style={styles.header}>
-            <View style={styles.logoContainer}>
-              <Icons.Shield size={40} color="#2563EB" />
-            </View>
-            <Text style={styles.title}>Two-Factor Authentication</Text>
-            <Text style={styles.subtitle}>Enter the 6-digit code from your authenticator app</Text>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.keyboardView}>
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <View style={styles.logoContainer}>
+            <Icons.Shield size={40} color="#2563EB" />
           </View>
-
-          <Card style={styles.formCard}>
-            <View style={styles.form}>
-              <Controller
-                control={control}
-                name="code"
-                render={({ field: { value } }) => (
-                  <View style={styles.codeContainer}>
-                    {[0, 1, 2, 3, 4, 5].map((index) => (
-                      <TextInput
-                        key={index}
-                        ref={(ref) => {
-                          if (ref) inputRefs.current[index] = ref;
-                        }}
-                        style={[
-                          styles.codeInput,
-                          errors.code && styles.codeInputError,
-                          value[index] && styles.codeInputFilled,
-                        ]}
-                        value={value[index] || ''}
-                        onChangeText={(text) => handleCodeChange(text, index)}
-                        onKeyPress={({ nativeEvent }) => handleKeyPress(nativeEvent.key, index)}
-                        keyboardType="numeric"
-                        maxLength={1}
-                        textAlign="center"
-                        selectTextOnFocus
-                      />
-                    ))}
-                  </View>
-                )}
-              />
-              {errors.code && <Text style={styles.errorText}>{errors.code.message}</Text>}
-
-              <TouchableOpacity
-                style={[styles.verifyButton, isLoading && styles.verifyButtonDisabled]}
-                onPress={handleSubmit(onSubmit)}
-                disabled={isLoading || codeValue.length !== 6}>
-                {isLoading ? (
-                  <Text style={styles.verifyButtonText}>Verifying...</Text>
-                ) : (
-                  <Text style={styles.verifyButtonText}>Verify Code</Text>
-                )}
-              </TouchableOpacity>
-
-              <View style={styles.resendContainer}>
-                {canResend ? (
-                  <TouchableOpacity onPress={handleResendCode}>
-                    <Text style={styles.resendText}>Resend Code</Text>
-                  </TouchableOpacity>
-                ) : (
-                  <Text style={styles.countdownText}>Resend code in {countdown}s</Text>
-                )}
-              </View>
-            </View>
-          </Card>
-
-          <View style={styles.helpContainer}>
-            <Icons.HelpCircle size={16} color="#6B7280" />
-            <Text style={styles.helpText}>Having trouble? Contact support for assistance</Text>
-          </View>
-
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => {
-              setCurrentView(IAuthModuleKeys.signIn);
-            }}>
-            <Icons.ArrowLeft size={20} color="#6B7280" />
-            <Text style={styles.backButtonText}>Back to Sign In</Text>
-          </TouchableOpacity>
+          <Text style={styles.title}>Two-Factor Authentication</Text>
+          <Text style={styles.subtitle}>Enter the 6-digit code from your authenticator app</Text>
         </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+
+        <Card style={styles.formCard}>
+          <View style={styles.form}>
+            <Controller
+              control={control}
+              name="code"
+              render={({ field: { value } }) => (
+                <View style={styles.codeContainer}>
+                  {[0, 1, 2, 3, 4, 5].map((index) => (
+                    <TextInput
+                      key={index}
+                      ref={(ref) => {
+                        if (ref) inputRefs.current[index] = ref;
+                      }}
+                      style={[
+                        styles.codeInput,
+                        errors.code && styles.codeInputError,
+                        value[index] && styles.codeInputFilled,
+                      ]}
+                      value={value[index] || ''}
+                      onChangeText={(text) => handleCodeChange(text, index)}
+                      onKeyPress={({ nativeEvent }) => handleKeyPress(nativeEvent.key, index)}
+                      keyboardType="numeric"
+                      maxLength={1}
+                      textAlign="center"
+                      selectTextOnFocus
+                    />
+                  ))}
+                </View>
+              )}
+            />
+            {errors.code && <Text style={styles.errorText}>{errors.code.message}</Text>}
+
+            <TouchableOpacity
+              style={[styles.verifyButton, isLoading && styles.verifyButtonDisabled]}
+              onPress={handleSubmit(onSubmit)}
+              disabled={isLoading || codeValue.length !== 6}>
+              {isLoading ? (
+                <Text style={styles.verifyButtonText}>Verifying...</Text>
+              ) : (
+                <Text style={styles.verifyButtonText}>Verify Code</Text>
+              )}
+            </TouchableOpacity>
+
+            <View style={styles.resendContainer}>
+              {canResend ? (
+                <TouchableOpacity onPress={handleResendCode}>
+                  <Text style={styles.resendText}>Resend Code</Text>
+                </TouchableOpacity>
+              ) : (
+                <Text style={styles.countdownText}>Resend code in {countdown}s</Text>
+              )}
+            </View>
+          </View>
+        </Card>
+
+        <View style={styles.helpContainer}>
+          <Icons.HelpCircle size={16} color="#6B7280" />
+          <Text style={styles.helpText}>Having trouble? Contact support for assistance</Text>
+        </View>
+
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => {
+            setCurrentView(IAuthModuleKeys.signIn);
+          }}>
+          <Icons.ArrowLeft size={20} color="#6B7280" />
+          <Text style={styles.backButtonText}>Back to Sign In</Text>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F9FAFB',
-  },
   keyboardView: {
     flex: 1,
   },

@@ -178,14 +178,14 @@ export const PropertyForm = ({
               rules={{ required: 'Locality is required' }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <InputField
-                  label="Locality"
+                  label="City"
                   value={value}
                   required={true}
                   onChangeText={onChange}
                   onBlur={onBlur}
                   error={!!errors.locality}
                   errorMessage={errors.locality?.message}
-                  placeholder="Enter locality/city"
+                  placeholder="Enter city"
                 />
               )}
             />
@@ -212,7 +212,7 @@ export const PropertyForm = ({
                     onBlur={onBlur}
                     error={!!errors.region}
                     errorMessage={errors.region?.message}
-                    placeholder="Enter region/state"
+                    placeholder="Ex: FL"
                   />
                 )}
               />
@@ -269,7 +269,13 @@ export const PropertyForm = ({
           </View>
           <View style={styles.pairInputContainer}>
             {/* Rent - Optional */}
-            <View style={styles.inputFormWrapper}>
+            <View
+              style={[
+                styles.inputFormWrapper,
+                {
+                  flex: 1,
+                },
+              ]}>
               <Controller
                 control={control}
                 name="rent"
@@ -289,7 +295,13 @@ export const PropertyForm = ({
             </View>
 
             {/* Deposit - Optional */}
-            <View style={styles.inputFormWrapper}>
+            <View
+              style={[
+                styles.inputFormWrapper,
+                {
+                  flex: 1,
+                },
+              ]}>
               <Controller
                 control={control}
                 name="deposit"

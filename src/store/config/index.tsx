@@ -37,7 +37,7 @@ export const moduleScreens: Record<
     body: TasksScreen,
     bottomHeader: DailyTaskSelector,
   },
-  CRM: {
+  Crm: {
     body: CRMScreen,
     bottomHeader: SearchCrmBoxIA,
   },

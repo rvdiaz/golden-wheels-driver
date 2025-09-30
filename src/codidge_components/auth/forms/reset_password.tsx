@@ -3,9 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
   TouchableOpacity,
-  TextInput,
   Alert,
   KeyboardAvoidingView,
   Platform,
@@ -14,7 +12,8 @@ import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
 import { useAuthContext } from '../context';
 import { IAuthModuleKeys, ResetPasswordFormData } from '../interfaces';
-import { Card } from '~/codidge_components/UI/card';
+import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import InputField from '~/codidge_components/UI/form/inputs/inputField';
 
 export const ResetPassword = ({
   onSignUpSuccess,
@@ -66,140 +65,106 @@ export const ResetPassword = ({
 
   if (emailSent) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.content}>
+      <View style={styles.content}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => {
+            setCurrentView(IAuthModuleKeys.signIn);
+          }}>
+          <Icons.ArrowLeft size={24} color="#374151" />
+        </TouchableOpacity>
+
+        <View style={styles.successContainer}>
+          <View style={styles.iconContainer}>
+            <Icons.Mail size={48} color="#10B981" />
+          </View>
+          <Text style={styles.successTitle}>Check Your Email</Text>
+          <Text style={styles.successMessage}>
+            We've sent a password reset link to your email address. Please check your inbox and
+            follow the instructions to reset your password.
+          </Text>
+
           <TouchableOpacity
-            style={styles.backButton}
+            style={styles.resendButton}
+            onPress={handleResendEmail}
+            disabled={isLoading}>
+            <Text style={styles.resendButtonText}>{isLoading ? 'Sending...' : 'Resend Email'}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.backToLoginButton}
             onPress={() => {
               setCurrentView(IAuthModuleKeys.signIn);
             }}>
-            <Icons.ArrowLeft size={24} color="#374151" />
+            <Text style={styles.backToLoginText}>Back to Sign In</Text>
           </TouchableOpacity>
-
-          <View style={styles.successContainer}>
-            <View style={styles.iconContainer}>
-              <Icons.Mail size={48} color="#10B981" />
-            </View>
-            <Text style={styles.successTitle}>Check Your Email</Text>
-            <Text style={styles.successMessage}>
-              We've sent a password reset link to your email address. Please check your inbox and
-              follow the instructions to reset your password.
-            </Text>
-
-            <TouchableOpacity
-              style={styles.resendButton}
-              onPress={handleResendEmail}
-              disabled={isLoading}>
-              <Text style={styles.resendButtonText}>
-                {isLoading ? 'Sending...' : 'Resend Email'}
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.backToLoginButton}
-              onPress={() => {
-                setCurrentView(IAuthModuleKeys.signIn);
-              }}>
-              <Text style={styles.backToLoginText}>Back to Sign In</Text>
-            </TouchableOpacity>
-          </View>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}>
-        <View style={styles.content}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.keyboardView}>
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <Icons.HelpCircle size={16} color="#6B7280" />
+          <Text style={styles.subtitle}>
+            Your password has expired. Please create a new secure password.
+          </Text>
+        </View>
+
+        <View style={styles.formCard}>
+          <View style={styles.form}>
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <InputField
+                  label="Email Address"
+                  placeholder="Enter your email"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  error={!!errors.email}
+                  errorMessage={errors.email?.message}
+                  rightIcon={<Icons.Mail size={16} color="#6B7280" />}
+                />
+              )}
+            />
+            <PrimaryButton
+              size={ButtonSize.LARGE}
+              title="Send Reset Link"
+              onPress={handleSubmit(onSubmit)}
+              loading={isLoading}
+            />
+          </View>
+        </View>
+
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Remember your password? </Text>
           <TouchableOpacity
-            style={styles.backButton}
             onPress={() => {
               setCurrentView(IAuthModuleKeys.signIn);
             }}>
-            <Icons.ArrowLeft size={24} color="#374151" />
+            <Text style={styles.signInLink}>Sign In</Text>
           </TouchableOpacity>
-
-          <View style={styles.header}>
-            <View style={styles.logoContainer}>
-              <Icons.Lock size={40} color="#2563EB" />
-            </View>
-            <Text style={styles.title}>Reset Password</Text>
-            <Text style={styles.subtitle}>
-              Enter your email address and we'll send you a link to reset your password
-            </Text>
-          </View>
-
-          <Card style={styles.formCard}>
-            <View style={styles.form}>
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Email Address</Text>
-                <Controller
-                  control={control}
-                  name="email"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <View style={styles.inputContainer}>
-                      <Icons.Mail size={20} color="#6B7280" />
-                      <TextInput
-                        style={[styles.input, errors.email && styles.inputError]}
-                        placeholder="Enter your email"
-                        value={value}
-                        onChangeText={onChange}
-                        onBlur={onBlur}
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                        autoComplete="email"
-                      />
-                    </View>
-                  )}
-                />
-                {errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
-              </View>
-
-              <TouchableOpacity
-                style={[styles.resetButton, isLoading && styles.resetButtonDisabled]}
-                onPress={handleSubmit(onSubmit)}
-                disabled={isLoading}>
-                {isLoading ? (
-                  <Text style={styles.resetButtonText}>Sending...</Text>
-                ) : (
-                  <Text style={styles.resetButtonText}>Send Reset Link</Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          </Card>
-
-          <View style={styles.footer}>
-            {' '}
-            vald
-            <Text style={styles.footerText}>Remember your password? </Text>
-            <TouchableOpacity
-              onPress={() => {
-                setCurrentView(IAuthModuleKeys.signIn);
-              }}>
-              <Text style={styles.signInLink}>Sign In</Text>
-            </TouchableOpacity>
-          </View>
         </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F9FAFB',
-  },
   keyboardView: {
     flex: 1,
   },
   content: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'center',
+    paddingVertical: 20,
   },
   backButton: {
     position: 'absolute',
@@ -210,6 +175,7 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
+    gap: 5,
     marginBottom: 32,
   },
   logoContainer: {
@@ -231,59 +197,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#6B7280',
     textAlign: 'center',
-    lineHeight: 24,
   },
   formCard: {
-    marginBottom: 24,
+    marginBottom: 12,
   },
   form: {
-    padding: 24,
-  },
-  inputGroup: {
-    marginBottom: 24,
+    paddingHorizontal: 24,
+    marginBottom: 12,
   },
   label: {
     fontSize: 16,
     fontWeight: '600',
     color: '#374151',
     marginBottom: 8,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 12,
-    backgroundColor: 'white',
-  },
-  input: {
-    flex: 1,
-    paddingVertical: 16,
-    paddingHorizontal: 12,
-    fontSize: 16,
-    color: '#1F2937',
-  },
-  inputError: {
-    borderColor: '#EF4444',
-  },
-  errorText: {
-    fontSize: 14,
-    color: '#EF4444',
-    marginTop: 4,
-  },
-  resetButton: {
-    backgroundColor: '#2563EB',
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  resetButtonDisabled: {
-    opacity: 0.6,
-  },
-  resetButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
   },
   footer: {
     flexDirection: 'row',

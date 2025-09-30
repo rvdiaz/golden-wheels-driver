@@ -6,7 +6,8 @@ export const getUserQuery = gql`
       email
       id
       activeTemplateId
-      name
+      firstName
+      lastName
       phone
       address {
         addressLine1
@@ -15,6 +16,13 @@ export const getUserQuery = gql`
         postalCode
         country
       }
+      profileSteps {
+        id
+        title
+        subSteps
+      }
+      profileSetupSkipped
+      hasSeenProfileCompletionCongrats
       modules {
         icon
         label
@@ -22,9 +30,14 @@ export const getUserQuery = gql`
         metaData
         moduleKey
         path
+        customIcon
         modules {
           label
           metaData
+          icon
+          description
+          color
+          backgroundColor
           moduleKey
         }
       }

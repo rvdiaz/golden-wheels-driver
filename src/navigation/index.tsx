@@ -1,10 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useReactiveVar } from '@apollo/client';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-
-// App modules screens
 import { userData } from '~/store/user';
 import { IModule, ModuleKeys } from '~/store/interface';
 import {
@@ -12,13 +10,15 @@ import {
   createTabNavigationBottomBar,
   getTenantRoutes,
 } from '~/store/helpers';
-import { AuthFormWrapper } from '~/core_modules/auth';
+import { AuthWrapper } from '~/core_modules/auth';
 import { AuthProvider } from '~/codidge_components/auth/context';
 import { usePushNotificationTokenSetup } from '~/core_modules/auth/hooks/usePushNotificationToken';
 import { CustomHeader } from './header/customHeader';
 import { theme } from '~/theme/theme';
 import { View } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { OnboardingFlow, OnboardingStorage } from '~/core_modules/on_boarding';
+import { useSystemSettings } from '~/system_setting/customHook';
+import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -96,37 +96,77 @@ function TabsWithCustomHeader({ tenantModules }: { tenantModules: IModule[] }) {
 
 export default function Navigation() {
   const userInfo = useReactiveVar(userData);
+  const { loading } = useSystemSettings();
 
   usePushNotificationTokenSetup();
 
   const tenantModules = getTenantRoutes(userInfo);
   const nestedNav = createNestedNavigationScreens(tenantModules, Stack);
 
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [accountCreation, setAccountCreation] = useState(false);
+
+  useEffect(() => {
+    checkOnboardingStatus();
+  }, [userInfo]);
+
+  const checkOnboardingStatus = async () => {
+    try {
+      const isCompleted = await OnboardingStorage.isOnboardingCompleted();
+      const isCreated = await OnboardingStorage.isAccountCreated();
+      setAccountCreation(isCreated);
+      setShowOnboarding(!isCompleted);
+    } catch (error) {
+      console.error('Error checking onboarding status:', error);
+      setShowOnboarding(false);
+    }
+  };
+
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+  };
+
+  if (loading) {
+    return (
+      <NavigationContainer>
+        <PageLoading />
+      </NavigationContainer>
+    );
+  }
+
   return (
     <NavigationContainer>
-      <SafeAreaProvider>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          {userInfo ? (
-            <>
-              <Stack.Screen name="MainTabs">
-                {() => <TabsWithCustomHeader tenantModules={tenantModules} />}
-              </Stack.Screen>
-              {nestedNav}
-            </>
-          ) : (
-            // Public/auth stack
-            <>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {userInfo ? (
+          <>
+            <Stack.Screen name="MainTabs">
+              {() => <TabsWithCustomHeader tenantModules={tenantModules} />}
+            </Stack.Screen>
+            {nestedNav}
+          </>
+        ) : (
+          <>
+            {!showOnboarding ? (
               <Stack.Screen name="Auth">
                 {() => (
                   <AuthProvider>
-                    <AuthFormWrapper />
+                    <AuthWrapper
+                      firstRender={!accountCreation}
+                      onRegister={() => {
+                        setAccountCreation(true);
+                      }}
+                    />
                   </AuthProvider>
                 )}
               </Stack.Screen>
-            </>
-          )}
-        </Stack.Navigator>
-      </SafeAreaProvider>
+            ) : (
+              <Stack.Screen name="Onboarding">
+                {() => <OnboardingFlow onComplete={handleOnboardingComplete} />}
+              </Stack.Screen>
+            )}
+          </>
+        )}
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }

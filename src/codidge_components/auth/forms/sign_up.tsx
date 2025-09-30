@@ -185,6 +185,7 @@ export const SignUpForm = ({
                     errorMessage={errors.password?.message}
                     secureTextEntry={!showPassword}
                     autoComplete="off"
+                    textContentType="none"
                     rightIcon={
                       <TouchableOpacity
                         onPress={() => setShowPassword(!showPassword)}
@@ -215,6 +216,7 @@ export const SignUpForm = ({
                     errorMessage={errors.confirmPassword?.message}
                     secureTextEntry={!showConfirmPassword}
                     autoComplete="off"
+                    textContentType="none"
                     rightIcon={
                       <TouchableOpacity
                         onPress={() => setShowConfirmPassword(!showConfirmPassword)}

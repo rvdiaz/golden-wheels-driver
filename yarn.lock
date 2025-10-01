@@ -133,10 +133,10 @@
     lodash "^4.17.21"
     tslib "^2.5.0"
 
-"@aws-amplify/react-native@^1.1.10":
-  version "1.1.10"
-  resolved "https://registry.npmjs.org/@aws-amplify/react-native/-/react-native-1.1.10.tgz"
-  integrity sha512-dldYQ4jVdso9i4JlFoXV/jwz6uklYoE1YwQ0lWXXzY7t12wcb68xIkcW+HBOwR5bKDqj7v/wCJrZxCGJ764rxg==
+"@aws-amplify/react-native@^1.2.1-unstable.aae2834.0":
+  version "1.2.1-unstable.aae2834.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/react-native/-/react-native-1.2.1-unstable.aae2834.0.tgz#9f23ab5c6ab3374f32ee408d3a7713a895e02889"
+  integrity sha512-sWsg453XB6apmee+XMWge2xJ16xRA4DtkAzua5Q3v7A2sg4v/KHH/fDuIkj7EZRVCe6YeQu9wVsiAeBRk5nZSw==
   dependencies:
     base-64 "^1.0.0"
     buffer "^6.0.3"

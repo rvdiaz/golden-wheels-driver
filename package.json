@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.13.8",
-    "@aws-amplify/react-native": "^1.1.10",
+    "@aws-amplify/react-native": "^1.2.1-unstable.aae2834.0",
     "@expo/vector-icons": "^15.0.2",
     "@hookform/resolvers": "^5.2.1",
     "@react-native-async-storage/async-storage": "^2.2.0",

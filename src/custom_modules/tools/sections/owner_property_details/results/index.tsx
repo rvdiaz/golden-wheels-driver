@@ -3,11 +3,12 @@ import { Property } from './property';
 import { IProperty } from '../interfaces';
 import { Owner } from './owner';
 import { MlsHistoryList } from './mlsHistory';
-import { Modal, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
+import { Modal, ScrollView, StyleSheet, View } from 'react-native';
 import { Header } from '~/codidge_components/UI/header';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import { Share } from 'lucide-react-native';
 import { ShareModalPropertyDetails } from './shareModal';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 export const PropertyOwnerResults = ({
   propertyData,
@@ -19,7 +20,7 @@ export const PropertyOwnerResults = ({
   const [shareModalVisible, setShareModalVisible] = useState(false);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#F9FAFB', justifyContent: 'flex-end' }}>
+    <PageSafeContainer style={{ flex: 1, backgroundColor: '#F9FAFB', justifyContent: 'flex-end' }}>
       <Header title="Mortgage Results" rightText="Close" rightAction={dispose} />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
@@ -53,7 +54,7 @@ export const PropertyOwnerResults = ({
           }}
         />
       </Modal>
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 };
 

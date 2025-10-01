@@ -1,17 +1,10 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import * as Icons from 'lucide-react-native';
 import { Header } from '~/codidge_components/UI/header';
 import { Card } from '~/codidge_components/UI/card';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 export const VideoPlayerScreen = ({ onDispose }: { onDispose: () => void }) => {
   const navigation = useNavigation();
@@ -53,7 +46,7 @@ export const VideoPlayerScreen = ({ onDispose }: { onDispose: () => void }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <PageSafeContainer style={styles.container}>
       <Header
         title={video.title}
         rightText="Close"
@@ -139,7 +132,7 @@ export const VideoPlayerScreen = ({ onDispose }: { onDispose: () => void }) => {
           </TouchableOpacity>
         </Card>
       </ScrollView>
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 };
 

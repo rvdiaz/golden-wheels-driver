@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
-  SafeAreaView,
 } from 'react-native';
 import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
 import * as Icons from 'lucide-react-native';

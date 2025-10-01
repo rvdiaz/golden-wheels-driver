@@ -1,10 +1,10 @@
 import React from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '~/codidge_components/UI/header';
 import { useNavigation } from '@react-navigation/native';
 import { useActiveUserGoals } from './hooks/useActiveUserGoals';
 import { GoalList } from './components/GoalList';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 export const GoalsScreen = () => {
   const navigation = useNavigation();
@@ -12,7 +12,7 @@ export const GoalsScreen = () => {
   const { goals, isLoading } = useActiveUserGoals();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <PageSafeContainer style={styles.container}>
       <Header title="Goals" showBack onBack={() => navigation.goBack()} />
 
       <ScrollView
@@ -23,7 +23,7 @@ export const GoalsScreen = () => {
           <GoalList goals={goals || []} displayList={goals || []} isLoading={isLoading} />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 };
 

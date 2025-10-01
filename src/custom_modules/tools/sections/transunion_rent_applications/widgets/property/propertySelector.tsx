@@ -9,7 +9,6 @@ import {
   Modal,
   TouchableOpacity,
   Pressable,
-  SafeAreaView,
 } from 'react-native';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
@@ -20,6 +19,7 @@ import { Search, ChevronDown, Plus, X } from 'lucide-react-native';
 import { PropertyForm } from './propertyForm';
 import { Header } from '~/codidge_components/UI/header';
 import { theme } from '~/theme/theme';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 // Property Selector Widget Component
 interface PropertySelectorWidgetProps {
@@ -55,7 +55,7 @@ export const PropertySelectorWidget: React.FC<PropertySelectorWidgetProps> = ({
   };
 
   return (
-    <SafeAreaView>
+    <PageSafeContainer>
       <View style={styles.widgetContainer}>
         {label && <Text style={styles.widgetLabel}>{label}</Text>}
         <Pressable
@@ -88,7 +88,7 @@ export const PropertySelectorWidget: React.FC<PropertySelectorWidgetProps> = ({
         onPropertySelect={handlePropertySelect}
         selectedPropertyId={selectedProperty?.propertyId}
       />
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 };
 
@@ -244,7 +244,7 @@ export const PropertySelectorModal: React.FC<PropertySelectorModalProps> = ({
 
   return (
     <Modal animationType="slide" transparent={true} visible={visible} onRequestClose={handleClose}>
-      <SafeAreaView style={styles.modalOverlay}>
+      <PageSafeContainer style={styles.modalOverlay}>
         <Header
           title="Select Property"
           showBack={true}
@@ -309,7 +309,7 @@ export const PropertySelectorModal: React.FC<PropertySelectorModalProps> = ({
             )}
           </>
         )}
-      </SafeAreaView>
+      </PageSafeContainer>
     </Modal>
   );
 };

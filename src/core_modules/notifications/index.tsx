@@ -7,10 +7,10 @@ import Constants from 'expo-constants';
 import { Card } from '~/codidge_components/UI/card';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import * as Icons from 'lucide-react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '~/codidge_components/UI/header';
 import { RefreshControl } from 'react-native-gesture-handler';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 const mockNotifications: INotification[] = [
   {
@@ -158,17 +158,17 @@ export const NotificationsScreen = () => {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container}>
+      <PageSafeContainer style={styles.container}>
         <Header title="Notifications" showBack onBack={() => navigation.goBack()} />
         <PageLoading />
-      </SafeAreaView>
+      </PageSafeContainer>
     );
   }
 
   const notifications = data?.getUserNotifications?.items || [];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <PageSafeContainer style={styles.container}>
       <Header title="Notifications" showBack onBack={() => navigation.goBack()} />
 
       <View style={styles.content}>
@@ -184,7 +184,7 @@ export const NotificationsScreen = () => {
           }
         />
       </View>
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 };
 

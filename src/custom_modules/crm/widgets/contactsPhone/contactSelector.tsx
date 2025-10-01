@@ -2,18 +2,17 @@ import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
-  SafeAreaView,
   TouchableOpacity,
   Text,
   Modal,
   FlatList,
-  TextInput,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
 import * as Icons from 'lucide-react-native';
 import { PhoneContact } from '../../interfaces';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 interface IContactSelectorProps {
   showPhoneContacts: boolean;
@@ -70,7 +69,7 @@ export const ContactSelector = ({
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <SafeAreaView style={styles.modalContent}>
+        <PageSafeContainer style={styles.modalContent}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Select Contact</Text>
             <TouchableOpacity onPress={onClose}>
@@ -102,7 +101,7 @@ export const ContactSelector = ({
               </View>
             }
           />
-        </SafeAreaView>
+        </PageSafeContainer>
       </KeyboardAvoidingView>
     </Modal>
   );

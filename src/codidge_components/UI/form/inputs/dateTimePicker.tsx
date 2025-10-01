@@ -34,6 +34,7 @@ export const DateTimeInputField: React.FC<DateInputFieldProps> = ({
   const handleChange = (_event: any, selectedDate?: Date) => {
     if (!selectedDate) {
       setShowModal(false);
+      setStep('date'); // reset step when cancelled
       return;
     }
 
@@ -59,8 +60,18 @@ export const DateTimeInputField: React.FC<DateInputFieldProps> = ({
     } else {
       // Normal case (iOS datetime OR Android date/time separately)
       onChangeText?.(selectedDate);
-      if (Platform.OS === 'android') setShowModal(false);
+      if (Platform.OS === 'android') {
+        setShowModal(false);
+      }
     }
+  };
+
+  // Determine which mode to show on Android
+  const getAndroidMode = () => {
+    if (mode === 'datetime') {
+      return step; // use step for datetime mode
+    }
+    return mode; // use the mode directly for 'date' or 'time'
   };
 
   const inputValue = value
@@ -88,17 +99,17 @@ export const DateTimeInputField: React.FC<DateInputFieldProps> = ({
         hint={hint}
       />
 
-      {showModal && (
+      {Platform.OS === 'android' && showModal && (
         <DateTimePicker
           value={date}
-          mode={Platform.OS === 'ios' ? mode : step}
-          display={Platform.OS === 'ios' ? 'spinner' : step === 'date' ? 'calendar' : 'clock'}
+          mode={getAndroidMode()}
+          display={getAndroidMode() === 'date' ? 'calendar' : 'clock'}
           onChange={handleChange}
         />
       )}
 
       {/* On iOS wrap in modal with Done button */}
-      {Platform.OS === 'ios' && (
+      {Platform.OS === 'ios' && showModal && (
         <Modal transparent animationType="slide" visible={showModal}>
           <View
             style={{

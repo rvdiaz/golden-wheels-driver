@@ -5,6 +5,7 @@ import Navigation from './src/navigation';
 import { Amplify } from 'aws-amplify';
 import { cognitoUserPoolsTokenProvider } from 'aws-amplify/auth/cognito';
 import { loadErrorMessages, loadDevMessages } from '@apollo/client/dev';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 if (Constants.expoConfig?.extra?.EAS_BUILD_PROFILE === 'development') {
   // Adds messages only in a dev environment
@@ -69,7 +70,9 @@ const client = new ApolloClient({
 export default function App() {
   return (
     <ApolloProvider client={client}>
-      <Navigation />
+      <SafeAreaProvider>
+        <Navigation />
+      </SafeAreaProvider>
     </ApolloProvider>
   );
 }

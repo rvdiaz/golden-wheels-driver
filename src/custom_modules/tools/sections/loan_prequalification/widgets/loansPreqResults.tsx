@@ -10,7 +10,7 @@ import {
 } from 'lucide-react-native';
 import { Header } from '~/codidge_components/UI/header';
 import { Card } from '~/codidge_components/UI/card';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 interface LoansPreqResultsProps {
   result: {
@@ -59,7 +59,7 @@ export const LoansPreqResults: React.FC<LoansPreqResultsProps> = ({ result, onDi
   const isGoodDebtRatio = debtToIncomeFloat <= 43;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#F9FAFB', marginTop: 40 }}>
+    <PageSafeContainer style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
       <Header title="Prequalification Results" rightText="Close" rightAction={onDispose} />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
@@ -252,7 +252,7 @@ export const LoansPreqResults: React.FC<LoansPreqResultsProps> = ({ result, onDi
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 };
 

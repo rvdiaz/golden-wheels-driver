@@ -5,11 +5,11 @@ import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
 import { Header } from '~/codidge_components/UI/header';
 import { Card } from '~/codidge_components/UI/card';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { LoansPreqResults } from './widgets/loansPreqResults';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 interface PrequalifiedFormData {
   monthlyIncome: number;
@@ -81,7 +81,7 @@ export const PrequalifiedLoanScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <PageSafeContainer style={styles.container}>
       <Header title="Prequalified Loan Calculator" showBack onBack={() => navigation.goBack()} />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -219,7 +219,7 @@ export const PrequalifiedLoanScreen: React.FC = () => {
           </Modal>
         </Card>
       </ScrollView>
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 };
 

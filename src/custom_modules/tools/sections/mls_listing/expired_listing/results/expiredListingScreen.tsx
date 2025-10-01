@@ -1,13 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Animated,
-  SafeAreaView,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated } from 'react-native';
 import { IMlsListingItemResponse } from '../../interfaces';
 import { calculateDaysOnMarket, formatPrice } from '../../helpers';
 import { Card } from '~/codidge_components/UI/card';
@@ -15,6 +7,7 @@ import { Badge } from '~/codidge_components/UI/badge';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
 import { PhoneCall } from 'lucide-react-native';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 interface PropertyDetailScreenProps {
   listing: IMlsListingItemResponse;
@@ -56,7 +49,7 @@ const ExpiredListingDetail: React.FC<PropertyDetailScreenProps> = ({
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <PageSafeContainer style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={onClose} style={styles.closeButton}>
@@ -228,7 +221,7 @@ const ExpiredListingDetail: React.FC<PropertyDetailScreenProps> = ({
           rightWidget={<PhoneCall size={16} color="#fff" />}
         />
       </View>
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 };
 

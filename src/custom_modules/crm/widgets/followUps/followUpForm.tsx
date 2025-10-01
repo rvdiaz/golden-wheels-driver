@@ -9,7 +9,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
-  SafeAreaView,
 } from 'react-native';
 import { X, User } from 'lucide-react-native';
 import { useForm, Controller } from 'react-hook-form';
@@ -19,6 +18,7 @@ import { DateInputField } from '~/codidge_components/UI/form/inputs/datePicker';
 import { DateTimeInputField } from '~/codidge_components/UI/form/inputs/dateTimePicker';
 import moment from 'moment';
 import { Header } from '~/codidge_components/UI/header';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 interface FollowUpFormValues {
   contactId: string;
@@ -155,7 +155,7 @@ export const AddFollowUpModal: React.FC<AddFollowUpModalProps> = ({
 
   return (
     <Modal visible={visible} transparent={true} animationType="slide" onRequestClose={handleClose}>
-      <SafeAreaView style={styles.container}>
+      <PageSafeContainer style={styles.container}>
         <KeyboardAvoidingView
           style={styles.modalOverlay}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -336,7 +336,7 @@ export const AddFollowUpModal: React.FC<AddFollowUpModalProps> = ({
             </ScrollView>
           </View>
         </KeyboardAvoidingView>
-      </SafeAreaView>
+      </PageSafeContainer>
     </Modal>
   );
 };
@@ -345,8 +345,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
-    paddingHorizontal: 20,
-    paddingTop: 40,
   },
   modalOverlay: {
     flex: 1,

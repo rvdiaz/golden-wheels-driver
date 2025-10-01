@@ -1,16 +1,8 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  Modal,
-  TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
-  Linking,
-  Alert,
-} from 'react-native';
+import { View, Text, Modal, TouchableOpacity, StyleSheet, Linking, Alert } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { IExtendedRenterInput } from '../../interfaces';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 interface PdfReportModalProps {
   visible: boolean;
@@ -113,7 +105,7 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({ visible, onClose
       animationType="slide"
       presentationStyle="pageSheet"
       onRequestClose={onClose}>
-      <SafeAreaView style={styles.container}>
+      <PageSafeContainer style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
@@ -130,7 +122,7 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({ visible, onClose
         </View>
 
         {renderContent()}
-      </SafeAreaView>
+      </PageSafeContainer>
     </Modal>
   );
 };

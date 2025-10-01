@@ -1,20 +1,13 @@
 import { useMutation, useReactiveVar } from '@apollo/client';
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Alert,
-  View,
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Alert, View } from 'react-native';
 import { Header } from '~/codidge_components/UI/header';
 import { createTransUnionPropertyMutation } from '~/custom_modules/tools/api/mutations';
 import { userData } from '~/store/user';
 import { ITransUnionProperty } from '../../interfaces';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 export const PropertyForm = ({
   disposeModalHandler,
@@ -94,7 +87,7 @@ export const PropertyForm = ({
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <PageSafeContainer style={styles.container}>
       <Header
         title="Add Property"
         showBack={true}
@@ -322,7 +315,7 @@ export const PropertyForm = ({
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 };
 
@@ -330,8 +323,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
-    paddingHorizontal: 20,
-    paddingTop: 40,
   },
   keyboardAvoidingView: {
     flex: 1,

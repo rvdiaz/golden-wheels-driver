@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Modal, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Modal, StyleSheet, Text, View } from 'react-native';
 import { Card } from '~/codidge_components/UI/card';
 import { Header } from '~/codidge_components/UI/header';
 import SearchAddressAutoComplete from '../../widgets/searchAutoComplete';
@@ -15,6 +15,7 @@ import { useLazyQuery } from '@apollo/client';
 import { getPropertyEstimationQuery } from '../owner_property_details/graphql/queries';
 import * as Icons from 'lucide-react-native';
 import { ResultsWrapper } from './results';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 interface PropertySearchData {
   address: string;
@@ -58,7 +59,7 @@ export const PropertyEstimationsPage = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <PageSafeContainer style={styles.container}>
       <Header title="Quick CMA Tool" showBack onBack={() => navigation.goBack()} />
       <View style={styles.content}>
         <Card style={styles.searchCard}>
@@ -106,7 +107,7 @@ export const PropertyEstimationsPage = () => {
           }}
         />
       </Modal>
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 };
 

@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { LoadingSpinner } from './loadingSpinner';
 import { Header } from '../header';
 import { useNavigation } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { PageSafeContainer } from '../pageSafeContainer';
 
 interface ILoadingPageProps {
   headerTitle?: string;
@@ -14,14 +14,14 @@ export const PageLoading = ({ style, headerTitle }: ILoadingPageProps) => {
   const navigation = useNavigation();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <PageSafeContainer style={styles.container}>
       {headerTitle && (
         <Header showBack={true} title={headerTitle} onBack={() => navigation.goBack()} />
       )}
       <View style={styles.centerContent}>
         <LoadingSpinner color="gray" />
       </View>
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 };
 

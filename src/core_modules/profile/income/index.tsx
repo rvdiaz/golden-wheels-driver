@@ -8,7 +8,6 @@ import {
   RefreshControl,
   Modal,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import * as Icons from 'lucide-react-native';
 import Constants from 'expo-constants';
@@ -21,6 +20,7 @@ import { TabHeader } from '~/codidge_components/UI/tabs';
 import { getUserIncomes } from './graphql/queries';
 import { IIncome, IncomeStatus } from './interfaces';
 import { IncomeCard } from './widgets/incomeCard';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -55,7 +55,7 @@ export const UserIncomes = () => {
 
   if (error) {
     return (
-      <SafeAreaView style={styles.container}>
+      <PageSafeContainer style={styles.container}>
         <Header showBack={true} title="Incomes" onBack={() => navigation.goBack()} />
         <View style={styles.centerContent}>
           <Text style={styles.errorText}>Error loading incomes</Text>
@@ -63,14 +63,14 @@ export const UserIncomes = () => {
             <Text style={styles.retryButtonText}>Retry</Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </PageSafeContainer>
     );
   }
 
   const incomesCompleted = incomes.filter((income) => income.status === IncomeStatus.completed);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <PageSafeContainer style={styles.container}>
       <Header
         showBack={true}
         title=""
@@ -139,7 +139,7 @@ export const UserIncomes = () => {
           />
         </View>
       </Modal>
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 };
 

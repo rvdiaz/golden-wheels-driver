@@ -7,7 +7,6 @@ import {
   StyleSheet,
   ActivityIndicator,
   Dimensions,
-  SafeAreaView,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { IExtendedRenterInput, IRentApplication } from '../../interfaces';
@@ -16,6 +15,7 @@ import { useQuery } from '@apollo/client';
 import { getApplicantReportQuery } from '~/custom_modules/tools/api/queries';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import { CompactTabHeader } from '~/codidge_components/UI/tabs';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 interface ReportData {
   renterReportItems: {
@@ -251,7 +251,7 @@ export const ApplicantReportsModal: React.FC<ApplicantReportsModalProps> = ({
       animationType="slide"
       presentationStyle="pageSheet"
       onRequestClose={onClose}>
-      <SafeAreaView style={styles.container}>
+      <PageSafeContainer style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
@@ -268,7 +268,7 @@ export const ApplicantReportsModal: React.FC<ApplicantReportsModalProps> = ({
         </View>
 
         {renderContent()}
-      </SafeAreaView>
+      </PageSafeContainer>
     </Modal>
   );
 };

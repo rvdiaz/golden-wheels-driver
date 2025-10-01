@@ -10,7 +10,7 @@ import { ContactDetailsScreen } from '~/custom_modules/crm/widgets/contactDetail
 import { CourseDetailsScreen } from '~/custom_modules/training/sections/CourseDetailsScreen';
 import { ProfileScreen } from '~/core_modules/profile';
 import { PropertyInfoScreen } from '~/custom_modules/tools/sections/owner_property_details';
-import { UserIncomes } from '~/core_modules/profile/income/widgets';
+import { UserIncomes } from '~/core_modules/profile/income';
 import { ExpiredListingPage } from '~/custom_modules/tools/sections/mls_listing/expired_listing';
 import { DashboardBottomHeader } from '~/custom_modules/dashboard/widgets/headers';
 import { DailyTaskSelector } from '~/custom_modules/task/widgets/dailyTaskSelector';

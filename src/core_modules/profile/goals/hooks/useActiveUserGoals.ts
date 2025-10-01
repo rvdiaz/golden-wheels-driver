@@ -7,7 +7,7 @@ import { IGoalProgress } from '../interfaces';
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const useActiveUserGoals = () => {
-  const customer = useReactiveVar(userData);
+  const user = useReactiveVar(userData);
 
   const { data, loading, error, refetch } = useQuery<{ getActiveUserGoals: IGoalProgress[] }>(
     getActiveUserGoals,
@@ -16,8 +16,8 @@ export const useActiveUserGoals = () => {
         tenant: {
           tenantId,
         },
-        userId: customer?.id,
-        userActiveTemplateId: customer?.activeTemplateId,
+        userId: user?.id,
+        userActiveTemplateId: user?.activeTemplateId,
       },
     }
   );

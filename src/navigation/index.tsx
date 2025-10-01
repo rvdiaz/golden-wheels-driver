@@ -19,7 +19,6 @@ import { View } from 'react-native';
 import { OnboardingFlow, OnboardingStorage } from '~/core_modules/on_boarding';
 import { useSystemSettings } from '~/system_setting/customHook';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();

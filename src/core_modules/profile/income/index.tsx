@@ -16,11 +16,11 @@ import { userData } from '~/store/user';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import { Header } from '~/codidge_components/UI/header';
 import { useNavigation } from '@react-navigation/native';
-import IncomeForm from './incomeForm';
+import IncomeForm from './widgets/incomeForm';
 import { TabHeader } from '~/codidge_components/UI/tabs';
-import { getUserIncomes } from '../graphql/queries';
-import { IIncome, IncomeStatus } from '../interfaces';
-import { IncomeCard } from './incomeCard';
+import { getUserIncomes } from './graphql/queries';
+import { IIncome, IncomeStatus } from './interfaces';
+import { IncomeCard } from './widgets/incomeCard';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 

@@ -9,7 +9,7 @@ import { userData } from '~/store/user';
 import { useReactiveVar } from '@apollo/client';
 import moment from 'moment';
 import { moduleScreens } from '~/store/config';
-import { NotificationButton } from '~/core_modules/notifications/widgets/NotificationButton';
+import { NotificationButton } from '~/core_modules/notifications/widgets/notificationButton';
 
 interface CustomHeaderProps {
   navigation: any;

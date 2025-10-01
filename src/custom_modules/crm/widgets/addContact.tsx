@@ -1,17 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   StyleSheet,
   ScrollView,
-  SafeAreaView,
   Alert,
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
   Text,
-  Modal,
-  FlatList,
-  TextInput,
 } from 'react-native';
 import * as Icons from 'lucide-react-native';
 import { useForm, Controller } from 'react-hook-form';
@@ -26,6 +22,7 @@ import { CONTACT_CATEGORY_OPTIONS, CONTACT_TYPE_OPTIONS } from '../helpers';
 import { theme } from '~/theme/theme';
 import { useContactsQueries } from '../hooks/contactMutations';
 import { ContactSelector } from './contactsPhone/contactSelector';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -202,7 +199,7 @@ export default function ContactForm({
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <PageSafeContainer style={styles.container}>
       <Header
         title={contact?.id ? 'Edit Contact' : 'New Contact'}
         showBack={true}
@@ -274,7 +271,6 @@ export default function ContactForm({
                 control={control}
                 name="lastName"
                 rules={{
-                  required: 'Last Name is required',
                   minLength: {
                     value: 2,
                     message: 'Name must be at least 2 characters',
@@ -283,7 +279,6 @@ export default function ContactForm({
                 render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
                     label="Last name"
-                    required={true}
                     placeholder="Last name"
                     placeholderTextColor="#9ca3af"
                     value={value}
@@ -336,7 +331,6 @@ export default function ContactForm({
                 control={control}
                 name="email"
                 rules={{
-                  required: 'Email is required',
                   pattern: {
                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                     message: 'Please enter a valid email address',
@@ -346,7 +340,6 @@ export default function ContactForm({
                   <InputField
                     leftIcon={<Icons.Mail size={16} color="#6B7280" />}
                     label="Email"
-                    required={true}
                     placeholder="email@example.com"
                     placeholderTextColor="#9ca3af"
                     value={value}
@@ -459,7 +452,7 @@ export default function ContactForm({
         onClose={() => setShowPhoneContacts(false)}
         phoneContacts={phoneContacts}
       />
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 }
 
@@ -467,8 +460,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
-    paddingHorizontal: 20,
-    paddingTop: 40,
   },
   form: {
     flex: 1,

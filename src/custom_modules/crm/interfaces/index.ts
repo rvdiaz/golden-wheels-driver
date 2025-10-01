@@ -12,7 +12,7 @@ export enum ContactCategory {
 
 export enum ContactType {
   LEAD = 'lead',
-  CLIENT = 'client',
+  Contact = 'contact',
 }
 
 export enum ActiveCrmTabs {

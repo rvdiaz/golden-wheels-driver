@@ -16,11 +16,11 @@ import { userData } from '~/store/user';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import { Header } from '~/codidge_components/UI/header';
 import { useNavigation } from '@react-navigation/native';
-import IncomeForm from './incomeForm';
+import IncomeForm from './widgets/incomeForm';
 import { TabHeader } from '~/codidge_components/UI/tabs';
-import { getUserIncomes } from '../graphql/queries';
-import { IIncome, IncomeStatus } from '../interfaces';
-import { IncomeCard } from './incomeCard';
+import { getUserIncomes } from './graphql/queries';
+import { IIncome, IncomeStatus } from './interfaces';
+import { IncomeCard } from './widgets/incomeCard';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -67,12 +67,15 @@ export const UserIncomes = () => {
     );
   }
 
+  const incomesCompleted = incomes.filter((income) => income.status === IncomeStatus.completed);
+
   return (
     <SafeAreaView style={styles.container}>
       <Header
         showBack={true}
-        title="Incomes"
+        title=""
         onBack={() => navigation.goBack()}
+        leftText="Incomes"
         rightText="Add Income"
         rightAction={() => {
           setmodal(true);
@@ -81,11 +84,24 @@ export const UserIncomes = () => {
 
       <TabHeader
         tabs={[
-          { key: IncomeStatus.pending, label: 'Pending', Icon: Icons.Hourglass },
-          { key: IncomeStatus.completed, label: 'Completed', Icon: Icons.CheckCircle },
+          {
+            key: IncomeStatus.pending,
+            label: 'Pending',
+            Icon: Icons.Hourglass,
+            indexNumber: incomes.length - incomesCompleted.length,
+          },
+          {
+            key: IncomeStatus.completed,
+            label: 'Completed',
+            Icon: Icons.CheckCircle,
+            indexNumber: incomesCompleted.length,
+          },
         ]}
         onTabChange={(key) => {
           setactiveStatus(key as IncomeStatus);
+        }}
+        containerStyle={{
+          marginTop: 10,
         }}
       />
 

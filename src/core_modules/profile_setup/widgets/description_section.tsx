@@ -4,7 +4,7 @@ import { WebView } from 'react-native-webview';
 import { theme } from '~/theme/theme';
 
 export default function DescriptionSection({ htmlDescription }: { htmlDescription: string }) {
-  const [webViewHeight, setWebViewHeight] = useState(400); // Increased fallback height
+  const [webViewHeight, setWebViewHeight] = useState(200); // Increased fallback height
 
   const injectedJS = `
     (function() {

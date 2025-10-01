@@ -14,6 +14,7 @@ import { userData } from '~/store/user';
 import DropdownComponent from '~/codidge_components/UI/dropdown';
 import { DateInputField } from '~/codidge_components/UI/form/inputs/datePicker';
 import { INCOME_SOURCE } from '../helpers';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -165,9 +166,10 @@ export default function IncomeForm({ dispose, income }: { dispose: () => void; i
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <PageSafeContainer style={styles.container}>
       <Header
-        title={income ? 'Update Income' : 'New Income'}
+        title=""
+        leftText={income ? 'Update Income' : 'New Income'}
         rightAction={() => {
           dispose();
         }}
@@ -332,7 +334,7 @@ export default function IncomeForm({ dispose, income }: { dispose: () => void; i
           title={'Save Income'}
         />
       </View>
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 }
 
@@ -340,7 +342,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
-    paddingTop: 40,
   },
   form: {
     flex: 1,

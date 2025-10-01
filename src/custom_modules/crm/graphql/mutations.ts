@@ -38,6 +38,7 @@ export const updateContactMutation = gql`
       firstName
       lastName
       email
+      phone
       address
       category
       priority
@@ -46,6 +47,7 @@ export const updateContactMutation = gql`
       notes
       type
       convertedAt
+      updatedAt
     }
   }
 `;

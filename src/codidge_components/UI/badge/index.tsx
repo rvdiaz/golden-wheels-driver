@@ -1,14 +1,15 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { CheckCircle, XCircle, Info, AlertTriangle } from 'lucide-react-native'; // icons
+import { theme } from '~/theme/theme';
 
-type BadgeType = 'success' | 'error' | 'warning' | 'info';
+type BadgeType = 'success' | 'error' | 'warning' | 'info' | 'normal';
 
 interface BadgeProps {
   children: React.ReactNode;
   type?: BadgeType;
-  style?: any;
-  textStyle?: any;
+  style?: ViewStyle;
+  textStyle?: TextStyle;
   displayIcon?: boolean;
 }
 
@@ -25,6 +26,7 @@ export const Badge: React.FC<BadgeProps> = ({
     error: { bg: '#F87171', border: '#B91C1C', icon: <XCircle size={14} color="white" /> },
     warning: { bg: '#FBBF24', border: '#B45309', icon: <AlertTriangle size={14} color="white" /> },
     info: { bg: '#60A5FA', border: '#2563EB', icon: <Info size={14} color="white" /> },
+    normal: { bg: '#E2E8F0', border: '#E2E8F0', icon: <Info size={14} color="gray" /> },
   };
 
   const { bg, border, icon } = typeColors[type];
@@ -43,7 +45,7 @@ const styles = StyleSheet.create({
   badge: {
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 6,
+    borderRadius: theme.borderRadius.lg,
     borderWidth: 1,
     alignSelf: 'flex-start',
   },
@@ -54,7 +56,7 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontSize: 12,
-    fontWeight: '500',
+    fontWeight: '600',
     color: 'white',
   },
 });

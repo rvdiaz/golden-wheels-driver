@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  TouchableOpacity,
-  ScrollView,
-  Modal,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Header } from '../../../codidge_components/UI/header';
 import { Card } from '../../../codidge_components/UI/card';
@@ -21,6 +13,14 @@ import Constants from 'expo-constants';
 import { AddFollowUpModal } from './followUps/followUpForm';
 import { useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import {
+  getCategoryColors,
+  getUserInitials,
+  handleCallContact,
+  handleEmailContact,
+  handleSmsContact,
+} from '../helpers';
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const ContactDetailsScreen = () => {
@@ -40,9 +40,10 @@ export const ContactDetailsScreen = () => {
   const [contact, setContact] = useState(contactRuote);
 
   const [modal, setmodal] = useState(false);
+  const categoryColors = getCategoryColors(contact.category ?? '');
 
   return (
-    <SafeAreaView style={styles.container}>
+    <PageSafeContainer style={styles.container}>
       <Header
         title="Contact Details"
         showBack
@@ -58,8 +59,16 @@ export const ContactDetailsScreen = () => {
       <ScrollView style={styles.content}>
         <Card style={styles.profileCard}>
           <View style={styles.profileHeader}>
-            <View style={styles.avatarContainer}>
-              <Icons.User size={40} color="#6B7280" />
+            <View
+              style={[
+                styles.avatar,
+                {
+                  backgroundColor: categoryColors.bg,
+                },
+              ]}>
+              <Text style={[styles.initials, { color: categoryColors.text }]}>
+                {getUserInitials(contact.firstName, contact.lastName)}
+              </Text>
             </View>
             <View style={styles.profileInfo}>
               <View style={{ flexDirection: 'row', gap: 2 }}>
@@ -77,54 +86,54 @@ export const ContactDetailsScreen = () => {
           </View>
 
           <View style={styles.contactInfo}>
-            <View style={styles.contactItem}>
-              <Icons.Mail size={20} color="#6B7280" />
-              <Text style={styles.contactText}>{contact.email}</Text>
-            </View>
-            <View style={styles.contactItem}>
-              <Icons.Phone size={20} color="#6B7280" />
-              <Text style={styles.contactText}>{contact.phone}</Text>
-            </View>
+            {contact.email && (
+              <View style={styles.contactItem}>
+                <Icons.Mail size={20} color="#6B7280" />
+                <Text style={styles.contactText}>{contact.email}</Text>
+              </View>
+            )}
+            {contact.phone && (
+              <View style={styles.contactItem}>
+                <Icons.Phone size={20} color="#6B7280" />
+                <Text style={styles.contactText}>{contact.phone}</Text>
+              </View>
+            )}
           </View>
 
-          <View style={styles.actionButtons}>
-            <TouchableOpacity style={[styles.actionButton, styles.callButton]}>
-              <Icons.Phone size={20} color="white" />
-              <Text style={styles.actionButtonText}>Call</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.actionButton, styles.emailButton]}>
-              <Icons.Mail size={20} color="white" />
-              <Text style={styles.actionButtonText}>Email</Text>
-            </TouchableOpacity>
+          <View style={styles.actions}>
+            {contact.phone && (
+              <TouchableOpacity
+                onPress={() => handleCallContact(contact.phone)}
+                style={styles.actionButton}>
+                <Icons.Phone size={18} color="#2563EB" />
+                <Text style={styles.actionText}>Call</Text>
+              </TouchableOpacity>
+            )}
+            {contact.phone && (
+              <TouchableOpacity
+                onPress={() => handleSmsContact(contact.phone)}
+                style={styles.actionButton}>
+                <Icons.MessageCircle size={18} color="#10B981" />
+                <Text style={styles.actionText}>SMS</Text>
+              </TouchableOpacity>
+            )}
+            {contact.email && (
+              <TouchableOpacity
+                onPress={() => handleEmailContact(contact.email)}
+                style={styles.actionButton}>
+                <Icons.Mail size={18} color="#8B5CF6" />
+                <Text style={styles.actionText}>Email</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </Card>
 
-        <Card style={styles.activityCard}>
-          <Text style={styles.sectionTitle}>Recent Activity</Text>
-          <View style={styles.activityItem}>
-            <View style={styles.activityIcon}>
-              <Icons.Phone size={16} color="#2563EB" />
-            </View>
-            <View style={styles.activityContent}>
-              <Text style={styles.activityText}>Phone call - 15 minutes</Text>
-              <Text style={styles.activityDate}>March 15, 2024</Text>
-            </View>
-          </View>
-          <View style={styles.activityItem}>
-            <View style={styles.activityIcon}>
-              <Icons.Mail size={16} color="#10B981" />
-            </View>
-            <View style={styles.activityContent}>
-              <Text style={styles.activityText}>Email sent - Property details</Text>
-              <Text style={styles.activityDate}>March 12, 2024</Text>
-            </View>
-          </View>
-        </Card>
-
-        <Card style={styles.notesCard}>
-          <Text style={styles.sectionTitle}>Notes</Text>
-          <Text style={styles.notesText}>{contact.notes}</Text>
-        </Card>
+        {contact.notes && (
+          <Card style={styles.notesCard}>
+            <Text style={styles.sectionTitle}>Notes</Text>
+            <Text style={styles.notesText}>{contact.notes}</Text>
+          </Card>
+        )}
       </ScrollView>
       <Modal
         animationType="slide"
@@ -174,7 +183,7 @@ export const ContactDetailsScreen = () => {
           }
         }}
       />
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 };
 
@@ -191,22 +200,48 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 16,
   },
+  avatar: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  initials: {
+    fontSize: 20,
+    fontWeight: '700',
+  },
   profileHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
   },
-  avatarContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#F3F4F6',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-  },
   profileInfo: {
     flex: 1,
+  },
+  actions: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingBottom: 16,
+  },
+  actionButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: '#F9FAFB',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    gap: 6,
+  },
+  actionText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#374151',
   },
   profileName: {
     fontSize: 20,
@@ -231,31 +266,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#374151',
     marginLeft: 12,
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  actionButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    borderRadius: 8,
-    marginHorizontal: 4,
-  },
-  callButton: {
-    backgroundColor: '#2563EB',
-  },
-  emailButton: {
-    backgroundColor: '#10B981',
-  },
-  actionButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
   },
   activityCard: {
     padding: 20,

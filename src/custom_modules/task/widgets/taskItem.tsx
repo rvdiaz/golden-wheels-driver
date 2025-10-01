@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { GoalType, ITask } from '../interfaces';
-import { formatTaskTime, getDurationInMinutes, getTaskConfigByKey, isActiveTask } from '../helpers';
+import {
+  formatTaskTime,
+  getDurationInMinutes,
+  getTaskColorByPriority,
+  getTaskColorByType,
+  getTaskConfigByKey,
+  getTaskStatus,
+  isActiveTask,
+} from '../helpers';
 import { useMutation, useReactiveVar } from '@apollo/client';
 import { completeTaskMutation } from '../graphql/mutations';
 import { userData } from '~/store/user';
@@ -152,9 +160,17 @@ export const TaskItem = ({ task }: { task: ITask }) => {
     setvalue(task.isCompleted ?? false);
   };
 
+  const taskStatus = getTaskStatus(task);
+  const borderColor = getTaskColorByType(taskStatus);
+
   return (
     <>
-      <View key={task.id} style={[styles.taskItem, { backgroundColor: 'white' }]}>
+      <View
+        key={task.id}
+        style={[
+          styles.taskItem,
+          { backgroundColor: 'white', borderBottomWidth: 4, borderBottomColor: borderColor },
+        ]}>
         <View style={styles.taskContent}>
           <View style={styles.taskHeader}>
             <View style={{ flexDirection: 'row', flex: 1 }}>
@@ -166,27 +182,32 @@ export const TaskItem = ({ task }: { task: ITask }) => {
               </View>
             </View>
 
-            {isActive ? (
-              <SimpleCheckbox checked={value} onToggle={handleCompleteTask} />
-            ) : task.isCompleted ? (
-              <Badge type="success" displayIcon={false}>
-                Completed
-              </Badge>
-            ) : (
-              <Badge type="error" displayIcon={false}>
-                Incompleted
-              </Badge>
+            {isActive && (
+              <SimpleCheckbox
+                color={theme.colors.success}
+                checked={value}
+                onToggle={handleCompleteTask}
+              />
             )}
           </View>
 
           <View style={styles.taskMeta}>
-            <View style={[styles.taskCategoryBadge]}>
+            <View style={styles.leftFooter}>
+              <Badge
+                displayIcon={false}
+                type="normal"
+                textStyle={{
+                  color: '#636363',
+                }}>
+                {taskConfiguration?.label ?? task.category}
+              </Badge>
+            </View>
+            {/*  <View style={[styles.taskCategoryBadge]}>
               <Text style={[styles.taskBadgeText]}>
                 {taskConfiguration?.label ?? task.category}
               </Text>
-            </View>
+            </View> */}
             <View style={styles.rightFooter}>
-              <Image source={require('assets/highPriority.png')} />
               <Text style={styles.taskTime}>
                 {formatTaskTime(task.startTime.toString())} -{' '}
                 {formatTaskTime(task.endTime.toString())}
@@ -208,11 +229,6 @@ export const TaskItem = ({ task }: { task: ITask }) => {
 };
 
 const styles = StyleSheet.create({
-  tasksCard: {
-    flex: 2,
-    borderWidth: 2,
-    borderColor: '#F3F4F6',
-  },
   tasksTitle: {
     fontSize: 18,
     fontWeight: '600',
@@ -234,6 +250,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 2,
     borderColor: '#F3F4F6',
+  },
+  leftFooter: {
+    gap: 5,
   },
   rightFooter: { alignItems: 'flex-end', marginBottom: 4, gap: 2 },
   taskCheckboxEmpty: {
@@ -278,16 +297,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     justifyContent: 'space-between',
     marginTop: 21,
-  },
-  taskCategoryBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 14,
-    backgroundColor: '#ededed',
-  },
-  taskBadgeText: {
-    fontSize: 11,
-    fontWeight: '600',
   },
   taskProgress: {
     fontSize: 10,

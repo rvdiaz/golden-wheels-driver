@@ -15,72 +15,56 @@ export const ToolsScreen: React.FC = () => {
   const currentTools =
     currentUserData?.modules.find((mod) => mod.moduleKey === ModuleKeys.tools)?.modules ?? [];
 
-  const documentationLinks = [
-    {
-      title: 'Mortgage Basics',
-      description: 'Understanding mortgage calculations and terms',
-      url: '',
-      icon: 'BookOpen',
-    },
-    {
-      title: 'Real Estate Math',
-      description: 'Essential calculations for real estate professionals',
-      url: '',
-      icon: 'Calculator',
-    },
-    {
-      title: 'Loan Qualification',
-      description: 'Guidelines for loan prequalification',
-      url: '',
-      icon: 'FileText',
-    },
-  ];
+  // Function to adjust color opacity
+  const adjustColorOpacity = (color: string, opacity: number): string => {
+    // Handle hex colors
+    if (color.startsWith('#')) {
+      const hex = color.replace('#', '');
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    }
+    // Handle rgb/rgba colors
+    if (color.startsWith('rgb')) {
+      return color.replace(/rgba?\(([^)]+)\)/, (match, values) => {
+        const parts = values.split(',').map((v: string) => v.trim());
+        return `rgba(${parts[0]}, ${parts[1]}, ${parts[2]}, ${opacity})`;
+      });
+    }
+    return `rgba(0, 0, 0, ${opacity})`;
+  };
 
   const renderTool = (tool: IFeatureModule) => {
-    let IconComponent = Icons.Calculator; // default fallback
+    let IconComponent = Icons.Calculator;
     if (tool.icon && (Icons as any)[tool.icon]) {
       IconComponent = (Icons as any)[tool.icon];
     } else {
       console.warn('Icon not found for', tool.icon);
     }
 
+    const iconColor = tool?.color ?? '#000';
+    const iconBackgroundColor = adjustColorOpacity(iconColor, 0.15);
+
     return (
       <TouchableOpacity
         key={tool.moduleKey}
-        style={styles.toolCard}
+        style={[styles.toolCard, { backgroundColor: tool?.backgroundColor ?? '#FFF' }]}
         onPress={() => {
           navigation.navigate(tool.moduleKey as never);
         }}>
-        <View style={[styles.toolIcon, { backgroundColor: tool?.backgroundColor ?? '#FFF' }]}>
-          <IconComponent size={28} />
+        <View style={[styles.toolIcon, { backgroundColor: iconBackgroundColor }]}>
+          <IconComponent size={28} color={iconColor} />
         </View>
-        <View style={styles.toolContent}>
-          <Text style={styles.toolTitle}>{tool?.label ?? ''}</Text>
-          <Text style={styles.toolDescription}>{tool?.description ?? ''}</Text>
-        </View>
-        <View style={styles.toolArrow}>
-          <Icons.ChevronRight size={20} color="#9CA3AF" />
-        </View>
+        <Text style={styles.toolTitle}>{tool?.label ?? ''}</Text>
+        <Text style={styles.toolDescription}>{tool?.description ?? ''}</Text>
       </TouchableOpacity>
     );
   };
 
-  const renderDocLink = (doc: any) => {
-    const IconComponent = (Icons as any)[doc.icon] || Icons.BookOpen;
-
-    return (
-      <TouchableOpacity key={doc.title} style={styles.docCard} onPress={() => {}}>
-        <View style={styles.docIcon}>
-          <IconComponent size={20} color="#6B7280" />
-        </View>
-        <View style={styles.docContent}>
-          <Text style={styles.docTitle}>{doc.title}</Text>
-          <Text style={styles.docDescription}>{doc.description}</Text>
-        </View>
-        <Icons.ExternalLink size={16} color="#9CA3AF" />
-      </TouchableOpacity>
-    );
-  };
+  // Split tools into two columns for masonry effect
+  const leftColumn = currentTools.filter((_, index) => index % 2 === 0);
+  const rightColumn = currentTools.filter((_, index) => index % 2 === 1);
 
   return (
     <View style={styles.container}>
@@ -92,39 +76,10 @@ export const ToolsScreen: React.FC = () => {
           </Text>
         </View>
 
-        <View style={styles.toolsGrid}>{currentTools.map((tool) => renderTool(tool))}</View>
-
-        {/* <Card style={styles.featuredCard}>
-          <View style={styles.featuredHeader}>
-            <Icons.Lightbulb size={24} color="#F59E0B" />
-            <Text style={styles.featuredTitle}>Pro Tip</Text>
-          </View>
-          <Text style={styles.featuredText}>
-            Use these calculators during client meetings to provide instant, professional estimates.
-            Always recommend clients get pre-approved with a lender for accurate qualification.
-          </Text>
-        </Card>
-
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Documentation & Resources</Text>
-          <Text style={styles.sectionSubtitle}>
-            Learn more about real estate calculations and industry standards
-          </Text>
+        <View style={styles.masonryContainer}>
+          <View style={styles.column}>{leftColumn.map((tool) => renderTool(tool))}</View>
+          <View style={styles.column}>{rightColumn.map((tool) => renderTool(tool))}</View>
         </View>
-
-        <View style={styles.docSection}>{documentationLinks.map(renderDocLink)}</View>
-
-        <Card style={styles.disclaimerCard}>
-          <View style={styles.disclaimerHeader}>
-            <Icons.AlertTriangle size={20} color="#F59E0B" />
-            <Text style={styles.disclaimerTitle}>Important Notice</Text>
-          </View>
-          <Text style={styles.disclaimerText}>
-            These calculators provide estimates only. Actual loan terms, payments, and
-            qualifications may vary based on lender requirements, credit scores, and other factors.
-            Always consult with qualified mortgage professionals for accurate information.
-          </Text>
-        </Card> */}
       </ScrollView>
     </View>
   );
@@ -153,140 +108,41 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     lineHeight: 24,
   },
-  toolsGrid: {
-    marginBottom: 24,
+  masonryContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  column: {
+    flex: 1,
+    paddingHorizontal: 4,
   },
   toolCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'white',
     borderRadius: 16,
     padding: 20,
-    marginBottom: 16,
+    marginBottom: 12,
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
-    borderWidth: 1,
-    borderColor: '#F3F4F6',
   },
   toolIcon: {
     width: 56,
     height: 56,
-    borderRadius: 16,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 16,
-  },
-  toolContent: {
-    flex: 1,
+    marginBottom: 16,
   },
   toolTitle: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '600',
     color: '#1F2937',
-    marginBottom: 6,
+    marginBottom: 8,
   },
   toolDescription: {
     fontSize: 14,
     color: '#6B7280',
-    lineHeight: 18,
-  },
-  toolArrow: {
-    marginLeft: 8,
-  },
-  featuredCard: {
-    backgroundColor: '#FFFBEB',
-    borderWidth: 1,
-    borderColor: '#FED7AA',
-    padding: 20,
-    marginBottom: 24,
-  },
-  featuredHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  featuredTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#92400E',
-    marginLeft: 8,
-  },
-  featuredText: {
-    fontSize: 14,
-    color: '#A16207',
     lineHeight: 20,
-  },
-  sectionHeader: {
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1F2937',
-    marginBottom: 4,
-  },
-  sectionSubtitle: {
-    fontSize: 14,
-    color: '#6B7280',
-  },
-  docSection: {
-    marginBottom: 24,
-  },
-  docCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-  },
-  docIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 8,
-    backgroundColor: '#F9FAFB',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  docContent: {
-    flex: 1,
-  },
-  docTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1F2937',
-    marginBottom: 2,
-  },
-  docDescription: {
-    fontSize: 12,
-    color: '#6B7280',
-  },
-  disclaimerCard: {
-    backgroundColor: '#FFFBEB',
-    borderWidth: 1,
-    borderColor: '#FED7AA',
-    padding: 16,
-  },
-  disclaimerHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  disclaimerTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#92400E',
-    marginLeft: 8,
-  },
-  disclaimerText: {
-    fontSize: 12,
-    color: '#A16207',
-    lineHeight: 16,
   },
 });

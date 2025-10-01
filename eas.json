@@ -6,7 +6,7 @@
     },
     "production": {
       "developmentClient": false,
-      "distribution": "internal",
+      "distribution": "store",
       "env": {
         "GRAPHQL_API_KEY": "GRAPHQL_API_KEY",
         "COGNITO_USERPOOL_ID": "COGNITO_USERPOOL_ID",

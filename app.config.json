@@ -19,7 +19,7 @@
       "expo-notifications"
     ],
     "orientation": "portrait",
-    "icon": "assets/icon.png",
+    "icon": "assets/appIcon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "assets/splash.png",
@@ -29,13 +29,15 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.myvirtualboss.realestate"
+      "bundleIdentifier": "com.myvirtualboss.realestate",
+      "buildNumber": "1.0.0"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "assets/adaptive-icon.png",
+        "foregroundImage": "assets/appIcon.png",
         "backgroundColor": "#ffffff"
       },
+      "versionCode": 1,
       "edgeToEdgeEnabled": true
     },
     "extra": {

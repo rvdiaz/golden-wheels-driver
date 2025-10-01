@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import * as Icons from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { NotificationButton } from '~/components/NotificationButton';
 import { ModuleKeys } from '~/store/interface';
 import IconButton from '~/codidge_components/UI/button/IconButton';
 import { theme } from '~/theme/theme';
@@ -10,6 +9,7 @@ import { userData } from '~/store/user';
 import { useReactiveVar } from '@apollo/client';
 import moment from 'moment';
 import { moduleScreens } from '~/store/config';
+import { NotificationButton } from '~/core_modules/notifications/widgets/notificationButton';
 
 interface CustomHeaderProps {
   navigation: any;
@@ -82,7 +82,7 @@ export const CustomHeader: React.FC<CustomHeaderProps> = ({
 
           {/* Right Section */}
           <View style={styles.rightSection}>
-            <NotificationButton badgeCount={2} navigation={navigation} />
+            <NotificationButton navigation={navigation} />
             <IconButton
               onPress={() => navigation.navigate(ModuleKeys.profile)}
               variant="plain"

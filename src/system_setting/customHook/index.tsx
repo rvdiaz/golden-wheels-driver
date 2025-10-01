@@ -24,8 +24,6 @@ export const useSystemSettings = (): UseProfileSetupConfigResult => {
   const parsedConfig =
     typeof rawConfig === 'string' ? JSON.parse(rawConfig) : (rawConfig ?? { categories: [] });
 
-  console.log('::::parsedConfig', parsedConfig);
-
   const categories: IProfileCategory[] = parsedConfig.categories ?? [];
 
   const allTasks: IProfileTask[] = categories.flatMap((category) => category.tasks || []);

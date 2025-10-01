@@ -88,6 +88,7 @@ export const AuthWrapper = ({
             financialGoals,
             swotAnalysis,
             visionMission,
+            notificationToken: pushToken,
           },
           userId,
         },

@@ -11,6 +11,32 @@ export const TASK_PRIORITY_OPTIONS = Object.values(TaskPriority).map((value) => 
   value,
 }));
 
+export const getTaskColorByType = (type: string) => {
+  switch (type) {
+    case 'inProgress':
+      return '#F59E0B ';
+    case 'inComplete':
+      return '#DC2626';
+    case 'complete':
+      return '#22C55E';
+    default:
+      return '#E2E8F0';
+  }
+};
+
+export const getTaskColorByPriority = (priority: TaskPriority) => {
+  switch (priority) {
+    case TaskPriority.high:
+      return '#F59E0B ';
+    case TaskPriority.medium:
+      return '#DC2626';
+    case TaskPriority.low:
+      return '#22C55E';
+    default:
+      return '#E2E8F0';
+  }
+};
+
 export const formatTaskDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString();
 };
@@ -101,4 +127,29 @@ export const getDurationInMinutes = (startTime: string, endTime: string): number
   const endTotal = endHour * 60 + endMinute;
 
   return endTotal - startTotal;
+};
+
+export const getTaskStatus = (task: ITask): string => {
+  const now = new Date();
+  const taskEndTime = new Date(task.endTime);
+  const taskStartTime = new Date(task.startTime);
+  const isActive = isActiveTask(task);
+
+  // If task is completed
+  if (task.isCompleted) {
+    return 'complete';
+  }
+
+  // If task is incomplete and end time has passed
+  if (!task.isCompleted && !isActive) {
+    return 'inComplete';
+  }
+
+  // If task is currently in progress (between start and end time)
+  if (taskStartTime <= now && taskEndTime >= now && !task.isCompleted) {
+    return 'inProgress';
+  }
+
+  // For future tasks or based on source
+  return task.source; // Returns 'user' or 'admin'
 };

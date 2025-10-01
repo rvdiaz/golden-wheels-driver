@@ -83,7 +83,7 @@ export const CRMScreen: React.FC = () => {
           lastName,
           phone: pc.phoneNumbers?.[0]?.number || '',
           email: pc.emails?.[0]?.email || '',
-          type: asLeads ? ContactType.LEAD : ContactType.CLIENT, // ContactType.LEAD or ContactType.CLIENT
+          type: asLeads ? ContactType.LEAD : ContactType.Contact, // ContactType.LEAD or ContactType.CLIENT
           category: category, // The selected category
           priority: 'medium',
           leadStatus: asLeads ? 'new' : undefined,

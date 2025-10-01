@@ -41,7 +41,7 @@ export const Header: React.FC<HeaderProps> = ({
       <View style={[styles.content, contentStyle]}>
         {/* Left section */}
         <View style={styles.leftSection}>
-          <View style={{ flexDirection: 'row', gap: 2 }}>
+          <View style={{ flexDirection: 'row', gap: 2, alignItems: 'center' }}>
             {showBack && (
               <TouchableOpacity onPress={onBack} style={styles.backButton}>
                 {leftWidget ? (

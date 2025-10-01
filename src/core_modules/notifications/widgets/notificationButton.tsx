@@ -2,29 +2,43 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ModuleKeys } from '~/store/interface';
+import Constants from 'expo-constants';
 
 interface NotificationButtonProps {
   navigation: any;
-  badgeCount?: number;
   showBadge?: boolean;
   badgeColor?: string;
   iconColor?: string;
   iconSize?: number;
 }
 
+const tenantId = Constants.expoConfig?.extra?.TENANTID;
+
 export const NotificationButton: React.FC<NotificationButtonProps> = ({
   navigation,
-  badgeCount = 0,
   showBadge = true,
   badgeColor = '#EF4444', // Red color
   iconColor = '#fff',
   iconSize = 22,
 }) => {
-  // Don't show badge if count is 0 or showBadge is false
-  const shouldShowBadge = showBadge && badgeCount > 0;
+  const user = useReactiveVar(userData);
 
+  // Don't show badge if count is 0 or showBadge is false
+  const { data } = useQuery<GetUserNotificationsResponse>(getUserNotificationsQuery, {
+    variables: {
+      tenant: {
+        tenantId,
+      },
+      userId: user?.id,
+      limit: 50,
+    },
+  });
+
+  const newNotificationsCount = data?.getUserNotifications?.items?.length ?? 0;
+
+  const shouldShowBadge = showBadge && newNotificationsCount > 0;
   // Format badge text (show 99+ for counts over 99)
-  const badgeText = badgeCount > 99 ? '99+' : badgeCount.toString();
+  const badgeText = newNotificationsCount > 99 ? '99+' : newNotificationsCount.toString();
 
   return (
     <TouchableOpacity
@@ -47,18 +61,36 @@ export const NotificationButton: React.FC<NotificationButtonProps> = ({
 // Alternative version with animated badge
 import { useEffect, useRef } from 'react';
 import { Animated } from 'react-native';
+import { useQuery, useReactiveVar } from '@apollo/client';
+import { GetUserNotificationsResponse } from '../interfaces';
+import { getUserNotificationsQuery } from '../graphql';
+import { userData } from '~/store/user';
 
 export const AnimatedNotificationButton: React.FC<NotificationButtonProps> = ({
   navigation,
-  badgeCount = 0,
   showBadge = true,
   badgeColor = '#EF4444',
   iconColor = '#fff',
   iconSize = 22,
 }) => {
+  const user = useReactiveVar(userData);
+
+  // Don't show badge if count is 0 or showBadge is false
+  const { data } = useQuery<GetUserNotificationsResponse>(getUserNotificationsQuery, {
+    variables: {
+      tenant: {
+        tenantId,
+      },
+      userId: user?.id,
+      limit: 50,
+    },
+  });
+
+  const newNotificationsCount = data?.getUserNotifications?.items?.length ?? 0;
+
   const scaleAnim = useRef(new Animated.Value(1)).current;
-  const shouldShowBadge = showBadge && badgeCount > 0;
-  const badgeText = badgeCount > 99 ? '99+' : badgeCount.toString();
+  const shouldShowBadge = showBadge && newNotificationsCount > 0;
+  const badgeText = newNotificationsCount > 99 ? '99+' : newNotificationsCount.toString();
 
   // Animate badge when count changes
   useEffect(() => {
@@ -76,7 +108,7 @@ export const AnimatedNotificationButton: React.FC<NotificationButtonProps> = ({
         }),
       ]).start();
     }
-  }, [badgeCount]);
+  }, [newNotificationsCount]);
 
   return (
     <TouchableOpacity

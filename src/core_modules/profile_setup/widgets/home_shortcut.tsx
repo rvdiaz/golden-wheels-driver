@@ -18,7 +18,7 @@ interface ProfileCompletionWidgetProps {
 }
 
 export const ProfileSetupShortcut: React.FC<ProfileCompletionWidgetProps> = ({
-  completedSteps = 3,
+  completedSteps = 0,
   totalSteps = 4,
   title = 'Agent Setup',
   description = 'Complete your profile to unlock all features and improve your experience',
@@ -55,7 +55,7 @@ export const ProfileSetupShortcut: React.FC<ProfileCompletionWidgetProps> = ({
           }}
           onPress={onButtonPress}
           size={ButtonSize.MEDIUM}
-          title="Start Now"
+          title={completedSteps > 0 ? 'Continue Setup' : 'Start Now'}
         />
         {/* Action Button */}
       </View>

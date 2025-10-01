@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const getUserQuery = gql`
-  query getUser($tenant: TenantData!, $userId: ID!) {
-    getUser(tenant: $tenant, userId: $userId) {
+  query getUser($tenant: TenantData!, $userId: ID!, $token: String) {
+    getUser(tenant: $tenant, userId: $userId, token: $token) {
       email
       id
       activeTemplateId

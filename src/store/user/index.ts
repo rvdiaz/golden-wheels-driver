@@ -4,13 +4,13 @@ import { IUser } from '../interface';
 
 const USER_STORAGE_KEY = 'signinUser';
 
-export const userData = makeVar<IUser | null>(null);
+export const userData = makeVar<(IUser & { loadedFromStorage?: boolean }) | null>(null);
 
 (async () => {
   try {
     const storedUser = await AsyncStorage.getItem(USER_STORAGE_KEY);
     if (storedUser) {
-      userData(JSON.parse(storedUser));
+      userData({ ...JSON.parse(storedUser), loadedFromStorage: true });
     }
   } catch (error) {
     console.error('Error loading user from storage', error);

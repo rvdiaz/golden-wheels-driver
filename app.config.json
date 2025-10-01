@@ -35,7 +35,8 @@
       "adaptiveIcon": {
         "foregroundImage": "assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "edgeToEdgeEnabled": true
     },
     "extra": {
       //"GRAPHQL_ENDPOINT": "http://localhost:4000/graphql",

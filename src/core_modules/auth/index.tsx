@@ -1,10 +1,12 @@
 import React from 'react';
 import { ConfirmResetPassword } from '~/codidge_components/auth/forms/confirm_reset_password';
 import { useAuthContext } from '~/codidge_components/auth/context';
+import { useReactiveVar } from '@apollo/client';
 import Constants from 'expo-constants';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { addUserMutation } from './graphql/mutations';
 import { updateUser } from '~/store/user';
+import { pushTokenVar } from '~/store/user/pushToken';
 import { IUser } from '~/store/interface';
 import { signOut } from 'aws-amplify/auth/cognito';
 import { getUserQuery } from './graphql/queries';
@@ -30,6 +32,7 @@ export const AuthWrapper = ({
   const { currentView } = useAuthContext();
   const [addUserFn] = useMutation<{ addUser: IUser }>(addUserMutation);
   const [getUserFn] = useLazyQuery<{ getUser: IUser }>(getUserQuery);
+  const pushToken = useReactiveVar(pushTokenVar);
 
   const handleLoginSuccess = async (userId: string) => {
     try {
@@ -38,11 +41,13 @@ export const AuthWrapper = ({
           tenant: {
             tenantId,
           },
+          token: pushToken,
           userId,
         },
       });
 
       if (!user.data?.getUser) {
+        console.error(user.error);
         throw Error('Error getting user');
       }
 
@@ -82,6 +87,7 @@ export const AuthWrapper = ({
             financialGoals,
             swotAnalysis,
             visionMission,
+            notificationToken: pushToken,
           },
           userId,
         },

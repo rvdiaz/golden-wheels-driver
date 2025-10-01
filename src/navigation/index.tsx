@@ -12,12 +12,14 @@ import {
 } from '~/store/helpers';
 import { AuthWrapper } from '~/core_modules/auth';
 import { AuthProvider } from '~/codidge_components/auth/context';
+import { usePushNotificationTokenSetup } from '~/core_modules/auth/hooks/usePushNotificationToken';
 import { CustomHeader } from './header/customHeader';
 import { theme } from '~/theme/theme';
 import { View } from 'react-native';
 import { OnboardingFlow, OnboardingStorage } from '~/core_modules/on_boarding';
 import { useSystemSettings } from '~/system_setting/customHook';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -96,6 +98,8 @@ function TabsWithCustomHeader({ tenantModules }: { tenantModules: IModule[] }) {
 export default function Navigation() {
   const userInfo = useReactiveVar(userData);
   const { loading } = useSystemSettings();
+
+  usePushNotificationTokenSetup();
 
   const tenantModules = getTenantRoutes(userInfo);
   const nestedNav = createNestedNavigationScreens(tenantModules, Stack);

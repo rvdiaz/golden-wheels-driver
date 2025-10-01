@@ -2,8 +2,8 @@
   "name": "my-own-boss",
   "version": "1.0.0",
   "scripts": {
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "start": "expo start",
     "lint": "eslint \"**/*.{js,jsx,ts,tsx}\" && prettier -c \"**/*.{js,jsx,ts,tsx,json}\"",
     "format": "eslint \"**/*.{js,jsx,ts,tsx}\" --fix && prettier \"**/*.{js,jsx,ts,tsx,json}\" --write",
@@ -31,6 +31,7 @@
     "expo-device": "^8.0.7",
     "expo-linear-gradient": "~15.0.7",
     "expo-notifications": "^0.32.11",
+    "expo-dev-client": "^6.0.12",
     "expo-status-bar": "~3.0.8",
     "lucide-react-native": "^0.539.0",
     "moment": "^2.30.1",

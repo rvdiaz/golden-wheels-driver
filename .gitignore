@@ -9,8 +9,13 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
+.env
 
+credentials
+credentials.json
 
+# Firebase configuration file
+google-services.json
 
 
 ios

@@ -45,21 +45,21 @@ export const TaskItem = ({ task }: { task: ITask }) => {
 
   const taskConfiguration = getTaskConfigByKey(task, userTaskSchema ?? []);
 
-  const executeTaskCompletion = async (goalTypes: GoalType[]) => {
+  const executeTaskCompletion = async (goalTypes: GoalType[], completionParam = true) => {
     try {
-      setvalue(true);
+      setvalue(completionParam);
       await completeTaskFn({
         variables: {
           task: { ...task, progress: goalTypes },
           tenant: { tenantId },
           userId: user?.id,
-          completionParam: true,
+          completionParam: completionParam,
           goalTypes, // Add the goalTypes to the mutation variables
         },
         optimisticResponse: {
           completeTask: {
             ...task,
-            isCompleted: true,
+            isCompleted: completionParam,
           },
         },
       });
@@ -72,7 +72,7 @@ export const TaskItem = ({ task }: { task: ITask }) => {
   const handleCompleteTask = async (toggleValue: boolean) => {
     if (!toggleValue) {
       // If unchecking, you might want to handle this differently
-      setvalue(false);
+      // setvalue(false);
       return;
     }
 

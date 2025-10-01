@@ -23,6 +23,14 @@
       }
     }
   },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "flaglervillagegroup@gmail.com",
+        "ascAppId": "6752781766"
+      }
+    }
+  },
   "cli": {
     "version": ">= 3.0.0"
   }

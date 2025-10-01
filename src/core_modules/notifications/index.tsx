@@ -1,163 +1,110 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  TouchableOpacity,
-  FlatList,
-  Alert,
-} from 'react-native';
+import { useQuery, useReactiveVar } from '@apollo/client';
 import { useNavigation } from '@react-navigation/native';
-import { Header } from '../../codidge_components/UI/header';
-import { Card } from '../../codidge_components/UI/card';
+import { GetUserNotificationsResponse, INotification } from './interfaces';
+import { getUserNotificationsQuery } from './graphql';
+import { userData } from '~/store/user';
+import Constants from 'expo-constants';
+import { Card } from '~/codidge_components/UI/card';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import * as Icons from 'lucide-react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Header } from '~/codidge_components/UI/header';
+import { RefreshControl } from 'react-native-gesture-handler';
+import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 
-interface Notification {
-  id: string;
-  type: 'task' | 'appointment' | 'lead' | 'system' | 'training';
-  title: string;
-  message: string;
-  timestamp: string;
-  read: boolean;
-  priority: 'high' | 'medium' | 'low';
-  actionable?: boolean;
-}
-
-const mockNotifications: Notification[] = [
+const mockNotifications: INotification[] = [
   {
-    id: '1',
-    type: 'task',
+    notificationId: '1',
+    title: 'Welcome to the App!',
+    body: 'Thank you for joining us. Get started by exploring your dashboard.',
+    createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(), // 5 minutes ago
+  },
+  {
+    notificationId: '2',
+    title: 'New Message Received',
+    body: 'John Smith sent you a message about the property inquiry.',
+    createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 minutes ago
+  },
+  {
+    notificationId: '3',
+    title: 'Appointment Reminder',
+    body: 'Your appointment with Sarah Johnson is scheduled for tomorrow at 2:00 PM.',
+    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+  },
+  {
+    notificationId: '4',
     title: 'Task Due Soon',
-    message: 'Call John Smith - Property inquiry follow-up is due in 30 minutes',
-    timestamp: '2024-03-15T14:30:00Z',
-    read: false,
-    priority: 'high',
-    actionable: true,
+    body: 'Complete property inspection report - due in 3 hours.',
+    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), // 5 hours ago
   },
   {
-    id: '2',
-    type: 'appointment',
-    title: 'Upcoming Appointment',
-    message: 'Property showing at 123 Oak Street scheduled for 3:00 PM today',
-    timestamp: '2024-03-15T13:45:00Z',
-    read: false,
-    priority: 'high',
-    actionable: true,
+    notificationId: '5',
+    title: 'Payment Received',
+    body: 'Monthly subscription payment of $49.99 has been processed successfully.',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // Yesterday
   },
   {
-    id: '3',
-    type: 'lead',
-    title: 'New Lead',
-    message: 'Sarah Johnson submitted an inquiry for properties in downtown area',
-    timestamp: '2024-03-15T12:20:00Z',
-    read: true,
-    priority: 'medium',
-    actionable: true,
+    notificationId: '6',
+    title: 'New Lead Alert',
+    body: 'Michael Brown is interested in properties in the downtown area. Budget: $500k-$750k.',
+    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
   },
   {
-    id: '4',
-    type: 'system',
+    notificationId: '7',
+    title: 'Document Uploaded',
+    body: 'Client uploaded signed contract for 123 Oak Street property.',
+    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
+  },
+  {
+    notificationId: '8',
     title: 'Market Update',
-    message: 'New market analysis report available for your area',
-    timestamp: '2024-03-15T10:15:00Z',
-    read: true,
-    priority: 'low',
-    actionable: false,
+    body: 'New market analysis report is available for your area. Average prices increased by 3.2%.',
+    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
   },
   {
-    id: '5',
-    type: 'training',
-    title: 'Course Reminder',
-    message: 'Complete "Advanced Negotiation Tactics" course - 2 videos remaining',
-    timestamp: '2024-03-15T09:30:00Z',
-    read: false,
-    priority: 'medium',
-    actionable: true,
+    notificationId: '9',
+    title: 'Training Course Available',
+    body: 'New course "Advanced Negotiation Tactics" is now available in your learning portal.',
+    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 1 week ago
   },
   {
-    id: '6',
-    type: 'task',
-    title: 'Task Completed',
-    message: 'Market analysis report for downtown properties has been completed',
-    timestamp: '2024-03-14T16:45:00Z',
-    read: true,
-    priority: 'low',
-    actionable: false,
+    notificationId: '10',
+    title: 'System Maintenance',
+    body: 'Scheduled maintenance will occur on Sunday, March 17th from 2:00 AM to 4:00 AM.',
+    createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), // 10 days ago
   },
   {
-    id: '7',
-    type: 'lead',
-    title: 'Follow-up Required',
-    message: "Mike Brown hasn't responded to your email from 3 days ago",
-    timestamp: '2024-03-14T14:20:00Z',
-    read: false,
-    priority: 'medium',
-    actionable: true,
+    notificationId: '11',
+    title: 'Review Request',
+    body: 'Please take a moment to review your recent property showing experience.',
+    createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(), // 2 weeks ago
   },
   {
-    id: '8',
-    type: 'system',
-    title: 'App Update',
-    message: 'New features available! Update to version 2.1.0 for enhanced calculator tools',
-    timestamp: '2024-03-14T08:00:00Z',
-    read: true,
-    priority: 'low',
-    actionable: false,
+    notificationId: '12',
+    title: 'Feature Update',
+    body: 'New calculator tools and report templates have been added to your dashboard.',
+    createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(), // 20 days ago
   },
 ];
 
-export const NotificationsScreen: React.FC = () => {
-  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
-  const [filter, setFilter] = useState<'all' | 'unread' | 'high'>('all');
+const tenantId = Constants.expoConfig?.extra?.TENANTID;
+
+export const NotificationsScreen = () => {
   const navigation = useNavigation();
+  const user = useReactiveVar(userData);
 
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case 'task':
-        return Icons.CheckSquare;
-      case 'appointment':
-        return Icons.Calendar;
-      case 'lead':
-        return Icons.Users;
-      case 'system':
-        return Icons.Settings;
-      case 'training':
-        return Icons.GraduationCap;
-      default:
-        return Icons.Bell;
+  const { data, loading, refetch } = useQuery<GetUserNotificationsResponse>(
+    getUserNotificationsQuery,
+    {
+      variables: {
+        tenant: {
+          tenantId,
+        },
+        userId: user?.id,
+        limit: 50,
+      },
     }
-  };
-
-  const getNotificationColor = (type: string) => {
-    switch (type) {
-      case 'task':
-        return '#2563EB';
-      case 'appointment':
-        return '#059669';
-      case 'lead':
-        return '#DC2626';
-      case 'system':
-        return '#6B7280';
-      case 'training':
-        return '#7C3AED';
-      default:
-        return '#6B7280';
-    }
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high':
-        return '#EF4444';
-      case 'medium':
-        return '#F59E0B';
-      case 'low':
-        return '#10B981';
-      default:
-        return '#6B7280';
-    }
-  };
+  );
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
@@ -171,167 +118,69 @@ export const NotificationsScreen: React.FC = () => {
       return `${Math.floor(diffInHours)}h ago`;
     } else {
       const diffInDays = Math.floor(diffInHours / 24);
-      return `${diffInDays}d ago`;
+      if (diffInDays === 1) return 'Yesterday';
+      if (diffInDays < 7) return `${diffInDays}d ago`;
+      return date.toLocaleDateString();
     }
   };
 
-  const markAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((notification) =>
-        notification.id === id ? { ...notification, read: true } : notification
-      )
-    );
-  };
-
-  const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((notification) => ({ ...notification, read: true })));
-  };
-
-  const deleteNotification = (id: string) => {
-    Alert.alert('Delete Notification', 'Are you sure you want to delete this notification?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: () => {
-          setNotifications((prev) => prev.filter((n) => n.id !== id));
-        },
-      },
-    ]);
-  };
-
-  const filteredNotifications = notifications.filter((notification) => {
-    switch (filter) {
-      case 'unread':
-        return !notification.read;
-      case 'high':
-        return notification.priority === 'high';
-      default:
-        return true;
-    }
-  });
-
-  const unreadCount = notifications.filter((n) => !n.read).length;
-  const highPriorityCount = notifications.filter((n) => n.priority === 'high').length;
-
-  const renderNotification = ({ item }: { item: Notification }) => {
-    const IconComponent = getNotificationIcon(item.type);
-    const iconColor = getNotificationColor(item.type);
-    const priorityColor = getPriorityColor(item.priority);
-
+  const renderNotification = ({ item }: { item: INotification }) => {
     return (
-      <Card style={[styles.notificationCard, !item.read && styles.unreadCard]}>
-        <TouchableOpacity onPress={() => markAsRead(item.id)} style={styles.notificationContent}>
-          <View style={styles.notificationHeader}>
-            <View style={styles.notificationIcon}>
-              <IconComponent size={20} color={iconColor} />
-            </View>
-            <View style={styles.notificationInfo}>
-              <View style={styles.titleRow}>
-                <Text style={[styles.notificationTitle, !item.read && styles.unreadTitle]}>
-                  {item.title}
-                </Text>
-                <View style={styles.notificationMeta}>
-                  <View style={[styles.priorityDot, { backgroundColor: priorityColor }]} />
-                  <Text style={styles.timestamp}>{formatTimestamp(item.timestamp)}</Text>
-                </View>
-              </View>
-              <Text style={styles.notificationMessage}>{item.message}</Text>
-
-              {item.actionable && (
-                <View style={styles.actionButtons}>
-                  <TouchableOpacity style={styles.actionButton}>
-                    <Icons.Eye size={16} color="#2563EB" />
-                    <Text style={styles.actionButtonText}>View</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.actionButton}>
-                    <Icons.ExternalLink size={16} color="#2563EB" />
-                    <Text style={styles.actionButtonText}>Open</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-            </View>
-
-            <TouchableOpacity
-              onPress={() => deleteNotification(item.id)}
-              style={styles.deleteButton}>
-              <Icons.X size={20} color="#9CA3AF" />
-            </TouchableOpacity>
+      <Card style={styles.notificationCard}>
+        <View style={styles.notificationContent}>
+          <View style={styles.notificationIcon}>
+            <Icons.Bell size={20} color="#2563EB" />
           </View>
-        </TouchableOpacity>
+
+          <View style={styles.notificationInfo}>
+            <View style={styles.titleRow}>
+              <Text style={styles.notificationTitle} numberOfLines={1}>
+                {item.title}
+              </Text>
+              <Text style={styles.timestamp}>{formatTimestamp(item.createdAt)}</Text>
+            </View>
+            <Text style={styles.notificationBody} numberOfLines={2}>
+              {item.body}
+            </Text>
+          </View>
+        </View>
       </Card>
     );
   };
 
+  const renderEmptyState = () => (
+    <View style={styles.emptyContainer}>
+      <Icons.Bell size={48} color="#9CA3AF" />
+      <Text style={styles.emptyTitle}>No notifications</Text>
+      <Text style={styles.emptyMessage}>You're all caught up! No notifications to show.</Text>
+    </View>
+  );
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Header title="Notifications" showBack onBack={() => navigation.goBack()} />
+        <PageLoading />
+      </SafeAreaView>
+    );
+  }
+
+  const notifications = data?.getUserNotifications?.items || [];
+
   return (
     <SafeAreaView style={styles.container}>
-      <Header
-        title="Notifications"
-        showBack
-        onBack={() => navigation.goBack()}
-        rightAction={markAllAsRead}
-        rightText="Mark All Read"
-      />
+      <Header title="Notifications" showBack onBack={() => navigation.goBack()} />
 
       <View style={styles.content}>
-        {/* Stats Row */}
-        <View style={styles.statsRow}>
-          <Card style={[styles.statCard, { backgroundColor: '#EEF2FF' }]}>
-            <Text style={styles.statNumber}>{notifications.length}</Text>
-            <Text style={styles.statLabel}>Total</Text>
-          </Card>
-          <Card style={[styles.statCard, { backgroundColor: '#FEF2F2' }]}>
-            <Text style={styles.statNumber}>{unreadCount}</Text>
-            <Text style={styles.statLabel}>Unread</Text>
-          </Card>
-          <Card style={[styles.statCard, { backgroundColor: '#FFFBEB' }]}>
-            <Text style={styles.statNumber}>{highPriorityCount}</Text>
-            <Text style={styles.statLabel}>High Priority</Text>
-          </Card>
-        </View>
-
-        {/* Filter Buttons */}
-        <View style={styles.filterContainer}>
-          <TouchableOpacity
-            style={[styles.filterButton, filter === 'all' && styles.activeFilter]}
-            onPress={() => setFilter('all')}>
-            <Text style={[styles.filterText, filter === 'all' && styles.activeFilterText]}>
-              All
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.filterButton, filter === 'unread' && styles.activeFilter]}
-            onPress={() => setFilter('unread')}>
-            <Text style={[styles.filterText, filter === 'unread' && styles.activeFilterText]}>
-              Unread ({unreadCount})
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.filterButton, filter === 'high' && styles.activeFilter]}
-            onPress={() => setFilter('high')}>
-            <Text style={[styles.filterText, filter === 'high' && styles.activeFilterText]}>
-              High Priority
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Notifications List */}
         <FlatList
-          data={filteredNotifications}
+          data={notifications}
           renderItem={renderNotification}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.notificationId}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
-          ListEmptyComponent={
-            <Card style={styles.emptyCard}>
-              <Icons.Bell size={48} color="#9CA3AF" />
-              <Text style={styles.emptyTitle}>No notifications</Text>
-              <Text style={styles.emptyMessage}>
-                {filter === 'all'
-                  ? "You're all caught up! No notifications to show."
-                  : `No ${filter} notifications found.`}
-              </Text>
-            </Card>
+          ListEmptyComponent={renderEmptyState}
+          refreshControl={
+            <RefreshControl refreshing={loading} onRefresh={refetch} tintColor="#2563EB" />
           }
         />
       </View>
@@ -348,72 +197,21 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  statsRow: {
-    flexDirection: 'row',
-    marginBottom: 16,
-  },
-  statCard: {
+  loadingContainer: {
     flex: 1,
-    marginHorizontal: 4,
-    padding: 16,
+    justifyContent: 'center',
     alignItems: 'center',
-  },
-  statNumber: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1F2937',
-  },
-  statLabel: {
-    fontSize: 12,
-    color: '#6B7280',
-    marginTop: 4,
-  },
-  filterContainer: {
-    flexDirection: 'row',
-    marginBottom: 16,
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 4,
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-  },
-  filterButton: {
-    flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  activeFilter: {
-    backgroundColor: '#2563EB',
-  },
-  filterText: {
-    fontSize: 14,
-    color: '#6B7280',
-    fontWeight: '500',
-  },
-  activeFilterText: {
-    color: 'white',
   },
   listContainer: {
     paddingBottom: 20,
   },
   notificationCard: {
-    marginBottom: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: 'transparent',
-  },
-  unreadCard: {
+    marginBottom: 12,
+    borderLeftWidth: 3,
     borderLeftColor: '#2563EB',
-    backgroundColor: '#FEFEFF',
   },
   notificationContent: {
     padding: 16,
-  },
-  notificationHeader: {
     flexDirection: 'row',
     alignItems: 'flex-start',
   },
@@ -421,7 +219,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: '#EEF2FF',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -433,67 +231,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   notificationTitle: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
     color: '#1F2937',
     flex: 1,
     marginRight: 8,
   },
-  unreadTitle: {
-    fontWeight: '600',
-  },
-  notificationMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  priorityDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    marginRight: 6,
-  },
   timestamp: {
     fontSize: 12,
     color: '#9CA3AF',
+    flexShrink: 0,
   },
-  notificationMessage: {
+  notificationBody: {
     fontSize: 14,
     color: '#6B7280',
     lineHeight: 20,
-    marginBottom: 12,
   },
-  actionButtons: {
-    flexDirection: 'row',
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
-  },
-  actionButton: {
-    flexDirection: 'row',
+  emptyContainer: {
     alignItems: 'center',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    marginRight: 12,
-    backgroundColor: '#EEF2FF',
-    borderRadius: 6,
-  },
-  actionButtonText: {
-    fontSize: 12,
-    color: '#2563EB',
-    fontWeight: '500',
-    marginLeft: 4,
-  },
-  deleteButton: {
-    padding: 4,
-    marginLeft: 8,
-  },
-  emptyCard: {
-    alignItems: 'center',
+    justifyContent: 'center',
     padding: 40,
-    marginTop: 40,
+    marginTop: 60,
   },
   emptyTitle: {
     fontSize: 18,

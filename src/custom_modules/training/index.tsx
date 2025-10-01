@@ -5,6 +5,7 @@ import { Card } from '../../codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
 import { ModuleKeys } from '~/store/interface';
 import { theme } from '~/theme/theme';
+import { ComingSoonOverlay } from '~/codidge_components/UI/comingSoonOverlay';
 
 export interface ICourse {
   id: string;
@@ -145,6 +146,7 @@ export const TrainingScreen: React.FC = () => {
           </View>
         </Card>
       </ScrollView>
+      <ComingSoonOverlay title="Training" message="Coming Soon" />
     </View>
   );
 };

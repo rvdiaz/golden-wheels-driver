@@ -24,6 +24,19 @@ export const getTaskColorByType = (type: string) => {
   }
 };
 
+export const getTaskColorByPriority = (priority: TaskPriority) => {
+  switch (priority) {
+    case TaskPriority.high:
+      return '#F59E0B ';
+    case TaskPriority.medium:
+      return '#DC2626';
+    case TaskPriority.low:
+      return '#22C55E';
+    default:
+      return '#E2E8F0';
+  }
+};
+
 export const formatTaskDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString();
 };

@@ -4,6 +4,7 @@ import { GoalType, ITask } from '../interfaces';
 import {
   formatTaskTime,
   getDurationInMinutes,
+  getTaskColorByPriority,
   getTaskColorByType,
   getTaskConfigByKey,
   getTaskStatus,
@@ -181,31 +182,32 @@ export const TaskItem = ({ task }: { task: ITask }) => {
               </View>
             </View>
 
-            {isActive ? (
+            {isActive && (
               <SimpleCheckbox
                 color={theme.colors.success}
                 checked={value}
                 onToggle={handleCompleteTask}
               />
-            ) : task.isCompleted ? (
-              <Badge type="success" displayIcon={false}>
-                Completed
-              </Badge>
-            ) : (
-              <Badge type="error" displayIcon={false}>
-                Incompleted
-              </Badge>
             )}
           </View>
 
           <View style={styles.taskMeta}>
-            <View style={[styles.taskCategoryBadge]}>
+            <View style={styles.leftFooter}>
+              <Badge
+                displayIcon={false}
+                type="normal"
+                textStyle={{
+                  color: '#636363',
+                }}>
+                {taskConfiguration?.label ?? task.category}
+              </Badge>
+            </View>
+            {/*  <View style={[styles.taskCategoryBadge]}>
               <Text style={[styles.taskBadgeText]}>
                 {taskConfiguration?.label ?? task.category}
               </Text>
-            </View>
+            </View> */}
             <View style={styles.rightFooter}>
-              <Image source={require('assets/highPriority.png')} />
               <Text style={styles.taskTime}>
                 {formatTaskTime(task.startTime.toString())} -{' '}
                 {formatTaskTime(task.endTime.toString())}
@@ -248,6 +250,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 2,
     borderColor: '#F3F4F6',
+  },
+  leftFooter: {
+    gap: 5,
   },
   rightFooter: { alignItems: 'flex-end', marginBottom: 4, gap: 2 },
   taskCheckboxEmpty: {
@@ -292,16 +297,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     justifyContent: 'space-between',
     marginTop: 21,
-  },
-  taskCategoryBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 14,
-    backgroundColor: '#ededed',
-  },
-  taskBadgeText: {
-    fontSize: 11,
-    fontWeight: '600',
   },
   taskProgress: {
     fontSize: 10,

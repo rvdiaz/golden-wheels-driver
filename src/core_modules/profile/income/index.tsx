@@ -100,6 +100,9 @@ export const UserIncomes = () => {
         onTabChange={(key) => {
           setactiveStatus(key as IncomeStatus);
         }}
+        containerStyle={{
+          marginTop: 10,
+        }}
       />
 
       <ScrollView

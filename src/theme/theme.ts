@@ -15,6 +15,7 @@ export const theme = {
     menuItemInactive: '#64748B',
     headerModal: '#EEF2FF',
     headerModalText: '#3730A3',
+    success: '#22C55E',
   },
   spacing: {
     xs: 4,

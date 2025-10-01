@@ -173,7 +173,7 @@ export const NotificationsScreen = () => {
 
       <View style={styles.content}>
         <FlatList
-          data={notifications}
+          data={mockNotifications}
           renderItem={renderNotification}
           keyExtractor={(item) => item.notificationId}
           showsVerticalScrollIndicator={false}

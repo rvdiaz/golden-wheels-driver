@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { GoalType, ITask } from '../interfaces';
-import { formatTaskTime, getDurationInMinutes, getTaskConfigByKey, isActiveTask } from '../helpers';
+import {
+  formatTaskTime,
+  getDurationInMinutes,
+  getTaskColorByType,
+  getTaskConfigByKey,
+  getTaskStatus,
+  isActiveTask,
+} from '../helpers';
 import { useMutation, useReactiveVar } from '@apollo/client';
 import { completeTaskMutation } from '../graphql/mutations';
 import { userData } from '~/store/user';
@@ -152,9 +159,17 @@ export const TaskItem = ({ task }: { task: ITask }) => {
     setvalue(task.isCompleted ?? false);
   };
 
+  const taskStatus = getTaskStatus(task);
+  const borderColor = getTaskColorByType(taskStatus);
+
   return (
     <>
-      <View key={task.id} style={[styles.taskItem, { backgroundColor: 'white' }]}>
+      <View
+        key={task.id}
+        style={[
+          styles.taskItem,
+          { backgroundColor: 'white', borderBottomWidth: 4, borderBottomColor: borderColor },
+        ]}>
         <View style={styles.taskContent}>
           <View style={styles.taskHeader}>
             <View style={{ flexDirection: 'row', flex: 1 }}>
@@ -167,7 +182,11 @@ export const TaskItem = ({ task }: { task: ITask }) => {
             </View>
 
             {isActive ? (
-              <SimpleCheckbox checked={value} onToggle={handleCompleteTask} />
+              <SimpleCheckbox
+                color={theme.colors.success}
+                checked={value}
+                onToggle={handleCompleteTask}
+              />
             ) : task.isCompleted ? (
               <Badge type="success" displayIcon={false}>
                 Completed
@@ -208,11 +227,6 @@ export const TaskItem = ({ task }: { task: ITask }) => {
 };
 
 const styles = StyleSheet.create({
-  tasksCard: {
-    flex: 2,
-    borderWidth: 2,
-    borderColor: '#F3F4F6',
-  },
   tasksTitle: {
     fontSize: 18,
     fontWeight: '600',

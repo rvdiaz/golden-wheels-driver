@@ -5,7 +5,7 @@ import { ModuleKeys } from '~/store/interface';
 import { useNavigation } from '@react-navigation/native';
 import { IContact } from '../interfaces';
 import { useMutation, useReactiveVar } from '@apollo/client';
-import { deleteContactMutation, updateContactMutation } from '../graphql/mutations';
+import { deleteContactMutation } from '../graphql/mutations';
 import Constants from 'expo-constants';
 import { userData } from '~/store/user';
 import { getUserContacts } from '../graphql/queries';
@@ -104,18 +104,25 @@ export const ContactCard = ({ contact }: { contact: IContact }) => {
 
         {/* Action buttons */}
         <View style={styles.contactActions}>
-          <IconButton
-            onPress={() => handleCallContact(contact.phone ?? '')}
-            icon={<Icons.Phone size={16} />}
-          />
-          <IconButton
-            onPress={() => handleSmsContact(contact.phone ?? '')}
-            icon={<Icons.MessageCircle size={16} />}
-          />
-          <IconButton
-            onPress={() => handleEmailContact(contact.email ?? '')}
-            icon={<Icons.Mail size={16} />}
-          />
+          {contact.phone && (
+            <IconButton
+              onPress={() => handleCallContact(contact.phone)}
+              icon={<Icons.Phone size={16} />}
+            />
+          )}
+          {contact.phone && (
+            <IconButton
+              onPress={() => handleSmsContact(contact.phone)}
+              icon={<Icons.MessageCircle size={16} />}
+            />
+          )}
+          {contact.email && (
+            <IconButton
+              disabled={true}
+              onPress={() => handleEmailContact(contact.email)}
+              icon={<Icons.Mail size={16} />}
+            />
+          )}
         </View>
       </View>
     </TouchableOpacity>

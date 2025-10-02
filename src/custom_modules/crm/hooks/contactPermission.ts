@@ -1,6 +1,6 @@
 // hooks/usePhoneContacts.ts
 import * as Contacts from 'expo-contacts';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 export const usePhoneContacts = () => {
   const [phoneContacts, setPhoneContacts] = useState([]);

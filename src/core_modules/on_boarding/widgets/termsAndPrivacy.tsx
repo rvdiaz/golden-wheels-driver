@@ -110,7 +110,6 @@ const styles = StyleSheet.create({
   // Legal Text Styles
   legalContainer: {
     paddingHorizontal: 16,
-    marginTop: 'auto',
   },
   legalText: {
     fontSize: 12,

@@ -28,7 +28,7 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.myvirtualboss.realestate",
       "buildNumber": "1.0.0"
     },

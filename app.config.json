@@ -33,11 +33,8 @@
       "buildNumber": "1.0.2"
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "assets/playstore.png",
-        "backgroundColor": "#ffffff"
-      },
-      "versionCode": 3,
+      "package": "com.yourcompany.yourapp",
+      "versionCode": 4,
       "edgeToEdgeEnabled": true
     },
     "extra": {

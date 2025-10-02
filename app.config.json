@@ -19,7 +19,7 @@
       "expo-notifications"
     ],
     "orientation": "portrait",
-    "icon": "assets/appIcon.png",
+    "icon": "assets/appstore.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "assets/splash.png",
@@ -34,7 +34,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "assets/appIcon.png",
+        "foregroundImage": "assets/playstore.png",
         "backgroundColor": "#ffffff"
       },
       "versionCode": 3,

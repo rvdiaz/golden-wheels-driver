@@ -7,12 +7,12 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Platform,
-  KeyboardAvoidingView,
 } from 'react-native';
 import { useFormContext, Controller } from 'react-hook-form';
 import { FooterConfig, FormWrapper, HeaderConfig } from '../formsWrapper';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { OnboardingFormData } from '../../interface';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 // Validation rules
 const validationRules = {
@@ -57,13 +57,14 @@ export const VisionAndMission = ({
       props={props}
       currentStep={currentStep}
       totalSteps={totalSteps}>
-      <KeyboardAvoidingView
-        style={styles.keyboardAvoidingView}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 280 : 0}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.formContent}>
-            <Text style={styles.sectionTitle}>Vision and Mission</Text>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.formContent}>
+          <Text style={styles.sectionTitle}>Vision and Mission</Text>
+          <KeyboardAwareScrollView
+            showsVerticalScrollIndicator={false}
+            enableOnAndroid={true}
+            extraScrollHeight={Platform.OS === 'ios' ? 0 : 80}
+            keyboardShouldPersistTaps="handled">
             <ScrollView showsVerticalScrollIndicator={false}>
               {/* 5-Year Vision */}
               <View style={styles.inputContainer}>
@@ -161,9 +162,9 @@ export const VisionAndMission = ({
                 />
               </View>
             </ScrollView>
-          </View>
-        </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
+          </KeyboardAwareScrollView>
+        </View>
+      </TouchableWithoutFeedback>
     </FormWrapper>
   );
 };

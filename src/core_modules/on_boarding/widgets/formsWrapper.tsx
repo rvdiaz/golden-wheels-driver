@@ -186,7 +186,6 @@ const styles = StyleSheet.create({
   headerContent: {
     alignItems: 'center',
   },
-
   // Step Progress Styles
   stepProgressContainer: {
     flexDirection: 'row',

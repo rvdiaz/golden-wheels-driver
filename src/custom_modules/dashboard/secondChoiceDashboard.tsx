@@ -1,10 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { LineChart, PieChart } from 'react-native-chart-kit';
 import { Card } from '../../codidge_components/UI/card';
-import { Header } from '../../codidge_components/UI/header';
 import * as Icons from 'lucide-react-native';
-import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -68,7 +67,7 @@ export const DashboardV2Screen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <PageSafeContainer style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Stats Cards */}
         <View style={styles.statsContainer}>
@@ -161,7 +160,7 @@ export const DashboardV2Screen: React.FC = () => {
           </View>
         </Card>
       </ScrollView>
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 };
 

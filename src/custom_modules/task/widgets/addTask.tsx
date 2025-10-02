@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  SafeAreaView,
-  Alert,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import { View, StyleSheet, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { Header } from '~/codidge_components/UI/header';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
@@ -22,6 +14,7 @@ import { userData } from '~/store/user';
 import { getTaskByUserQuery } from '../graphql/queries';
 import { DateTimeInputField } from '~/codidge_components/UI/form/inputs/dateTimePicker';
 import moment from 'moment';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -140,7 +133,7 @@ export const AddTaskScreen = ({
   const startTime = watch('startTime'); // watch start time
 
   return (
-    <SafeAreaView style={styles.container}>
+    <PageSafeContainer style={styles.container}>
       <Header
         title="Add Task"
         showBack={true}
@@ -326,7 +319,7 @@ export const AddTaskScreen = ({
           />
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 };
 
@@ -334,8 +327,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
-    paddingHorizontal: 20,
-    paddingTop: 40,
   },
   fieldContainer: {
     marginBottom: 10,

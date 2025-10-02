@@ -18,6 +18,7 @@ import DropdownComponent from '~/codidge_components/UI/dropdown';
 import { CONTACT_CATEGORY_OPTIONS } from '../helpers';
 import { ContactCategory } from '../interfaces';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import * as Contacts from 'expo-contacts';
 
 interface PhoneContact {
   id: string;
@@ -78,7 +79,6 @@ export const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
   const loadPhoneContacts = async () => {
     setLoading(true);
     try {
-      const Contacts = await import('expo-contacts');
       const { status } = await Contacts.requestPermissionsAsync();
 
       if (status !== 'granted') {

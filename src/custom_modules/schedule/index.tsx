@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Header } from '../../codidge_components/UI/header';
 import { Card } from '../../codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
 import { theme } from '~/theme/theme';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 interface ScheduleItem {
   id: string;
@@ -100,7 +101,7 @@ export const ScheduleScreen: React.FC = () => {
   const upcomingCount = schedule.filter((item) => item.status === 'upcoming').length;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <PageSafeContainer style={styles.container}>
       <View style={styles.dateHeader}>
         <Text style={styles.dateText}>Today, March 15</Text>
         <TouchableOpacity style={styles.calendarButton}>
@@ -134,7 +135,7 @@ export const ScheduleScreen: React.FC = () => {
           </TouchableOpacity>
         </Card>
       </ScrollView>
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 };
 

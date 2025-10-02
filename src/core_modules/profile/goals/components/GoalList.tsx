@@ -48,7 +48,10 @@ export const GoalList = ({
         primaryColor={theme.colors.primary}
         progressBottomData="overall"
       />
-      <View>
+      <View
+        style={{
+          marginTop: 12,
+        }}>
         {displayList.map((goal) => (
           <GoalItem key={goal.progressId} goal={goal} />
         ))}

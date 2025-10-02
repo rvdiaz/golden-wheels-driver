@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, Switch, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Switch, Alert } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { useMutation, useReactiveVar } from '@apollo/client';
 import { IFormData, IIncome, IncomeSource, IncomeStatus } from '../interfaces';

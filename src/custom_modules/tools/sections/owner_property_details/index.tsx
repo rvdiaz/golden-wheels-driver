@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, StyleSheet, SafeAreaView, View, Modal } from 'react-native';
+import { Text, StyleSheet, View, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Controller, useForm } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
@@ -11,6 +11,7 @@ import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/Primar
 import { useLazyQuery } from '@apollo/client';
 import { IProperty } from './interfaces';
 import { getPropertyQuery } from './graphql/queries';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 interface PropertySearchData {
   address: string;
@@ -54,7 +55,7 @@ export const PropertyInfoScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <PageSafeContainer style={styles.container}>
       <Header title="Property/Owner Information" showBack onBack={() => navigation.goBack()} />
 
       <View style={styles.content}>
@@ -105,7 +106,7 @@ export const PropertyInfoScreen: React.FC = () => {
           />
         )}
       </Modal>
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 };
 

@@ -1,19 +1,12 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-  TouchableOpacity,
-  Modal,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 import * as Icons from 'lucide-react-native';
 import { Card } from '~/codidge_components/UI/card';
 import { Header } from '~/codidge_components/UI/header';
 import { VideoPlayerScreen } from './VideoPlayerScreen';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 interface Video {
   id: string;
@@ -110,7 +103,7 @@ export const CourseDetailsScreen: React.FC = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <PageSafeContainer style={styles.container}>
       <Header title="Course Details" showBack onBack={() => navigation.goBack()} />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -162,7 +155,7 @@ export const CourseDetailsScreen: React.FC = () => {
           </TouchableOpacity>
         </Card>
       </ScrollView>
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 };
 

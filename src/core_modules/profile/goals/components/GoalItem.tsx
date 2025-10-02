@@ -73,10 +73,48 @@ export const GoalItem = ({ goal }: { goal: IGoalProgress }) => {
           break;
         }
 
+        case 'rollingQuarterly': {
+          const match = period.match(/^(\d{4})-QQ-(\d+)$/);
+          if (match) {
+            const [, year, quarter] = match;
+            return `Q${quarter} ${year}`;
+          }
+
+          // Handle rolling format like "2025-01-01_to_2026-09-30"
+          const rangeMatch = period.match(/^(\d{4}-\d{2}-\d{2})_to_(\d{4}-\d{2}-\d{2})$/);
+          if (rangeMatch) {
+            const [, startStr, endStr] = rangeMatch;
+            const start = new Date(startStr);
+            const end = new Date(endStr);
+            if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+              return `${start.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`;
+            }
+          }
+          break;
+        }
+
         case 'yearly': {
           // Format: "2024"
           if (/^\d{4}$/.test(period)) {
             return period;
+          }
+          break;
+        }
+
+        case 'rollingYearly': {
+          if (/^\d{4}$/.test(period)) {
+            return period;
+          }
+
+          // Handle rolling format like "2025-01-01_to_2026-09-30"
+          const rangeMatch = period.match(/^(\d{4}-\d{2}-\d{2})_to_(\d{4}-\d{2}-\d{2})$/);
+          if (rangeMatch) {
+            const [, startStr, endStr] = rangeMatch;
+            const start = new Date(startStr);
+            const end = new Date(endStr);
+            if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+              return `${start.toLocaleDateString('en-US', { year: 'numeric' })} - ${end.toLocaleDateString('en-US', { year: 'numeric' })}`;
+            }
           }
           break;
         }

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Modal, FlatList, TextInput } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronDown } from 'lucide-react-native';
+import { PageSafeContainer } from '../pageSafeContainer';
 
 interface DropdownItem {
   label: string;
@@ -93,7 +93,7 @@ const ModalPickerComponent: React.FC<ModalPickerProps> = ({
         animationType="slide"
         presentationStyle="pageSheet"
         onRequestClose={handleModalClose}>
-        <SafeAreaView style={styles.modalContainer}>
+        <PageSafeContainer style={styles.modalContainer}>
           {/* Header */}
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={handleModalClose}>
@@ -139,7 +139,7 @@ const ModalPickerComponent: React.FC<ModalPickerProps> = ({
               </Text>
             </View>
           )}
-        </SafeAreaView>
+        </PageSafeContainer>
       </Modal>
     </View>
   );

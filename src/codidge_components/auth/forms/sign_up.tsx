@@ -22,6 +22,7 @@ import { IAuthModuleKeys, RegisterFormData } from '../interfaces';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const schema = yup.object({
   email: yup.string().email('Please enter a valid email').required('Email is required'),
@@ -127,11 +128,12 @@ export const SignUpForm = ({
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 280 : 0}
-      style={styles.keyboardView}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <TouchableWithoutFeedback style={styles.keyboardView} onPress={Keyboard.dismiss}>
+      <KeyboardAwareScrollView
+        showsVerticalScrollIndicator={false}
+        enableOnAndroid={true}
+        extraScrollHeight={Platform.OS === 'ios' ? 0 : 80}
+        keyboardShouldPersistTaps="handled">
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.formCard}>
             <View style={styles.form}>
@@ -284,8 +286,8 @@ export const SignUpForm = ({
             )}
           </View>
         </ScrollView>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -297,6 +299,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
+    paddingTop: 40,
   },
   header: {
     alignItems: 'center',

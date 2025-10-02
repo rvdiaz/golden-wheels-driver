@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { Header } from '~/codidge_components/UI/header';
 import { MarketValueCard } from './mainEstimation';
 import {
@@ -8,6 +8,7 @@ import {
   PropertyEstimatorAvm,
 } from '../../owner_property_details/interfaces';
 import { CompsProperties } from './compsProperties';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 export const ResultsWrapper = ({
   dispose,
@@ -21,7 +22,7 @@ export const ResultsWrapper = ({
   };
 }) => {
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#F9FAFB', justifyContent: 'flex-end' }}>
+    <PageSafeContainer style={{ flex: 1, backgroundColor: '#F9FAFB', justifyContent: 'flex-end' }}>
       <Header
         title="Quick CMA Tool"
         rightText="Close"
@@ -36,7 +37,7 @@ export const ResultsWrapper = ({
         />
         <CompsProperties propertiesComps={estimationResults.comps} />
       </ScrollView>
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 };
 

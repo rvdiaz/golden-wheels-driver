@@ -1,6 +1,6 @@
 import { useLazyQuery } from '@apollo/client';
 import React, { useState } from 'react';
-import { Modal, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
+import { Modal, ScrollView, StyleSheet, View } from 'react-native';
 import { getMlsListingQuery } from '../graphql/queries';
 import { ExpiredStatus, IExpiredListingForm, IMlsListingItemResponse } from '../interfaces';
 import { Controller, useForm } from 'react-hook-form';
@@ -13,6 +13,7 @@ import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
 import * as Icons from 'lucide-react-native';
 import PropertyListScreen from './results/expiredListingListContainer';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 const iconsSize = 16;
 const pageSize = 20;
@@ -92,7 +93,7 @@ export const ExpiredListingPage = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <PageSafeContainer style={styles.container}>
       <Header title="Expired Listings" showBack onBack={() => navigation.goBack()} />
       <Card style={styles.cardContainer}>
         <ScrollView>
@@ -161,7 +162,7 @@ export const ExpiredListingPage = () => {
           />
         )}
       </Modal>
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 };
 

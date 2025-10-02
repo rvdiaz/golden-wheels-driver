@@ -6,7 +6,7 @@ import { Header } from '~/codidge_components/UI/header';
 import { TabHeader } from '~/codidge_components/UI/tabs';
 import { TransUnionPropertyList } from './widgets/property/propertyList';
 import { ScreenRequestList } from './widgets/screen_request/screenRequestList';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 enum RentalAppScreen {
   TransUnionPropertyList = 'TransUnionPropertyList',
@@ -28,7 +28,7 @@ export const TransunionRentsApplications = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <PageSafeContainer style={styles.container}>
       <Header
         title="Rental Applications"
         showBack={true}
@@ -56,7 +56,7 @@ export const TransunionRentsApplications = () => {
           <View style={styles.bodyContainer}>{body}</View>
         </View>
       </Card>
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 };
 

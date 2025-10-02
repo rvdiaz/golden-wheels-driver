@@ -6,6 +6,7 @@ import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import { ArrowLeft, ArrowRight } from 'lucide-react-native';
 import { theme } from '~/theme/theme';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export interface HeaderConfig {
   icon: any; // Lucide icon component
@@ -77,6 +78,13 @@ export const FormWrapper = ({
 }: FormWrapperProps) => {
   return (
     <View style={styles.container}>
+      <View style={styles.gradientContainer}>
+        {/* Base gradient */}
+        <LinearGradient
+          colors={['#1D0D66', '#2D1B8F', '#1D0D66']}
+          style={StyleSheet.absoluteFillObject}
+        />
+      </View>
       {/* Header Section */}
       <View style={styles.headerContainer}>
         <View style={styles.headerContent}>
@@ -165,6 +173,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.headerBackground,
   },
+  gradientContainer: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
+  },
   // Header Styles
   headerContainer: {
     paddingTop: 80,
@@ -174,7 +186,6 @@ const styles = StyleSheet.create({
   headerContent: {
     alignItems: 'center',
   },
-
   // Step Progress Styles
   stepProgressContainer: {
     flexDirection: 'row',

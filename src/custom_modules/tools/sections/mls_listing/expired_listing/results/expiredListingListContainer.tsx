@@ -1,16 +1,10 @@
 import React, { useRef, useState } from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  Animated,
-  Dimensions,
-  FlatList,
-  ActivityIndicator,
-} from 'react-native';
+import { Animated, Dimensions, FlatList, ActivityIndicator } from 'react-native';
 import { Header } from '~/codidge_components/UI/header';
 import PropertyDetailScreen from './expiredListingScreen';
 import ExpiredListingCard from './expiredListingCard';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -72,7 +66,7 @@ const ExpiredListingContainer: React.FC<PropertyListScreenProps> = ({
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
+    <PageSafeContainer style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
       {/* Main List View */}
       <Animated.View
         style={{
@@ -125,7 +119,7 @@ const ExpiredListingContainer: React.FC<PropertyListScreenProps> = ({
           />
         </Animated.View>
       )}
-    </SafeAreaView>
+    </PageSafeContainer>
   );
 };
 

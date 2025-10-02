@@ -10,6 +10,7 @@ import { useReactiveVar } from '@apollo/client';
 import moment from 'moment';
 import { moduleScreens } from '~/store/config';
 import { NotificationButton } from '~/core_modules/notifications/widgets/notificationButton';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface CustomHeaderProps {
   navigation: any;
@@ -47,6 +48,13 @@ export const CustomHeader: React.FC<CustomHeaderProps> = ({
 
   return (
     <View style={styles.container}>
+      <View style={styles.gradientContainer}>
+        {/* Base gradient */}
+        <LinearGradient
+          colors={['#1D0D66', '#2D1B8F', '#1D0D66']}
+          style={StyleSheet.absoluteFillObject}
+        />
+      </View>
       {/* Header Background - dynamically sized */}
       <View
         style={[
@@ -132,6 +140,10 @@ export const CustomHeader: React.FC<CustomHeaderProps> = ({
 const styles = StyleSheet.create({
   container: {
     zIndex: 0,
+  },
+  gradientContainer: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
   },
   headerBackground: {
     width: '100%',

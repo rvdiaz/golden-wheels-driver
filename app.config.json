@@ -34,7 +34,7 @@
     },
     "android": {
       "package": "com.myvirtualboss.realestate",
-      "versionCode": 5,
+      "versionCode": 6,
       "edgeToEdgeEnabled": true
     },
     "extra": {

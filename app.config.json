@@ -30,10 +30,10 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.myvirtualboss.realestate",
-      "buildNumber": "1.0.3"
+      "buildNumber": "1.0.4"
     },
     "android": {
-      "package": "com.yourcompany.yourapp",
+      "package": "com.myvirtualboss.realestate",
       "versionCode": 5,
       "edgeToEdgeEnabled": true
     },

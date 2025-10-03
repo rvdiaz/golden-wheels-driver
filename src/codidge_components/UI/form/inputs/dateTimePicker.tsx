@@ -76,28 +76,33 @@ export const DateTimeInputField: React.FC<DateInputFieldProps> = ({
 
   const inputValue = value
     ? mode === 'time'
-      ? value.toLocaleTimeString()
+      ? value.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       : mode === 'datetime'
-        ? value.toLocaleString()
+        ? value.toLocaleString([], {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          })
         : value.toDateString()
     : '';
 
   return (
     <>
-      <InputField
-        required={required}
-        label={label}
-        value={inputValue}
-        editable={false}
-        rightIcon={
-          <TouchableOpacity onPress={() => setShowModal(true)}>
-            <Clock size={16} color="#6B7280" style={{ marginRight: 16 }} />
-          </TouchableOpacity>
-        }
-        error={error}
-        errorMessage={errorMessage}
-        hint={hint}
-      />
+      <TouchableOpacity onPress={() => setShowModal(true)}>
+        <InputField
+          required={required}
+          label={label}
+          pointerEvents="none"
+          value={inputValue}
+          editable={false}
+          rightIcon={<Clock size={16} color="#6B7280" style={{ marginRight: 16 }} />}
+          error={error}
+          errorMessage={errorMessage}
+          hint={hint}
+        />
+      </TouchableOpacity>
 
       {Platform.OS === 'android' && showModal && (
         <DateTimePicker

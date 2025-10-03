@@ -6,6 +6,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Text,
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -26,7 +27,13 @@ const schema = yup.object({
     .required('Password is required'),
 });
 
-export const SignInForm = ({ onLoginSuccess }: { onLoginSuccess: (userId: string) => void }) => {
+export const SignInForm = ({
+  onLoginSuccess,
+  strictView,
+}: {
+  onLoginSuccess: (userId: string) => void;
+  strictView?: boolean;
+}) => {
   const { setCurrentView } = useAuthContext();
 
   const [loading, setloading] = useState(false);
@@ -143,6 +150,19 @@ export const SignInForm = ({ onLoginSuccess }: { onLoginSuccess: (userId: string
             size={ButtonSize.LARGE}
           />
         </View>
+        {!strictView && (
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Don't have an account? </Text>
+            <TextButton
+              textStyle={styles.signUpLink}
+              title="Sign Up"
+              size={ButtonSize.SMALL}
+              onPress={() => {
+                setCurrentView(IAuthModuleKeys.signUp);
+              }}
+            />
+          </View>
+        )}
       </View>
     </KeyboardAvoidingView>
   );

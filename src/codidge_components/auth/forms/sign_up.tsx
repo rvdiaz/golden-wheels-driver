@@ -6,7 +6,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
-  KeyboardAvoidingView,
   Platform,
   ScrollView,
   TouchableWithoutFeedback,
@@ -54,9 +53,11 @@ const schema = yup.object({
 export const SignUpForm = ({
   onSignUpSuccess,
   strictView,
+  loginScreenRequest,
 }: {
   onSignUpSuccess: (userId: string, formData: any) => void;
   strictView?: boolean;
+  loginScreenRequest?: () => void;
 }) => {
   const { setCurrentView, setTempData } = useAuthContext();
 
@@ -279,6 +280,9 @@ export const SignUpForm = ({
                   title="Sign In"
                   size={ButtonSize.SMALL}
                   onPress={() => {
+                    if (loginScreenRequest) {
+                      loginScreenRequest();
+                    }
                     setCurrentView(IAuthModuleKeys.signIn);
                   }}
                 />
@@ -299,7 +303,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingTop: 40,
+    paddingVertical: 40,
   },
   header: {
     alignItems: 'center',

@@ -7,6 +7,7 @@ import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/Primar
 import { ArrowLeft, ArrowRight } from 'lucide-react-native';
 import { theme } from '~/theme/theme';
 import { LinearGradient } from 'expo-linear-gradient';
+import TextButton from '~/codidge_components/UI/button/TextButton';
 
 export interface HeaderConfig {
   icon: any; // Lucide icon component

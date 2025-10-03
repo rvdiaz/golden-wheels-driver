@@ -46,18 +46,38 @@ export const ToolsScreen: React.FC = () => {
     const iconColor = tool?.color ?? '#000';
     const iconBackgroundColor = adjustColorOpacity(iconColor, 0.15);
 
+    const available = tool.available;
+    const comingSoon = tool.comingSoon;
+
     return (
       <TouchableOpacity
         key={tool.moduleKey}
-        style={[styles.toolCard, { backgroundColor: tool?.backgroundColor ?? '#FFF' }]}
+        style={[
+          styles.toolCard,
+          { backgroundColor: tool?.backgroundColor ?? '#FFF' },
+          comingSoon && styles.toolCardDisabled,
+        ]}
         onPress={() => {
-          navigation.navigate(tool.moduleKey as never);
-        }}>
+          if (available && !comingSoon) {
+            navigation.navigate(tool.moduleKey as never);
+          }
+        }}
+        disabled={comingSoon || !available}
+        activeOpacity={comingSoon || !available ? 1 : 0.7}>
         <View style={[styles.toolIcon, { backgroundColor: iconBackgroundColor }]}>
           <IconComponent size={28} color={iconColor} />
         </View>
-        <Text style={styles.toolTitle}>{tool?.label ?? ''}</Text>
-        <Text style={styles.toolDescription}>{tool?.description ?? ''}</Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.toolTitle}>{tool?.label ?? ''}</Text>
+          {comingSoon && (
+            <View style={styles.comingSoonBadge}>
+              <Text style={styles.comingSoonText}>Coming Soon</Text>
+            </View>
+          )}
+        </View>
+        <Text style={[styles.toolDescription, comingSoon && styles.toolDescriptionDisabled]}>
+          {tool?.description ?? ''}
+        </Text>
       </TouchableOpacity>
     );
   };
@@ -144,5 +164,29 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6B7280',
     lineHeight: 20,
+  },
+  toolCardDisabled: {
+    opacity: 0.6,
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+    flexWrap: 'wrap',
+  },
+  comingSoonBadge: {
+    backgroundColor: '#FEF3C7',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  comingSoonText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#92400E',
+    textTransform: 'uppercase',
+  },
+  toolDescriptionDisabled: {
+    color: '#9CA3AF',
   },
 });

@@ -196,7 +196,7 @@ export const AuthWrapper = ({
               <Text style={styles.mainTitle}>Sign In</Text>
             </View>
           }>
-          <SignInForm strictView={!allowLogin} onLoginSuccess={handleLoginSuccess} />
+          <SignInForm strictView={allowLogin} onLoginSuccess={handleLoginSuccess} />
         </AuthFormWrapper>
       );
   }

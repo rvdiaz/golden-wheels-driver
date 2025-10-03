@@ -18,7 +18,7 @@ import { theme } from '~/theme/theme';
 import { View } from 'react-native';
 import { OnboardingFlow, OnboardingStorage } from '~/core_modules/on_boarding';
 import { useSystemSettings } from '~/system_setting/customHook';
-import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
+import { LoadingFirstScreen } from './header/loadingFirstScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -129,7 +129,7 @@ export default function Navigation() {
   if (loading) {
     return (
       <NavigationContainer>
-        <PageLoading />
+        <LoadingFirstScreen />
       </NavigationContainer>
     );
   }
@@ -161,7 +161,11 @@ export default function Navigation() {
               </Stack.Screen>
             ) : (
               <Stack.Screen name="Onboarding">
-                {() => <OnboardingFlow onComplete={handleOnboardingComplete} />}
+                {() => (
+                  <AuthProvider>
+                    <OnboardingFlow onComplete={handleOnboardingComplete} />
+                  </AuthProvider>
+                )}
               </Stack.Screen>
             )}
           </>

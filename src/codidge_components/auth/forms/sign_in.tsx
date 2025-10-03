@@ -30,9 +30,11 @@ const schema = yup.object({
 export const SignInForm = ({
   onLoginSuccess,
   strictView,
+  back,
 }: {
   onLoginSuccess: (userId: string) => void;
   strictView?: boolean;
+  back?: () => void;
 }) => {
   const { setCurrentView } = useAuthContext();
 
@@ -132,16 +134,17 @@ export const SignInForm = ({
               />
             )}
           />
-
-          <View style={styles.optionsRow}>
-            <TextButton
-              textStyle={styles.forgotPassword}
-              title="Forgot Password?"
-              onPress={() => {
-                setCurrentView(IAuthModuleKeys.forcePasswordChange);
-              }}
-            />
-          </View>
+          {!strictView && (
+            <View style={styles.optionsRow}>
+              <TextButton
+                textStyle={styles.forgotPassword}
+                title="Forgot Password?"
+                onPress={() => {
+                  setCurrentView(IAuthModuleKeys.forcePasswordChange);
+                }}
+              />
+            </View>
+          )}
 
           <PrimaryButton
             onPress={handleSubmit(onSubmit)}
@@ -150,6 +153,18 @@ export const SignInForm = ({
             size={ButtonSize.LARGE}
           />
         </View>
+        {back && (
+          <View style={[styles.footer]}>
+            <TextButton
+              textStyle={styles.signUpLink}
+              title="Back"
+              size={ButtonSize.SMALL}
+              onPress={() => {
+                back();
+              }}
+            />
+          </View>
+        )}
         {!strictView && (
           <View style={styles.footer}>
             <Text style={styles.footerText}>Don't have an account? </Text>
@@ -260,7 +275,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: 10,
   },
   footerText: {
     fontSize: 16,

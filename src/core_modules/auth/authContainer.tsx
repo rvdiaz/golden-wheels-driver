@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
     backgroundColor: '#fff',
-    marginTop: 32,
+    marginTop: 20,
     borderTopLeftRadius: theme.borderRadius.xxl,
     borderTopRightRadius: theme.borderRadius.xxl,
     overflow: 'hidden',

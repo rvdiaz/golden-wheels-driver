@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ConfirmResetPassword } from '~/codidge_components/auth/forms/confirm_reset_password';
 import { useAuthContext } from '~/codidge_components/auth/context';
 import { useReactiveVar } from '@apollo/client';
@@ -30,9 +30,10 @@ export const AuthWrapper = ({
   onRegister: () => void;
 }) => {
   const { currentView } = useAuthContext();
-  const pushToken = useReactiveVar(pushTokenVar);
   const [addUserFn] = useMutation<{ addUser: IUser }>(addUserMutation);
   const [getUserFn] = useLazyQuery<{ getUser: IUser }>(getUserQuery);
+  const pushToken = useReactiveVar(pushTokenVar);
+  const [allowLogin, setallowLogin] = useState(false);
 
   const handleLoginSuccess = async (userId: string) => {
     try {
@@ -88,7 +89,6 @@ export const AuthWrapper = ({
             financialGoals,
             swotAnalysis,
             visionMission,
-            notificationToken: pushToken,
           },
           userId,
         },
@@ -126,10 +126,16 @@ export const AuthWrapper = ({
     </View>
   );
 
-  if (firstRender && currentView === IAuthModuleKeys.signIn) {
+  if (firstRender && currentView === IAuthModuleKeys.signIn && !allowLogin) {
     return (
       <AuthFormWrapper header={header}>
-        <SignUpForm strictView={true} onSignUpSuccess={handleRegisterSuccess} />
+        <SignUpForm
+          strictView={false}
+          loginScreenRequest={() => {
+            setallowLogin(true);
+          }}
+          onSignUpSuccess={handleRegisterSuccess}
+        />
       </AuthFormWrapper>
     );
   }
@@ -190,7 +196,7 @@ export const AuthWrapper = ({
               <Text style={styles.mainTitle}>Sign In</Text>
             </View>
           }>
-          <SignInForm onLoginSuccess={handleLoginSuccess} />
+          <SignInForm strictView={allowLogin} onLoginSuccess={handleLoginSuccess} />
         </AuthFormWrapper>
       );
   }
@@ -210,7 +216,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#FFFFFF',
     textAlign: 'center',
-    marginVertical: 8,
+    marginVertical: 4,
     letterSpacing: -0.5,
   },
   subtitle: {
@@ -218,7 +224,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#fff',
     textAlign: 'center',
-    lineHeight: 24,
     fontWeight: '400',
   },
   iconContainer: {

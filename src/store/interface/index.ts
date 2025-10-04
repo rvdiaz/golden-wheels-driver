@@ -30,6 +30,8 @@ export interface IFeatureModule {
   icon: string;
   color: string;
   backgroundColor: string;
+  available: boolean;
+  comingSoon: boolean;
   modules?: IFeatureModule[];
 }
 

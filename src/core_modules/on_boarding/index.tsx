@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   User,
-  Settings,
   CheckCircle,
   TrendingUp,
   Star,
@@ -24,6 +23,7 @@ import {
   SwotThreats,
 } from './widgets/steps/swotAnalisysForm';
 import { StartPointScreen } from './widgets/startScreen';
+import { LoadingFirstScreen } from '~/navigation/header/loadingFirstScreen';
 
 // Storage keys
 const STORAGE_KEYS = {
@@ -367,7 +367,7 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
   ];
 
   if (isLoading) {
-    return null;
+    return <LoadingFirstScreen />;
   }
 
   if (currentStep === -1) {

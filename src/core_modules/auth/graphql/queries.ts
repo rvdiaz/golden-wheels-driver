@@ -39,6 +39,8 @@ export const getUserQuery = gql`
           color
           backgroundColor
           moduleKey
+          available
+          comingSoon
         }
       }
       systemData {

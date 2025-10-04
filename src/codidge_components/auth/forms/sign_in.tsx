@@ -6,6 +6,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Text,
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -26,7 +27,15 @@ const schema = yup.object({
     .required('Password is required'),
 });
 
-export const SignInForm = ({ onLoginSuccess }: { onLoginSuccess: (userId: string) => void }) => {
+export const SignInForm = ({
+  onLoginSuccess,
+  strictView,
+  back,
+}: {
+  onLoginSuccess: (userId: string) => void;
+  strictView?: boolean;
+  back?: () => void;
+}) => {
   const { setCurrentView } = useAuthContext();
 
   const [loading, setloading] = useState(false);
@@ -125,16 +134,17 @@ export const SignInForm = ({ onLoginSuccess }: { onLoginSuccess: (userId: string
               />
             )}
           />
-
-          <View style={styles.optionsRow}>
-            <TextButton
-              textStyle={styles.forgotPassword}
-              title="Forgot Password?"
-              onPress={() => {
-                setCurrentView(IAuthModuleKeys.forcePasswordChange);
-              }}
-            />
-          </View>
+          {!strictView && (
+            <View style={styles.optionsRow}>
+              <TextButton
+                textStyle={styles.forgotPassword}
+                title="Forgot Password?"
+                onPress={() => {
+                  setCurrentView(IAuthModuleKeys.forcePasswordChange);
+                }}
+              />
+            </View>
+          )}
 
           <PrimaryButton
             onPress={handleSubmit(onSubmit)}
@@ -143,6 +153,31 @@ export const SignInForm = ({ onLoginSuccess }: { onLoginSuccess: (userId: string
             size={ButtonSize.LARGE}
           />
         </View>
+        {back && (
+          <View style={[styles.footer]}>
+            <TextButton
+              textStyle={styles.signUpLink}
+              title="Back"
+              size={ButtonSize.SMALL}
+              onPress={() => {
+                back();
+              }}
+            />
+          </View>
+        )}
+        {!strictView && (
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Don't have an account? </Text>
+            <TextButton
+              textStyle={styles.signUpLink}
+              title="Sign Up"
+              size={ButtonSize.SMALL}
+              onPress={() => {
+                setCurrentView(IAuthModuleKeys.signUp);
+              }}
+            />
+          </View>
+        )}
       </View>
     </KeyboardAvoidingView>
   );
@@ -240,7 +275,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: 10,
   },
   footerText: {
     fontSize: 16,

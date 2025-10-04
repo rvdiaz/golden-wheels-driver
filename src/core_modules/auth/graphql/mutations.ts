@@ -39,6 +39,8 @@ export const addUserMutation = gql`
           color
           backgroundColor
           moduleKey
+          available
+          comingSoon
         }
       }
       systemData {
@@ -98,6 +100,8 @@ export const updateUserMutation = gql`
           color
           backgroundColor
           moduleKey
+          available
+          comingSoon
         }
       }
       systemData {

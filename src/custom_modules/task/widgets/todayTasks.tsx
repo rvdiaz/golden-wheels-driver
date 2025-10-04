@@ -48,12 +48,7 @@ export const TodayTasks = () => {
   if (allTasksCompleted && !isLoading) {
     return (
       <View style={{ marginTop: 16 }}>
-        <TasksCompletionWidget
-          onViewCompleted={() => {
-            // Handle viewing completed tasks
-            console.log('View completed tasks');
-          }}
-        />
+        <TasksCompletionWidget />
       </View>
     );
   }

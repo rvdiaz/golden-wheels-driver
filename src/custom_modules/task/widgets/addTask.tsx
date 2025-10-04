@@ -4,17 +4,22 @@ import { useForm, Controller } from 'react-hook-form';
 import { Header } from '~/codidge_components/UI/header';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import DropdownComponent from '~/codidge_components/UI/dropdown';
-import { getTaskCategoriesOptions, TASK_PRIORITY_OPTIONS } from '../helpers';
+import {
+  convertTimeStringToDate,
+  getTaskCategoriesOptions,
+  TASK_PRIORITY_OPTIONS,
+} from '../helpers';
 import { DateInputField } from '~/codidge_components/UI/form/inputs/datePicker';
 import { ITask, TaskFormValues, TaskPriority, TaskSource } from '../interfaces';
 import { useMutation, useReactiveVar } from '@apollo/client';
-import { addTaskMutation } from '../graphql/mutations';
+import { addTaskMutation, updateTaskMutation } from '../graphql/mutations';
 import Constants from 'expo-constants';
 import { userData } from '~/store/user';
 import { getTaskByUserQuery } from '../graphql/queries';
 import { DateTimeInputField } from '~/codidge_components/UI/form/inputs/dateTimePicker';
 import moment from 'moment';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import { useTasksByUser } from '../hooks/listTask';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -30,39 +35,23 @@ export const AddTaskScreen = ({
   const user = useReactiveVar(userData);
   const userTaskSchema = user?.systemData?.tasksConfiguration;
 
+  const { refetch } = useTasksByUser();
+
   const [addTaskMutationFn, { loading }] = useMutation<{ addTask: ITask }>(addTaskMutation, {
-    update: (cache, { data }) => {
-      if (!data?.addTask) return;
-
-      const newTask = data.addTask;
-
-      // Read existing tasks for this user from cache
-      const existingData = cache.readQuery<{ getTasksByUser: ITask[] }>({
-        query: getTaskByUserQuery,
-        variables: {
-          tenant: { tenantId },
-          userId: user?.id,
-          date: defaultDate,
-          userActiveTemplateId: user?.activeTemplateId,
-        },
-      });
-
-      if (existingData?.getTasksByUser) {
-        cache.writeQuery({
-          query: getTaskByUserQuery,
-          variables: {
-            tenant: { tenantId },
-            userId: user?.id,
-            date: defaultDate,
-            userActiveTemplateId: user?.activeTemplateId,
-          },
-          data: {
-            getTasksByUser: [...existingData.getTasksByUser, newTask],
-          },
-        });
-      }
+    onCompleted: () => {
+      refetch();
     },
   });
+
+  const [updateTaskMutationFn, { loading: loadingMutation }] = useMutation<{ updateTask: ITask }>(
+    updateTaskMutation,
+    {
+      onCompleted: () => {
+        refetch();
+      },
+    }
+  );
+
   const {
     control,
     handleSubmit,
@@ -74,8 +63,12 @@ export const AddTaskScreen = ({
       title: task?.title ?? '',
       category: task?.category ?? '',
       priority: task?.priority ?? TaskPriority.medium,
-      startTime: task?.startTime ?? null,
-      endTime: task?.endTime ?? null,
+      startTime: task?.startTime
+        ? convertTimeStringToDate(task.startTime as string, task.date as string)
+        : null,
+      endTime: task?.endTime
+        ? convertTimeStringToDate(task.endTime as string, task.date as string)
+        : null,
       date: task?.date ?? defaultDate,
       description: task?.description ?? '',
     },
@@ -90,7 +83,7 @@ export const AddTaskScreen = ({
           ? new Date(data.startTime).toLocaleTimeString([], {
               hour: '2-digit',
               minute: '2-digit',
-              hour12: false, // remove if you want AM/PM
+              hour12: false,
             })
           : null,
         endTime: data.endTime
@@ -102,31 +95,67 @@ export const AddTaskScreen = ({
           : null,
       };
 
-      await addTaskMutationFn({
-        variables: {
-          tenant: { tenantId },
-          userId: user?.id,
-          task: {
-            ...formatted,
-            source: TaskSource.user,
+      if (task) {
+        const updated = await updateTaskMutationFn({
+          variables: {
+            tenant: { tenantId },
+            userId: user?.id,
+            taskId: task.id,
+            date: task.date,
+            updates: {
+              ...formatted,
+              source: TaskSource.user,
+            },
           },
-        },
-      });
+        });
 
-      reset({
-        title: '',
-        category: '',
-        priority: TaskPriority.medium,
-        startTime: null,
-        endTime: null,
-        date: defaultDate,
-        description: '',
-      });
+        reset({
+          title: updated.data?.updateTask?.title ?? '',
+          category: updated.data?.updateTask?.category ?? '',
+          priority: updated.data?.updateTask?.priority ?? TaskPriority.medium,
+          startTime: updated.data?.updateTask?.startTime
+            ? convertTimeStringToDate(
+                updated.data?.updateTask.startTime as string,
+                task.date as string
+              )
+            : null,
+          endTime: updated.data?.updateTask?.endTime
+            ? convertTimeStringToDate(
+                updated.data?.updateTask.endTime as string,
+                task.date as string
+              )
+            : null,
+          date: updated.data?.updateTask?.date ?? defaultDate,
+          description: updated.data?.updateTask?.description ?? '',
+        });
 
-      disposeModalHandler();
+        disposeModalHandler();
+      } else {
+        await addTaskMutationFn({
+          variables: {
+            tenant: { tenantId },
+            userId: user?.id,
+            task: {
+              ...formatted,
+              source: TaskSource.user,
+            },
+          },
+        });
+        reset({
+          title: '',
+          category: '',
+          priority: TaskPriority.medium,
+          startTime: null,
+          endTime: null,
+          date: defaultDate,
+          description: '',
+        });
+
+        disposeModalHandler();
+      }
     } catch (error) {
-      Alert.alert('Error', 'Error adding task!');
-      console.log('data', data);
+      const errorText = task ? 'Error adding task!' : 'Error editing task!';
+      Alert.alert('Error', errorText);
     }
   };
 
@@ -135,12 +164,12 @@ export const AddTaskScreen = ({
   return (
     <PageSafeContainer style={styles.container}>
       <Header
-        title="Add Task"
+        title={task ? 'Edit Task' : 'Add Task'}
         showBack={true}
         onBack={disposeModalHandler}
         rightAction={handleSubmit(onSubmit)}
         rightText="Save"
-        loadingRight={loading}
+        loadingRight={loading || loadingMutation}
         disabledRight={!isValid}
       />
       <KeyboardAvoidingView
@@ -150,7 +179,7 @@ export const AddTaskScreen = ({
         <ScrollView style={styles.content}>
           <View style={styles.formCard}>
             {/* Title */}
-            <View style={styles.fieldContainer}>
+            <View>
               <Controller
                 control={control}
                 name="title"
@@ -169,6 +198,24 @@ export const AddTaskScreen = ({
               />
             </View>
 
+            {/* Date Time */}
+            <Controller
+              control={control}
+              name="description"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <InputField
+                  label="Notes"
+                  placeholder="Additional details about this income"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  multiline
+                  numberOfLines={3}
+                  style={styles.textArea}
+                />
+              )}
+            />
+
             <View style={styles.fieldContainer}>
               <Controller
                 control={control}
@@ -178,7 +225,7 @@ export const AddTaskScreen = ({
                 }}
                 render={({ field: { onChange, value }, fieldState: { error } }) => (
                   <DropdownComponent
-                    label="Type"
+                    label="Category"
                     required={true}
                     data={getTaskCategoriesOptions(userTaskSchema ?? [])}
                     placeholder="Select task category"
@@ -220,20 +267,21 @@ export const AddTaskScreen = ({
               <Controller
                 control={control}
                 name="date"
-                render={({ field: { onChange, value } }) => (
-                  <DateInputField
-                    label="Tasks date"
-                    value={value as Date}
-                    onChangeText={(date) => {
-                      const formatted = moment(date).format('YYYY-MM-DD');
-                      onChange(formatted);
-                    }}
-                  />
-                )}
+                render={({ field: { onChange, value } }) => {
+                  return (
+                    <DateInputField
+                      label="Tasks date"
+                      value={value as Date}
+                      onChangeText={(date) => {
+                        const formatted = moment(date).format('YYYY-MM-DD');
+                        onChange(formatted);
+                      }}
+                    />
+                  );
+                }}
               />
             </View>
           </View>
-          {/* Date Time */}
           <View
             style={[
               styles.fieldContainer,
@@ -284,39 +332,23 @@ export const AddTaskScreen = ({
                     return true;
                   },
                 }}
-                render={({ field: { onChange, value }, fieldState: { error } }) => (
-                  <DateTimeInputField
-                    required={true}
-                    mode="time"
-                    label="To"
-                    value={value as Date}
-                    onChangeText={onChange}
-                    error={!!error} // pass error state
-                    errorMessage={error?.message} // pass message to display
-                    hint="After from date*"
-                  />
-                )}
+                render={({ field: { onChange, value }, fieldState: { error } }) => {
+                  return (
+                    <DateTimeInputField
+                      required={true}
+                      mode="time"
+                      label="To"
+                      value={value as Date}
+                      onChangeText={onChange}
+                      error={!!error} // pass error state
+                      errorMessage={error?.message} // pass message to display
+                      hint="After from date*"
+                    />
+                  );
+                }}
               />
             </View>
           </View>
-
-          {/* Date Time */}
-          <Controller
-            control={control}
-            name="description"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <InputField
-                label="Notes"
-                placeholder="Additional details about this income"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                multiline
-                numberOfLines={3}
-                style={styles.textArea}
-              />
-            )}
-          />
         </ScrollView>
       </KeyboardAvoidingView>
     </PageSafeContainer>

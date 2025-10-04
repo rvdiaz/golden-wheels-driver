@@ -17,6 +17,7 @@ import { useLazyQuery, useReactiveVar } from '@apollo/client';
 import { pushTokenVar } from '~/store/user/pushToken';
 import { updateUser } from '~/store/user';
 import { signOut } from 'aws-amplify/auth/cognito';
+import Background from '~/codidge_components/UI/backgroundImage';
 
 interface StartScreenProps {
   onNext: () => void;
@@ -65,78 +66,81 @@ export const StartPointScreen = ({ onNext, onSave }: StartScreenProps) => {
 
   if (showLogin) {
     return (
-      <AuthFormWrapper
-        header={
-          <View style={styles.headerContainer}>
-            <View
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Image
-                style={styles.image}
-                source={require('assets/auth.png')}
-                resizeMode="contain"
-              />
-            </View>
+      <Background>
+        <AuthFormWrapper
+          header={
+            <View style={styles.headerContainer}>
+              <View
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Image
+                  style={styles.image}
+                  source={require('assets/auth.png')}
+                  resizeMode="contain"
+                />
+              </View>
 
-            <Text style={styles.mainTitle}>Sign In</Text>
-          </View>
-        }>
-        <SignInForm
-          strictView={true}
-          onLoginSuccess={handleLoginSuccess}
-          back={() => {
-            setshowLogin(false);
-          }}
-        />
-      </AuthFormWrapper>
+              <Text style={styles.mainTitle}>Sign In</Text>
+            </View>
+          }>
+          <SignInForm
+            strictView={true}
+            onLoginSuccess={handleLoginSuccess}
+            back={() => {
+              setshowLogin(false);
+            }}
+          />
+        </AuthFormWrapper>
+      </Background>
     );
   }
 
   return (
-    <View style={styles.container}>
-      {/* Animated Background with Gradient Blobs */}
-      <View style={styles.gradientContainer}>
-        {/* Base gradient */}
+    <Background>
+      <View style={styles.container}>
+        {/* Animated Background with Gradient Blobs */}
+        {/* <View style={styles.gradientContainer}>
         <LinearGradient
           colors={['#1D0D66', '#2D1B8F', '#1D0D66']}
           style={StyleSheet.absoluteFillObject}
         />
-      </View>
-      <FadeTransition isVisible={true} style={{ flex: 1 }}>
-        {/* Main Content Centered */}
-        <View style={styles.centerContent}>
-          <StepIcon icon={Rocket} />
-          <Text style={styles.mainTitle}>Your journey starts here</Text>
-          <Text style={styles.subtitle}>
-            Share your goals and vision so we can build the perfect plan for you.
-          </Text>
-          <PrimaryButton
-            onPress={handleGetStarted}
-            size={ButtonSize.LARGE}
-            title="Start now"
-            style={styles.buttonStyle}
-          />
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Already have an account? </Text>
-            <TextButton
-              textStyle={styles.signInLink}
-              title="Sign In"
-              size={ButtonSize.SMALL}
-              onPress={() => {
-                setshowLogin(true);
-              }}
+      </View> */}
+        <FadeTransition isVisible={true} style={{ flex: 1 }}>
+          {/* Main Content Centered */}
+          <View style={styles.centerContent}>
+            <StepIcon icon={Rocket} />
+            <Text style={styles.mainTitle}>Your journey starts here</Text>
+            <Text style={styles.subtitle}>
+              Share your goals and vision so we can build the perfect plan for you.
+            </Text>
+            <PrimaryButton
+              onPress={handleGetStarted}
+              size={ButtonSize.LARGE}
+              title="Start now"
+              style={styles.buttonStyle}
             />
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>Already have an account? </Text>
+              <TextButton
+                textStyle={styles.signInLink}
+                title="Sign In"
+                size={ButtonSize.SMALL}
+                onPress={() => {
+                  setshowLogin(true);
+                }}
+              />
+            </View>
           </View>
-        </View>
 
-        {/* Terms & Conditions at the Bottom */}
-        <View style={styles.bottomContent}>
-          <TermsAndPrivacy />
-        </View>
-      </FadeTransition>
-    </View>
+          {/* Terms & Conditions at the Bottom */}
+          <View style={styles.bottomContent}>
+            <TermsAndPrivacy />
+          </View>
+        </FadeTransition>
+      </View>
+    </Background>
   );
 };
 

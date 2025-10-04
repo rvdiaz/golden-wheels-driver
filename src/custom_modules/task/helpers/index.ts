@@ -153,3 +153,10 @@ export const getTaskStatus = (task: ITask): string => {
   // For future tasks or based on source
   return task.source; // Returns 'user' or 'admin'
 };
+
+export const convertTimeStringToDate = (timeString: string, dateString: string): Date => {
+  const [hours, minutes] = timeString.split(':').map(Number);
+  const date = new Date(dateString);
+  date.setHours(hours, minutes, 0, 0);
+  return date;
+};

@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { SvgProps } from 'react-native-svg';
+import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
 
 export const StepIcon = ({ icon: Icon }: { icon: FC<SvgProps> }) => {

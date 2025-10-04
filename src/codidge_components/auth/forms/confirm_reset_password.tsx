@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from '~/codidge_components/UI/text';
 
 export const ConfirmResetPassword = () => {
   return (

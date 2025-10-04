@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextStyle } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, TextStyle } from 'react-native';
+import Text from '../../text';
 
 interface Option {
   label: string;

@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { IMlsListingItemResponse } from '../../interfaces';
 import { calculateDaysOnMarket, formatPrice } from '../../helpers';
 import { Card } from '~/codidge_components/UI/card';
 import { Badge } from '~/codidge_components/UI/badge';
+import Text from '~/codidge_components/UI/text';
 
 interface PropertyListingCardProps {
   listing: IMlsListingItemResponse;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Modal } from 'react-native';
+import { View, StyleSheet, ScrollView, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
@@ -10,6 +10,7 @@ import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import Text from '~/codidge_components/UI/text';
 
 interface PrequalifiedFormData {
   monthlyIncome: number;

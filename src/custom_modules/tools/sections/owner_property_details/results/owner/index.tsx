@@ -1,10 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Card } from '~/codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
 import { IEmail, IOwnerInfo, IPhone } from '../../interfaces';
 import { InfoItem } from '../infoItem';
 import { OwnerContactInfo } from './contactOwner';
+import Text from '~/codidge_components/UI/text';
 
 export const Owner = ({ ownerInfo }: { ownerInfo: IOwnerInfo }) => {
   return (

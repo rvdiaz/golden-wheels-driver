@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,
-  Text,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
@@ -9,6 +8,7 @@ import {
   ScrollView,
   TextInput,
 } from 'react-native';
+import Text from '~/codidge_components/UI/text';
 import { useLazyQuery } from '@apollo/client';
 import { getSearchAutoCompleteQuery } from '../api/queries';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';

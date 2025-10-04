@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
@@ -21,6 +20,7 @@ import { getUserIncomes } from './graphql/queries';
 import { IIncome, IncomeStatus } from './interfaces';
 import { IncomeCard } from './widgets/incomeCard';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import Text from '~/codidge_components/UI/text';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 

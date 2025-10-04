@@ -17,8 +17,9 @@ import { ResetPassword } from '~/codidge_components/auth/forms/reset_password';
 import { VerifyEmail } from '~/codidge_components/auth/forms/verify_email';
 import { SignInForm } from '~/codidge_components/auth/forms/sign_in';
 import { AuthFormWrapper } from './authContainer';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { OnboardingStorage } from '../on_boarding';
+import Text from '~/codidge_components/UI/text';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 

@@ -1,10 +1,11 @@
 // components/forms/PropertyForm.tsx
 import React from 'react';
 import { Controller, UseFormReturn } from 'react-hook-form';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { Card } from '~/codidge_components/UI/card';
 import { Home, Percent } from 'lucide-react-native';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
+import Text from '~/codidge_components/UI/text';
 
 interface PropertyFormProps {
   form: UseFormReturn<any>;

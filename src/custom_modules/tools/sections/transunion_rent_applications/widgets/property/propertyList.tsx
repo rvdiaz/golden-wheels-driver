@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, Alert, Modal } from 'react-native';
+import { View, StyleSheet, FlatList, ActivityIndicator, Alert, Modal } from 'react-native';
+import Text from '~/codidge_components/UI/text';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import { getTransunionPropertyQuery } from '~/custom_modules/tools/api/queries';

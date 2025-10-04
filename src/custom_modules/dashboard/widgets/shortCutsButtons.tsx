@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Card } from '~/codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
+import Text from '~/codidge_components/UI/text';
 
 export const ShortCutsButtons = () => {
   return (

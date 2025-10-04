@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { FadeTransition } from '~/codidge_components/UI/transitions/fadeIn';
 import { StepIcon } from './stepIcon';
 import { Slider } from '~/codidge_components/UI/slider';
@@ -8,6 +8,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react-native';
 import { theme } from '~/theme/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import TextButton from '~/codidge_components/UI/button/TextButton';
+import Text from '~/codidge_components/UI/text';
 
 export interface HeaderConfig {
   icon: any; // Lucide icon component

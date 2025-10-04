@@ -1,6 +1,6 @@
 import { useMutation, useReactiveVar } from '@apollo/client';
 import React, { useState, useEffect, useRef } from 'react';
-import { Modal, Text, View } from 'react-native';
+import { Modal, View } from 'react-native';
 import { updateUserMutation } from '~/core_modules/auth/graphql/mutations';
 import { SetupProfile } from '~/core_modules/profile_setup';
 import { useSystemSettings } from '~/system_setting/customHook';
@@ -8,6 +8,7 @@ import { ProfileSetupShortcut } from '~/core_modules/profile_setup/widgets/home_
 import { updateUser, userData } from '~/store/user';
 import Constants from 'expo-constants';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
+import Text from '~/codidge_components/UI/text';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   StyleSheet,
-  Text,
   View,
   ScrollView,
   TouchableWithoutFeedback,
@@ -14,6 +13,7 @@ import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { OnboardingFormData } from '../../interface';
 import { Flag } from 'lucide-react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import Text from '~/codidge_components/UI/text';
 
 // Validation rules
 const validationRules = {

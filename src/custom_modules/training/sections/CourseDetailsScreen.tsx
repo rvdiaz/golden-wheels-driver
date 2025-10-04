@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Modal } from 'react-native';
+import Text from '~/codidge_components/UI/text';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 import * as Icons from 'lucide-react-native';

@@ -1,13 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import { View, StyleSheet, Alert, KeyboardAvoidingView, Platform, TextInput } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
 import {
@@ -22,6 +14,8 @@ import { IAuthModuleKeys, MfaFormData } from '../interfaces';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
+import InputField from '~/codidge_components/UI/form/inputs/inputField';
+import Text from '~/codidge_components/UI/text';
 
 const EXPIRATION_COGNITO_TOKEN = 180;
 
@@ -151,7 +145,7 @@ export const VerifyEmail = ({
               render={({ field: { value } }) => (
                 <View style={styles.codeContainer}>
                   {[0, 1, 2, 3, 4, 5].map((index) => (
-                    <TextInput
+                    <InputField
                       key={index}
                       ref={(ref) => {
                         if (ref) inputRefs.current[index] = ref;

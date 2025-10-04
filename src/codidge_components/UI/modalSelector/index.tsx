@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Modal, FlatList, TextInput } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Modal, FlatList } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { ChevronDown } from 'lucide-react-native';
 import { PageSafeContainer } from '../pageSafeContainer';
+import Text from '../text';
+import InputField from '../form/inputs/inputField';
 
 interface DropdownItem {
   label: string;
@@ -107,7 +109,7 @@ const ModalPickerComponent: React.FC<ModalPickerProps> = ({
           {search && (
             <View style={styles.searchContainer}>
               <AntDesign size={16} color="#666" style={styles.searchIcon} />
-              <TextInput
+              <InputField
                 style={styles.searchInput}
                 placeholder="Search..."
                 value={searchText}

@@ -1,4 +1,5 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import Text from '~/codidge_components/UI/text';
 import React, { useState } from 'react';
 import { Card } from '~/codidge_components/UI/card';
 import { formatTransunionDate, getApplicantStatus, getRequestStatus } from '../../helpers';

@@ -1,10 +1,11 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Controller } from 'react-hook-form';
 import { Home, Trash2, DollarSign, Plus, Minus } from 'lucide-react-native';
 import ModalPickerComponent from '~/codidge_components/UI/modalSelector';
 import { RENOVATION_CATEGORIES } from '../interfaces';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
+import Text from '~/codidge_components/UI/text';
 
 // Variation 1: Vertical Card Layout
 const RenovationItemVertical = ({ field, index, control, onRemoveRenovationItem }: any) => (

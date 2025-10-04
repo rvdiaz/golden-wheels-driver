@@ -2,17 +2,17 @@ import { useLazyQuery } from '@apollo/client';
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
-  Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
   Keyboard,
   ScrollView,
+  TextInput,
 } from 'react-native';
 import { searchLocationsQueries } from '../api/queries';
 import Constants from 'expo-constants';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
+import Text from '~/codidge_components/UI/text';
 
 interface ISuggestionsApp {
   id: string;
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     position: 'relative',
   },
-  textInput: {
+  InputField: {
     flex: 1,
     fontSize: 16,
     color: '#111827',

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text, View, FlatList, StyleSheet } from 'react-native';
+import { View, FlatList, StyleSheet } from 'react-native';
+import Text from '~/codidge_components/UI/text';
 import { ContactCategory, IContact } from '../interfaces';
 import { useReactiveVar } from '@apollo/client';
 import { crmSearhInput, selectedFiltersVar, selectedSortVar } from '../hooks/tabSelectionVar';

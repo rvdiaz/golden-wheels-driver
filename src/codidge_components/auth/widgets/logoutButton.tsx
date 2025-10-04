@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import * as Icons from 'lucide-react-native';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { useApolloClient } from '@apollo/client';
 import { signOut } from 'aws-amplify/auth/cognito';
 import { updateUser } from '~/store/user';
+import Text from '~/codidge_components/UI/text';
 
 export const LogoutButton = () => {
   const [loadingLogout, setloadingLogout] = useState(false);

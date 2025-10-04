@@ -1,7 +1,8 @@
-import { View, Text, TouchableOpacity, StyleSheet, ViewStyle, ScrollView } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, ViewStyle, ScrollView } from 'react-native';
 import React, { useState } from 'react';
 import { theme } from '~/theme/theme';
 import { ToyBrick } from 'lucide-react-native';
+import Text from '../text';
 
 interface Tab {
   key: string;

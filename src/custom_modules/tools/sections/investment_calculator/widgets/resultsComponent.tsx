@@ -1,6 +1,6 @@
 // components/results/ResultsDisplay.tsx
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { useFormatters, useInvestmentForm } from '../custom_hooks';
 import { CalculationResults } from '../interfaces';
 import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
@@ -9,6 +9,7 @@ import { Card } from '~/codidge_components/UI/card';
 import { TargetAnalysis } from './targetAnalysis';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { Header } from '~/codidge_components/UI/header';
+import Text from '~/codidge_components/UI/text';
 
 interface ResultsDisplayProps {
   results: CalculationResults;

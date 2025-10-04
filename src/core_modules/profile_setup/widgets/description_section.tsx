@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
+import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
 
 export default function DescriptionSection({ htmlDescription }: { htmlDescription: string }) {

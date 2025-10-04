@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   Alert,
@@ -16,6 +15,7 @@ import { ChangePasswordFormData, IAuthModuleKeys } from '../interfaces';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import TextButton from '~/codidge_components/UI/button/TextButton';
+import Text from '~/codidge_components/UI/text';
 
 export const ForcePasswordChange = ({
   onSignUpSuccess,

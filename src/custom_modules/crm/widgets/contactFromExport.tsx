@@ -3,11 +3,9 @@ import React, { useState, useEffect } from 'react';
 import {
   Modal,
   View,
-  Text,
   FlatList,
   TouchableOpacity,
   StyleSheet,
-  TextInput,
   Alert,
   ActivityIndicator,
 } from 'react-native';
@@ -19,6 +17,8 @@ import { CONTACT_CATEGORY_OPTIONS } from '../helpers';
 import { ContactCategory } from '../interfaces';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import * as Contacts from 'expo-contacts';
+import InputField from '~/codidge_components/UI/form/inputs/inputField';
+import Text from '~/codidge_components/UI/text';
 
 interface PhoneContact {
   id: string;
@@ -215,7 +215,7 @@ export const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
           {/* Search Bar */}
           <View style={styles.searchContainer}>
             <Search size={20} color="#6B7280" />
-            <TextInput
+            <InputField
               style={styles.searchInput}
               placeholder="Search contacts..."
               value={searchQuery}

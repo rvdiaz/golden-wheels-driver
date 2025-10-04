@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import {
   CheckCircle,
   XCircle,
@@ -11,6 +11,7 @@ import {
 import { Header } from '~/codidge_components/UI/header';
 import { Card } from '~/codidge_components/UI/card';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import Text from '~/codidge_components/UI/text';
 
 interface LoansPreqResultsProps {
   result: {

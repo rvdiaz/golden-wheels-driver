@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { Calculator, Info, DollarSign, TrendingUp } from 'lucide-react-native';
 import { useFormContext } from 'react-hook-form';
 import { MortgageCalculation, MortgageFormValues } from '../interfaces';
@@ -7,6 +7,7 @@ import { formatCurrency, formatCurrencyDetailed } from '../helpers';
 import { Header } from '~/codidge_components/UI/header';
 import { Card } from '~/codidge_components/UI/card';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import Text from '~/codidge_components/UI/text';
 
 interface MortgageCalculatorResultsProps {
   calculation: MortgageCalculation;

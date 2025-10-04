@@ -3,7 +3,6 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
-  Text,
   Modal,
   FlatList,
   KeyboardAvoidingView,
@@ -13,6 +12,7 @@ import * as Icons from 'lucide-react-native';
 import { PhoneContact } from '../../interfaces';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import Text from '~/codidge_components/UI/text';
 
 interface IContactSelectorProps {
   showPhoneContacts: boolean;

@@ -6,7 +6,6 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  Text,
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -18,6 +17,7 @@ import { IAuthModuleKeys, LoginFormData } from '../interfaces';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
+import Text from '~/codidge_components/UI/text';
 
 const schema = yup.object({
   email: yup.string().email('Please enter a valid email').required('Email is required'),

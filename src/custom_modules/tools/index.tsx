@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as Icons from 'lucide-react-native';
 import { IFeatureModule, ModuleKeys } from '~/store/interface';
 import { theme } from '~/theme/theme';
 import { useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
+import Text from '~/codidge_components/UI/text';
 
 export const ToolsScreen: React.FC = () => {
   const navigation = useNavigation();

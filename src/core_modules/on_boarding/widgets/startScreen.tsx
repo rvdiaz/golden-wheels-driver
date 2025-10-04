@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
+import Text from '~/codidge_components/UI/text';
 import Constants from 'expo-constants';
 import { LinearGradient } from 'expo-linear-gradient'; // or react-native-linear-gradient
 import { TermsAndPrivacy } from './termsAndPrivacy';

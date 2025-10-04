@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, JSX } from 'react';
 import {
   View,
-  Text,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
@@ -9,6 +8,7 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
+import Text from '../text';
 
 const { width: screenWidth } = Dimensions.get('window');
 

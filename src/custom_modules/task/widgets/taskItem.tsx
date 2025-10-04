@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet, Image } from 'react-native';
 import { GoalType, ITask } from '../interfaces';
 import {
   formatTaskTime,
@@ -18,6 +18,7 @@ import { theme } from '~/theme/theme';
 import { SimpleCheckbox } from '~/codidge_components/UI/form/checkbox';
 import { Badge } from '~/codidge_components/UI/badge';
 import { TaskFieldsModal } from '~/codidge_components/UI/customField/modalForm';
+import Text from '~/codidge_components/UI/text';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 

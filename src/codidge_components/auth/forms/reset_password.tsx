@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   Alert,
@@ -14,6 +13,7 @@ import { useAuthContext } from '../context';
 import { IAuthModuleKeys, ResetPasswordFormData } from '../interfaces';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
+import Text from '~/codidge_components/UI/text';
 
 export const ResetPassword = ({
   onSignUpSuccess,

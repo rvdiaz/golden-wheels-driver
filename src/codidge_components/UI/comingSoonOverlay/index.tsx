@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import * as Icons from 'lucide-react-native';
+import Text from '../text';
 
 interface ComingSoonOverlayProps {
   title?: string;

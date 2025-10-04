@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, Modal, TouchableOpacity, StyleSheet, Linking, Alert } from 'react-native';
+import { View, Modal, TouchableOpacity, StyleSheet, Linking, Alert } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { IExtendedRenterInput } from '../../interfaces';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import Text from '~/codidge_components/UI/text';
 
 interface PdfReportModalProps {
   visible: boolean;

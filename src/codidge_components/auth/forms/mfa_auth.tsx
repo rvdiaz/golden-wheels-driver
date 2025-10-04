@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   TextInput,
@@ -14,6 +13,8 @@ import * as Icons from 'lucide-react-native';
 import { useAuthContext } from '../context';
 import { IAuthModuleKeys, MfaFormData } from '../interfaces';
 import { Card } from '~/codidge_components/UI/card';
+import InputField from '~/codidge_components/UI/form/inputs/inputField';
+import Text from '~/codidge_components/UI/text';
 
 export const MfaAuth = () => {
   const { setCurrentView } = useAuthContext();
@@ -100,7 +101,7 @@ export const MfaAuth = () => {
               render={({ field: { value } }) => (
                 <View style={styles.codeContainer}>
                   {[0, 1, 2, 3, 4, 5].map((index) => (
-                    <TextInput
+                    <InputField
                       key={index}
                       ref={(ref) => {
                         if (ref) inputRefs.current[index] = ref;

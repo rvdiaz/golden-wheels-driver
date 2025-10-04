@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { IGoalProgress } from '../interfaces';
 import { theme } from '~/theme/theme';
 import { Slider } from '~/codidge_components/UI/slider';
+import Text from '~/codidge_components/UI/text';
 
 export const GoalItem = ({ goal }: { goal: IGoalProgress }) => {
   // Calculate progress percentage

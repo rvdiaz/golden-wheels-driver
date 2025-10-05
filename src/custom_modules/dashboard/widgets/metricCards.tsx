@@ -1,6 +1,7 @@
 import React, { ReactNode, useEffect, useRef } from 'react';
-import { View, Text, Dimensions, StyleSheet, Animated } from 'react-native';
+import { View, Dimensions, StyleSheet, Animated } from 'react-native';
 import { ShimmerPlaceholder } from '~/codidge_components/UI/skeleton/shimmerPlaceholder';
+import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
 
 const screenWidth = Dimensions.get('window').width;

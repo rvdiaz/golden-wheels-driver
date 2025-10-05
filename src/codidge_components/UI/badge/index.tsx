@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import { View, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { CheckCircle, XCircle, Info, AlertTriangle } from 'lucide-react-native'; // icons
 import { theme } from '~/theme/theme';
+import Text from '../text';
 
 type BadgeType = 'success' | 'error' | 'warning' | 'info' | 'normal';
 

@@ -1,9 +1,10 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
+import { View, StyleSheet, Animated } from 'react-native';
 import { ITask } from '../interfaces';
 import { TaskItem } from './taskItem';
 import { theme } from '~/theme/theme';
 import { Slider } from '~/codidge_components/UI/slider';
+import Text from '~/codidge_components/UI/text';
 
 // Main TaskList component with loading state
 export const TaskList = ({

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Modal, View, Text, Animated } from 'react-native';
+import { Modal, View, Animated } from 'react-native';
 import { InfoWidget } from '~/custom_modules/dashboard/widgets/rentApplication';
 import { ScreenRequestForm } from './screen_request/screenRequestForm';
 import { useNavigation } from '@react-navigation/native';
 import { ModuleKeys } from '~/store/interface';
 import { theme } from '~/theme/theme';
+import Text from '~/codidge_components/UI/text';
 
 export const RentAppShortcut = () => {
   const [modalVisible, setModalVisible] = useState(false);

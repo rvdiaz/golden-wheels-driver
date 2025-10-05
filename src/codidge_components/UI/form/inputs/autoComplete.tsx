@@ -1,13 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
-import {
-  View,
-  TextInput,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-  Keyboard,
-} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, FlatList, TouchableOpacity, StyleSheet, Keyboard } from 'react-native';
+import InputField from './inputField';
+import Text from '../../text';
 
 interface Option {
   value: string;
@@ -67,7 +61,7 @@ export const AutoCompleteInput: React.FC<AutocompleteInputProps> = ({
   return (
     <View style={{ width: '100%' }}>
       {label && <Text style={styles.label}>{label}</Text>}
-      <TextInput
+      <InputField
         value={inputValue}
         placeholder={placeholder}
         style={styles.input}

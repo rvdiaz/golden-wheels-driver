@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Modal } from 'react-native';
+import { View, StyleSheet, Modal } from 'react-native';
 import { GoalType, ITask } from '../interfaces';
 import {
   formatTaskTime,
@@ -20,6 +20,7 @@ import { TaskFieldsModal } from '~/codidge_components/UI/customField/modalForm';
 import { AddTaskScreen } from './addTask';
 import { CheckCircle, Pencil, X, XCircle } from 'lucide-react-native';
 import IconButton from '~/codidge_components/UI/button/IconButton';
+import Text from '~/codidge_components/UI/text';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 

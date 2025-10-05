@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text, StyleSheet, TextStyle, StyleProp } from 'react-native';
+import { StyleSheet, TextStyle, StyleProp } from 'react-native';
+import Text from '~/codidge_components/UI/text';
 
 interface LabelProps {
   label: string;

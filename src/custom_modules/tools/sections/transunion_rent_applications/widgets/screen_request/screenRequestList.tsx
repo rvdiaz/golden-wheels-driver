@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Modal } from 'react-native';
+import { View, StyleSheet, FlatList, Modal } from 'react-native';
+import Text from '~/codidge_components/UI/text';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import { getRentApplications } from '~/custom_modules/tools/api/queries';

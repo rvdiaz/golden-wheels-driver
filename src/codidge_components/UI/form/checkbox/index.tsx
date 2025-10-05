@@ -1,7 +1,8 @@
 import React from 'react';
-import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, View, StyleSheet } from 'react-native';
 import * as Icons from 'lucide-react-native';
 import { theme } from '~/theme/theme';
+import Text from '../../text';
 
 export const Checkbox = ({
   checked = false,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, RefreshControl, ListRenderItem } from 'react-native';
+import { View, StyleSheet, FlatList, RefreshControl, ListRenderItem } from 'react-native';
 import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import Constants from 'expo-constants';
@@ -10,6 +10,7 @@ import { FollowUpCard } from './followUpCard';
 import { theme } from '~/theme/theme';
 import { markDoneUserFollowUpMutation } from '../../graphql/mutations';
 import moment from 'moment';
+import Text from '~/codidge_components/UI/text';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 

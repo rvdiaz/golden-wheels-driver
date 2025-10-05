@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import Text from '~/codidge_components/UI/text';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 

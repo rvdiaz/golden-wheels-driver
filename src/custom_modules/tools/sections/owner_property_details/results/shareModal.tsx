@@ -1,6 +1,7 @@
 import { Copy, Download, Mail, MessageCircle, Share2, X } from 'lucide-react-native';
 import React from 'react';
-import { Alert, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Share, StyleSheet, TouchableOpacity, View } from 'react-native';
+import Text from '~/codidge_components/UI/text';
 
 export const ShareModalPropertyDetails = ({ cancel }: { cancel: () => void }) => {
   const handleNativeShare = async () => {

@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Animated } from 'react-native';
 import { IMlsListingItemResponse } from '../../interfaces';
 import { calculateDaysOnMarket, formatPrice } from '../../helpers';
 import { Card } from '~/codidge_components/UI/card';
@@ -8,6 +8,7 @@ import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
 import { PhoneCall } from 'lucide-react-native';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import Text from '~/codidge_components/UI/text';
 
 interface PropertyDetailScreenProps {
   listing: IMlsListingItemResponse;

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   View,
-  Text,
   Modal,
   TouchableOpacity,
   StyleSheet,
@@ -16,6 +15,7 @@ import { getApplicantReportQuery } from '~/custom_modules/tools/api/queries';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import { CompactTabHeader } from '~/codidge_components/UI/tabs';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import Text from '~/codidge_components/UI/text';
 
 interface ReportData {
   renterReportItems: {

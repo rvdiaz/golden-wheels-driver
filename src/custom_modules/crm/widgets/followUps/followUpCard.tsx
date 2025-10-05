@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import { Clock } from 'lucide-react-native';
 import IconButton from '~/codidge_components/UI/button/IconButton';
 import { IFollowUp, IsDoneValues } from '../../interfaces';
@@ -10,6 +10,7 @@ import {
   handleEmailContact,
   handleSmsContact,
 } from '../../helpers';
+import Text from '~/codidge_components/UI/text';
 
 interface FollowUpCardProps {
   followUp: IFollowUp;

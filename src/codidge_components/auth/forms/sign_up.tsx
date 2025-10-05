@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Constants from 'expo-constants';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   Alert,
@@ -22,6 +21,7 @@ import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/Primar
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import Text from '~/codidge_components/UI/text';
 
 const schema = yup.object({
   email: yup.string().email('Please enter a valid email').required('Email is required'),

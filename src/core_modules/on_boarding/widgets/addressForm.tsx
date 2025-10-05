@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { MapPin, Flag } from 'lucide-react-native';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
+import Text from '~/codidge_components/UI/text';
 
 interface PersonalInfo {
   firstName: string;

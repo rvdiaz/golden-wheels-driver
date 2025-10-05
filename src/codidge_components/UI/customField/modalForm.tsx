@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView } from 'react-native';
+import { View, StyleSheet, Modal, TouchableOpacity, ScrollView } from 'react-native';
 import { theme } from '~/theme/theme';
 import InputField from '../form/inputs/inputField';
 import PrimaryButton from '../button/PrimaryButton';
 import { ButtonSize } from '../button/OutlineButton';
 import { GoalType } from '~/custom_modules/task/interfaces';
+import Text from '../text';
 
 interface TaskFieldsModalProps {
   visible: boolean;

@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   FlatList,
   ActivityIndicator,
@@ -20,6 +19,7 @@ import { PropertyForm } from './propertyForm';
 import { Header } from '~/codidge_components/UI/header';
 import { theme } from '~/theme/theme';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import Text from '~/codidge_components/UI/text';
 
 // Property Selector Widget Component
 interface PropertySelectorWidgetProps {

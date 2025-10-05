@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ModuleKeys } from '~/store/interface';
 import Constants from 'expo-constants';
@@ -65,6 +65,7 @@ import { useQuery, useReactiveVar } from '@apollo/client';
 import { GetUserNotificationsResponse } from '../interfaces';
 import { getUserNotificationsQuery } from '../graphql';
 import { userData } from '~/store/user';
+import Text from '~/codidge_components/UI/text';
 
 export const AnimatedNotificationButton: React.FC<NotificationButtonProps> = ({
   navigation,

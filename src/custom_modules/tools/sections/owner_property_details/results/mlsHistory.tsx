@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Card } from '~/codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
 import { IMlsHistoryItem } from '../interfaces';
+import Text from '~/codidge_components/UI/text';
 
 export const MlsHistoryList = ({ mlsHistory }: { mlsHistory: IMlsHistoryItem[] }) => {
   return (

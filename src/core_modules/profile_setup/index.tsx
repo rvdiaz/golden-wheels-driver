@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSystemSettings } from '../../system_setting/customHook';
 import { theme } from '~/theme/theme';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, View, Modal } from 'react-native';
 import { IProfileTask } from '../../system_setting/interfaces';
 import { PageTransition } from '~/codidge_components/UI/pageTransition';
 import { TaskDetailScreen } from './widgets/setup_item_detail';
@@ -16,6 +16,7 @@ import { updateUserMutation } from '~/core_modules/auth/graphql/mutations';
 import Constants from 'expo-constants';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { SetupItem } from './widgets/setup_list_item';
+import Text from '~/codidge_components/UI/text';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 

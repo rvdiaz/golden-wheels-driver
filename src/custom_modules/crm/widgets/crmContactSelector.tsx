@@ -1,14 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   FlatList,
   ActivityIndicator,
   Modal,
   TouchableOpacity,
-  TextInput,
 } from 'react-native';
+import Text from '~/codidge_components/UI/text';
 import { Search, Plus, X, Trash2, UserPlus, Users } from 'lucide-react-native';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { useContactsQueries } from '../hooks/contactMutations';
@@ -73,7 +72,7 @@ export const ContactEmailInput: React.FC<ContactEmailInputProps> = ({
         {label && <Text style={styles.inputLabel}>{label}</Text>}
         <View style={styles.inputRow}>
           <View style={styles.textInputWrapper}>
-            <TextInput
+            <InputField
               style={[styles.textInput, inputError && styles.textInputError]}
               value={value}
               onChangeText={onChangeText}

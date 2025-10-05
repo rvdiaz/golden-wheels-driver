@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Header } from '../../codidge_components/UI/header';
 import { Card } from '../../codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
@@ -16,6 +16,7 @@ import { IncomeStatus } from './income/interfaces';
 import { LogoutButton } from '~/codidge_components/auth/widgets/logoutButton';
 import { LoadingSpinner } from '~/codidge_components/UI/loading/loadingSpinner';
 import { AccountDeletionModal } from './accountDeletion';
+import Text from '~/codidge_components/UI/text';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 

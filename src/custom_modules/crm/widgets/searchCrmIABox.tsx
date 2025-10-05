@@ -8,7 +8,6 @@ import {
   View,
   Modal,
   TouchableOpacity,
-  Text,
   TouchableWithoutFeedback,
   ScrollView,
   Dimensions,
@@ -16,6 +15,7 @@ import {
 import { theme } from '~/theme/theme';
 import IconButton from '~/codidge_components/UI/button/IconButton';
 import { ContactCategory } from '../interfaces';
+import Text from '~/codidge_components/UI/text';
 
 // Get screen dimensions
 const { height: screenHeight } = Dimensions.get('window');

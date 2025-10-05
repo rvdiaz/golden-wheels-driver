@@ -1,6 +1,6 @@
 // components/results/TargetAnalysis.tsx
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useFormatters } from '../custom_hooks';
 import { TargetResults } from '../interfaces';
 import { Card } from '~/codidge_components/UI/card';
@@ -8,6 +8,7 @@ import { Edit, Target } from 'lucide-react-native';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
+import Text from '~/codidge_components/UI/text';
 
 interface TargetAnalysisProps {
   onCalculateTarget: (targetCapRate: number, targetCashOnCash: number) => void;

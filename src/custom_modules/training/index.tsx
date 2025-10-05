@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import Text from '~/codidge_components/UI/text';
 import { useNavigation } from '@react-navigation/native';
 import { Card } from '../../codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';

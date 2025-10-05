@@ -1,7 +1,6 @@
 import React, { ReactNode } from 'react';
 import {
   TouchableOpacity,
-  Text,
   StyleSheet,
   ActivityIndicator,
   ViewStyle,
@@ -9,6 +8,7 @@ import {
 } from 'react-native';
 import { ButtonSize } from './PrimaryButton';
 import { sizeStyles } from './types';
+import Text from '../text';
 
 interface TextButtonProps {
   loading?: boolean;

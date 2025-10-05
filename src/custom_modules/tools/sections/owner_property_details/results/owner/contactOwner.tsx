@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  Modal,
-  TouchableOpacity,
-  TextInput,
-  ScrollView,
-} from 'react-native';
+import { View, StyleSheet, Modal, TouchableOpacity, ScrollView } from 'react-native';
 import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
 import * as Icons from 'lucide-react-native';
 import { IEmail, IPhone } from '../../interfaces';
 import TextButton from '~/codidge_components/UI/button/TextButton';
+import Text from '~/codidge_components/UI/text';
+import InputField from '~/codidge_components/UI/form/inputs/inputField';
 
 interface EmailTemplate {
   id: string;
@@ -147,7 +141,7 @@ export const OwnerContactInfo: React.FC<OwnerContactInfoProps> = ({
 
             {/* Subject & Body */}
             <Text style={styles.label}>Subject:</Text>
-            <TextInput
+            <InputField
               style={styles.input}
               placeholder="Enter subject"
               value={emailSubject}
@@ -155,7 +149,7 @@ export const OwnerContactInfo: React.FC<OwnerContactInfoProps> = ({
             />
 
             <Text style={styles.label}>Message:</Text>
-            <TextInput
+            <InputField
               style={[styles.input, { height: 150 }]}
               placeholder="Enter message"
               multiline

@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, View, Text, StyleSheet, Alert, Linking } from 'react-native';
+import { TouchableOpacity, View, StyleSheet, Alert, Linking } from 'react-native';
 import * as Icons from 'lucide-react-native';
 import { ModuleKeys } from '~/store/interface';
 import { useNavigation } from '@react-navigation/native';
@@ -17,6 +17,7 @@ import {
   handleSmsContact,
 } from '../helpers';
 import IconButton from '~/codidge_components/UI/button/IconButton';
+import Text from '~/codidge_components/UI/text';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 

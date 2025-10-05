@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import * as Icons from 'lucide-react-native';
 import PrimaryButton, { ButtonSize } from './PrimaryButton';
 

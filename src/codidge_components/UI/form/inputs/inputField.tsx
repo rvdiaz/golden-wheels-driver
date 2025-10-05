@@ -2,7 +2,6 @@ import React, { forwardRef, ReactNode } from 'react';
 import {
   View,
   TextInput,
-  Text,
   TouchableOpacity,
   StyleSheet,
   TextInputProps,
@@ -12,6 +11,7 @@ import {
 import { X } from 'lucide-react-native'; // make sure you have RN version
 import { LoadingSpinner } from '../../loading/loadingSpinner';
 import { theme } from '~/theme/theme';
+import Text from '../../text';
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -46,6 +46,7 @@ const InputField = forwardRef<TextInput, InputProps>(
       labelStyle,
       required,
       containerStyle,
+      allowFontScaling = false,
       ...rest
     },
     ref
@@ -78,6 +79,7 @@ const InputField = forwardRef<TextInput, InputProps>(
         <View style={styles.container}>
           {leftIcon && <View style={[styles.leftIcon]}>{leftIcon}</View>}
           <TextInput
+            allowFontScaling={allowFontScaling}
             ref={ref}
             value={value ?? ''}
             onChangeText={onChangeText}

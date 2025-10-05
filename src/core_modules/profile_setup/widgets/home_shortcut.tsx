@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import { theme } from '~/theme/theme';
 import { ProgressRing } from './ring_status_circle';
+import Text from '~/codidge_components/UI/text';
 
 interface ProfileCompletionWidgetProps {
   completedSteps: number;

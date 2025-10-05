@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { IPropertyInfo } from '../../owner_property_details/interfaces';
 import { formatCurrency } from '../../mortgage_calculator/helpers';
+import Text from '~/codidge_components/UI/text';
 
 export const CompsProperties = ({ propertiesComps }: { propertiesComps: IPropertyInfo[] }) => {
   const formatSquareFeet = (sqft: number) => {

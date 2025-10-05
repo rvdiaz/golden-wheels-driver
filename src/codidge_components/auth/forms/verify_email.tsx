@@ -181,7 +181,16 @@ export const VerifyEmail = ({
               loading={loading}
               onPress={handleSubmit(onSubmit)}
             />
-
+            <TextButton
+              style={{
+                marginVertical: 10,
+              }}
+              size={ButtonSize.LARGE}
+              onPress={() => {
+                setCurrentView(IAuthModuleKeys.signUp);
+              }}
+              title="Back"
+            />
             <View style={styles.resendContainer}>
               {canResend && <TextButton title="Resend Code" onPress={handleResendCode} />}
             </View>

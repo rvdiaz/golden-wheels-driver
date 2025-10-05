@@ -15,6 +15,7 @@ import Constants from 'expo-constants';
 import { IncomeStatus } from './income/interfaces';
 import { LogoutButton } from '~/codidge_components/auth/widgets/logoutButton';
 import { LoadingSpinner } from '~/codidge_components/UI/loading/loadingSpinner';
+import { AccountDeletionModal } from './accountDeletion';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -225,6 +226,7 @@ export const ProfileScreen: React.FC = () => {
             <Icons.ChevronRight size={20} color="#9CA3AF" />
           </TouchableOpacity>
 
+          <AccountDeletionModal />
           <LogoutButton />
         </Card>
       </ScrollView>

@@ -36,7 +36,7 @@ export const SignInForm = ({
   strictView?: boolean;
   back?: () => void;
 }) => {
-  const { setCurrentView } = useAuthContext();
+  const { setCurrentView, setTempData } = useAuthContext();
 
   const [loading, setloading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -64,6 +64,18 @@ export const SignInForm = ({
         },
       });
 
+      const needsVerification = user.nextStep.signInStep === 'CONFIRM_SIGN_UP';
+
+      if (needsVerification) {
+        setTempData({
+          email: data.email,
+          password: data.password,
+        });
+
+        setCurrentView(IAuthModuleKeys.verifyEmail);
+        setloading(false);
+        return;
+      }
       if (user.isSignedIn) {
         const att = await fetchUserAttributes();
 
@@ -73,6 +85,7 @@ export const SignInForm = ({
         setloading(false);
       }
     } catch (error: any) {
+      console.log(':::result', error);
       setloading(false);
       Alert.alert('Login Failed', 'Invalid email or password');
       await signOut();

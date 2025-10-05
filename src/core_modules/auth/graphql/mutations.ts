@@ -121,3 +121,9 @@ export const updateUserMutation = gql`
     }
   }
 `;
+
+export const deleteUserMutation = gql`
+  mutation deleteUser($tenant: TenantData!, $userId: ID!) {
+    deleteUser(tenant: $tenant, userId: $userId)
+  }
+`;

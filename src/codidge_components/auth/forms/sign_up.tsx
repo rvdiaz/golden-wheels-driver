@@ -123,6 +123,7 @@ export const SignUpForm = ({
       });
       setloading(false);
     } catch (error) {
+      console.log(':::result', error);
       setloading(false);
       Alert.alert('Registration Failed', 'Please try again');
     }

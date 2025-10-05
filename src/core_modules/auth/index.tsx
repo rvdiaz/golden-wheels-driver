@@ -20,6 +20,7 @@ import { AuthFormWrapper } from './authContainer';
 import { Image, StyleSheet, View } from 'react-native';
 import { OnboardingStorage } from '../on_boarding';
 import Text from '~/codidge_components/UI/text';
+import { clearOnboardingData } from '../on_boarding/helpers';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -52,7 +53,7 @@ export const AuthWrapper = ({
         console.error(user.error);
         throw Error('Error getting user');
       }
-
+      clearOnboardingData();
       updateUser(user.data?.getUser);
     } catch (error) {
       console.log('::::error getting customer', error);
@@ -102,6 +103,7 @@ export const AuthWrapper = ({
       }
 
       updateUser(userData.data?.addUser);
+      clearOnboardingData();
       onRegister();
     } catch (error) {
       await signOut();

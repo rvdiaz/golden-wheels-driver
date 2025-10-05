@@ -26,7 +26,7 @@ import { StartPointScreen } from './widgets/startScreen';
 import { LoadingFirstScreen } from '~/navigation/header/loadingFirstScreen';
 
 // Storage keys
-const STORAGE_KEYS = {
+export const STORAGE_KEYS = {
   ONBOARDING_DATA: '@onboarding_data',
   ONBOARDING_STEP: '@onboarding_current_step',
   ONBOARDING_COMPLETED: '@onboarding_completed',
@@ -152,19 +152,6 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
       console.error('Error loading saved data:', error);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  // Clear onboarding data
-  const clearOnboardingData = async () => {
-    try {
-      await AsyncStorage.multiRemove([
-        STORAGE_KEYS.ONBOARDING_DATA,
-        STORAGE_KEYS.ONBOARDING_STEP,
-        STORAGE_KEYS.ONBOARDING_COMPLETED,
-      ]);
-    } catch (error) {
-      console.error('Error clearing onboarding data:', error);
     }
   };
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ConfirmResetPassword } from '~/codidge_components/auth/forms/confirm_reset_password';
 import { useAuthContext } from '~/codidge_components/auth/context';
 import { useReactiveVar } from '@apollo/client';
@@ -17,7 +17,7 @@ import { ResetPassword } from '~/codidge_components/auth/forms/reset_password';
 import { VerifyEmail } from '~/codidge_components/auth/forms/verify_email';
 import { SignInForm } from '~/codidge_components/auth/forms/sign_in';
 import { AuthFormWrapper } from './authContainer';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, Keyboard, StyleSheet, View } from 'react-native';
 import { OnboardingStorage } from '../on_boarding';
 import Text from '~/codidge_components/UI/text';
 import { clearOnboardingData } from '../on_boarding/helpers';
@@ -36,6 +36,22 @@ export const AuthWrapper = ({
   const [getUserFn] = useLazyQuery<{ getUser: IUser }>(getUserQuery);
   const pushToken = useReactiveVar(pushTokenVar);
   const [allowLogin, setallowLogin] = useState(false);
+
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboardVisible(true);
+    });
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardVisible(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   const handleLoginSuccess = async (userId: string) => {
     try {
@@ -112,18 +128,47 @@ export const AuthWrapper = ({
   };
 
   const header = (
-    <View style={styles.headerContainer}>
+    <View
+      style={[
+        styles.headerContainer,
+        keyboardVisible && {
+          paddingTop: 40,
+        },
+      ]}>
       <View
         style={{
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-        <Image style={styles.image} source={require('assets/auth.png')} resizeMode="contain" />
+        <Image
+          style={[
+            styles.image,
+            keyboardVisible && {
+              width: 80,
+            },
+          ]}
+          source={require('assets/auth.png')}
+          resizeMode="contain"
+        />
       </View>
 
-      <Text style={styles.mainTitle}>Account Creation</Text>
+      <Text
+        style={[
+          styles.mainTitle,
+          keyboardVisible && {
+            fontSize: 18,
+          },
+        ]}>
+        Account Creation
+      </Text>
 
-      <Text style={styles.subtitle}>
+      <Text
+        style={[
+          styles.subtitle,
+          keyboardVisible && {
+            fontSize: 12,
+          },
+        ]}>
         Save your progress by creating your account so you won’t lose what you’ve already built.
       </Text>
     </View>
@@ -183,20 +228,39 @@ export const AuthWrapper = ({
       return (
         <AuthFormWrapper
           header={
-            <View style={styles.headerContainer}>
+            <View
+              style={[
+                styles.headerContainer,
+                keyboardVisible && {
+                  paddingTop: 40,
+                },
+              ]}>
               <View
                 style={{
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}>
                 <Image
-                  style={styles.image}
+                  style={[
+                    styles.image,
+                    keyboardVisible && {
+                      width: 80,
+                    },
+                  ]}
                   source={require('assets/auth.png')}
                   resizeMode="contain"
                 />
               </View>
 
-              <Text style={styles.mainTitle}>Sign In</Text>
+              <Text
+                style={[
+                  styles.mainTitle,
+                  keyboardVisible && {
+                    fontSize: 18,
+                  },
+                ]}>
+                Sign In
+              </Text>
             </View>
           }>
           <SignInForm strictView={allowLogin} onLoginSuccess={handleLoginSuccess} />

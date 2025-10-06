@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, StyleSheet, View } from 'react-native';
 import { FadeTransition } from '~/codidge_components/UI/transitions/fadeIn';
 import { StepIcon } from './stepIcon';
 import { Slider } from '~/codidge_components/UI/slider';
@@ -7,8 +7,8 @@ import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/Primar
 import { ArrowLeft, ArrowRight } from 'lucide-react-native';
 import { theme } from '~/theme/theme';
 import { LinearGradient } from 'expo-linear-gradient';
-import TextButton from '~/codidge_components/UI/button/TextButton';
 import Text from '~/codidge_components/UI/text';
+import { useEffect, useState } from 'react';
 
 export interface HeaderConfig {
   icon: any; // Lucide icon component
@@ -47,22 +47,30 @@ const StepProgress = ({
   currentStep,
   totalSteps,
   icon,
+  keyboardVisible,
 }: {
   currentStep: number;
   totalSteps: number;
   icon: any;
+  keyboardVisible?: boolean;
 }) => {
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === totalSteps - 1;
 
   return (
-    <View style={styles.stepProgressContainer}>
+    <View
+      style={[
+        styles.stepProgressContainer,
+        keyboardVisible && {
+          height: 40,
+        },
+      ]}>
       {/* Left line - hidden on first step */}
       <View style={[styles.progressLineLeft, isFirstStep && styles.hiddenLine]} />
 
       {/* Icon container - always centered */}
       <View style={styles.iconContainer}>
-        <StepIcon icon={icon} />
+        <StepIcon keyboardVisible={keyboardVisible} icon={icon} />
       </View>
 
       {/* Right line - hidden on last step */}
@@ -78,8 +86,24 @@ export const FormWrapper = ({
   currentStep,
   totalSteps,
 }: FormWrapperProps) => {
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboardVisible(true);
+    });
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardVisible(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView style={styles.container}>
       <View style={styles.gradientContainer}>
         {/* Base gradient */}
         <LinearGradient
@@ -88,18 +112,49 @@ export const FormWrapper = ({
         />
       </View>
       {/* Header Section */}
-      <View style={styles.headerContainer}>
+      <View
+        style={[
+          styles.headerContainer,
+          keyboardVisible && {
+            paddingTop: 40,
+          },
+        ]}>
         <View style={styles.headerContent}>
-          <StepProgress currentStep={currentStep} totalSteps={totalSteps} icon={header.icon} />
-          <Text style={styles.mainTitle}>
+          <StepProgress
+            keyboardVisible={keyboardVisible}
+            currentStep={currentStep}
+            totalSteps={totalSteps}
+            icon={header.icon}
+          />
+          <Text
+            style={[
+              styles.mainTitle,
+              keyboardVisible && {
+                fontSize: 16,
+              },
+            ]}>
             Step {currentStep + 1} of {totalSteps}
           </Text>
-          <Text style={styles.subtitle}>{header.subtitle}</Text>
+          <Text
+            style={[
+              styles.subtitle,
+              keyboardVisible && {
+                fontSize: 13,
+              },
+            ]}>
+            {header.subtitle}
+          </Text>
         </View>
       </View>
 
       {/* Form Container */}
-      <View style={styles.formContainer}>
+      <View
+        style={[
+          styles.formContainer,
+          keyboardVisible && {
+            marginTop: 14,
+          },
+        ]}>
         {/* Form Content */}
         <View style={styles.contentContainer}>
           <FadeTransition isVisible={true} style={{ flex: 1 }}>
@@ -166,7 +221,7 @@ export const FormWrapper = ({
           )}
         </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -228,7 +283,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#fff',
     textAlign: 'center',
-    lineHeight: 24,
     fontWeight: '400',
     paddingHorizontal: 20,
   },

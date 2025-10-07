@@ -10,10 +10,9 @@ import {
 } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FooterConfig, HeaderConfig } from './widgets/formsWrapper';
-import { PersonalInformation } from './widgets/steps/personalnformationForm';
+import { PersonalInformation } from '../auth/personalnformationForm';
 import { MultiStepFormWrapper } from './widgets/multiStepsWrapper';
-import { VisionAndMission } from './widgets/steps/visionAndMission';
-import { FinantialGoals } from './widgets/steps/finantialGoals';
+import { VisionAndMission } from '../profile_setup/widgets/business_plan/visionAndMission';
 import { FormProvider, useForm } from 'react-hook-form';
 import { OnboardingFormData } from './interface';
 import {
@@ -21,9 +20,9 @@ import {
   SwotWeaknesses,
   SwotOpportunities,
   SwotThreats,
-} from './widgets/steps/swotAnalisysForm';
-import { StartPointScreen } from './widgets/startScreen';
+} from '../profile_setup/widgets/business_plan/swotAnalisysForm';
 import { LoadingFirstScreen } from '~/navigation/header/loadingFirstScreen';
+import { SignUpForm } from '~/codidge_components/auth/forms/sign_up';
 
 // Storage keys
 export const STORAGE_KEYS = {
@@ -207,10 +206,12 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
         subtitle: 'Tell us about yourself so we can personalize your experience',
       } as HeaderConfig,
       footer: {
+        showBack: true,
         showNext: true,
         nextTitle: 'Continue',
         showSlider: true,
         progressPercentage: (1 / totalSteps) * 100,
+        onBack: stepBack,
         onNext: handlePersonalInfoNext,
       } as FooterConfig,
       component: PersonalInformation,
@@ -345,7 +346,7 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
         onBack: stepBack,
         onComplete: handleFinalSubmit,
       } as FooterConfig,
-      component: FinantialGoals,
+      component: SignUpForm,
       props: {
         errors: errors.financialGoals,
         allData: getValues(),
@@ -355,16 +356,6 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
 
   if (isLoading) {
     return <LoadingFirstScreen />;
-  }
-
-  if (currentStep === -1) {
-    return (
-      <StartPointScreen
-        onNext={() => {
-          setCurrentStep(0);
-        }}
-      />
-    );
   }
 
   return (

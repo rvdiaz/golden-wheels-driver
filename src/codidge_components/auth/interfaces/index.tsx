@@ -1,4 +1,5 @@
 export enum IAuthModuleKeys {
+  personalInfo = 'PersonalInfo',
   signIn = 'SignIn',
   signUp = 'SignUp',
   forcePasswordChange = 'ForcePasswordChange',
@@ -26,9 +27,8 @@ export interface ResetPasswordFormData {
 }
 
 export interface ChangePasswordFormData {
-  currentPassword?: string;
+  confirmationCode: string;
   newPassword: string;
-  confirmPassword: string;
 }
 
 export interface MfaFormData {

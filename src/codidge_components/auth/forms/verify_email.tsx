@@ -13,16 +13,16 @@ import { useAuthContext } from '../context';
 import { IAuthModuleKeys, MfaFormData } from '../interfaces';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import TextButton from '~/codidge_components/UI/button/TextButton';
-import { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
+import OutlineButton, { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import Text from '~/codidge_components/UI/text';
 
 const EXPIRATION_COGNITO_TOKEN = 180;
 
 export const VerifyEmail = ({
-  onSignUpSuccess,
+  onVerificationSuccess,
 }: {
-  onSignUpSuccess: (userId: string, formData: any) => void;
+  onVerificationSuccess: (userId: string) => void;
 }) => {
   const { setCurrentView, tempData } = useAuthContext();
 
@@ -80,16 +80,13 @@ export const VerifyEmail = ({
           const att = await fetchUserAttributes();
           const userId = att?.['sub'] || '';
 
-          await onSignUpSuccess(userId, {
-            name: tempData.name,
-            email: tempData.email,
-            phone: tempData.phone,
-          });
+          await onVerificationSuccess(userId);
         }
       }
 
       setloading(false);
     } catch (error) {
+      console.log(':::error', error);
       setloading(false);
       await signOut();
       Alert.alert('Invalid Code', 'Please check your code and try again');
@@ -175,18 +172,24 @@ export const VerifyEmail = ({
               loading={loading}
               onPress={handleSubmit(onSubmit)}
             />
-            <TextButton
-              style={{
-                marginVertical: 10,
-              }}
-              size={ButtonSize.LARGE}
-              onPress={() => {
-                setCurrentView(IAuthModuleKeys.signUp);
-              }}
-              title="Back"
-            />
-            <View style={styles.resendContainer}>
-              {canResend && <TextButton title="Resend Code" onPress={handleResendCode} />}
+            <View
+              style={[
+                styles.resendContainer,
+                canResend && {
+                  justifyContent: 'space-between',
+                },
+              ]}>
+              <TextButton
+                style={{
+                  marginVertical: 10,
+                }}
+                size={ButtonSize.LARGE}
+                onPress={() => {
+                  setCurrentView(IAuthModuleKeys.signUp);
+                }}
+                title="Back"
+              />
+              {canResend && <OutlineButton title="Resend Code" onPress={handleResendCode} />}
             </View>
           </View>
         </View>
@@ -269,8 +272,7 @@ const styles = StyleSheet.create({
   resendContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 10,
+    justifyContent: 'center',
   },
   countdownText: {
     fontSize: 16,

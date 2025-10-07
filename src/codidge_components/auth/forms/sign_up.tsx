@@ -99,6 +99,15 @@ export const SignUpForm = ({
         },
       });
 
+      if (!result.userId) {
+        throw Error('Error sign up');
+      }
+
+      await onSignUpSuccess(result.userId, {
+        email: data.email,
+        phone: data.phone,
+      });
+
       const needsVerification = result.nextStep.signUpStep === 'CONFIRM_SIGN_UP';
 
       if (needsVerification) {
@@ -110,17 +119,8 @@ export const SignUpForm = ({
 
         setCurrentView(IAuthModuleKeys.verifyEmail);
         setloading(false);
-        return;
       }
 
-      if (!result.userId) {
-        throw Error('Error sign up');
-      }
-
-      await onSignUpSuccess(result.userId, {
-        email: data.email,
-        phone: data.phone,
-      });
       setloading(false);
     } catch (error) {
       console.log(':::result', error);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useReactiveVar } from '@apollo/client';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -10,15 +10,15 @@ import {
   createTabNavigationBottomBar,
   getTenantRoutes,
 } from '~/store/helpers';
-import { AuthWrapper } from '~/core_modules/auth';
 import { AuthProvider } from '~/codidge_components/auth/context';
 import { usePushNotificationTokenSetup } from '~/core_modules/auth/hooks/usePushNotificationToken';
 import { CustomHeader } from './header/customHeader';
 import { theme } from '~/theme/theme';
 import { View } from 'react-native';
-import { OnboardingFlow, OnboardingStorage } from '~/core_modules/on_boarding';
 import { useSystemSettings } from '~/system_setting/customHook';
 import { LoadingFirstScreen } from './header/loadingFirstScreen';
+import { StartPointScreen } from '~/core_modules/auth';
+import { IAuthModuleKeys } from '~/codidge_components/auth/interfaces';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -103,29 +103,6 @@ export default function Navigation() {
   const tenantModules = getTenantRoutes(userInfo);
   const nestedNav = createNestedNavigationScreens(tenantModules, Stack);
 
-  const [showOnboarding, setShowOnboarding] = useState(false);
-  const [accountCreation, setAccountCreation] = useState(false);
-
-  useEffect(() => {
-    checkOnboardingStatus();
-  }, [userInfo]);
-
-  const checkOnboardingStatus = async () => {
-    try {
-      const isCompleted = await OnboardingStorage.isOnboardingCompleted();
-      const isCreated = await OnboardingStorage.isAccountCreated();
-      setAccountCreation(isCreated);
-      setShowOnboarding(!isCompleted);
-    } catch (error) {
-      console.error('Error checking onboarding status:', error);
-      setShowOnboarding(false);
-    }
-  };
-
-  const handleOnboardingComplete = () => {
-    setShowOnboarding(false);
-  };
-
   if (loading) {
     return (
       <NavigationContainer>
@@ -146,28 +123,14 @@ export default function Navigation() {
           </>
         ) : (
           <>
-            {!showOnboarding ? (
-              <Stack.Screen name="Auth">
-                {() => (
-                  <AuthProvider>
-                    <AuthWrapper
-                      firstRender={!accountCreation}
-                      onRegister={() => {
-                        setAccountCreation(true);
-                      }}
-                    />
-                  </AuthProvider>
-                )}
-              </Stack.Screen>
-            ) : (
-              <Stack.Screen name="Onboarding">
-                {() => (
-                  <AuthProvider>
-                    <OnboardingFlow onComplete={handleOnboardingComplete} />
-                  </AuthProvider>
-                )}
-              </Stack.Screen>
-            )}
+            <Stack.Screen name="auth">
+              {() => (
+                <AuthProvider
+                  defaultAuthScreen={userInfo === '' ? IAuthModuleKeys.signIn : undefined}>
+                  <StartPointScreen />
+                </AuthProvider>
+              )}
+            </Stack.Screen>
           </>
         )}
       </Stack.Navigator>

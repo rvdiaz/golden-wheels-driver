@@ -14,34 +14,34 @@ import { useAuthContext } from '../context';
 import { ChangePasswordFormData, IAuthModuleKeys } from '../interfaces';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
-import TextButton from '~/codidge_components/UI/button/TextButton';
 import Text from '~/codidge_components/UI/text';
+import { confirmResetPassword } from 'aws-amplify/auth';
 
 export const ForcePasswordChange = ({
-  onSignUpSuccess,
+  username,
+  onResendCode,
 }: {
-  onSignUpSuccess: (userId: string, formData: any) => void;
+  username: string;
+  onResendCode?: () => void;
 }) => {
   const { setCurrentView } = useAuthContext();
 
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     control,
     handleSubmit,
     formState: { errors },
     watch,
+    setError,
   } = useForm<ChangePasswordFormData>({
     defaultValues: {
-      currentPassword: '',
+      confirmationCode: '',
       newPassword: '',
-      confirmPassword: '',
     },
   });
-
-  const isLoading = false;
 
   const newPassword = watch('newPassword');
 
@@ -69,12 +69,93 @@ export const ForcePasswordChange = ({
     return 'Strong';
   };
 
+  const validatePassword = (password: string): string | true => {
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters';
+    }
+    if (!/[A-Z]/.test(password)) {
+      return 'Password must contain at least one uppercase letter';
+    }
+    if (!/[a-z]/.test(password)) {
+      return 'Password must contain at least one lowercase letter';
+    }
+    if (!/\d/.test(password)) {
+      return 'Password must contain at least one number';
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      return 'Password must contain at least one special character';
+    }
+    return true;
+  };
+
   const onSubmit = async (data: ChangePasswordFormData) => {
+    // Validate password requirements
+    const validationResult = validatePassword(data.newPassword);
+    if (validationResult !== true) {
+      setError('newPassword', {
+        type: 'manual',
+        message: validationResult,
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
-      //await changePassword(data.currentPassword!, data.newPassword);
-      Alert.alert('Success', 'Password changed successfully!');
-    } catch (error) {
-      Alert.alert('Error', 'Failed to change password. Please check your current password.');
+      await confirmResetPassword({
+        username: username,
+        confirmationCode: data.confirmationCode!,
+        newPassword: data.newPassword,
+      });
+
+      Alert.alert('Success', 'Password changed successfully!', [
+        {
+          text: 'OK',
+          onPress: () => {
+            setCurrentView?.('SIGN_IN' as IAuthModuleKeys);
+          },
+        },
+      ]);
+    } catch (error: any) {
+      console.error('Confirm reset password error:', error);
+
+      let errorMessage = 'Failed to change password. Please try again.';
+
+      switch (error.name) {
+        case 'CodeMismatchException':
+          errorMessage = 'Invalid verification code. Please check and try again.';
+          setError('confirmationCode', {
+            type: 'manual',
+            message: 'Invalid code',
+          });
+          break;
+        case 'ExpiredCodeException':
+          errorMessage = 'Verification code has expired. Please request a new one.';
+          setError('confirmationCode', {
+            type: 'manual',
+            message: 'Code expired',
+          });
+          break;
+        case 'InvalidPasswordException':
+          errorMessage = 'Password does not meet requirements.';
+          setError('newPassword', {
+            type: 'manual',
+            message: error.message || errorMessage,
+          });
+          break;
+        case 'LimitExceededException':
+          errorMessage = 'Too many attempts. Please try again later.';
+          break;
+        case 'InvalidParameterException':
+          errorMessage = error.message || 'Invalid input. Please check your information.';
+          break;
+        default:
+          errorMessage = error.message || errorMessage;
+      }
+
+      Alert.alert('Error', errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -89,7 +170,8 @@ export const ForcePasswordChange = ({
         <View style={styles.header}>
           <Icons.HelpCircle size={20} color="#6B7280" />
           <Text style={styles.subtitle}>
-            Your password has expired. Please create a new secure password.
+            We sent a verification code to {username}. Enter the code and create a new secure
+            password.
           </Text>
         </View>
 
@@ -98,20 +180,24 @@ export const ForcePasswordChange = ({
             <View style={styles.inputGroup}>
               <Controller
                 control={control}
-                name="currentPassword"
+                name="confirmationCode"
+                rules={{
+                  required: 'Verification code is required',
+                }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
                     containerStyle={{
                       flex: 1,
                       width: '100%',
                     }}
-                    label="Current Password"
-                    placeholder="Enter current password"
+                    label="Verification Code"
+                    placeholder="Enter 6-digit code"
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
-                    secureTextEntry={!showCurrentPassword}
-                    leftIcon={<Icons.Lock size={16} color="#6B7280" />}
+                    keyboardType="number-pad"
+                    maxLength={6}
+                    leftIcon={<Icons.Key size={16} color="#6B7280" />}
                     rightIcon={
                       <TouchableOpacity
                         onPress={() => setShowCurrentPassword(!showCurrentPassword)}
@@ -123,17 +209,27 @@ export const ForcePasswordChange = ({
                         )}
                       </TouchableOpacity>
                     }
-                    error={!!errors.currentPassword}
-                    errorMessage={errors?.currentPassword?.message}
+                    error={!!errors.confirmationCode}
+                    errorMessage={errors?.confirmationCode?.message}
                   />
                 )}
               />
+
+              {onResendCode && (
+                <TouchableOpacity onPress={onResendCode} style={styles.resendButton}>
+                  <Text style={styles.resendText}>Didn't receive the code? Resend</Text>
+                </TouchableOpacity>
+              )}
             </View>
 
             <View style={styles.inputGroup}>
               <Controller
                 control={control}
                 name="newPassword"
+                rules={{
+                  required: 'New password is required',
+                  validate: validatePassword,
+                }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
                     containerStyle={{
@@ -183,41 +279,6 @@ export const ForcePasswordChange = ({
                   </Text>
                 </View>
               )}
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Controller
-                control={control}
-                name="confirmPassword"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <InputField
-                    containerStyle={{
-                      flex: 1,
-                      width: '100%',
-                    }}
-                    label="Confirm new Password"
-                    placeholder="Confirm new password"
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    secureTextEntry={!showNewPassword}
-                    leftIcon={<Icons.Lock size={16} color="#6B7280" />}
-                    rightIcon={
-                      <TouchableOpacity
-                        onPress={() => setShowConfirmPassword(!showNewPassword)}
-                        style={styles.eyeIcon}>
-                        {showNewPassword ? (
-                          <Icons.EyeOff size={16} color="#6B7280" />
-                        ) : (
-                          <Icons.Eye size={16} color="#6B7280" />
-                        )}
-                      </TouchableOpacity>
-                    }
-                    error={!!errors.confirmPassword}
-                    errorMessage={errors?.confirmPassword?.message}
-                  />
-                )}
-              />
             </View>
 
             <View style={styles.requirementsContainer}>
@@ -279,16 +340,7 @@ export const ForcePasswordChange = ({
               title="Change Password"
               loading={isLoading}
               size={ButtonSize.LARGE}
-            />
-
-            <TextButton
-              style={{
-                marginTop: 5,
-              }}
-              title="Back to Sign In"
-              onPress={() => {
-                setCurrentView(IAuthModuleKeys.signIn);
-              }}
+              disabled={isLoading}
             />
           </View>
         </View>
@@ -315,7 +367,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 14,
     color: '#6B7280',
-    textAlign: 'left',
+    textAlign: 'center',
   },
   formCard: {
     marginBottom: 24,
@@ -337,6 +389,15 @@ const styles = StyleSheet.create({
   },
   eyeIcon: {
     paddingHorizontal: 10,
+  },
+  resendButton: {
+    marginTop: 8,
+    alignSelf: 'flex-end',
+  },
+  resendText: {
+    fontSize: 14,
+    color: '#4F46E5',
+    fontWeight: '500',
   },
   errorText: {
     fontSize: 14,

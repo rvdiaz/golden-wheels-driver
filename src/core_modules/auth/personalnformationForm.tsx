@@ -8,12 +8,14 @@ import {
   Platform,
 } from 'react-native';
 import { useFormContext, Controller } from 'react-hook-form';
-import { FooterConfig, FormWrapper, HeaderConfig } from '../formsWrapper';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
-import { OnboardingFormData } from '../../interface';
+import { IPersonalData } from '../on_boarding/interface';
 import { Flag } from 'lucide-react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Text from '~/codidge_components/UI/text';
+import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
+import { ButtonSize } from '~/codidge_components/UI/button/types';
+import TextButton from '~/codidge_components/UI/button/TextButton';
 
 // Validation rules
 const validationRules = {
@@ -64,42 +66,45 @@ const validationRules = {
 
 // Main Personal Information Component
 export const PersonalInformation = ({
-  header,
-  footer,
-  props,
-  currentStep,
-  totalSteps,
+  openSignIn,
+  onNext,
 }: {
-  header: HeaderConfig;
-  footer: FooterConfig;
-  props: any;
-  currentStep: number;
-  totalSteps: number;
+  openSignIn: () => void;
+  onNext: (personalData: IPersonalData) => void;
 }) => {
   const {
     control,
+    handleSubmit,
     formState: { errors },
-  } = useFormContext<OnboardingFormData>();
+  } = useFormContext<IPersonalData>();
+
+  const hasErrors = Object.keys(errors).length > 0;
+
+  const onSubmit = (data: IPersonalData) => {
+    onNext(data);
+  };
+
+  const handleNextPress = () => {
+    handleSubmit(onSubmit)();
+  };
 
   return (
-    <FormWrapper
-      header={header}
-      footer={footer}
-      props={props}
-      currentStep={currentStep}
-      totalSteps={totalSteps}>
+    <View style={{ flex: 1 }}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.formContent}>
-          <Text style={styles.sectionTitle}>Personal Information</Text>
           <KeyboardAwareScrollView
             showsVerticalScrollIndicator={false}
             enableOnAndroid={true}
             extraScrollHeight={Platform.OS === 'ios' ? 0 : 80}
             keyboardShouldPersistTaps="handled">
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView
+              style={{
+                paddingTop: 30,
+              }}
+              showsVerticalScrollIndicator={false}>
               <View style={styles.inputContainer}>
                 <Controller
-                  name="personalInfo.firstName"
+                  name="firstName"
                   control={control}
                   rules={validationRules.firstName}
                   render={({ field: { onChange, value, onBlur } }) => (
@@ -110,8 +115,8 @@ export const PersonalInformation = ({
                       onChangeText={onChange}
                       onBlur={onBlur}
                       placeholder="Enter your first name"
-                      errorMessage={errors.personalInfo?.firstName?.message}
-                      error={!!errors.personalInfo?.firstName}
+                      errorMessage={errors.firstName?.message}
+                      error={!!errors.firstName}
                     />
                   )}
                 />
@@ -119,7 +124,7 @@ export const PersonalInformation = ({
 
               <View style={styles.inputContainer}>
                 <Controller
-                  name="personalInfo.lastName"
+                  name="lastName"
                   control={control}
                   rules={validationRules.lastName}
                   render={({ field: { onChange, value, onBlur } }) => (
@@ -130,8 +135,8 @@ export const PersonalInformation = ({
                       onChangeText={onChange}
                       onBlur={onBlur}
                       placeholder="Enter your last name"
-                      errorMessage={errors.personalInfo?.lastName?.message}
-                      error={!!errors.personalInfo?.lastName}
+                      errorMessage={errors.lastName?.message}
+                      error={!!errors.lastName}
                     />
                   )}
                 />
@@ -139,7 +144,7 @@ export const PersonalInformation = ({
 
               <View style={styles.inputContainer}>
                 <Controller
-                  name="personalInfo.mlsNumber"
+                  name="mlsNumber"
                   control={control}
                   rules={validationRules.mlsNumber}
                   render={({ field: { onChange, value, onBlur } }) => (
@@ -150,8 +155,8 @@ export const PersonalInformation = ({
                       onChangeText={onChange}
                       onBlur={onBlur}
                       placeholder="Enter your mls number"
-                      errorMessage={errors.personalInfo?.mlsNumber?.message}
-                      error={!!errors.personalInfo?.mlsNumber}
+                      errorMessage={errors.mlsNumber?.message}
+                      error={!!errors.mlsNumber}
                     />
                   )}
                 />
@@ -162,7 +167,7 @@ export const PersonalInformation = ({
               </View>
               <View style={styles.inputContainer}>
                 <Controller
-                  name="personalInfo.addressLine1"
+                  name="addressLine1"
                   control={control}
                   rules={validationRules.addressLine1}
                   render={({ field: { onChange, value, onBlur } }) => (
@@ -173,8 +178,8 @@ export const PersonalInformation = ({
                       onChangeText={onChange}
                       onBlur={onBlur}
                       placeholder="Enter your address"
-                      errorMessage={errors.personalInfo?.addressLine1?.message}
-                      error={!!errors.personalInfo?.addressLine1}
+                      errorMessage={errors.addressLine1?.message}
+                      error={!!errors.addressLine1}
                     />
                   )}
                 />
@@ -182,9 +187,9 @@ export const PersonalInformation = ({
 
               <View style={styles.inputContainer}>
                 <Controller
-                  name="personalInfo.city"
+                  name="city"
                   control={control}
-                  rules={validationRules.addressLine1}
+                  rules={validationRules.city}
                   render={({ field: { onChange, value, onBlur } }) => (
                     <InputField
                       label="City"
@@ -193,8 +198,8 @@ export const PersonalInformation = ({
                       onChangeText={onChange}
                       onBlur={onBlur}
                       placeholder="Enter your city"
-                      errorMessage={errors.personalInfo?.city?.message}
-                      error={!!errors.personalInfo?.city}
+                      errorMessage={errors.city?.message}
+                      error={!!errors.city}
                     />
                   )}
                 />
@@ -213,7 +218,7 @@ export const PersonalInformation = ({
                     flex: 1,
                   }}>
                   <Controller
-                    name="personalInfo.postalCode"
+                    name="postalCode"
                     control={control}
                     rules={validationRules.zipCode}
                     render={({ field: { onChange, value, onBlur } }) => (
@@ -224,8 +229,8 @@ export const PersonalInformation = ({
                         onChangeText={onChange}
                         onBlur={onBlur}
                         placeholder="Enter your zip code"
-                        errorMessage={errors.personalInfo?.postalCode?.message}
-                        error={!!errors.personalInfo?.postalCode}
+                        errorMessage={errors.postalCode?.message}
+                        error={!!errors.postalCode}
                       />
                     )}
                   />
@@ -236,19 +241,19 @@ export const PersonalInformation = ({
                     flex: 1,
                   }}>
                   <Controller
-                    name="personalInfo.region"
+                    name="region"
                     control={control}
                     rules={validationRules.region}
                     render={({ field: { onChange, value, onBlur } }) => (
                       <InputField
-                        label="Region"
+                        label="State"
                         required={true}
                         value={value || ''}
                         onChangeText={onChange}
                         onBlur={onBlur}
                         placeholder="Ex: FL"
-                        errorMessage={errors.personalInfo?.region?.message}
-                        error={!!errors.personalInfo?.region}
+                        errorMessage={errors.region?.message}
+                        error={!!errors.region}
                       />
                     )}
                   />
@@ -258,7 +263,26 @@ export const PersonalInformation = ({
           </KeyboardAwareScrollView>
         </View>
       </TouchableWithoutFeedback>
-    </FormWrapper>
+      <View style={styles.footerContainer}>
+        <PrimaryButton
+          onPress={handleNextPress}
+          size={ButtonSize.LARGE}
+          title="Next"
+          disabled={hasErrors}
+        />
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Already have an account? </Text>
+          <TextButton
+            textStyle={styles.signInLink}
+            title="Sign In"
+            size={ButtonSize.SMALL}
+            onPress={async () => {
+              openSignIn();
+            }}
+          />
+        </View>
+      </View>
+    </View>
   );
 };
 
@@ -269,13 +293,6 @@ const styles = StyleSheet.create({
   },
   keyboardAvoidingView: {
     flex: 1,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginBottom: 24,
-    textAlign: 'center',
-    color: '#333',
   },
   inputContainer: {
     marginBottom: 8,
@@ -293,5 +310,24 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#1F2937',
     fontWeight: '500',
+  },
+  footerContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 10,
+  },
+  footerText: {
+    fontSize: 16,
+    color: '#6B7280',
+  },
+  signInLink: {
+    fontSize: 16,
+    color: '#2563EB',
+    fontWeight: '600',
   },
 });

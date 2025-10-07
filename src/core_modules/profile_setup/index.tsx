@@ -124,6 +124,11 @@ export const SetupProfile = ({ dispose }: { dispose: () => void }) => {
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
             style={styles.scrollContainer}>
+            {/*    <SetupItem
+              key="special"
+              task={{ id: 'special', label: 'Featured Tool', description: 'Try this first' }}
+              onPress={() => setSelectedTask({ id: 'special' })}
+            /> */}
             {allTasks.map((task) => (
               <SetupItem key={task.id} task={task} onPress={() => setSelectedTask(task)} />
             ))}

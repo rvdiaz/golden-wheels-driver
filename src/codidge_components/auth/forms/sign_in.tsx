@@ -31,10 +31,12 @@ export const SignInForm = ({
   onLoginSuccess,
   strictView,
   back,
+  onSignUp,
 }: {
   onLoginSuccess: (userId: string) => void;
   strictView?: boolean;
   back?: () => void;
+  onSignUp?: () => void;
 }) => {
   const { setCurrentView, setTempData } = useAuthContext();
 
@@ -185,9 +187,7 @@ export const SignInForm = ({
               textStyle={styles.signUpLink}
               title="Sign Up"
               size={ButtonSize.SMALL}
-              onPress={() => {
-                setCurrentView(IAuthModuleKeys.signUp);
-              }}
+              onPress={onSignUp}
             />
           </View>
         )}

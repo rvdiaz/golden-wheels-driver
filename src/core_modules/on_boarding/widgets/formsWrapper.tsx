@@ -33,11 +33,11 @@ export interface FooterConfig {
 
 // Main FormWrapper props
 export interface FormWrapperProps {
-  header: HeaderConfig;
-  footer: FooterConfig;
+  header?: HeaderConfig;
+  footer?: FooterConfig;
   children: React.ReactNode;
-  currentStep: number;
-  totalSteps: number;
+  currentStep?: number;
+  totalSteps?: number;
   showTransition?: boolean;
   props: any;
 }
@@ -120,30 +120,36 @@ export const FormWrapper = ({
           },
         ]}>
         <View style={styles.headerContent}>
-          <StepProgress
-            keyboardVisible={keyboardVisible}
-            currentStep={currentStep}
-            totalSteps={totalSteps}
-            icon={header.icon}
-          />
-          <Text
-            style={[
-              styles.mainTitle,
-              keyboardVisible && {
-                fontSize: 16,
-              },
-            ]}>
-            Step {currentStep + 1} of {totalSteps}
-          </Text>
-          <Text
-            style={[
-              styles.subtitle,
-              keyboardVisible && {
-                fontSize: 13,
-              },
-            ]}>
-            {header.subtitle}
-          </Text>
+          {currentStep && totalSteps && (
+            <StepProgress
+              keyboardVisible={keyboardVisible}
+              currentStep={currentStep}
+              totalSteps={totalSteps}
+              icon={header?.icon}
+            />
+          )}
+          {currentStep && (
+            <Text
+              style={[
+                styles.mainTitle,
+                keyboardVisible && {
+                  fontSize: 16,
+                },
+              ]}>
+              Step {currentStep + 1} of {totalSteps}
+            </Text>
+          )}
+          {header?.subtitle && (
+            <Text
+              style={[
+                styles.subtitle,
+                keyboardVisible && {
+                  fontSize: 13,
+                },
+              ]}>
+              {header?.subtitle}
+            </Text>
+          )}
         </View>
       </View>
 
@@ -163,63 +169,65 @@ export const FormWrapper = ({
         </View>
 
         {/* Footer Section */}
-        <View style={styles.footerContainer}>
-          {footer.showSlider && (
-            <View>
-              <View style={styles.sliderContainer}>
-                <Slider progressPercentage={footer.progressPercentage || 0} />
+        {footer && (
+          <View style={styles.footerContainer}>
+            {footer.showSlider && (
+              <View>
+                <View style={styles.sliderContainer}>
+                  <Slider progressPercentage={footer.progressPercentage || 0} />
+                </View>
               </View>
-            </View>
-          )}
+            )}
 
-          {footer.customFooter ? (
-            <View>{footer.customFooter}</View>
-          ) : (
-            <View>
-              <View style={styles.footer}>
-                {footer.showBack && footer.showNext ? (
-                  // Both buttons
-                  <View style={styles.buttonRow}>
-                    <OutlineButton
-                      size={ButtonSize.LARGE}
-                      title={footer.backTitle || 'Back'}
-                      leftWidget={<ArrowLeft size={16} color={theme.colors.primary} />}
-                      style={styles.backButton}
-                      onPress={footer.onBack}
-                    />
+            {footer.customFooter ? (
+              <View>{footer.customFooter}</View>
+            ) : (
+              <View>
+                <View style={styles.footer}>
+                  {footer.showBack && footer.showNext ? (
+                    // Both buttons
+                    <View style={styles.buttonRow}>
+                      <OutlineButton
+                        size={ButtonSize.LARGE}
+                        title={footer.backTitle || 'Back'}
+                        leftWidget={<ArrowLeft size={16} color={theme.colors.primary} />}
+                        style={styles.backButton}
+                        onPress={footer.onBack}
+                      />
+                      <PrimaryButton
+                        size={ButtonSize.LARGE}
+                        title={footer.nextTitle || 'Continue'}
+                        rightWidget={<ArrowRight size={16} color="#FFF" />}
+                        style={styles.nextButton}
+                        onPress={footer.onComplete ?? footer.onNext}
+                        disabled={footer.nextDisabled}
+                      />
+                    </View>
+                  ) : footer.showNext ? (
+                    // Only next button
                     <PrimaryButton
                       size={ButtonSize.LARGE}
                       title={footer.nextTitle || 'Continue'}
                       rightWidget={<ArrowRight size={16} color="#FFF" />}
-                      style={styles.nextButton}
+                      style={styles.fullWidthButton}
                       onPress={footer.onComplete ?? footer.onNext}
                       disabled={footer.nextDisabled}
                     />
-                  </View>
-                ) : footer.showNext ? (
-                  // Only next button
-                  <PrimaryButton
-                    size={ButtonSize.LARGE}
-                    title={footer.nextTitle || 'Continue'}
-                    rightWidget={<ArrowRight size={16} color="#FFF" />}
-                    style={styles.fullWidthButton}
-                    onPress={footer.onComplete ?? footer.onNext}
-                    disabled={footer.nextDisabled}
-                  />
-                ) : footer.showBack ? (
-                  // Only back button
-                  <OutlineButton
-                    size={ButtonSize.LARGE}
-                    title={footer.backTitle || 'Back'}
-                    leftWidget={<ArrowLeft size={16} color={theme.colors.primary} />}
-                    style={styles.fullWidthButton}
-                    onPress={footer.onBack}
-                  />
-                ) : null}
+                  ) : footer.showBack ? (
+                    // Only back button
+                    <OutlineButton
+                      size={ButtonSize.LARGE}
+                      title={footer.backTitle || 'Back'}
+                      leftWidget={<ArrowLeft size={16} color={theme.colors.primary} />}
+                      style={styles.fullWidthButton}
+                      onPress={footer.onBack}
+                    />
+                  ) : null}
+                </View>
               </View>
-            </View>
-          )}
-        </View>
+            )}
+          </View>
+        )}
       </View>
     </KeyboardAvoidingView>
   );
@@ -286,7 +294,6 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     paddingHorizontal: 20,
   },
-
   // Form Styles
   formContainer: {
     flex: 1,

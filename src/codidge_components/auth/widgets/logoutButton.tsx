@@ -14,7 +14,7 @@ export const LogoutButton = () => {
     try {
       setloadingLogout(true);
       await signOut();
-      updateUser(null);
+      updateUser("");
       await client.clearStore(); // Clears all cached data
       setloadingLogout(false);
     } catch (error) {

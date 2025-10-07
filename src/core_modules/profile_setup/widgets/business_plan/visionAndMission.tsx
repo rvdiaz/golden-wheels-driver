@@ -8,9 +8,9 @@ import {
   Platform,
 } from 'react-native';
 import { useFormContext, Controller } from 'react-hook-form';
-import { FooterConfig, FormWrapper, HeaderConfig } from '../formsWrapper';
+import { FooterConfig, FormWrapper, HeaderConfig } from '../../../on_boarding/widgets/formsWrapper';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
-import { OnboardingFormData } from '../../interface';
+import { OnboardingFormData } from '../../../on_boarding/interface';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Text from '~/codidge_components/UI/text';
 

@@ -4,21 +4,9 @@ import { SvgProps } from 'react-native-svg';
 import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
 
-export const StepIcon = ({
-  icon: Icon,
-  keyboardVisible,
-}: {
-  icon: FC<SvgProps>;
-  keyboardVisible?: boolean;
-}) => {
+export const StepIcon = ({ icon: Icon }: { icon: FC<SvgProps> }) => {
   return (
-    <View
-      style={[
-        styles.iconContainer,
-        keyboardVisible && {
-          padding: 8,
-        },
-      ]}>
+    <View style={[styles.iconContainer]}>
       <Text style={styles.mainIcon}>
         <Icon color="#FFF" />
       </Text>

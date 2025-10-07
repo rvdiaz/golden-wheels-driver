@@ -46,22 +46,6 @@ export const AuthWrapper = () => {
   const [getUserFn] = useLazyQuery<{ getUser: IUser }>(getUserQuery);
   const pushToken = useReactiveVar(pushTokenVar);
 
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
-
-  useEffect(() => {
-    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
-      setKeyboardVisible(true);
-    });
-    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
-      setKeyboardVisible(false);
-    });
-
-    return () => {
-      showSubscription.remove();
-      hideSubscription.remove();
-    };
-  }, []);
-
   const handleLoginSuccess = async (userId: string) => {
     try {
       const user = await getUserFn({
@@ -153,9 +137,6 @@ export const AuthWrapper = () => {
       <View
         style={[
           styles.headerContainer,
-          keyboardVisible && {
-            paddingTop: 40,
-          },
           {
             marginBottom: 20,
           },
@@ -184,15 +165,7 @@ export const AuthWrapper = () => {
           {icon}
         </View>
 
-        <Text
-          style={[
-            styles.mainTitle,
-            keyboardVisible && {
-              fontSize: 18,
-            },
-          ]}>
-          {title}
-        </Text>
+        <Text style={[styles.mainTitle]}>{title}</Text>
       </View>
     );
   };
@@ -205,9 +178,6 @@ export const AuthWrapper = () => {
             <View
               style={[
                 styles.headerContainer,
-                keyboardVisible && {
-                  paddingTop: 40,
-                },
                 {
                   marginBottom: 20,
                 },
@@ -217,18 +187,10 @@ export const AuthWrapper = () => {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}>
-                <StepIcon keyboardVisible={keyboardVisible} icon={UserLock} />
+                <StepIcon icon={UserLock} />
               </View>
 
-              <Text
-                style={[
-                  styles.mainTitle,
-                  keyboardVisible && {
-                    fontSize: 18,
-                  },
-                ]}>
-                Sign In
-              </Text>
+              <Text style={styles.mainTitle}>Sign In</Text>
             </View>
           }>
           <SignInForm
@@ -250,24 +212,16 @@ export const AuthWrapper = () => {
     case IAuthModuleKeys.forcePasswordChange:
       return (
         <AuthFormWrapper
-          header={getHeader(
-            'Forget password',
-            <StepIcon keyboardVisible={keyboardVisible} icon={LockKeyhole} />,
-            () => {
-              setCurrentView(IAuthModuleKeys.signIn);
-            }
-          )}>
+          header={getHeader('Forget password', <StepIcon icon={LockKeyhole} />, () => {
+            setCurrentView(IAuthModuleKeys.signIn);
+          })}>
           <ResetPassword />
         </AuthFormWrapper>
       );
 
     case IAuthModuleKeys.resetPassword:
       return (
-        <AuthFormWrapper
-          header={getHeader(
-            'Reset password',
-            <StepIcon keyboardVisible={keyboardVisible} icon={RefreshCcw} />
-          )}>
+        <AuthFormWrapper header={getHeader('Reset password', <StepIcon icon={RefreshCcw} />)}>
           <ResetPassword />
         </AuthFormWrapper>
       );
@@ -275,21 +229,14 @@ export const AuthWrapper = () => {
     case IAuthModuleKeys.confirmResetPassword:
       return (
         <AuthFormWrapper
-          header={getHeader(
-            'Confirm Reset password',
-            <StepIcon keyboardVisible={keyboardVisible} icon={CheckCircle} />
-          )}>
+          header={getHeader('Confirm Reset password', <StepIcon icon={CheckCircle} />)}>
           <ConfirmResetPassword />
         </AuthFormWrapper>
       );
 
     case IAuthModuleKeys.verifyEmail:
       return (
-        <AuthFormWrapper
-          header={getHeader(
-            'Verify Email',
-            <StepIcon keyboardVisible={keyboardVisible} icon={MailOpen} />
-          )}>
+        <AuthFormWrapper header={getHeader('Verify Email', <StepIcon icon={MailOpen} />)}>
           <VerifyEmail onVerificationSuccess={handleVerificationSuccess} />
         </AuthFormWrapper>
       );
@@ -300,9 +247,6 @@ export const AuthWrapper = () => {
             <View
               style={[
                 styles.headerContainer,
-                keyboardVisible && {
-                  paddingTop: 40,
-                },
                 {
                   marginBottom: 20,
                 },
@@ -330,18 +274,10 @@ export const AuthWrapper = () => {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}>
-                <StepIcon keyboardVisible={keyboardVisible} icon={UserPlus} />
+                <StepIcon icon={UserPlus} />
               </View>
 
-              <Text
-                style={[
-                  styles.mainTitle,
-                  keyboardVisible && {
-                    fontSize: 18,
-                  },
-                ]}>
-                Account Creation
-              </Text>
+              <Text style={[styles.mainTitle]}>Account Creation</Text>
             </View>
           }>
           <SignUpForm onSignUpSuccess={handleRegisterSuccess} />
@@ -354,11 +290,8 @@ export const AuthWrapper = () => {
             <View
               style={[
                 styles.headerContainer,
-                keyboardVisible && {
-                  paddingTop: 60,
-                },
                 {
-                  marginBottom: 10,
+                  marginBottom: 20,
                 },
               ]}>
               <View
@@ -366,7 +299,7 @@ export const AuthWrapper = () => {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}>
-                <StepIcon keyboardVisible={keyboardVisible} icon={UserCheck} />
+                <StepIcon icon={UserCheck} />
               </View>
 
               <Text
@@ -374,9 +307,6 @@ export const AuthWrapper = () => {
                   styles.mainTitle,
                   {
                     fontSize: 24,
-                  },
-                  keyboardVisible && {
-                    fontSize: 18,
                   },
                 ]}>
                 Personal Information

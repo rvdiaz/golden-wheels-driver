@@ -72,7 +72,7 @@ export interface CalculationResults {
   cashOnCashReturn: number;
   totalCashInvested: number;
   annualCashFlow: number;
-  monthlyUnits: number;
+  units: UnitData[];
   currentCapRate: number;
   improvedCapRate: number;
   totalRepairCosts: number;

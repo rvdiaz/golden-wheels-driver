@@ -112,7 +112,7 @@ export const ForcePasswordChange = ({
         {
           text: 'OK',
           onPress: () => {
-            setCurrentView?.('SIGN_IN' as IAuthModuleKeys);
+            setCurrentView(IAuthModuleKeys.signIn);
           },
         },
       ]);

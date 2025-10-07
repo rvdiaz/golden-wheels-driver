@@ -1,33 +1,24 @@
-// components/results/ResultsDisplay.tsx
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { useFormatters, useInvestmentForm } from '../custom_hooks';
-import { CalculationResults } from '../interfaces';
-import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
-import { Building, DollarSign, Edit, RotateCcw, Target, TrendingUp } from 'lucide-react-native';
+import { useFormatters } from '../../custom_hooks';
+import { CalculationResults } from '../../interfaces';
+import { Building, DollarSign, Target, TrendingUp } from 'lucide-react-native';
 import { Card } from '~/codidge_components/UI/card';
 import { TargetAnalysis } from './targetAnalysis';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { Header } from '~/codidge_components/UI/header';
 import Text from '~/codidge_components/UI/text';
+import { UnitsCarousel } from './unitResults';
 
 interface ResultsDisplayProps {
   results: CalculationResults;
-  onEditInputs: () => void;
-  onReset: () => void;
   onDispose: () => void;
 }
 
-export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
-  results,
-  onEditInputs,
-  onReset,
-  onDispose,
-}) => {
+export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ results, onDispose }) => {
   const { formatCurrency, formatPercentage } = useFormatters();
 
-  const { targetResults, showTargetAnalysis, setShowTargetAnalysis, calculateTarget } =
-    useInvestmentForm();
+  const units = results.units;
 
   return (
     <PageSafeContainer>
@@ -42,20 +33,6 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>Investment Analysis Results</Text>
-          <View style={styles.buttonGroup}>
-            <OutlineButton
-              onPress={onEditInputs}
-              style={styles.headerButton}
-              title="Edit Inputs"
-              rightWidget={<Edit size={16} color="#3b82f6" />}
-            />
-            <OutlineButton
-              onPress={onReset}
-              style={styles.headerButton}
-              title="New Analysis"
-              rightWidget={<RotateCcw size={16} color="#3b82f6" />}
-            />
-          </View>
         </View>
 
         {/* Current vs Improved Comparison */}
@@ -262,16 +239,14 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
             </View>
           </View>
         </Card>
-
+        {/* Units Carousel */}
+        <UnitsCarousel
+          units={units}
+          formatCurrency={formatCurrency}
+          formatPercentage={formatPercentage}
+        />
         {/* Target Analisyts */}
-        {targetResults && (
-          <TargetAnalysis
-            onCalculateTarget={calculateTarget}
-            targetResults={targetResults}
-            showTargetAnalysis={showTargetAnalysis}
-            onToggleTargetAnalysis={setShowTargetAnalysis}
-          />
-        )}
+        <TargetAnalysis results={results} />
       </ScrollView>
     </PageSafeContainer>
   );
@@ -288,19 +263,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: '600',
-  },
-  buttonGroup: {
-    flexDirection: 'row',
-    gap: 8,
-    flex: 1,
-    marginTop: 10,
-  },
-  headerButton: {
-    flex: 1,
-  },
-  buttonText: {
-    fontSize: 14,
-    color: '#3b82f6',
   },
   comparisonGrid: {
     flexDirection: 'row',

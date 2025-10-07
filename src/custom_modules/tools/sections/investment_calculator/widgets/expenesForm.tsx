@@ -356,18 +356,6 @@ export const ExpensesForm: React.FC<ExpensesFormProps> = ({
           </View>
         </Card>
       </ScrollView>
-      <View
-        style={{
-          padding: 16,
-        }}>
-        <PrimaryButton
-          onPress={onSubmit}
-          disabled={isCalculating}
-          size={ButtonSize.LARGE}
-          rightWidget={<Calculator size={20} color="#ffffff" />}
-          title={isCalculating ? 'Calculating...' : 'Calculate Investment Analysis'}
-        />
-      </View>
     </View>
   );
 };

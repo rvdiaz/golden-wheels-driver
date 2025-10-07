@@ -70,6 +70,7 @@ export interface IModule {
   icon?: string;
   isBottomBar?: boolean;
   customIcon?: string;
+  comingSoon: boolean;
 }
 
 export enum StatusUser {

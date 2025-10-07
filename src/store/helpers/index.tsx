@@ -4,48 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { moduleScreens } from '../config';
 import { Image } from 'react-native';
 
-export const localToolModules = [
-  {
-    label: 'Open Houses',
-    moduleKey: ModuleKeys.openHouses,
-    description: 'Create open house listings and manage agent booking slots',
-    icon: 'MapPin',
-    color: '#0284C7',
-    backgroundColor: '#E0F2FE',
-    available: true,
-    comingSoon: false,
-  },
-  {
-    label: 'Seller Net Sheet',
-    moduleKey: ModuleKeys.sellerNetSheet,
-    description: 'Calculate estimated net proceeds from a sale',
-    icon: 'DollarSign',
-    color: '#CA8A04',
-    backgroundColor: '#FEF9C3',
-    available: true,
-    comingSoon: false,
-  },
-  {
-    label: 'Foreclosures',
-    moduleKey: ModuleKeys.foreclosures,
-    description: 'Explore foreclosure listings with detailed data',
-    icon: 'Search',
-    color: '#BE123C',
-    backgroundColor: '#FFE4E6',
-    available: true,
-    comingSoon: false,
-  },
-  {
-    label: 'AI Role Play Training',
-    moduleKey: ModuleKeys.iARolePlayTraining,
-    description: 'Simulate realistic client conversations with AI',
-    icon: 'MessageSquare',
-    color: '#9333EA',
-    backgroundColor: '#F3E8FF',
-    available: true,
-    comingSoon: false,
-  },
-];
+export const localToolModules = [];
 
 export const getTenantRoutes = (user: IUser | null): IModule[] => {
   const userModules = user?.modules ?? [];
@@ -58,12 +17,7 @@ export const getTenantRoutes = (user: IUser | null): IModule[] => {
 
       const backendTools = module.modules ?? [];
 
-      const mergedTools = [
-        ...backendTools,
-        ...localToolModules.filter(
-          (local) => !backendTools.some((mod) => mod.moduleKey === local.moduleKey)
-        ),
-      ];
+      const mergedTools = [...backendTools];
 
       return {
         ...module,

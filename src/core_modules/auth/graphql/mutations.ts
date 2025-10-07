@@ -48,6 +48,7 @@ export const addUserMutation = gql`
         moduleKey
         path
         customIcon
+        comingSoon
         modules {
           label
           metaData
@@ -126,6 +127,7 @@ export const updateUserMutation = gql`
         moduleKey
         path
         customIcon
+        comingSoon
         modules {
           label
           metaData

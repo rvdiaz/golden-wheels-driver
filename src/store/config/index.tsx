@@ -23,8 +23,8 @@ import InvestmentCalculatorScreen from '~/custom_modules/tools/sections/investme
 import { CmaComparativesPage } from '~/custom_modules/tools/sections/cma_tools';
 import { ForeClosuresPage } from '~/custom_modules/tools/sections/foreclosures';
 import { OpenHousesPage } from '~/custom_modules/tools/sections/openHouses';
-import { IARolePlayingPage } from '~/custom_modules/tools/sections/iaRolePlaying';
 import { SellerNetSheetPage } from '~/custom_modules/tools/sections/sellerNetSheet';
+import { IARolePlayingPage } from '~/custom_modules/tools/sections/ia_role_playing';
 
 export const moduleScreens: Record<
   ModuleKeys,

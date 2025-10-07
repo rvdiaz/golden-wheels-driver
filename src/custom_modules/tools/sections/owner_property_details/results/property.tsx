@@ -9,7 +9,9 @@ import { Badge } from '~/codidge_components/UI/badge';
 import Text from '~/codidge_components/UI/text';
 
 export const Property = ({ propertyData }: { propertyData: IProperty }) => {
-  const { bedrooms, bathrooms } = propertyData.propertyInfo;
+  const bedrooms = propertyData?.propertyInfo?.bedrooms;
+  const bathrooms = propertyData?.propertyInfo?.bathrooms;
+
   const bathBed = !!bedrooms && !!bathrooms ? `${bedrooms}BR / ${bathrooms}BA` : undefined;
 
   const isForeclosure = propertyData.foreclosureInfo.length > 0;

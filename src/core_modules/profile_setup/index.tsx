@@ -9,7 +9,7 @@ import { Slider } from '~/codidge_components/UI/slider';
 import { userData, updateUser } from '~/store/user';
 import { useReactiveVar, useMutation } from '@apollo/client';
 import { ProfileScreensWrapper } from './widgets/wrapper';
-import { ArrowLeft, ChevronLast, AlertCircle, X } from 'lucide-react-native';
+import { ArrowLeft, ChevronLast, AlertCircle, X, Rocket } from 'lucide-react-native';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import OutlineButton, { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
 import { updateUserMutation } from '~/core_modules/auth/graphql/mutations';
@@ -132,7 +132,7 @@ export const SetupProfile = ({ dispose }: { dispose: () => void }) => {
             style={styles.scrollContainer}>
             {!userBusinessPlanFinished && (
               <OutlineButton
-                title="Creat Business Plan"
+                title="Create Business Plan"
                 size={ButtonSize.LARGE}
                 style={{
                   marginBottom: 20,
@@ -140,6 +140,7 @@ export const SetupProfile = ({ dispose }: { dispose: () => void }) => {
                 onPress={() => {
                   setshowBusinessPlan(true);
                 }}
+                rightWidget={<Rocket size={16} color={theme.colors.primary} />}
               />
             )}
             {allTasks.map((task) => (

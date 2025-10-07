@@ -95,7 +95,7 @@ export const ToolsScreen: React.FC = () => {
     <View style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.headerSection}>
-          <Text style={styles.headerTitle}>Real Estate Calculators</Text>
+          <Text style={styles.headerTitle}>Real Estate Tools</Text>
           <Text style={styles.headerSubtitle}>
             Professional tools to help you serve your clients better
           </Text>

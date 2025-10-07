@@ -93,9 +93,6 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({ form }) => {
                   />
                 )}
               />
-              {/*  {errors.propertyValue && (
-                <Text style={styles.errorText}>{errors.propertyValue.message}</Text>
-              )} */}
             </View>
 
             {/* Down Payment */}
@@ -113,9 +110,6 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({ form }) => {
                   />
                 )}
               />
-              {/*  {errors.downPayment && (
-                <Text style={styles.errorText}>{errors.downPayment.message}</Text>
-              )} */}
             </View>
 
             {/* Closing Costs */}
@@ -130,6 +124,7 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({ form }) => {
                     value={value?.toString() || ''}
                     onChangeText={(text) => onChange(parseFloat(text) || 0)}
                     keyboardType="numeric"
+                    hint="Auto-calculated at 3% of asking price"
                   />
                 )}
               />

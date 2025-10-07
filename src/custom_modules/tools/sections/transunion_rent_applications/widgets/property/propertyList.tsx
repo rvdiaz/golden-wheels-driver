@@ -39,7 +39,6 @@ export const TransUnionPropertyList = () => {
     return properties.filter((property: ITransUnionProperty) => {
       const searchLower = searchTerm.toLowerCase();
       return (
-        property.propertyName?.toLowerCase().includes(searchLower) ||
         property.addressLine1?.toLowerCase().includes(searchLower) ||
         property.locality?.toLowerCase().includes(searchLower) ||
         property.region?.toLowerCase().includes(searchLower) ||
@@ -72,9 +71,6 @@ export const TransUnionPropertyList = () => {
         {/* Property Header */}
         <View style={styles.propertyHeader}>
           <View style={styles.propertyTitle}>
-            <Text style={styles.propertyName} numberOfLines={2}>
-              {item.propertyName || 'Unnamed Property'}
-            </Text>
             <View
               style={[
                 styles.statusBadge,

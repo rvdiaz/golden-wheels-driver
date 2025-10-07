@@ -47,7 +47,7 @@ export const MortgageCalculatorResults: React.FC<MortgageCalculatorResultsProps>
 
   return (
     <PageSafeContainer style={{ flex: 1, backgroundColor: '#F9FAFB', justifyContent: 'flex-end' }}>
-      <Header title="Mortgage Results" rightText="Close" rightAction={onDispose} />
+      <Header showBack={true} onBack={onDispose} title="Mortgage Results" rightAction={onDispose} />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
           {/* Monthly Payment Breakdown */}
@@ -196,31 +196,6 @@ export const MortgageCalculatorResults: React.FC<MortgageCalculatorResultsProps>
           </View>
         </View>
       </ScrollView>
-      {/*  <PrimaryButton
-        size={ButtonSize.LARGE}
-        style={{
-          paddingVertical: 16,
-          marginHorizontal: 16,
-        }}
-        title="Send Results"
-        onPress={() => {
-          setShareModalVisible(true);
-        }}
-        rightWidget={<Share size={16} color="#FFF" style={{ marginLeft: 10 }} />}
-      />
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={shareModalVisible}
-        onRequestClose={() => setShareModalVisible(false)}>
-        <ShareModalMortgage
-          downPayment={downPayment}
-          downPaymentPercent={downPaymentPercent}
-          homePrice={homePrice}
-          calculation={calculation}
-          cancel={() => setShareModalVisible(false)}
-        />
-      </Modal> */}
     </PageSafeContainer>
   );
 };

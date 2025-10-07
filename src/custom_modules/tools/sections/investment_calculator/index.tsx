@@ -142,7 +142,7 @@ const InvestmentCalculatorScreen: React.FC = () => {
         <View
           style={{
             paddingHorizontal: 16,
-            paddingVertical: 5,
+            paddingVertical: 10,
             flexDirection: 'row',
             justifyContent: 'space-between',
             gap: 10,

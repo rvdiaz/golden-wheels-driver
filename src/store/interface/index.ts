@@ -94,6 +94,29 @@ export interface IUser {
   }[];
   profileSetupSkipped: boolean;
   hasSeenProfileCompletionCongrats: boolean;
+  financialGoals: IFinancialGoals;
+  swotAnalysis: ISWOTAnalysis;
+  visionMission: IVisionMission;
+}
+
+export interface IFinancialGoals {
+  avgCommissionByRents: number;
+  avgCommissionBySales: number;
+  desiredAnnualIncome: number;
+}
+
+export interface ISWOTAnalysis {
+  strengths: string[];
+  weaknesses: string[];
+  opportunities: string[];
+  threats: string[];
+}
+
+export interface IVisionMission {
+  statement: string;
+  drivesYou: string;
+  oneYear: string;
+  fiveYear: string;
 }
 
 export interface ITaskSchemaItem {

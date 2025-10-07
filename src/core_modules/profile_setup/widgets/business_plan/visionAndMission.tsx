@@ -8,7 +8,7 @@ import {
   Platform,
 } from 'react-native';
 import { useFormContext, Controller } from 'react-hook-form';
-import { FooterConfig, FormWrapper, HeaderConfig } from '../../../on_boarding/widgets/formsWrapper';
+import { FooterConfig, FormWrapper, HeaderConfig } from './formsWrapper';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { OnboardingFormData } from '../../../on_boarding/interface';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -50,6 +50,8 @@ export const VisionAndMission = ({
     formState: { errors },
   } = useFormContext<OnboardingFormData>();
 
+  
+
   return (
     <FormWrapper
       header={header}
@@ -66,7 +68,6 @@ export const VisionAndMission = ({
             extraScrollHeight={Platform.OS === 'ios' ? 0 : 80}
             keyboardShouldPersistTaps="handled">
             <ScrollView showsVerticalScrollIndicator={false}>
-              {/* 5-Year Vision */}
               <View style={styles.inputContainer}>
                 <Controller
                   name="visionMission.fiveYear"
@@ -90,7 +91,6 @@ export const VisionAndMission = ({
                 />
               </View>
 
-              {/* 1-Year Mission */}
               <View style={styles.inputContainer}>
                 <Controller
                   name="visionMission.oneYear"
@@ -114,7 +114,6 @@ export const VisionAndMission = ({
                 />
               </View>
 
-              {/* Mission Statement */}
               <View style={styles.inputContainer}>
                 <Controller
                   name="visionMission.statement"
@@ -138,7 +137,6 @@ export const VisionAndMission = ({
                 />
               </View>
 
-              {/* What Drives You */}
               <View style={styles.inputContainer}>
                 <Controller
                   name="visionMission.drivesYou"

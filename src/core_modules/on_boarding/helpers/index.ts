@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { STORAGE_KEYS } from '..';
+import { STORAGE_KEYS } from '../../profile_setup/widgets/business_plan';
 
 // Clear onboarding data
 export const clearOnboardingData = async () => {

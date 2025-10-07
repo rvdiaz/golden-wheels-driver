@@ -8,7 +8,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { FormWrapper } from '../../../on_boarding/widgets/formsWrapper';
+import { FormWrapper } from './formsWrapper';
 import { Controller, useFormContext } from 'react-hook-form';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { OnboardingFormData } from '../../../on_boarding/interface';

@@ -11,12 +11,13 @@ import { useReactiveVar, useMutation } from '@apollo/client';
 import { ProfileScreensWrapper } from './widgets/wrapper';
 import { ArrowLeft, ChevronLast, AlertCircle, X } from 'lucide-react-native';
 import TextButton from '~/codidge_components/UI/button/TextButton';
-import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
+import OutlineButton, { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
 import { updateUserMutation } from '~/core_modules/auth/graphql/mutations';
 import Constants from 'expo-constants';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { SetupItem } from './widgets/setup_list_item';
 import Text from '~/codidge_components/UI/text';
+import { BusinessPlanFlow } from './widgets/business_plan';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -24,6 +25,8 @@ export const SetupProfile = ({ dispose }: { dispose: () => void }) => {
   const { allTasks } = useSystemSettings();
   const [selectedTask, setSelectedTask] = useState<IProfileTask | null>(null);
   const [showSkipModal, setShowSkipModal] = useState(false);
+
+  const [showBusinessPlan, setshowBusinessPlan] = useState(false);
 
   const user = useReactiveVar(userData);
   const userStepsCompleted = user?.profileSteps?.length ?? 0;
@@ -84,6 +87,9 @@ export const SetupProfile = ({ dispose }: { dispose: () => void }) => {
     }
   };
 
+  const userBusinessPlanFinished =
+    user?.swotAnalysis && user?.financialGoals && user?.visionMission;
+
   return (
     <>
       <ProfileScreensWrapper
@@ -124,11 +130,18 @@ export const SetupProfile = ({ dispose }: { dispose: () => void }) => {
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
             style={styles.scrollContainer}>
-            {/*    <SetupItem
-              key="special"
-              task={{ id: 'special', label: 'Featured Tool', description: 'Try this first' }}
-              onPress={() => setSelectedTask({ id: 'special' })}
-            /> */}
+            {!userBusinessPlanFinished && (
+              <OutlineButton
+                title="Creat Business Plan"
+                size={ButtonSize.LARGE}
+                style={{
+                  marginBottom: 20,
+                }}
+                onPress={() => {
+                  setshowBusinessPlan(true);
+                }}
+              />
+            )}
             {allTasks.map((task) => (
               <SetupItem key={task.id} task={task} onPress={() => setSelectedTask(task)} />
             ))}
@@ -157,6 +170,17 @@ export const SetupProfile = ({ dispose }: { dispose: () => void }) => {
             onPreview={!isFirstTask ? handlePrevious : undefined}
           />
         )}
+      </PageTransition>
+
+      <PageTransition isVisible={showBusinessPlan} duration={350}>
+        <BusinessPlanFlow
+          onComplete={() => {
+            setshowBusinessPlan(false);
+          }}
+          dispose={() => {
+            setshowBusinessPlan(false);
+          }}
+        />
       </PageTransition>
 
       <Modal

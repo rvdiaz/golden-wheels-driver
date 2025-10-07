@@ -1,6 +1,6 @@
 import { Keyboard, KeyboardAvoidingView, StyleSheet, View } from 'react-native';
 import { FadeTransition } from '~/codidge_components/UI/transitions/fadeIn';
-import { StepIcon } from './stepIcon';
+import { StepIcon } from '../../../on_boarding/widgets/stepIcon';
 import { Slider } from '~/codidge_components/UI/slider';
 import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
@@ -9,11 +9,13 @@ import { theme } from '~/theme/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import Text from '~/codidge_components/UI/text';
 import { useEffect, useState } from 'react';
+import IconButton from '~/codidge_components/UI/button/IconButton';
 
 export interface HeaderConfig {
-  icon: any; // Lucide icon component
+  icon: any;
   title: string;
   subtitle: string;
+  onBack?: () => void;
 }
 
 // Footer configuration type
@@ -70,7 +72,7 @@ const StepProgress = ({
 
       {/* Icon container - always centered */}
       <View style={styles.iconContainer}>
-        <StepIcon keyboardVisible={keyboardVisible} icon={icon} />
+        <StepIcon icon={icon} />
       </View>
 
       {/* Right line - hidden on last step */}
@@ -120,25 +122,21 @@ export const FormWrapper = ({
           },
         ]}>
         <View style={styles.headerContent}>
-          {currentStep && totalSteps && (
-            <StepProgress
-              keyboardVisible={keyboardVisible}
-              currentStep={currentStep}
-              totalSteps={totalSteps}
-              icon={header?.icon}
-            />
-          )}
-          {currentStep && (
-            <Text
-              style={[
-                styles.mainTitle,
-                keyboardVisible && {
-                  fontSize: 16,
-                },
-              ]}>
-              Step {currentStep + 1} of {totalSteps}
-            </Text>
-          )}
+          <StepProgress
+            keyboardVisible={keyboardVisible}
+            currentStep={currentStep ?? 0}
+            totalSteps={totalSteps!}
+            icon={header?.icon}
+          />
+          <Text
+            style={[
+              styles.mainTitle,
+              keyboardVisible && {
+                fontSize: 16,
+              },
+            ]}>
+            Step {(currentStep ?? 0) + 1} of {totalSteps}
+          </Text>
           {header?.subtitle && (
             <Text
               style={[
@@ -237,6 +235,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.headerBackground,
+    position: 'relative',
   },
   gradientContainer: {
     ...StyleSheet.absoluteFillObject,

@@ -9,6 +9,23 @@ export const getUserQuery = gql`
       firstName
       lastName
       phone
+      financialGoals {
+        avgCommissionByRents
+        avgCommissionBySales
+        desiredAnnualIncome
+      }
+      swotAnalysis {
+        strengths
+        weaknesses
+        opportunities
+        threats
+      }
+      visionMission {
+        statement
+        drivesYou
+        oneYear
+        fiveYear
+      }
       address {
         addressLine1
         locality

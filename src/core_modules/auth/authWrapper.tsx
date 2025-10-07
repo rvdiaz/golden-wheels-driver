@@ -16,7 +16,7 @@ import { ResetPassword } from '~/codidge_components/auth/forms/reset_password';
 import { VerifyEmail } from '~/codidge_components/auth/forms/verify_email';
 import { SignInForm } from '~/codidge_components/auth/forms/sign_in';
 import { AuthFormWrapper } from './authLayout';
-import { Keyboard, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Text from '~/codidge_components/UI/text';
 import IconButton from '~/codidge_components/UI/button/IconButton';
 import {
@@ -251,24 +251,22 @@ export const AuthWrapper = () => {
                   marginBottom: 20,
                 },
               ]}>
-              {
-                <View
+              <View
+                style={{
+                  position: 'absolute',
+                  top: 40,
+                  left: 0,
+                }}>
+                <IconButton
                   style={{
-                    position: 'absolute',
-                    top: 40,
-                    left: 0,
-                  }}>
-                  <IconButton
-                    style={{
-                      backgroundColor: 'transparent',
-                    }}
-                    onPress={() => {
-                      setCurrentView(IAuthModuleKeys.personalInfo);
-                    }}
-                    icon={<ArrowLeft color={'#FFF'} />}
-                  />
-                </View>
-              }
+                    backgroundColor: 'transparent',
+                  }}
+                  onPress={() => {
+                    setCurrentView(IAuthModuleKeys.personalInfo);
+                  }}
+                  icon={<ArrowLeft color={'#FFF'} />}
+                />
+              </View>
               <View
                 style={{
                   justifyContent: 'center',

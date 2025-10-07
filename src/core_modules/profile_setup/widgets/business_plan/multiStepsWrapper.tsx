@@ -19,24 +19,24 @@ export const MultiStepFormWrapper = ({ steps, currentStep, onStepChange }: Multi
     if (currentStep < steps.length - 1) {
       onStepChange?.(currentStep + 1);
     }
-    currentStepConfig.footer.onNext?.();
+    currentStepConfig?.footer.onNext?.();
   };
 
   const handleBack = () => {
     if (currentStep > 0) {
       onStepChange?.(currentStep - 1);
     }
-    currentStepConfig.footer.onBack?.();
+    currentStepConfig?.footer.onBack?.();
   };
 
   const percentByTotalSteps = steps.length;
 
   // Create footer with navigation handlers
   const footerWithNavigation = {
-    ...currentStepConfig.footer,
+    ...currentStepConfig?.footer,
     progressPercentage: (currentStep / percentByTotalSteps) * 100,
-    onNext: currentStepConfig.footer.onNext || handleNext,
-    onBack: currentStepConfig.footer.onBack || handleBack,
+    onNext: currentStepConfig?.footer?.onNext || handleNext,
+    onBack: currentStepConfig?.footer?.onBack || handleBack,
   };
 
   const stepsConfig = {

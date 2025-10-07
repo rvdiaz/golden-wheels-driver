@@ -55,7 +55,7 @@ export const PropertySelectorWidget: React.FC<PropertySelectorWidgetProps> = ({
   };
 
   return (
-    <PageSafeContainer>
+    <>
       <View style={styles.widgetContainer}>
         {label && <Text style={styles.widgetLabel}>{label}</Text>}
         <Pressable
@@ -88,7 +88,7 @@ export const PropertySelectorWidget: React.FC<PropertySelectorWidgetProps> = ({
         onPropertySelect={handlePropertySelect}
         selectedPropertyId={selectedProperty?.propertyId}
       />
-    </PageSafeContainer>
+    </>
   );
 };
 
@@ -164,54 +164,56 @@ export const PropertySelectorModal: React.FC<PropertySelectorModalProps> = ({
     const isSelected = item.propertyId === selectedPropertyId;
 
     return (
-      <TouchableOpacity
-        style={[styles.selectablePropertyCard, isSelected && styles.selectedPropertyCard]}
-        onPress={() => onPropertySelect(item)}
-        activeOpacity={0.7}>
-        {/* Selection Indicator */}
-        <View style={styles.selectionIndicator}>
-          <View style={[styles.radioButton, isSelected && styles.radioButtonSelected]}>
-            {isSelected && <View style={styles.radioButtonInner} />}
-          </View>
-        </View>
-
-        {/* Property Content */}
-        <View style={styles.selectablePropertyContent}>
-          {/* Property Header */}
-          <View style={styles.propertyHeader}>
-            <View style={styles.propertyTitleRow}>
-              <Text style={styles.selectablePropertyName} numberOfLines={2}>
-                {item.propertyName || 'Unnamed Property'}
-              </Text>
-              <View
-                style={[
-                  styles.statusBadge,
-                  item.isActive ? styles.activeBadge : styles.inactiveBadge,
-                ]}>
-                <Text
-                  style={[
-                    styles.statusText,
-                    item.isActive ? styles.activeText : styles.inactiveText,
-                  ]}>
-                  {item.isActive ? 'Active' : 'Inactive'}
-                </Text>
-              </View>
+      <PageSafeContainer>
+        <TouchableOpacity
+          style={[styles.selectablePropertyCard, isSelected && styles.selectedPropertyCard]}
+          onPress={() => onPropertySelect(item)}
+          activeOpacity={0.7}>
+          {/* Selection Indicator */}
+          <View style={styles.selectionIndicator}>
+            <View style={[styles.radioButton, isSelected && styles.radioButtonSelected]}>
+              {isSelected && <View style={styles.radioButtonInner} />}
             </View>
           </View>
 
-          {/* Address Section */}
-          <View style={styles.selectableAddressSection}>
-            <Text style={styles.selectablePrimaryAddress} numberOfLines={1}>
-              {primaryAddress || 'Address not available'}
-            </Text>
-            {secondaryAddress && (
-              <Text style={styles.selectableSecondaryAddress} numberOfLines={1}>
-                {secondaryAddress}
+          {/* Property Content */}
+          <View style={styles.selectablePropertyContent}>
+            {/* Property Header */}
+            <View style={styles.propertyHeader}>
+              <View style={styles.propertyTitleRow}>
+                <Text style={styles.selectablePropertyName} numberOfLines={2}>
+                  {item.propertyName || 'Unnamed Property'}
+                </Text>
+                <View
+                  style={[
+                    styles.statusBadge,
+                    item.isActive ? styles.activeBadge : styles.inactiveBadge,
+                  ]}>
+                  <Text
+                    style={[
+                      styles.statusText,
+                      item.isActive ? styles.activeText : styles.inactiveText,
+                    ]}>
+                    {item.isActive ? 'Active' : 'Inactive'}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Address Section */}
+            <View style={styles.selectableAddressSection}>
+              <Text style={styles.selectablePrimaryAddress} numberOfLines={1}>
+                {primaryAddress || 'Address not available'}
               </Text>
-            )}
+              {secondaryAddress && (
+                <Text style={styles.selectableSecondaryAddress} numberOfLines={1}>
+                  {secondaryAddress}
+                </Text>
+              )}
+            </View>
           </View>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </PageSafeContainer>
     );
   };
 

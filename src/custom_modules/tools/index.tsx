@@ -7,14 +7,17 @@ import { theme } from '~/theme/theme';
 import { useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import Text from '~/codidge_components/UI/text';
+import { localToolModules } from '~/store/helpers';
 
 export const ToolsScreen: React.FC = () => {
   const navigation = useNavigation();
 
   const currentUserData = useReactiveVar(userData);
 
-  const currentTools =
+  const userTools =
     currentUserData?.modules.find((mod) => mod.moduleKey === ModuleKeys.tools)?.modules ?? [];
+
+  const currentTools = [...userTools, ...localToolModules];
 
   // Function to adjust color opacity
   const adjustColorOpacity = (color: string, opacity: number): string => {

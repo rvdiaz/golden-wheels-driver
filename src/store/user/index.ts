@@ -9,6 +9,7 @@ export const userData = makeVar<(IUser & { loadedFromStorage?: boolean }) | null
 (async () => {
   try {
     const storedUser = await AsyncStorage.getItem(USER_STORAGE_KEY);
+
     if (storedUser) {
       userData({ ...JSON.parse(storedUser), loadedFromStorage: true });
     }

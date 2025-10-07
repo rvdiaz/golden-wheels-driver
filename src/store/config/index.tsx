@@ -20,6 +20,11 @@ import { PropertyEstimationsPage } from '~/custom_modules/tools/sections/propert
 import { GoalsScreen } from '~/core_modules/profile/goals';
 import { PrequalifiedLoanScreen } from '~/custom_modules/tools/sections/loan_prequalification';
 import InvestmentCalculatorScreen from '~/custom_modules/tools/sections/investment_calculator';
+import { CmaComparativesPage } from '~/custom_modules/tools/sections/cma_tools';
+import { ForeClosuresPage } from '~/custom_modules/tools/sections/foreclosures';
+import { OpenHousesPage } from '~/custom_modules/tools/sections/openHouses';
+import { IARolePlayingPage } from '~/custom_modules/tools/sections/iaRolePlaying';
+import { SellerNetSheetPage } from '~/custom_modules/tools/sections/sellerNetSheet';
 
 export const moduleScreens: Record<
   ModuleKeys,
@@ -41,24 +46,50 @@ export const moduleScreens: Record<
     body: CRMScreen,
     bottomHeader: SearchCrmBoxIA,
   },
+  Training: {
+    body: TrainingScreen,
+  },
+  //Tools
   Tools: {
     body: ToolsScreen,
   },
-  Training: {
-    body: TrainingScreen,
+  RentApplications: {
+    body: TransunionRentsApplications,
   },
   MortgageCalculator: {
     body: MortgageCalculatorScreen,
   },
-  PropertyTools: {
-    body: PropertyInfoScreen,
-  },
   PrequalifiedTools: {
     body: PrequalifiedLoanScreen,
+  },
+  InvestmentCalculator: {
+    body: InvestmentCalculatorScreen,
+  },
+  PropertyTools: {
+    body: PropertyInfoScreen,
   },
   ExpiredListing: {
     body: ExpiredListingPage,
   },
+  PropertyEstimations: {
+    body: PropertyEstimationsPage,
+  },
+  Cma: {
+    body: CmaComparativesPage,
+  },
+  Foreclosures: {
+    body: ForeClosuresPage,
+  },
+  OpenHouses: {
+    body: OpenHousesPage,
+  },
+  AIRolePlayTraining: {
+    body: IARolePlayingPage,
+  },
+  SellerNetSheet: {
+    body: SellerNetSheetPage,
+  },
+  //Notifications
   Notifications: {
     body: NotificationsScreen,
   },
@@ -76,14 +107,5 @@ export const moduleScreens: Record<
   },
   Goals: {
     body: GoalsScreen,
-  },
-  PropertyEstimations: {
-    body: PropertyEstimationsPage,
-  },
-  RentApplications: {
-    body: TransunionRentsApplications,
-  },
-  InvestmentCalculator: {
-    body: InvestmentCalculatorScreen,
   },
 };

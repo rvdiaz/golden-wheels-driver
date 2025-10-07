@@ -1,7 +1,6 @@
 import { string } from 'yup';
 
 export interface ITransUnionProperty {
-  propertyName: string;
   rent?: number; // Nullable
   deposit?: number; // Nullable
   isActive: boolean;
@@ -13,9 +12,6 @@ export interface ITransUnionProperty {
   region: string;
   postalCode: string;
   country: string;
-  bankruptcyCheck: boolean;
-  bankruptcyTimeFrame: number;
-  incomeToRentRatio: number;
   propertyId?: string;
 }
 

@@ -20,6 +20,11 @@ export enum ModuleKeys {
   income = 'Incomes',
   transUnionRentApplications = 'RentApplications',
   goals = 'Goals',
+  cma = 'Cma',
+  foreclosures = 'Foreclosures',
+  openHouses = 'OpenHouses',
+  iARolePlayTraining = 'AIRolePlayTraining',
+  sellerNetSheet = 'SellerNetSheet',
 }
 
 export interface IFeatureModule {

@@ -88,22 +88,6 @@ export const FormWrapper = ({
   currentStep,
   totalSteps,
 }: FormWrapperProps) => {
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
-
-  useEffect(() => {
-    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
-      setKeyboardVisible(true);
-    });
-    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
-      setKeyboardVisible(false);
-    });
-
-    return () => {
-      showSubscription.remove();
-      hideSubscription.remove();
-    };
-  }, []);
-
   return (
     <KeyboardAvoidingView style={styles.container}>
       <View style={styles.gradientContainer}>
@@ -114,51 +98,22 @@ export const FormWrapper = ({
         />
       </View>
       {/* Header Section */}
-      <View
-        style={[
-          styles.headerContainer,
-          keyboardVisible && {
-            paddingTop: 40,
-          },
-        ]}>
+      <View style={[styles.headerContainer]}>
         <View style={styles.headerContent}>
           <StepProgress
-            keyboardVisible={keyboardVisible}
             currentStep={currentStep ?? 0}
             totalSteps={totalSteps!}
             icon={header?.icon}
           />
-          <Text
-            style={[
-              styles.mainTitle,
-              keyboardVisible && {
-                fontSize: 16,
-              },
-            ]}>
+          <Text style={[styles.mainTitle]}>
             Step {(currentStep ?? 0) + 1} of {totalSteps}
           </Text>
-          {header?.subtitle && (
-            <Text
-              style={[
-                styles.subtitle,
-                keyboardVisible && {
-                  fontSize: 13,
-                },
-              ]}>
-              {header?.subtitle}
-            </Text>
-          )}
+          {header?.subtitle && <Text style={[styles.subtitle]}>{header?.subtitle}</Text>}
         </View>
       </View>
 
       {/* Form Container */}
-      <View
-        style={[
-          styles.formContainer,
-          keyboardVisible && {
-            marginTop: 14,
-          },
-        ]}>
+      <View style={[styles.formContainer]}>
         {/* Form Content */}
         <View style={styles.contentContainer}>
           <FadeTransition isVisible={true} style={{ flex: 1 }}>

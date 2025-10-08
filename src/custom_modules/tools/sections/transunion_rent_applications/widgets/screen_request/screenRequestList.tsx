@@ -64,9 +64,6 @@ export const ScreenRequestList = () => {
               disposeModalHandler={() => {
                 setModalVisible(false);
               }}
-              onAddScreenView={() => {
-                refetch();
-              }}
             />
           </View>
         </Modal>
@@ -103,9 +100,6 @@ export const ScreenRequestList = () => {
           <ScreenRequestForm
             disposeModalHandler={() => {
               setModalVisible(false);
-            }}
-            onAddScreenView={() => {
-              refetch();
             }}
           />
         </View>

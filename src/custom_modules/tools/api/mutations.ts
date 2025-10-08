@@ -32,7 +32,6 @@ export const initiateRentApplicationMutation = gql`
         postalCode
         country
         propertyId
-        propertyName
       }
       applicants {
         emailAddress

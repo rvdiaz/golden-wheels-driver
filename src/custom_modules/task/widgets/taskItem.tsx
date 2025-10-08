@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Modal } from 'react-native';
 import { GoalType, ITask } from '../interfaces';
 import {
@@ -30,6 +30,10 @@ export const TaskItem = ({ task }: { task: ITask }) => {
   const [value, setvalue] = useState(task.isCompleted ?? false);
   const [showModal, setShowModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+
+  useEffect(() => {
+    setvalue(task.isCompleted);
+  }, [task.isCompleted]);
 
   const user = useReactiveVar(userData);
   const userTaskSchema = user?.systemData?.tasksConfiguration;
@@ -89,7 +93,12 @@ export const TaskItem = ({ task }: { task: ITask }) => {
         // Check if task has additional fields
         if (taskConfiguration.fields && taskConfiguration.fields.length > 0) {
           // Show modal to collect field data
-          setShowModal(true);
+          if (toggleValue) {
+            setShowModal(true);
+          } else {
+            await executeTaskCompletion([], toggleValue);
+          }
+
           return; // Don't complete the task yet, wait for modal submission
         } else {
           // Handle duration goal type
@@ -146,7 +155,7 @@ export const TaskItem = ({ task }: { task: ITask }) => {
           });
         }
       }
-      await executeTaskCompletion(goalTypes);
+      await executeTaskCompletion(goalTypes, true);
     } catch (error) {
       console.error(':error', error);
     }
@@ -174,6 +183,8 @@ export const TaskItem = ({ task }: { task: ITask }) => {
 
     return <View></View>;
   };
+
+  console.log(':::task', task);
 
   return (
     <>

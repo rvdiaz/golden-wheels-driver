@@ -15,7 +15,6 @@ import { useMutation, useReactiveVar } from '@apollo/client';
 import { addTaskMutation, updateTaskMutation } from '../graphql/mutations';
 import Constants from 'expo-constants';
 import { userData } from '~/store/user';
-import { getTaskByUserQuery } from '../graphql/queries';
 import { DateTimeInputField } from '~/codidge_components/UI/form/inputs/dateTimePicker';
 import moment from 'moment';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
@@ -141,6 +140,7 @@ export const AddTaskScreen = ({
             },
           },
         });
+
         reset({
           title: '',
           category: '',
@@ -153,13 +153,23 @@ export const AddTaskScreen = ({
 
         disposeModalHandler();
       }
-    } catch (error) {
+    } catch (error: any) {
+      if (error.graphQLErrors?.length > 0) {
+        const gqlError = error.graphQLErrors[0].message;
+
+        if (gqlError === 'Task overlaps with existing tasks') {
+          Alert.alert(
+            'Task Conflict',
+            'You already have a task scheduled at this time. To create a new one, please delete or reschedule the existing task first.'
+          );
+          return;
+        }
+      }
       const errorText = task ? 'Error adding task!' : 'Error editing task!';
       Alert.alert('Error', errorText);
     }
   };
-
-  const startTime = watch('startTime'); // watch start time
+  const startTime = watch('startTime'); // you already have this
 
   return (
     <PageSafeContainer style={styles.container}>
@@ -333,12 +343,14 @@ export const AddTaskScreen = ({
                   },
                 }}
                 render={({ field: { onChange, value }, fieldState: { error } }) => {
+                  const displayValue = value || startTime;
+
                   return (
                     <DateTimeInputField
                       required={true}
                       mode="time"
                       label="To"
-                      value={value as Date}
+                      value={displayValue as Date}
                       onChangeText={onChange}
                       error={!!error} // pass error state
                       errorMessage={error?.message} // pass message to display

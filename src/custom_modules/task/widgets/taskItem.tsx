@@ -184,8 +184,6 @@ export const TaskItem = ({ task }: { task: ITask }) => {
     return <View></View>;
   };
 
-  console.log(':::task', task);
-
   return (
     <>
       <View

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import * as Icons from 'lucide-react-native';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { useApolloClient } from '@apollo/client';
 import { signOut } from 'aws-amplify/auth/cognito';
 import { updateUser } from '~/store/user';
+import Text from '~/codidge_components/UI/text';
+import { apiKeyClient } from '~/store/config/apolloClient';
 
 export const LogoutButton = () => {
   const [loadingLogout, setloadingLogout] = useState(false);
@@ -13,8 +15,9 @@ export const LogoutButton = () => {
     try {
       setloadingLogout(true);
       await signOut();
-      updateUser(null);
+      updateUser('');
       await client.clearStore(); // Clears all cached data
+      await apiKeyClient.clearStore();
       setloadingLogout(false);
     } catch (error) {
       setloadingLogout(false);

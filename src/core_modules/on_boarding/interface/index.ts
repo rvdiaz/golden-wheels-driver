@@ -1,17 +1,5 @@
 export interface OnboardingFormData {
-  personalInfo: {
-    firstName: string;
-    lastName: string;
-    mlsNumber: string;
-    brokerage: string;
-    email: string;
-    phone: string;
-    addressLine1: string;
-    city: string;
-    region: string;
-    country: string;
-    postalCode: string;
-  };
+  personalInfo: IPersonalData;
   visionMission: {
     fiveYear: string;
     oneYear: string;
@@ -30,4 +18,18 @@ export interface OnboardingFormData {
     avgCommissionBySales: number;
     avgCommissionByRents: number;
   };
+}
+
+export interface IPersonalData {
+  firstName: string;
+  lastName: string;
+  mlsNumber: string;
+  brokerage: string;
+  email: string;
+  phone: string;
+  addressLine1: string;
+  city: string;
+  region: string;
+  country: string;
+  postalCode: string;
 }

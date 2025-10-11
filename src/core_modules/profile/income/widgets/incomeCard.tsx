@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, Modal } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Alert, Modal } from 'react-native';
 import * as Icons from 'lucide-react-native';
 import { formatCurrency } from '~/custom_modules/tools/sections/mortgage_calculator/helpers';
 import { IIncome, IncomeStatus } from '../interfaces';
@@ -11,6 +11,7 @@ import { getUserIncomes } from '../graphql/queries';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import IncomeForm from './incomeForm';
 import { getStatusColor } from '../helpers';
+import Text from '~/codidge_components/UI/text';
 
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString();

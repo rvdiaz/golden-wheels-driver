@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { getActiveTasks } from '../helpers';
 import { TaskList } from './taskList';
 import * as Icons from 'lucide-react-native';
 import { useTasksByUser } from '../hooks/listTask';
 import moment from 'moment';
+import Text from '~/codidge_components/UI/text';
 
 const today = moment().format('YYYY-MM-DD');
 
@@ -48,12 +49,7 @@ export const TodayTasks = () => {
   if (allTasksCompleted && !isLoading) {
     return (
       <View style={{ marginTop: 16 }}>
-        <TasksCompletionWidget
-          onViewCompleted={() => {
-            // Handle viewing completed tasks
-            console.log('View completed tasks');
-          }}
-        />
+        <TasksCompletionWidget />
       </View>
     );
   }

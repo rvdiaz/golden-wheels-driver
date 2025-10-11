@@ -18,8 +18,14 @@ interface AuthContextState {
 
 const AuthContext = createContext<AuthContextState | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [currentView, setCurrentView] = useState<IAuthModuleKeys>(IAuthModuleKeys.signIn);
+export const AuthProvider = ({
+  children,
+  defaultAuthScreen = IAuthModuleKeys.personalInfo,
+}: {
+  children: ReactNode;
+  defaultAuthScreen?: IAuthModuleKeys;
+}) => {
+  const [currentView, setCurrentView] = useState<IAuthModuleKeys>(defaultAuthScreen);
   const [tempData, setTempDataState] = useState<
     Partial<{ email: string; userId: string; password: string; phone: string }>
   >({});

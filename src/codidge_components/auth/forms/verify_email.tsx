@@ -1,13 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import { View, StyleSheet, Alert, KeyboardAvoidingView, Platform, TextInput } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
 import {
@@ -21,14 +13,16 @@ import { useAuthContext } from '../context';
 import { IAuthModuleKeys, MfaFormData } from '../interfaces';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import TextButton from '~/codidge_components/UI/button/TextButton';
-import { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
+import OutlineButton, { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
+import InputField from '~/codidge_components/UI/form/inputs/inputField';
+import Text from '~/codidge_components/UI/text';
 
 const EXPIRATION_COGNITO_TOKEN = 180;
 
 export const VerifyEmail = ({
-  onSignUpSuccess,
+  onVerificationSuccess,
 }: {
-  onSignUpSuccess: (userId: string, formData: any) => void;
+  onVerificationSuccess: (userId: string) => void;
 }) => {
   const { setCurrentView, tempData } = useAuthContext();
 
@@ -86,16 +80,13 @@ export const VerifyEmail = ({
           const att = await fetchUserAttributes();
           const userId = att?.['sub'] || '';
 
-          await onSignUpSuccess(userId, {
-            name: tempData.name,
-            email: tempData.email,
-            phone: tempData.phone,
-          });
+          await onVerificationSuccess(userId);
         }
       }
 
       setloading(false);
     } catch (error) {
+      console.log(':::error', error);
       setloading(false);
       await signOut();
       Alert.alert('Invalid Code', 'Please check your code and try again');
@@ -103,6 +94,19 @@ export const VerifyEmail = ({
   };
 
   const handleCodeChange = (text: string, index: number) => {
+    // Handle paste: if text is longer than 1 character, it's a paste operation
+    if (text.length > 1) {
+      // Extract only numeric characters
+      const pastedCode = text.replace(/[^0-9]/g, '').slice(0, 6);
+      setValue('code', pastedCode);
+
+      // Focus the last input or the next empty one
+      const nextIndex = Math.min(pastedCode.length, 5);
+      inputRefs.current[nextIndex]?.focus();
+      return;
+    }
+
+    // Handle single character input (normal typing)
     const newCode = codeValue.split('');
     newCode[index] = text;
     const updatedCode = newCode.join('');
@@ -151,7 +155,7 @@ export const VerifyEmail = ({
               render={({ field: { value } }) => (
                 <View style={styles.codeContainer}>
                   {[0, 1, 2, 3, 4, 5].map((index) => (
-                    <TextInput
+                    <InputField
                       key={index}
                       ref={(ref) => {
                         if (ref) inputRefs.current[index] = ref;
@@ -181,9 +185,24 @@ export const VerifyEmail = ({
               loading={loading}
               onPress={handleSubmit(onSubmit)}
             />
-
-            <View style={styles.resendContainer}>
-              {canResend && <TextButton title="Resend Code" onPress={handleResendCode} />}
+            <View
+              style={[
+                styles.resendContainer,
+                canResend && {
+                  justifyContent: 'space-between',
+                },
+              ]}>
+              <TextButton
+                style={{
+                  marginVertical: 10,
+                }}
+                size={ButtonSize.LARGE}
+                onPress={() => {
+                  setCurrentView(IAuthModuleKeys.signUp);
+                }}
+                title="Back"
+              />
+              {canResend && <OutlineButton title="Resend Code" onPress={handleResendCode} />}
             </View>
           </View>
         </View>
@@ -266,8 +285,7 @@ const styles = StyleSheet.create({
   resendContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 10,
+    justifyContent: 'center',
   },
   countdownText: {
     fontSize: 16,

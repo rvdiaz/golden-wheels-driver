@@ -10,11 +10,12 @@ import {
 } from 'lucide-react-native';
 import React from 'react';
 import { Controller, UseFormReturn, UseFieldArrayReturn } from 'react-hook-form';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Card } from '~/codidge_components/UI/card';
 import { useFormatters } from '../custom_hooks';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { UnitData } from '../interfaces';
+import Text from '~/codidge_components/UI/text';
 
 interface MobileUnitsFormProps {
   form: UseFormReturn<any>;

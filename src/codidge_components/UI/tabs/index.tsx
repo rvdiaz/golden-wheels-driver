@@ -1,7 +1,7 @@
-import { View, Text, TouchableOpacity, StyleSheet, ViewStyle, ScrollView } from 'react-native';
-import React, { useState } from 'react';
+import { View, TouchableOpacity, StyleSheet, ViewStyle, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import { theme } from '~/theme/theme';
-import { ToyBrick } from 'lucide-react-native';
+import Text from '../text';
 
 interface Tab {
   key: string;
@@ -196,6 +196,12 @@ export const GridTabs: React.FC<TabHeaderProps> = ({
   activeTabBackground = '#FFF',
 }) => {
   const [activeTab, setActiveTab] = useState(initialTabKey || tabs[0].key);
+
+  useEffect(() => {
+    if (initialTabKey) {
+      setActiveTab(initialTabKey);
+    }
+  }, [initialTabKey]);
 
   const handleTabPress = (key: string) => {
     setActiveTab(key);

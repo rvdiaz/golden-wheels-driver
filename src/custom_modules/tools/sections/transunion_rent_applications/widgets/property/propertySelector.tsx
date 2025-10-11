@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   FlatList,
   ActivityIndicator,
@@ -20,6 +19,7 @@ import { PropertyForm } from './propertyForm';
 import { Header } from '~/codidge_components/UI/header';
 import { theme } from '~/theme/theme';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import Text from '~/codidge_components/UI/text';
 
 // Property Selector Widget Component
 interface PropertySelectorWidgetProps {
@@ -51,11 +51,11 @@ export const PropertySelectorWidget: React.FC<PropertySelectorWidgetProps> = ({
       Boolean
     );
 
-    return property.propertyName || addressParts.join(', ') || 'Unnamed Property';
+    return addressParts.join(', ') || 'Unnamed Property';
   };
 
   return (
-    <PageSafeContainer>
+    <>
       <View style={styles.widgetContainer}>
         {label && <Text style={styles.widgetLabel}>{label}</Text>}
         <Pressable
@@ -88,7 +88,7 @@ export const PropertySelectorWidget: React.FC<PropertySelectorWidgetProps> = ({
         onPropertySelect={handlePropertySelect}
         selectedPropertyId={selectedProperty?.propertyId}
       />
-    </PageSafeContainer>
+    </>
   );
 };
 
@@ -134,7 +134,6 @@ export const PropertySelectorModal: React.FC<PropertySelectorModalProps> = ({
     return properties.filter((property: ITransUnionProperty) => {
       const searchLower = searchTerm.toLowerCase();
       return (
-        property.propertyName?.toLowerCase().includes(searchLower) ||
         property.addressLine1?.toLowerCase().includes(searchLower) ||
         property.locality?.toLowerCase().includes(searchLower) ||
         property.region?.toLowerCase().includes(searchLower) ||
@@ -180,9 +179,6 @@ export const PropertySelectorModal: React.FC<PropertySelectorModalProps> = ({
           {/* Property Header */}
           <View style={styles.propertyHeader}>
             <View style={styles.propertyTitleRow}>
-              <Text style={styles.selectablePropertyName} numberOfLines={2}>
-                {item.propertyName || 'Unnamed Property'}
-              </Text>
               <View
                 style={[
                   styles.statusBadge,
@@ -254,61 +250,68 @@ export const PropertySelectorModal: React.FC<PropertySelectorModalProps> = ({
           loadingRight={loading}
           //disabledRight={!isValid}
         />
-
-        {showPropertyForm ? (
-          // Property Form View
-          <View style={styles.formContainer}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showPropertyForm}
+          onRequestClose={() => {
+            setShowPropertyForm(false);
+          }}>
+          <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
             <PropertyForm
-              disposeModalHandler={() => setShowPropertyForm(false)}
-              onAddProperty={handleAddProperty}
+              disposeModalHandler={() => {
+                setShowPropertyForm(false);
+              }}
+              onAddProperty={() => {
+                refetch();
+              }}
             />
           </View>
-        ) : (
-          // Property List View
-          <>
-            {/* Search Section */}
-            <View style={styles.searchContainer}>
-              <InputField
-                placeholder="Search properties by name or address"
-                value={searchTerm}
-                onChangeText={setSearchTerm}
-                leftIcon={<Search size={16} />}
-                label=""
-              />
-            </View>
+        </Modal>
 
-            {/* Add New Property Button */}
-            <View style={styles.addButtonContainer}>
-              <TouchableOpacity style={styles.addButton} onPress={() => setShowPropertyForm(true)}>
-                <Plus size={20} color="#007AFF" />
-                <Text style={styles.addButtonText}>Add New Property</Text>
-              </TouchableOpacity>
-            </View>
+        <>
+          {/* Search Section */}
+          <View style={styles.searchContainer}>
+            <InputField
+              placeholder="Search properties by name or address"
+              value={searchTerm}
+              onChangeText={setSearchTerm}
+              leftIcon={<Search size={16} />}
+              label=""
+            />
+          </View>
 
-            {/* Properties List */}
-            {loading ? (
-              <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#007AFF" />
-                <Text style={styles.loadingText}>Loading properties...</Text>
-              </View>
-            ) : error && !data ? (
-              <View style={styles.errorState}>
-                <Text style={styles.errorIcon}>⚠️</Text>
-                <Text style={styles.errorTitle}>Unable to load properties</Text>
-                <Text style={styles.errorSubtitle}>Please check your connection and try again</Text>
-              </View>
-            ) : (
-              <FlatList
-                data={filteredProperties}
-                renderItem={renderSelectablePropertyItem}
-                keyExtractor={(item, index) => item.propertyId || `property-${index}`}
-                contentContainerStyle={styles.listContainer}
-                showsVerticalScrollIndicator={false}
-                ListEmptyComponent={renderEmptyState}
-              />
-            )}
-          </>
-        )}
+          {/* Add New Property Button */}
+          <View style={styles.addButtonContainer}>
+            <TouchableOpacity style={styles.addButton} onPress={() => setShowPropertyForm(true)}>
+              <Plus size={20} color="#007AFF" />
+              <Text style={styles.addButtonText}>Add New Property</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Properties List */}
+          {loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#007AFF" />
+              <Text style={styles.loadingText}>Loading properties...</Text>
+            </View>
+          ) : error && !data ? (
+            <View style={styles.errorState}>
+              <Text style={styles.errorIcon}>⚠️</Text>
+              <Text style={styles.errorTitle}>Unable to load properties</Text>
+              <Text style={styles.errorSubtitle}>Please check your connection and try again</Text>
+            </View>
+          ) : (
+            <FlatList
+              data={filteredProperties}
+              renderItem={renderSelectablePropertyItem}
+              keyExtractor={(item, index) => item.propertyId || `property-${index}`}
+              contentContainerStyle={styles.listContainer}
+              showsVerticalScrollIndicator={false}
+              ListEmptyComponent={renderEmptyState}
+            />
+          )}
+        </>
       </PageSafeContainer>
     </Modal>
   );
@@ -388,7 +391,7 @@ const styles = StyleSheet.create({
   },
   addButtonContainer: {
     paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingVertical: 10,
   },
   addButton: {
     flexDirection: 'row',

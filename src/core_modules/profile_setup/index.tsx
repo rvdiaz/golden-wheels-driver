@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSystemSettings } from '../../system_setting/customHook';
 import { theme } from '~/theme/theme';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, View, Modal } from 'react-native';
 import { IProfileTask } from '../../system_setting/interfaces';
 import { PageTransition } from '~/codidge_components/UI/pageTransition';
 import { TaskDetailScreen } from './widgets/setup_item_detail';
@@ -9,13 +9,15 @@ import { Slider } from '~/codidge_components/UI/slider';
 import { userData, updateUser } from '~/store/user';
 import { useReactiveVar, useMutation } from '@apollo/client';
 import { ProfileScreensWrapper } from './widgets/wrapper';
-import { ArrowLeft, ChevronLast, AlertCircle, X } from 'lucide-react-native';
+import { ArrowLeft, ChevronLast, AlertCircle, X, Rocket } from 'lucide-react-native';
 import TextButton from '~/codidge_components/UI/button/TextButton';
-import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
+import OutlineButton, { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
 import { updateUserMutation } from '~/core_modules/auth/graphql/mutations';
 import Constants from 'expo-constants';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { SetupItem } from './widgets/setup_list_item';
+import Text from '~/codidge_components/UI/text';
+import { BusinessPlanFlow } from './widgets/business_plan';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -23,6 +25,8 @@ export const SetupProfile = ({ dispose }: { dispose: () => void }) => {
   const { allTasks } = useSystemSettings();
   const [selectedTask, setSelectedTask] = useState<IProfileTask | null>(null);
   const [showSkipModal, setShowSkipModal] = useState(false);
+
+  const [showBusinessPlan, setshowBusinessPlan] = useState(false);
 
   const user = useReactiveVar(userData);
   const userStepsCompleted = user?.profileSteps?.length ?? 0;
@@ -83,6 +87,9 @@ export const SetupProfile = ({ dispose }: { dispose: () => void }) => {
     }
   };
 
+  const userBusinessPlanFinished =
+    user?.swotAnalysis && user?.financialGoals && user?.visionMission;
+
   return (
     <>
       <ProfileScreensWrapper
@@ -123,6 +130,19 @@ export const SetupProfile = ({ dispose }: { dispose: () => void }) => {
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
             style={styles.scrollContainer}>
+            {!userBusinessPlanFinished && (
+              <OutlineButton
+                title="Create Business Plan"
+                size={ButtonSize.LARGE}
+                style={{
+                  marginBottom: 20,
+                }}
+                onPress={() => {
+                  setshowBusinessPlan(true);
+                }}
+                rightWidget={<Rocket size={16} color={theme.colors.primary} />}
+              />
+            )}
             {allTasks.map((task) => (
               <SetupItem key={task.id} task={task} onPress={() => setSelectedTask(task)} />
             ))}
@@ -151,6 +171,17 @@ export const SetupProfile = ({ dispose }: { dispose: () => void }) => {
             onPreview={!isFirstTask ? handlePrevious : undefined}
           />
         )}
+      </PageTransition>
+
+      <PageTransition isVisible={showBusinessPlan} duration={350}>
+        <BusinessPlanFlow
+          onComplete={() => {
+            setshowBusinessPlan(false);
+          }}
+          dispose={() => {
+            setshowBusinessPlan(false);
+          }}
+        />
       </PageTransition>
 
       <Modal

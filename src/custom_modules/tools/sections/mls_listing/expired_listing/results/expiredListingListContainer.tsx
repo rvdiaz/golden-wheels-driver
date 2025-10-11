@@ -80,7 +80,7 @@ const ExpiredListingContainer: React.FC<PropertyListScreenProps> = ({
             },
           ],
         }}>
-        <Header title="Expired Listing" rightText="Close" rightAction={dispose} />
+        <Header title="Listings" onBack={dispose} showBack={true} />
         <FlatList
           data={expListings}
           keyExtractor={(item) => item.listingId}

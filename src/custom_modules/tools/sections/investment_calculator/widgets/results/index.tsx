@@ -1,32 +1,26 @@
-// components/results/ResultsDisplay.tsx
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { useFormatters, useInvestmentForm } from '../custom_hooks';
-import { CalculationResults } from '../interfaces';
-import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
-import { Building, DollarSign, Edit, RotateCcw, Target, TrendingUp } from 'lucide-react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import { useFormatters } from '../../custom_hooks';
+import { CalculationResults } from '../../interfaces';
+import { Building, DollarSign, Target, TrendingUp } from 'lucide-react-native';
 import { Card } from '~/codidge_components/UI/card';
 import { TargetAnalysis } from './targetAnalysis';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { Header } from '~/codidge_components/UI/header';
+import Text from '~/codidge_components/UI/text';
+import { UnitsCarousel } from './unitResults';
+import { FutureProjections } from './futureProjections';
+import { FinancialBreakdown } from './finantialBreakdown';
 
 interface ResultsDisplayProps {
   results: CalculationResults;
-  onEditInputs: () => void;
-  onReset: () => void;
   onDispose: () => void;
 }
 
-export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
-  results,
-  onEditInputs,
-  onReset,
-  onDispose,
-}) => {
+export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ results, onDispose }) => {
   const { formatCurrency, formatPercentage } = useFormatters();
 
-  const { targetResults, showTargetAnalysis, setShowTargetAnalysis, calculateTarget } =
-    useInvestmentForm();
+  const units = results.units;
 
   return (
     <PageSafeContainer>
@@ -41,20 +35,6 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>Investment Analysis Results</Text>
-          <View style={styles.buttonGroup}>
-            <OutlineButton
-              onPress={onEditInputs}
-              style={styles.headerButton}
-              title="Edit Inputs"
-              rightWidget={<Edit size={16} color="#3b82f6" />}
-            />
-            <OutlineButton
-              onPress={onReset}
-              style={styles.headerButton}
-              title="New Analysis"
-              rightWidget={<RotateCcw size={16} color="#3b82f6" />}
-            />
-          </View>
         </View>
 
         {/* Current vs Improved Comparison */}
@@ -188,89 +168,16 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
         </View>
 
         {/* Future Projections */}
-        <Card style={styles.projectionsCard}>
-          <View>
-            <Text style={styles.projectionsTitle}>Future Projections</Text>
-            <Text style={styles.projectionsSubtitle}>
-              Based on 5% annual rent growth and 3% property appreciation
-            </Text>
-          </View>
-          <View style={styles.projectionsContent}>
-            <View style={styles.projectionsGrid}>
-              {/* 3-Year Projection */}
-              <View style={styles.projectionSection}>
-                <Text style={styles.projectionTitle}>3-Year Projection</Text>
-                <View style={styles.projectionMetrics}>
-                  <View style={styles.projectionMetric}>
-                    <Text style={styles.projectionLabel}>Annual Rental Income:</Text>
-                    <Text style={styles.projectionValue}>
-                      {formatCurrency(results?.projections.year3.rent)}
-                    </Text>
-                  </View>
-                  <View style={styles.projectionMetric}>
-                    <Text style={styles.projectionLabel}>Property Value:</Text>
-                    <Text style={styles.projectionValue}>
-                      {formatCurrency(results?.projections.year3.propertyValue)}
-                    </Text>
-                  </View>
-                  <View style={styles.projectionMetric}>
-                    <Text style={styles.projectionLabel}>Annual Cash Flow:</Text>
-                    <Text style={styles.projectionValue}>
-                      {formatCurrency(results?.projections.year3.cashFlow)}
-                    </Text>
-                  </View>
-                  <View style={styles.projectionMetric}>
-                    <Text style={styles.projectionLabel}>Net Equity:</Text>
-                    <Text style={styles.projectionValue}>
-                      {formatCurrency(results?.projections.year3.equity)}
-                    </Text>
-                  </View>
-                </View>
-              </View>
+        <FutureProjections results={results} />
+        {/* Units Carousel */}
 
-              {/* 5-Year Projection */}
-              <View style={styles.projectionSection}>
-                <Text style={styles.projectionTitle}>5-Year Projection</Text>
-                <View style={styles.projectionMetrics}>
-                  <View style={styles.projectionMetric}>
-                    <Text style={styles.projectionLabel}>Annual Rental Income:</Text>
-                    <Text style={styles.projectionValue}>
-                      {formatCurrency(results?.projections.year5.rent)}
-                    </Text>
-                  </View>
-                  <View style={styles.projectionMetric}>
-                    <Text style={styles.projectionLabel}>Property Value:</Text>
-                    <Text style={styles.projectionValue}>
-                      {formatCurrency(results?.projections.year5.propertyValue)}
-                    </Text>
-                  </View>
-                  <View style={styles.projectionMetric}>
-                    <Text style={styles.projectionLabel}>Annual Cash Flow:</Text>
-                    <Text style={styles.projectionValue}>
-                      {formatCurrency(results?.projections.year5.cashFlow)}
-                    </Text>
-                  </View>
-                  <View style={styles.projectionMetric}>
-                    <Text style={styles.projectionLabel}>Net Equity:</Text>
-                    <Text style={styles.projectionValue}>
-                      {formatCurrency(results?.projections.year5.equity)}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            </View>
-          </View>
-        </Card>
-
+        <UnitsCarousel
+          units={units}
+          formatCurrency={formatCurrency}
+          formatPercentage={formatPercentage}
+        />
         {/* Target Analisyts */}
-        {targetResults && (
-          <TargetAnalysis
-            onCalculateTarget={calculateTarget}
-            targetResults={targetResults}
-            showTargetAnalysis={showTargetAnalysis}
-            onToggleTargetAnalysis={setShowTargetAnalysis}
-          />
-        )}
+        <TargetAnalysis results={results} />
       </ScrollView>
     </PageSafeContainer>
   );
@@ -287,19 +194,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: '600',
-  },
-  buttonGroup: {
-    flexDirection: 'row',
-    gap: 8,
-    flex: 1,
-    marginTop: 10,
-  },
-  headerButton: {
-    flex: 1,
-  },
-  buttonText: {
-    fontSize: 14,
-    color: '#3b82f6',
   },
   comparisonGrid: {
     flexDirection: 'row',
@@ -431,55 +325,5 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: '#6b7280',
     textAlign: 'center',
-  },
-  projectionsCard: {
-    marginBottom: 16,
-    padding: 12,
-  },
-  projectionsTitle: {
-    color: '#4338ca',
-    fontSize: 16,
-  },
-  projectionsSubtitle: {
-    fontSize: 12,
-    color: '#6b7280',
-    marginTop: 4,
-  },
-  projectionsContent: {
-    paddingTop: 12,
-  },
-  projectionsGrid: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  projectionSection: {
-    flex: 1,
-    backgroundColor: '#f0f9ff',
-    padding: 16,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#0ea5e9',
-  },
-  projectionTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#0c4a6e',
-    marginBottom: 12,
-  },
-  projectionMetrics: {
-    gap: 8,
-  },
-  projectionMetric: {
-    justifyContent: 'space-between',
-    gap: 5,
-  },
-  projectionLabel: {
-    fontSize: 12,
-    color: '#0369a1',
-  },
-  projectionValue: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#0c4a6e',
   },
 });

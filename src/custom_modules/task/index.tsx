@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, FlatList, Modal, View, RefreshControl, Text } from 'react-native';
+import { StyleSheet, FlatList, Modal, View, RefreshControl } from 'react-native';
 import { TaskItem } from './widgets/taskItem';
 import { ActiveTab, ITask } from './interfaces';
 import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
@@ -64,6 +64,8 @@ export const TasksScreen: React.FC = () => {
       </View>
     );
   };
+
+
 
   return (
     <View style={styles.container}>

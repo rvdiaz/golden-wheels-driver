@@ -1,19 +1,23 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as Icons from 'lucide-react-native';
 import { IFeatureModule, ModuleKeys } from '~/store/interface';
 import { theme } from '~/theme/theme';
 import { useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
+import Text from '~/codidge_components/UI/text';
+import { localToolModules } from '~/store/helpers';
 
 export const ToolsScreen: React.FC = () => {
   const navigation = useNavigation();
 
   const currentUserData = useReactiveVar(userData);
 
-  const currentTools =
+  const userTools =
     currentUserData?.modules.find((mod) => mod.moduleKey === ModuleKeys.tools)?.modules ?? [];
+
+  const currentTools = [...userTools, ...localToolModules];
 
   // Function to adjust color opacity
   const adjustColorOpacity = (color: string, opacity: number): string => {
@@ -46,51 +50,52 @@ export const ToolsScreen: React.FC = () => {
     const iconColor = tool?.color ?? '#000';
     const iconBackgroundColor = adjustColorOpacity(iconColor, 0.15);
 
-    const available = tool.available;
     const comingSoon = tool.comingSoon;
 
     return (
       <TouchableOpacity
         key={tool.moduleKey}
-        style={[
-          styles.toolCard,
-          { backgroundColor: tool?.backgroundColor ?? '#FFF' },
-          comingSoon && styles.toolCardDisabled,
-        ]}
+        style={[styles.toolCard, { backgroundColor: tool?.backgroundColor ?? '#FFF' }]}
         onPress={() => {
-          if (available && !comingSoon) {
+          if (!comingSoon) {
             navigation.navigate(tool.moduleKey as never);
           }
-        }}
-        disabled={comingSoon || !available}
-        activeOpacity={comingSoon || !available ? 1 : 0.7}>
-        <View style={[styles.toolIcon, { backgroundColor: iconBackgroundColor }]}>
+        }}>
+        <View
+          style={[
+            styles.toolIcon,
+            { backgroundColor: iconBackgroundColor },
+            comingSoon && styles.toolCardDisabled,
+          ]}>
           <IconComponent size={28} color={iconColor} />
         </View>
         <View style={styles.titleContainer}>
-          <Text style={styles.toolTitle}>{tool?.label ?? ''}</Text>
+          <Text style={[styles.toolTitle, comingSoon && styles.toolCardDisabled]}>
+            {tool?.label ?? ''}
+          </Text>
           {comingSoon && (
             <View style={styles.comingSoonBadge}>
               <Text style={styles.comingSoonText}>Coming Soon</Text>
+              <Icons.Clock size={16} color="#FFF" />
             </View>
           )}
         </View>
-        <Text style={[styles.toolDescription, comingSoon && styles.toolDescriptionDisabled]}>
-          {tool?.description ?? ''}
-        </Text>
+        <Text style={[styles.toolDescription]}>{tool?.description ?? ''}</Text>
       </TouchableOpacity>
     );
   };
 
+  const availableTools = currentTools.filter((too) => too.available);
+
   // Split tools into two columns for masonry effect
-  const leftColumn = currentTools.filter((_, index) => index % 2 === 0);
-  const rightColumn = currentTools.filter((_, index) => index % 2 === 1);
+  const leftColumn = availableTools.filter((_, index) => index % 2 === 0);
+  const rightColumn = availableTools.filter((_, index) => index % 2 === 1);
 
   return (
     <View style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.headerSection}>
-          <Text style={styles.headerTitle}>Real Estate Calculators</Text>
+          <Text style={styles.headerTitle}>Real Estate Tools</Text>
           <Text style={styles.headerSubtitle}>
             Professional tools to help you serve your clients better
           </Text>
@@ -161,9 +166,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   toolDescription: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#6B7280',
-    lineHeight: 20,
+    lineHeight: 18,
   },
   toolCardDisabled: {
     opacity: 0.6,
@@ -175,18 +180,18 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   comingSoonBadge: {
-    backgroundColor: '#FEF3C7',
+    backgroundColor: 'orange',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
   },
   comingSoonText: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#92400E',
+    color: 'white',
     textTransform: 'uppercase',
-  },
-  toolDescriptionDisabled: {
-    color: '#9CA3AF',
   },
 });

@@ -5,14 +5,14 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { FormWrapper } from '../formsWrapper';
+import { FormWrapper } from './formsWrapper';
 import { Controller, useFormContext } from 'react-hook-form';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
-import { OnboardingFormData } from '../../interface';
+import { OnboardingFormData } from '../../../on_boarding/interface';
+import Text from '~/codidge_components/UI/text';
 
 // Validation rules
 const validationRules = {

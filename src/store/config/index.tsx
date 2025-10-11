@@ -20,6 +20,16 @@ import { PropertyEstimationsPage } from '~/custom_modules/tools/sections/propert
 import { GoalsScreen } from '~/core_modules/profile/goals';
 import { PrequalifiedLoanScreen } from '~/custom_modules/tools/sections/loan_prequalification';
 import InvestmentCalculatorScreen from '~/custom_modules/tools/sections/investment_calculator';
+import { CmaComparativesPage } from '~/custom_modules/tools/sections/cma_tools';
+import { ForeClosuresPage } from '~/custom_modules/tools/sections/foreclosures';
+import { OpenHousesPage } from '~/custom_modules/tools/sections/openHouses';
+import { SellerNetSheetPage } from '~/custom_modules/tools/sections/sellerNetSheet';
+import { IARolePlayingPage } from '~/custom_modules/tools/sections/ia_role_playing';
+import { TrainingProgramsScreen } from '~/custom_modules/training/sections/programs/programsList';
+import { TrainingCategoriesScreen } from '~/custom_modules/training/sections/categories/categoriesList';
+import { TrainingModulesScreen } from '~/custom_modules/training/sections/modules/modulesList';
+import { TrainingCoursesScreen } from '~/custom_modules/training/sections/courses/coursesList';
+import { TrainingCourseDetailScreen } from '~/custom_modules/training/sections/courses/courseDetailScreen';
 
 export const moduleScreens: Record<
   ModuleKeys,
@@ -41,29 +51,71 @@ export const moduleScreens: Record<
     body: CRMScreen,
     bottomHeader: SearchCrmBoxIA,
   },
+  //Training
+  Training: {
+    body: TrainingCategoriesScreen,
+  },
+  TrainingDetailPage: {
+    body: CourseDetailsScreen,
+  },
+  TrainingPrograms: {
+    body: TrainingProgramsScreen,
+  },
+  TrainingCategories: {
+    body: TrainingCategoriesScreen,
+  },
+  TrainingModules: {
+    body: TrainingModulesScreen,
+  },
+  TrainingCourses: {
+    body: TrainingCoursesScreen,
+  },
+  TrainingDetailCourses: {
+    body: TrainingCourseDetailScreen,
+  },
+  //Tools
   Tools: {
     body: ToolsScreen,
   },
-  Training: {
-    body: TrainingScreen,
+  RentApplications: {
+    body: TransunionRentsApplications,
   },
   MortgageCalculator: {
     body: MortgageCalculatorScreen,
   },
-  PropertyTools: {
-    body: PropertyInfoScreen,
-  },
   PrequalifiedTools: {
     body: PrequalifiedLoanScreen,
+  },
+  InvestmentCalculator: {
+    body: InvestmentCalculatorScreen,
+  },
+  PropertyTools: {
+    body: PropertyInfoScreen,
   },
   ExpiredListing: {
     body: ExpiredListingPage,
   },
+  PropertyEstimations: {
+    body: PropertyEstimationsPage,
+  },
+  Cma: {
+    body: CmaComparativesPage,
+  },
+  Foreclosures: {
+    body: ForeClosuresPage,
+  },
+  OpenHouses: {
+    body: OpenHousesPage,
+  },
+  AIRolePlayTraining: {
+    body: IARolePlayingPage,
+  },
+  SellerNetSheet: {
+    body: SellerNetSheetPage,
+  },
+  //Notifications
   Notifications: {
     body: NotificationsScreen,
-  },
-  TrainingDetailPage: {
-    body: CourseDetailsScreen,
   },
   ContactDetals: {
     body: ContactDetailsScreen,
@@ -76,14 +128,5 @@ export const moduleScreens: Record<
   },
   Goals: {
     body: GoalsScreen,
-  },
-  PropertyEstimations: {
-    body: PropertyEstimationsPage,
-  },
-  RentApplications: {
-    body: TransunionRentsApplications,
-  },
-  InvestmentCalculator: {
-    body: InvestmentCalculatorScreen,
   },
 };

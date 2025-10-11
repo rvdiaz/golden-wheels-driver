@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Modal, StyleSheet, Text, View } from 'react-native';
+import { Modal, StyleSheet, View } from 'react-native';
 import { Card } from '~/codidge_components/UI/card';
 import { Header } from '~/codidge_components/UI/header';
 import SearchAddressAutoComplete from '../../widgets/searchAutoComplete';
@@ -16,6 +16,7 @@ import { getPropertyEstimationQuery } from '../owner_property_details/graphql/qu
 import * as Icons from 'lucide-react-native';
 import { ResultsWrapper } from './results';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import Text from '~/codidge_components/UI/text';
 
 interface PropertySearchData {
   address: string;

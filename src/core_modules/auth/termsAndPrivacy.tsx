@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { privacyContent, termsContent } from '../core';
+import { privacyContent, termsContent } from '../on_boarding/core';
+import Text from '~/codidge_components/UI/text';
 
 // Modal Component for Terms and Privacy
 const InfoModal = ({ visible, onClose, title, content }: any) => (

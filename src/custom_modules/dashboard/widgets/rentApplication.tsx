@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ImageSourcePropType } from 'react-native';
+import { View, StyleSheet, Image, ImageSourcePropType } from 'react-native';
 import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
 
 interface InfoWidgetProps {

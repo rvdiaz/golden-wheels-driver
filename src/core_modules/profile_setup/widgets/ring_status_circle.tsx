@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, View, Text, ViewStyle, TextStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle, TextStyle } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
+import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
 
 interface ProgressRingProps {

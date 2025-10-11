@@ -226,7 +226,7 @@ export const calculateInvestmentAnalysis = (formData: InvestmentFormData): Calcu
     cashOnCashReturn,
     totalCashInvested,
     annualCashFlow: projectedCashFlow,
-    monthlyUnits: units.length,
+    units: units,
     currentCapRate,
     improvedCapRate: projectedCapRate,
     totalRepairCosts,

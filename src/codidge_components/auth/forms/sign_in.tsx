@@ -6,7 +6,6 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  Text,
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -18,6 +17,7 @@ import { IAuthModuleKeys, LoginFormData } from '../interfaces';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
+import Text from '~/codidge_components/UI/text';
 
 const schema = yup.object({
   email: yup.string().email('Please enter a valid email').required('Email is required'),
@@ -31,12 +31,14 @@ export const SignInForm = ({
   onLoginSuccess,
   strictView,
   back,
+  onSignUp,
 }: {
   onLoginSuccess: (userId: string) => void;
   strictView?: boolean;
   back?: () => void;
+  onSignUp?: () => void;
 }) => {
-  const { setCurrentView } = useAuthContext();
+  const { setCurrentView, setTempData } = useAuthContext();
 
   const [loading, setloading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -64,6 +66,18 @@ export const SignInForm = ({
         },
       });
 
+      const needsVerification = user.nextStep.signInStep === 'CONFIRM_SIGN_UP';
+
+      if (needsVerification) {
+        setTempData({
+          email: data.email,
+          password: data.password,
+        });
+
+        setCurrentView(IAuthModuleKeys.verifyEmail);
+        setloading(false);
+        return;
+      }
       if (user.isSignedIn) {
         const att = await fetchUserAttributes();
 
@@ -73,6 +87,7 @@ export const SignInForm = ({
         setloading(false);
       }
     } catch (error: any) {
+      console.log(':::result', error);
       setloading(false);
       Alert.alert('Login Failed', 'Invalid email or password');
       await signOut();
@@ -172,9 +187,7 @@ export const SignInForm = ({
               textStyle={styles.signUpLink}
               title="Sign Up"
               size={ButtonSize.SMALL}
-              onPress={() => {
-                setCurrentView(IAuthModuleKeys.signUp);
-              }}
+              onPress={onSignUp}
             />
           </View>
         )}

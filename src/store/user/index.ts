@@ -9,6 +9,7 @@ export const userData = makeVar<(IUser & { loadedFromStorage?: boolean }) | null
 (async () => {
   try {
     const storedUser = await AsyncStorage.getItem(USER_STORAGE_KEY);
+
     if (storedUser) {
       userData({ ...JSON.parse(storedUser), loadedFromStorage: true });
     }
@@ -17,14 +18,14 @@ export const userData = makeVar<(IUser & { loadedFromStorage?: boolean }) | null
   }
 })();
 
-export const updateUser = async (user: IUser | null) => {
+export const updateUser = async (user: IUser | null | string) => {
   try {
     if (user) {
       await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
     } else {
       await AsyncStorage.removeItem(USER_STORAGE_KEY);
     }
-    userData(user);
+    userData(user as IUser);
   } catch (error) {
     console.error('Error updating user in storage', error);
   }

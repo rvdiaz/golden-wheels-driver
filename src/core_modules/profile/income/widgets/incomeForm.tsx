@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Switch, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, Switch, Alert } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { useMutation, useReactiveVar } from '@apollo/client';
 import { IFormData, IIncome, IncomeSource, IncomeStatus } from '../interfaces';
@@ -15,6 +15,7 @@ import DropdownComponent from '~/codidge_components/UI/dropdown';
 import { DateInputField } from '~/codidge_components/UI/form/inputs/datePicker';
 import { INCOME_SOURCE } from '../helpers';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import Text from '~/codidge_components/UI/text';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 

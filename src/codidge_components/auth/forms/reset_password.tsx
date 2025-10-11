@@ -1,29 +1,17 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import { View, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
-import { useAuthContext } from '../context';
-import { IAuthModuleKeys, ResetPasswordFormData } from '../interfaces';
+import { ResetPasswordFormData } from '../interfaces';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
+import Text from '~/codidge_components/UI/text';
+import { resetPassword } from 'aws-amplify/auth';
+import { ForcePasswordChange } from './force_password_change';
 
-export const ResetPassword = ({
-  onSignUpSuccess,
-}: {
-  onSignUpSuccess: (userId: string, formData: any) => void;
-}) => {
-  const { setCurrentView } = useAuthContext();
-
+export const ResetPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
+  const [emailSent, setEmailSent] = useState('');
 
   const {
     control,
@@ -38,11 +26,48 @@ export const ResetPassword = ({
 
   const onSubmit = async (data: ResetPasswordFormData) => {
     setIsLoading(true);
+
     try {
-      // await resetPassword(data.email);
-      setEmailSent(true);
-    } catch (error) {
-      Alert.alert('Error', 'Failed to send reset email. Please try again.');
+      const output = await resetPassword({
+        username: data.email,
+      });
+
+      const { nextStep } = output;
+
+      switch (nextStep.resetPasswordStep) {
+        case 'CONFIRM_RESET_PASSWORD_WITH_CODE':
+          const codeDeliveryDetails = nextStep.codeDeliveryDetails;
+          setEmailSent(data.email);
+
+          Alert.alert(
+            'Code Sent',
+            `A verification code was sent to ${codeDeliveryDetails.deliveryMedium === 'EMAIL' ? 'your email' : 'your phone'}: ${codeDeliveryDetails.destination}`
+          );
+          break;
+        case 'DONE':
+          Alert.alert('Success', 'Password reset completed.');
+          break;
+      }
+    } catch (error: any) {
+      console.log(':::error', error);
+
+      let errorMessage = 'Failed to send reset email. Please try again.';
+
+      switch (error.name) {
+        case 'UserNotFoundException':
+          errorMessage = 'No account found with this email address.';
+          break;
+        case 'LimitExceededException':
+          errorMessage = 'Too many attempts. Please try again later.';
+          break;
+        case 'InvalidParameterException':
+          errorMessage = error.message || 'Invalid email format.';
+          break;
+        default:
+          errorMessage = error.message || errorMessage;
+      }
+
+      Alert.alert('Error', errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -53,10 +78,19 @@ export const ResetPassword = ({
     if (email) {
       setIsLoading(true);
       try {
-        //await resetPassword(email);
-        Alert.alert('Success', 'Reset email sent again!');
-      } catch (error) {
-        Alert.alert('Error', 'Failed to resend email. Please try again.');
+        const output = await resetPassword({
+          username: email,
+        });
+
+        Alert.alert('Success', 'Reset code sent again!');
+      } catch (error: any) {
+        let errorMessage = 'Failed to resend email. Please try again.';
+
+        if (error.name === 'LimitExceededException') {
+          errorMessage = 'Too many attempts. Please wait before trying again.';
+        }
+
+        Alert.alert('Error', errorMessage);
       } finally {
         setIsLoading(false);
       }
@@ -66,39 +100,7 @@ export const ResetPassword = ({
   if (emailSent) {
     return (
       <View style={styles.content}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => {
-            setCurrentView(IAuthModuleKeys.signIn);
-          }}>
-          <Icons.ArrowLeft size={24} color="#374151" />
-        </TouchableOpacity>
-
-        <View style={styles.successContainer}>
-          <View style={styles.iconContainer}>
-            <Icons.Mail size={48} color="#10B981" />
-          </View>
-          <Text style={styles.successTitle}>Check Your Email</Text>
-          <Text style={styles.successMessage}>
-            We've sent a password reset link to your email address. Please check your inbox and
-            follow the instructions to reset your password.
-          </Text>
-
-          <TouchableOpacity
-            style={styles.resendButton}
-            onPress={handleResendEmail}
-            disabled={isLoading}>
-            <Text style={styles.resendButtonText}>{isLoading ? 'Sending...' : 'Resend Email'}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.backToLoginButton}
-            onPress={() => {
-              setCurrentView(IAuthModuleKeys.signIn);
-            }}>
-            <Text style={styles.backToLoginText}>Back to Sign In</Text>
-          </TouchableOpacity>
-        </View>
+        <ForcePasswordChange username={emailSent} onResendCode={handleResendEmail} />
       </View>
     );
   }
@@ -109,9 +111,12 @@ export const ResetPassword = ({
       style={styles.keyboardView}>
       <View style={styles.content}>
         <View style={styles.header}>
-          <Icons.HelpCircle size={16} color="#6B7280" />
+          <View style={styles.logoContainer}>
+            <Icons.Lock size={40} color="#4F46E5" />
+          </View>
+          <Text style={styles.title}>Forgot Password?</Text>
           <Text style={styles.subtitle}>
-            Your password has expired. Please create a new secure password.
+            Enter your email address and we'll send you a code to reset your password
           </Text>
         </View>
 
@@ -120,10 +125,20 @@ export const ResetPassword = ({
             <Controller
               control={control}
               name="email"
+              rules={{
+                required: 'Email is required',
+                pattern: {
+                  value: /\S+@\S+\.\S+/,
+                  message: 'Please enter a valid email address',
+                },
+              }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <InputField
+                  containerStyle={{
+                    marginBottom: 16,
+                  }}
                   label="Email Address"
-                  placeholder="Enter your email"
+                  placeholder="your.email@example.com"
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -132,27 +147,18 @@ export const ResetPassword = ({
                   autoComplete="email"
                   error={!!errors.email}
                   errorMessage={errors.email?.message}
-                  rightIcon={<Icons.Mail size={16} color="#6B7280" />}
+                  leftIcon={<Icons.Mail size={16} color="#6B7280" />}
                 />
               )}
             />
             <PrimaryButton
               size={ButtonSize.LARGE}
-              title="Send Reset Link"
+              title="Send Reset Code"
               onPress={handleSubmit(onSubmit)}
               loading={isLoading}
+              disabled={isLoading}
             />
           </View>
-        </View>
-
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Remember your password? </Text>
-          <TouchableOpacity
-            onPress={() => {
-              setCurrentView(IAuthModuleKeys.signIn);
-            }}>
-            <Text style={styles.signInLink}>Sign In</Text>
-          </TouchableOpacity>
         </View>
       </View>
     </KeyboardAvoidingView>
@@ -165,18 +171,13 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingVertical: 20,
-  },
-  backButton: {
-    position: 'absolute',
-    top: 60,
-    left: 20,
-    padding: 8,
-    zIndex: 1,
+    flex: 1,
   },
   header: {
     alignItems: 'center',
-    gap: 5,
+    gap: 8,
     marginBottom: 32,
+    paddingHorizontal: 20,
   },
   logoContainer: {
     width: 80,
@@ -188,13 +189,13 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#1F2937',
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#6B7280',
     textAlign: 'center',
   },
@@ -204,72 +205,5 @@ const styles = StyleSheet.create({
   form: {
     paddingHorizontal: 24,
     marginBottom: 12,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: 8,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  footerText: {
-    fontSize: 16,
-    color: '#6B7280',
-  },
-  signInLink: {
-    fontSize: 16,
-    color: '#2563EB',
-    fontWeight: '600',
-  },
-  successContainer: {
-    alignItems: 'center',
-    paddingTop: 60,
-  },
-  iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#ECFDF5',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  successTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1F2937',
-    marginBottom: 16,
-  },
-  successMessage: {
-    fontSize: 16,
-    color: '#6B7280',
-    textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 32,
-  },
-  resendButton: {
-    backgroundColor: '#10B981',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  resendButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  backToLoginButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-  },
-  backToLoginText: {
-    color: '#2563EB',
-    fontSize: 16,
-    fontWeight: '600',
   },
 });

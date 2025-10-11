@@ -1,7 +1,7 @@
 // components/forms/ExpensesForm.tsx
 import React from 'react';
 import { Controller, UseFieldArrayReturn, UseFormReturn } from 'react-hook-form';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 
 import { Building, Calculator, Home, Plus, AlertCircle } from 'lucide-react-native';
 import { Card } from '~/codidge_components/UI/card';
@@ -10,6 +10,7 @@ import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
 import { RenovationItemExpandable } from './renovationItem';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import { formatCurrency } from '../helpers';
+import Text from '~/codidge_components/UI/text';
 
 interface ExpensesFormProps {
   form: UseFormReturn<any>;
@@ -355,18 +356,6 @@ export const ExpensesForm: React.FC<ExpensesFormProps> = ({
           </View>
         </Card>
       </ScrollView>
-      <View
-        style={{
-          padding: 16,
-        }}>
-        <PrimaryButton
-          onPress={onSubmit}
-          disabled={isCalculating}
-          size={ButtonSize.LARGE}
-          rightWidget={<Calculator size={20} color="#ffffff" />}
-          title={isCalculating ? 'Calculating...' : 'Calculate Investment Analysis'}
-        />
-      </View>
     </View>
   );
 };

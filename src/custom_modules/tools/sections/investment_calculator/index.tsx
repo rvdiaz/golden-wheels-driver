@@ -1,9 +1,9 @@
 // components/InvestmentCalculator.tsx
 import React, { useState } from 'react';
 import { View, StyleSheet, Modal, KeyboardAvoidingView, Platform } from 'react-native';
-import { Home, Building, Calculator } from 'lucide-react-native';
+import { Home, Building, Calculator, ArrowRight, ArrowLeft } from 'lucide-react-native';
 import { PropertyForm } from './widgets/propertyInformation';
-import { ResultsDisplay } from './widgets/resultsComponent';
+import { ResultsDisplay } from './widgets/results';
 import { GridTabs } from '~/codidge_components/UI/tabs';
 import { useInvestmentForm } from './custom_hooks';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
@@ -11,6 +11,9 @@ import { Header } from '~/codidge_components/UI/header';
 import { useNavigation } from '@react-navigation/native';
 import { MobileUnitsForm } from './widgets/unitsForm';
 import { ExpensesForm } from './widgets/expenesForm';
+import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
+import { theme } from '~/theme/theme';
 
 const InvestmentCalculatorScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -58,6 +61,10 @@ const InvestmentCalculatorScreen: React.FC = () => {
     },
   ];
 
+  const currentTabIndex = tabs.findIndex((tab) => tab.key === activeTab);
+  const isFirstTab = currentTabIndex === 0;
+  const isLastTab = currentTabIndex === tabs.length - 1;
+
   const renderActiveScene = () => {
     switch (activeTab) {
       case 'property':
@@ -89,6 +96,28 @@ const InvestmentCalculatorScreen: React.FC = () => {
     }
   };
 
+  const handleNext = () => {
+    if (isLastTab) {
+      // On last tab, trigger form submission
+      calculateAnalysis();
+    } else {
+      // Navigate to next tab
+      const nextTab = tabs[currentTabIndex + 1];
+      setActiveTab(nextTab.key);
+    }
+  };
+
+  const handleBack = () => {
+    if (isFirstTab) {
+      // On first tab, go back in navigation
+      navigation.goBack();
+    } else {
+      // Navigate to previous tab
+      const prevTab = tabs[currentTabIndex - 1];
+      setActiveTab(prevTab.key);
+    }
+  };
+
   return (
     <PageSafeContainer
       style={{
@@ -107,19 +136,51 @@ const InvestmentCalculatorScreen: React.FC = () => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
         <View style={styles.tabHeaderWrapper}>
-          <GridTabs tabs={tabs} initialTabKey="property" onTabChange={setActiveTab} />
+          <GridTabs tabs={tabs} initialTabKey={activeTab} onTabChange={setActiveTab} />
         </View>
         <View style={styles.content}>{renderActiveScene()}</View>
+        <View
+          style={{
+            paddingHorizontal: 16,
+            paddingVertical: 10,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            gap: 10,
+          }}>
+          {!isFirstTab && (
+            <OutlineButton
+              style={{
+                flex: 1,
+              }}
+              leftWidget={<ArrowLeft size={16} color={theme.colors.primary} />}
+              size={ButtonSize.LARGE}
+              title="Back"
+              onPress={handleBack}
+            />
+          )}
+          <PrimaryButton
+            style={{
+              flex: isFirstTab ? 1 : 1,
+            }}
+            rightWidget={
+              !isLastTab ? (
+                <ArrowRight size={16} color="#FFF" />
+              ) : (
+                <Calculator size={16} color="#FFF" />
+              )
+            }
+            size={ButtonSize.LARGE}
+            title={isLastTab ? 'Calculate' : 'Next'}
+            onPress={handleNext}
+            disabled={isLastTab && isCalculating}
+          />
+        </View>
       </KeyboardAvoidingView>
       <Modal
         visible={showResults && !!results}
         animationType="slide"
         onRequestClose={() => setShowResults(false)}>
         <ResultsDisplay
-          onEditInputs={() => setShowResults(false)}
-          onReset={() => {
-            resetForm();
-          }}
           results={results!}
           onDispose={() => {
             setShowResults(false);

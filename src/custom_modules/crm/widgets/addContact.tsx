@@ -7,7 +7,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
-  Text,
 } from 'react-native';
 import * as Icons from 'lucide-react-native';
 import { useForm, Controller } from 'react-hook-form';
@@ -23,6 +22,7 @@ import { theme } from '~/theme/theme';
 import { useContactsQueries } from '../hooks/contactMutations';
 import { ContactSelector } from './contactsPhone/contactSelector';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import Text from '~/codidge_components/UI/text';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 

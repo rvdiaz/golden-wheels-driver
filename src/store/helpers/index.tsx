@@ -1,13 +1,47 @@
 import { TypedNavigator } from '@react-navigation/native';
-import { IModule, IUser } from '../interface';
+import { IFeatureModule, IModule, IUser, ModuleKeys } from '../interface';
 import { Ionicons } from '@expo/vector-icons';
 import { moduleScreens } from '../config';
 import { Image } from 'react-native';
 
-export const getTenantRoutes = (user: IUser | null) => {
+export const localToolModules: IFeatureModule[] = [];
+
+export const getTenantRoutes = (user: IUser | null): IModule[] => {
   const userModules = user?.modules ?? [];
 
-  return userModules;
+  const hasToolsModule = userModules.some((mod) => mod.moduleKey === ModuleKeys.tools);
+
+  return userModules
+    .map((module) => {
+      if (module.moduleKey !== ModuleKeys.tools) return module;
+
+      const backendTools = module.modules ?? [];
+
+      const mergedTools = [...backendTools];
+
+      return {
+        ...module,
+        modules: mergedTools,
+      };
+    })
+    .concat(
+      !hasToolsModule
+        ? [
+            {
+              label: 'Tools',
+              moduleKey: ModuleKeys.tools,
+              path: '/tools',
+              type: 'main',
+              metaData: '{}',
+              icon: 'hammer-outline',
+              isBottomBar: true,
+              customIcon: 'tools',
+              modules: localToolModules,
+              comingSoon: false,
+            },
+          ]
+        : []
+    );
 };
 
 export const customIcons: Record<string, { active: any; inactive: any }> = {

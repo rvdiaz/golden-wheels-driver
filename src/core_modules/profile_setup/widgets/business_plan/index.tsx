@@ -1,57 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import {
-  User,
-  CheckCircle,
-  TrendingUp,
-  Star,
-  AlertTriangle,
-  Target,
-  Eye,
-} from 'lucide-react-native';
+import { CheckCircle, TrendingUp, Star, AlertTriangle, Target, Eye } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { FooterConfig, HeaderConfig } from './widgets/formsWrapper';
-import { PersonalInformation } from './widgets/steps/personalnformationForm';
-import { MultiStepFormWrapper } from './widgets/multiStepsWrapper';
-import { VisionAndMission } from './widgets/steps/visionAndMission';
-import { FinantialGoals } from './widgets/steps/finantialGoals';
+import { FooterConfig, HeaderConfig } from './formsWrapper';
+import { MultiStepFormWrapper } from './multiStepsWrapper';
+import { VisionAndMission } from './visionAndMission';
 import { FormProvider, useForm } from 'react-hook-form';
-import { OnboardingFormData } from './interface';
-import {
-  SwotStrengths,
-  SwotWeaknesses,
-  SwotOpportunities,
-  SwotThreats,
-} from './widgets/steps/swotAnalisysForm';
-import { StartPointScreen } from './widgets/startScreen';
+import { OnboardingFormData } from '../../../on_boarding/interface';
+import { SwotStrengths, SwotWeaknesses, SwotOpportunities, SwotThreats } from './swotAnalisysForm';
 import { LoadingFirstScreen } from '~/navigation/header/loadingFirstScreen';
+import { FinantialGoals } from './finantialGoals';
+import { useMutation, useReactiveVar } from '@apollo/client';
+import { updateUserMutation } from '~/core_modules/auth/graphql/mutations';
+import Constants from 'expo-constants';
+import { userData } from '~/store/user';
 
 // Storage keys
-const STORAGE_KEYS = {
+export const STORAGE_KEYS = {
   ONBOARDING_DATA: '@onboarding_data',
   ONBOARDING_STEP: '@onboarding_current_step',
   ONBOARDING_COMPLETED: '@onboarding_completed',
-  ACCOUNT_CREATED: 'ACCOUNT_CREATED',
 };
 
+const tenantId = Constants.expoConfig?.extra?.TENANTID;
+
 // Complete onboarding flow using the MultiStepFormWrapper
-export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
-  const [currentStep, setCurrentStep] = useState(-1);
+export const BusinessPlanFlow = ({
+  onComplete,
+  dispose,
+}: {
+  onComplete: () => void;
+  dispose: () => void;
+}) => {
+  const user = useReactiveVar(userData);
+
+  const [currentStep, setCurrentStep] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [updateUserFn] = useMutation(updateUserMutation);
 
   const methods = useForm<OnboardingFormData>({
     defaultValues: {
-      personalInfo: {
-        firstName: '',
-        lastName: '',
-        mlsNumber: '',
-        brokerage: '',
-        email: '',
-        phone: '',
-        addressLine1: '',
-        region: 'FL',
-        country: 'USA',
-        postalCode: '',
-      },
       visionMission: {
         oneYear: '',
         fiveYear: '',
@@ -116,7 +103,7 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
   };
 
   // Mark onboarding as completed
-  const markOnboardingComplete = async () => {
+  const markBusinessPlanComplete = async () => {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.ONBOARDING_COMPLETED, 'true');
     } catch (error) {
@@ -132,7 +119,6 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
       // Check if onboarding is already completed
       const isCompleted = await AsyncStorage.getItem(STORAGE_KEYS.ONBOARDING_COMPLETED);
       if (isCompleted === 'true') {
-        onComplete();
         return;
       }
 
@@ -155,19 +141,6 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
     }
   };
 
-  // Clear onboarding data
-  const clearOnboardingData = async () => {
-    try {
-      await AsyncStorage.multiRemove([
-        STORAGE_KEYS.ONBOARDING_DATA,
-        STORAGE_KEYS.ONBOARDING_STEP,
-        STORAGE_KEYS.ONBOARDING_COMPLETED,
-      ]);
-    } catch (error) {
-      console.error('Error clearing onboarding data:', error);
-    }
-  };
-
   // Handle step navigation with validation and persistence
   const handleStepNext = async (stepName?: keyof OnboardingFormData) => {
     const isValid = await trigger(stepName);
@@ -177,10 +150,6 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
       setCurrentStep(nextStep);
       await saveCurrentStep(nextStep);
     }
-  };
-
-  const handlePersonalInfoNext = () => {
-    handleStepNext('personalInfo');
   };
 
   const handleVisionMissionNext = () => {
@@ -193,14 +162,34 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
   };
 
   const handleFinalSubmit = handleSubmit(async (data) => {
-    await markOnboardingComplete();
-    onComplete();
+    try {
+      await updateUserFn({
+        variables: {
+          tenant: {
+            tenantId: tenantId,
+          },
+          updates: {
+            ...data,
+          },
+          userId: user?.id,
+        },
+      });
+
+      await markBusinessPlanComplete();
+      onComplete();
+    } catch (error) {
+      console.log('error completing business plan');
+    }
   });
 
   const stepBack = async () => {
     const prevStep = currentStep - 1;
-    setCurrentStep(prevStep);
-    await saveCurrentStep(prevStep);
+    if (prevStep !== -1) {
+      setCurrentStep(prevStep);
+      await saveCurrentStep(prevStep);
+    } else {
+      dispose();
+    }
   };
 
   const handleStepChange = async (step: number) => {
@@ -209,28 +198,9 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
   };
 
   // Calculate progress percentage for each step
-  const totalSteps = 7; // Personal Info + Vision/Mission + 4 SWOT steps + Financial Goals
+  const totalSteps = 6; // Vision/Mission + 4 SWOT steps + Financial Goals
 
   const steps = [
-    // Step 1: Personal Information
-    {
-      header: {
-        icon: User,
-        title: 'Personal Information',
-        subtitle: 'Tell us about yourself so we can personalize your experience',
-      } as HeaderConfig,
-      footer: {
-        showNext: true,
-        nextTitle: 'Continue',
-        showSlider: true,
-        progressPercentage: (1 / totalSteps) * 100,
-        onNext: handlePersonalInfoNext,
-      } as FooterConfig,
-      component: PersonalInformation,
-      props: {
-        errors: errors.personalInfo,
-      },
-    },
     // Step 2: Vision and Mission
     {
       header: {
@@ -240,11 +210,11 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
       } as HeaderConfig,
       footer: {
         showBack: true,
-        showNext: true,
         backTitle: 'Back',
+        showNext: true,
         nextTitle: 'Continue',
         showSlider: true,
-        progressPercentage: (2 / totalSteps) * 100,
+        progressPercentage: (1 / totalSteps) * 100,
         onBack: stepBack,
         onNext: handleVisionMissionNext,
       } as FooterConfig,
@@ -266,7 +236,7 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
         backTitle: 'Back',
         nextTitle: 'Continue',
         showSlider: true,
-        progressPercentage: (3 / totalSteps) * 100,
+        progressPercentage: (2 / totalSteps) * 100,
         onBack: stepBack,
         onNext: handleSwotNext,
       } as FooterConfig,
@@ -288,7 +258,7 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
         backTitle: 'Back',
         nextTitle: 'Continue',
         showSlider: true,
-        progressPercentage: (4 / totalSteps) * 100,
+        progressPercentage: (3 / totalSteps) * 100,
         onBack: stepBack,
         onNext: handleSwotNext,
       } as FooterConfig,
@@ -310,7 +280,7 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
         backTitle: 'Back',
         nextTitle: 'Continue',
         showSlider: true,
-        progressPercentage: (5 / totalSteps) * 100,
+        progressPercentage: (4 / totalSteps) * 100,
         onBack: stepBack,
         onNext: handleSwotNext,
       } as FooterConfig,
@@ -332,7 +302,7 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
         backTitle: 'Back',
         nextTitle: 'Continue',
         showSlider: true,
-        progressPercentage: (6 / totalSteps) * 100,
+        progressPercentage: (5 / totalSteps) * 100,
         onBack: stepBack,
         onNext: handleSwotNext,
       } as FooterConfig,
@@ -352,9 +322,9 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
         showBack: true,
         showNext: true,
         backTitle: 'Back',
-        nextTitle: 'Complete Setup',
+        nextTitle: 'Complete',
         showSlider: true,
-        progressPercentage: (7 / totalSteps) * 100,
+        progressPercentage: (6 / totalSteps) * 100,
         onBack: stepBack,
         onComplete: handleFinalSubmit,
       } as FooterConfig,
@@ -368,16 +338,6 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: () => void }) => {
 
   if (isLoading) {
     return <LoadingFirstScreen />;
-  }
-
-  if (currentStep === -1) {
-    return (
-      <StartPointScreen
-        onNext={() => {
-          setCurrentStep(0);
-        }}
-      />
-    );
   }
 
   return (
@@ -422,24 +382,6 @@ export const OnboardingStorage = {
     } catch (error) {
       console.error('Error getting saved data:', error);
       return null;
-    }
-  },
-
-  setAccountCreated: async (): Promise<void> => {
-    try {
-      await AsyncStorage.setItem(STORAGE_KEYS.ACCOUNT_CREATED, 'true');
-    } catch (error) {
-      console.error('Error setting account created flag:', error);
-    }
-  },
-
-  isAccountCreated: async (): Promise<boolean> => {
-    try {
-      const isCreated = await AsyncStorage.getItem(STORAGE_KEYS.ACCOUNT_CREATED);
-      return isCreated === 'true';
-    } catch (error) {
-      console.error('Error checking account created flag:', error);
-      return false;
     }
   },
 };

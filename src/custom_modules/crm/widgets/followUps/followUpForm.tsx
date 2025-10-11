@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   View,
-  Text,
   TouchableOpacity,
   StyleSheet,
   Modal,
@@ -19,6 +18,7 @@ import { DateTimeInputField } from '~/codidge_components/UI/form/inputs/dateTime
 import moment from 'moment';
 import { Header } from '~/codidge_components/UI/header';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import Text from '~/codidge_components/UI/text';
 
 interface FollowUpFormValues {
   contactId: string;

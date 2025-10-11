@@ -1,27 +1,19 @@
 // components/results/TargetAnalysis.tsx
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { useFormatters } from '../custom_hooks';
-import { TargetResults } from '../interfaces';
+import { View, StyleSheet } from 'react-native';
+import { useFormatters, useInvestmentForm } from '../../custom_hooks';
+import { CalculationResults } from '../../interfaces';
 import { Card } from '~/codidge_components/UI/card';
 import { Edit, Target } from 'lucide-react-native';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
+import Text from '~/codidge_components/UI/text';
 
-interface TargetAnalysisProps {
-  onCalculateTarget: (targetCapRate: number, targetCashOnCash: number) => void;
-  targetResults: TargetResults | null;
-  showTargetAnalysis: boolean;
-  onToggleTargetAnalysis: (show: boolean) => void;
-}
+export const TargetAnalysis = ({ results }: { results: CalculationResults }) => {
+  const { targetResults, showTargetAnalysis, setShowTargetAnalysis, calculateTarget } =
+    useInvestmentForm();
 
-export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({
-  onCalculateTarget,
-  targetResults,
-  showTargetAnalysis,
-  onToggleTargetAnalysis,
-}) => {
   const [targetCapRate, setTargetCapRate] = useState('8');
   const [targetCashOnCash, setTargetCashOnCash] = useState('12');
   const { formatCurrency } = useFormatters();
@@ -29,7 +21,12 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({
   const handleCalculateTarget = () => {
     const capRate = parseFloat(targetCapRate) || 8;
     const cashOnCash = parseFloat(targetCashOnCash) || 12;
-    onCalculateTarget(capRate, cashOnCash);
+
+    calculateTarget(capRate, cashOnCash, results);
+  };
+
+  const onToggleTargetAnalysis = (value: boolean) => {
+    setShowTargetAnalysis(value);
   };
 
   return (
@@ -223,10 +220,9 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   resultsHeader: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
+    gap: 8,
     alignItems: 'center',
-    marginBottom: 8,
   },
   resultsTitle: {
     fontSize: 18,

@@ -4,8 +4,8 @@ export enum ContactCategory {
   SELLER = 'seller',
   RENTER = 'renter',
   LANDLORD = 'landlord',
-  FSBO = 'fsbo',
-  FRBO = 'frbo',
+  FSBO = 'FSBO',
+  FRBO = 'FRBO',
   EXPIRED = 'expired',
   INVESTOR = 'investor',
 }

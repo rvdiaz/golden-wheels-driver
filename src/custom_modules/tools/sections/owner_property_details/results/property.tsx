@@ -1,14 +1,17 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Card } from '~/codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
 import { IProperty } from '../interfaces';
 import { InfoItem } from './infoItem';
 import { formatCurrency } from '../../mortgage_calculator/helpers';
 import { Badge } from '~/codidge_components/UI/badge';
+import Text from '~/codidge_components/UI/text';
 
 export const Property = ({ propertyData }: { propertyData: IProperty }) => {
-  const { bedrooms, bathrooms } = propertyData.propertyInfo;
+  const bedrooms = propertyData?.propertyInfo?.bedrooms;
+  const bathrooms = propertyData?.propertyInfo?.bathrooms;
+
   const bathBed = !!bedrooms && !!bathrooms ? `${bedrooms}BR / ${bathrooms}BA` : undefined;
 
   const isForeclosure = propertyData.foreclosureInfo.length > 0;

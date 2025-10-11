@@ -1,11 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import Text from '~/codidge_components/UI/text';
 import { useNavigation } from '@react-navigation/native';
 import { Card } from '../../codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
 import { ModuleKeys } from '~/store/interface';
 import { theme } from '~/theme/theme';
 import { ComingSoonOverlay } from '~/codidge_components/UI/comingSoonOverlay';
+import { useReactiveVar } from '@apollo/client';
+import { userData } from '~/store/user';
 
 export interface ICourse {
   id: string;
@@ -49,6 +52,14 @@ const mockCourses: ICourse[] = [
 
 export const TrainingScreen: React.FC = () => {
   const navigation = useNavigation();
+
+  const currentUserData = useReactiveVar(userData);
+
+  const traningSection = currentUserData?.modules.find(
+    (mod) => mod.moduleKey === ModuleKeys.training
+  );
+
+  const available = traningSection?.comingSoon;
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -146,7 +157,7 @@ export const TrainingScreen: React.FC = () => {
           </View>
         </Card>
       </ScrollView>
-      <ComingSoonOverlay title="Training" message="Coming Soon" />
+      {available && <ComingSoonOverlay title="Training" message="Coming Soon" />}
     </View>
   );
 };

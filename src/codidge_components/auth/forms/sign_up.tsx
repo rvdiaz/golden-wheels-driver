@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Constants from 'expo-constants';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   Alert,
@@ -22,6 +21,7 @@ import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/Primar
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import Text from '~/codidge_components/UI/text';
 
 const schema = yup.object({
   email: yup.string().email('Please enter a valid email').required('Email is required'),
@@ -99,6 +99,15 @@ export const SignUpForm = ({
         },
       });
 
+      if (!result.userId) {
+        throw Error('Error sign up');
+      }
+
+      await onSignUpSuccess(result.userId, {
+        email: data.email,
+        phone: data.phone,
+      });
+
       const needsVerification = result.nextStep.signUpStep === 'CONFIRM_SIGN_UP';
 
       if (needsVerification) {
@@ -110,19 +119,11 @@ export const SignUpForm = ({
 
         setCurrentView(IAuthModuleKeys.verifyEmail);
         setloading(false);
-        return;
       }
 
-      if (!result.userId) {
-        throw Error('Error sign up');
-      }
-
-      await onSignUpSuccess(result.userId, {
-        email: data.email,
-        phone: data.phone,
-      });
       setloading(false);
     } catch (error) {
+      console.log(':::result', error);
       setloading(false);
       Alert.alert('Registration Failed', 'Please try again');
     }
@@ -134,8 +135,12 @@ export const SignUpForm = ({
         showsVerticalScrollIndicator={false}
         enableOnAndroid={true}
         extraScrollHeight={Platform.OS === 'ios' ? 0 : 80}
-        keyboardShouldPersistTaps="handled">
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag">
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          onScrollBeginDrag={Keyboard.dismiss}
+          contentContainerStyle={styles.scrollContent}>
           <View style={styles.formCard}>
             <View style={styles.form}>
               <Controller

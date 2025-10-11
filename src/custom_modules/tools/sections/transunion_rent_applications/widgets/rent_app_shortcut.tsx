@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Modal, View, Text, Animated } from 'react-native';
+import { Modal, View, Animated } from 'react-native';
 import { InfoWidget } from '~/custom_modules/dashboard/widgets/rentApplication';
 import { ScreenRequestForm } from './screen_request/screenRequestForm';
 import { useNavigation } from '@react-navigation/native';
 import { ModuleKeys } from '~/store/interface';
 import { theme } from '~/theme/theme';
+import Text from '~/codidge_components/UI/text';
 
 export const RentAppShortcut = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -38,7 +39,7 @@ export const RentAppShortcut = () => {
         title="Rent Application"
         description="Submit your rental application quickly and securely."
         imageSource={require('assets/rentApplication.png')}
-        backgroundColor="#f5f7ff"
+        backgroundColor="#E1F1FF"
         buttonText="Screen Applicant"
         secondButtonText="See Results"
         backgroundButtonColor={theme.colors.primary}
@@ -62,8 +63,8 @@ export const RentAppShortcut = () => {
               setModalVisible(false);
             }}
             onAddScreenView={() => {
-              setModalVisible(false); // Close the modal first
-              showConfirmationToast(); // Then show confirmation
+              setModalVisible(false);
+              showConfirmationToast();
             }}
           />
         </View>

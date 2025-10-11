@@ -1,14 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   FlatList,
   ActivityIndicator,
   Modal,
   TouchableOpacity,
-  TextInput,
 } from 'react-native';
+import Text from '~/codidge_components/UI/text';
 import { Search, Plus, X, Trash2, UserPlus, Users } from 'lucide-react-native';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { useContactsQueries } from '../hooks/contactMutations';
@@ -73,7 +72,7 @@ export const ContactEmailInput: React.FC<ContactEmailInputProps> = ({
         {label && <Text style={styles.inputLabel}>{label}</Text>}
         <View style={styles.inputRow}>
           <View style={styles.textInputWrapper}>
-            <TextInput
+            <InputField
               style={[styles.textInput, inputError && styles.textInputError]}
               value={value}
               onChangeText={onChangeText}
@@ -81,6 +80,8 @@ export const ContactEmailInput: React.FC<ContactEmailInputProps> = ({
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
+              error={!!inputError}
+              errorMessage={inputError}
             />
           </View>
           {showContactsButton && (
@@ -89,7 +90,6 @@ export const ContactEmailInput: React.FC<ContactEmailInputProps> = ({
             </TouchableOpacity>
           )}
         </View>
-        {inputError && <Text style={styles.errorText}>{inputError}</Text>}
       </View>
 
       {showContactsButton && (
@@ -322,11 +322,6 @@ export const ContactSelectorModal: React.FC<ContactSelectorModalProps> = ({
     </View>
   );
 
-  const handleAddContactSuccess = () => {
-    refetch();
-    setShowContactForm(false);
-  };
-
   const resetModal = () => {
     setSearchTerm('');
     setShowContactForm(false);
@@ -411,7 +406,7 @@ export const ContactSelectorModal: React.FC<ContactSelectorModalProps> = ({
 const styles = StyleSheet.create({
   // Email Input Styles
   inputContainer: {
-    marginVertical: 8,
+    marginVertical: 4,
   },
   inputLabel: {
     fontSize: 16,
@@ -492,7 +487,6 @@ const styles = StyleSheet.create({
   emailSlotContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
   },
   emailSlotContent: {
     flex: 1,

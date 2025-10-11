@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, Alert, Modal } from 'react-native';
+import { View, StyleSheet, FlatList, ActivityIndicator, Alert, Modal } from 'react-native';
+import Text from '~/codidge_components/UI/text';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import { getTransunionPropertyQuery } from '~/custom_modules/tools/api/queries';
@@ -38,7 +39,6 @@ export const TransUnionPropertyList = () => {
     return properties.filter((property: ITransUnionProperty) => {
       const searchLower = searchTerm.toLowerCase();
       return (
-        property.propertyName?.toLowerCase().includes(searchLower) ||
         property.addressLine1?.toLowerCase().includes(searchLower) ||
         property.locality?.toLowerCase().includes(searchLower) ||
         property.region?.toLowerCase().includes(searchLower) ||
@@ -71,9 +71,6 @@ export const TransUnionPropertyList = () => {
         {/* Property Header */}
         <View style={styles.propertyHeader}>
           <View style={styles.propertyTitle}>
-            <Text style={styles.propertyName} numberOfLines={2}>
-              {item.propertyName || 'Unnamed Property'}
-            </Text>
             <View
               style={[
                 styles.statusBadge,

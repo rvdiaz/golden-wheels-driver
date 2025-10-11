@@ -28,8 +28,6 @@ export const PropertyForm = ({
     formState: { errors, isValid },
   } = useForm<ITransUnionProperty>({
     defaultValues: {
-      propertyName: '',
-      rent: undefined,
       deposit: undefined,
       isActive: true,
       addressLine1: '',
@@ -40,9 +38,6 @@ export const PropertyForm = ({
       region: '',
       postalCode: '',
       country: 'USA',
-      bankruptcyCheck: false,
-      bankruptcyTimeFrame: 0,
-      incomeToRentRatio: 0,
       propertyId: '',
     },
     mode: 'onChange',
@@ -52,9 +47,6 @@ export const PropertyForm = ({
     try {
       // Clean up the data - remove empty strings and convert to proper types
       const propertyData = {
-        propertyName: data.propertyName,
-        rent: data.rent || undefined,
-        deposit: data.deposit || undefined,
         isActive: data.isActive,
         addressLine1: data.addressLine1,
         addressLine2: data.addressLine2 || undefined,
@@ -64,9 +56,6 @@ export const PropertyForm = ({
         region: data.region,
         postalCode: data.postalCode,
         country: data.country ?? 'USA',
-        bankruptcyCheck: data.bankruptcyCheck,
-        bankruptcyTimeFrame: data.bankruptcyTimeFrame ? Number(data.bankruptcyTimeFrame) : 6,
-        incomeToRentRatio: Number(data.incomeToRentRatio),
       };
 
       await addPropertyMutationFn({
@@ -102,27 +91,6 @@ export const PropertyForm = ({
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={0}>
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-          {/* Property Name - Required */}
-          <View style={styles.inputFormWrapper}>
-            <Controller
-              control={control}
-              name="propertyName"
-              rules={{ required: 'Property name is required' }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <InputField
-                  label="Property Name"
-                  value={value}
-                  required={true}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  errorMessage={errors.propertyName?.message}
-                  error={!!errors.propertyName}
-                  placeholder="Enter property name"
-                />
-              )}
-            />
-          </View>
-
           {/* Address Line 1 - Required */}
           <View style={styles.inputFormWrapper}>
             <Controller
@@ -211,7 +179,6 @@ export const PropertyForm = ({
               />
             </View>
 
-            {/* Bankruptcy Time Frame - Required */}
             <View
               style={[
                 styles.inputFormWrapper,
@@ -233,81 +200,6 @@ export const PropertyForm = ({
                     error={!!errors.postalCode}
                     errorMessage={errors.postalCode?.message}
                     placeholder="Enter postal code"
-                  />
-                )}
-              />
-            </View>
-          </View>
-
-          {/* Income to Rent Ratio - Required */}
-          <View style={styles.inputFormWrapper}>
-            <Controller
-              control={control}
-              name="incomeToRentRatio"
-              rules={{ required: 'Income to rent ratio is required' }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <InputField
-                  label="Income to Rent Ratio"
-                  value={value.toString()}
-                  required={true}
-                  onChangeText={(text) => onChange(parseInt(text, 10) || 0)}
-                  onBlur={onBlur}
-                  error={!!errors.incomeToRentRatio}
-                  errorMessage={errors.incomeToRentRatio?.message}
-                  placeholder="Enter income to rent ratio (e.g., 3 for 3:1)"
-                  keyboardType="numeric"
-                />
-              )}
-            />
-          </View>
-          <View style={styles.pairInputContainer}>
-            {/* Rent - Optional */}
-            <View
-              style={[
-                styles.inputFormWrapper,
-                {
-                  flex: 1,
-                },
-              ]}>
-              <Controller
-                control={control}
-                name="rent"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <InputField
-                    label="Rent"
-                    value={value?.toString() || ''}
-                    onChangeText={(text) => onChange(text ? parseInt(text, 10) : undefined)}
-                    onBlur={onBlur}
-                    error={!!errors.rent}
-                    errorMessage={errors.rent?.message}
-                    placeholder="Enter rent amount"
-                    keyboardType="numeric"
-                  />
-                )}
-              />
-            </View>
-
-            {/* Deposit - Optional */}
-            <View
-              style={[
-                styles.inputFormWrapper,
-                {
-                  flex: 1,
-                },
-              ]}>
-              <Controller
-                control={control}
-                name="deposit"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <InputField
-                    label="Deposit"
-                    value={value?.toString() || ''}
-                    onChangeText={(text) => onChange(text ? parseInt(text, 10) : undefined)}
-                    onBlur={onBlur}
-                    error={!!errors.deposit}
-                    errorMessage={errors.deposit?.message}
-                    placeholder="Enter deposit amount"
-                    keyboardType="numeric"
                   />
                 )}
               />

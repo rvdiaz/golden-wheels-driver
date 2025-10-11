@@ -1,10 +1,11 @@
 // SelectableItemsList.tsx
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useController, useFormContext } from 'react-hook-form';
 import { Check, Users } from 'lucide-react-native';
 import { theme } from '~/theme/theme';
 import { iconMap, SwottItem } from '~/system_setting/interfaces';
+import Text from '~/codidge_components/UI/text';
 
 interface SelectableItemsListProps {
   items: SwottItem[];

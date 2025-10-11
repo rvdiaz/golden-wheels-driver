@@ -9,6 +9,23 @@ export const addUserMutation = gql`
       firstName
       lastName
       phone
+      financialGoals {
+        avgCommissionByRents
+        avgCommissionBySales
+        desiredAnnualIncome
+      }
+      swotAnalysis {
+        strengths
+        weaknesses
+        opportunities
+        threats
+      }
+      visionMission {
+        statement
+        drivesYou
+        oneYear
+        fiveYear
+      }
       address {
         addressLine1
         locality
@@ -31,6 +48,7 @@ export const addUserMutation = gql`
         moduleKey
         path
         customIcon
+        comingSoon
         modules {
           label
           metaData
@@ -70,6 +88,23 @@ export const updateUserMutation = gql`
       firstName
       lastName
       phone
+      financialGoals {
+        avgCommissionByRents
+        avgCommissionBySales
+        desiredAnnualIncome
+      }
+      swotAnalysis {
+        strengths
+        weaknesses
+        opportunities
+        threats
+      }
+      visionMission {
+        statement
+        drivesYou
+        oneYear
+        fiveYear
+      }
       address {
         addressLine1
         locality
@@ -92,6 +127,7 @@ export const updateUserMutation = gql`
         moduleKey
         path
         customIcon
+        comingSoon
         modules {
           label
           metaData
@@ -119,5 +155,11 @@ export const updateUserMutation = gql`
         }
       }
     }
+  }
+`;
+
+export const deleteUserMutation = gql`
+  mutation deleteUser($tenant: TenantData!, $userId: ID!) {
+    deleteUser(tenant: $tenant, userId: $userId)
   }
 `;

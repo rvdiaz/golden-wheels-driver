@@ -5,20 +5,33 @@ export enum ModuleKeys {
   dashboard = 'Dashboard',
   tasks = 'Tasks',
   crm = 'Crm',
+  //tools
   tools = 'Tools',
-  training = 'Training',
   mortgageCalculator = 'MortgageCalculator',
   investmentCalculator = 'InvestmentCalculator',
   propertyEstimations = 'PropertyEstimations',
   propertyTools = 'PropertyTools',
   prequalifiedTools = 'PrequalifiedTools',
   expiredListing = 'ExpiredListing',
-  notifications = 'Notifications',
+  cma = 'Cma',
+  foreclosures = 'Foreclosures',
+  openHouses = 'OpenHouses',
+  iARolePlayTraining = 'AIRolePlayTraining',
+  sellerNetSheet = 'SellerNetSheet',
+  transUnionRentApplications = 'RentApplications',
+  //training
+  training = 'Training',
   trainingDetailPage = 'TrainingDetailPage',
+  trainingCategories = 'TrainingCategories',
+  trainingPrograms = 'TrainingPrograms',
+  trainingModules = 'TrainingModules',
+  trainingCourses = 'TrainingCourses',
+  trainingDetailCourses = 'TrainingDetailCourses',
+  //
+  notifications = 'Notifications',
   contactDetals = 'ContactDetals',
   profile = 'Profile',
   income = 'Incomes',
-  transUnionRentApplications = 'RentApplications',
   goals = 'Goals',
 }
 
@@ -65,6 +78,7 @@ export interface IModule {
   icon?: string;
   isBottomBar?: boolean;
   customIcon?: string;
+  comingSoon: boolean;
 }
 
 export enum StatusUser {
@@ -94,6 +108,29 @@ export interface IUser {
   }[];
   profileSetupSkipped: boolean;
   hasSeenProfileCompletionCongrats: boolean;
+  financialGoals: IFinancialGoals;
+  swotAnalysis: ISWOTAnalysis;
+  visionMission: IVisionMission;
+}
+
+export interface IFinancialGoals {
+  avgCommissionByRents: number;
+  avgCommissionBySales: number;
+  desiredAnnualIncome: number;
+}
+
+export interface ISWOTAnalysis {
+  strengths: string[];
+  weaknesses: string[];
+  opportunities: string[];
+  threats: string[];
+}
+
+export interface IVisionMission {
+  statement: string;
+  drivesYou: string;
+  oneYear: string;
+  fiveYear: string;
 }
 
 export interface ITaskSchemaItem {

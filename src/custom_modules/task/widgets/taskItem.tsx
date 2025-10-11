@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
-import { GoalType, ITask } from '../interfaces';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Modal } from 'react-native';
+import { GoalType, ITask, TaskSource } from '../interfaces';
 import {
   formatTaskTime,
   getDurationInMinutes,
-  getTaskColorByPriority,
   getTaskColorByType,
   getTaskConfigByKey,
   getTaskStatus,
@@ -18,6 +17,10 @@ import { theme } from '~/theme/theme';
 import { SimpleCheckbox } from '~/codidge_components/UI/form/checkbox';
 import { Badge } from '~/codidge_components/UI/badge';
 import { TaskFieldsModal } from '~/codidge_components/UI/customField/modalForm';
+import { AddTaskScreen } from './addTask';
+import { CheckCircle, Pencil, X, XCircle } from 'lucide-react-native';
+import IconButton from '~/codidge_components/UI/button/IconButton';
+import Text from '~/codidge_components/UI/text';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -26,6 +29,11 @@ export const TaskItem = ({ task }: { task: ITask }) => {
 
   const [value, setvalue] = useState(task.isCompleted ?? false);
   const [showModal, setShowModal] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  useEffect(() => {
+    setvalue(task.isCompleted);
+  }, [task.isCompleted]);
 
   const user = useReactiveVar(userData);
   const userTaskSchema = user?.systemData?.tasksConfiguration;
@@ -78,12 +86,6 @@ export const TaskItem = ({ task }: { task: ITask }) => {
   };
 
   const handleCompleteTask = async (toggleValue: boolean) => {
-    if (!toggleValue) {
-      // If unchecking, you might want to handle this differently
-      // setvalue(false);
-      return;
-    }
-
     try {
       if (taskConfiguration) {
         const goalTypes: GoalType[] = [];
@@ -91,7 +93,12 @@ export const TaskItem = ({ task }: { task: ITask }) => {
         // Check if task has additional fields
         if (taskConfiguration.fields && taskConfiguration.fields.length > 0) {
           // Show modal to collect field data
-          setShowModal(true);
+          if (toggleValue) {
+            setShowModal(true);
+          } else {
+            await executeTaskCompletion([], toggleValue);
+          }
+
           return; // Don't complete the task yet, wait for modal submission
         } else {
           // Handle duration goal type
@@ -113,11 +120,11 @@ export const TaskItem = ({ task }: { task: ITask }) => {
             });
           }
           // No additional fields, complete the task with duration only
-          await executeTaskCompletion(goalTypes);
+          await executeTaskCompletion(goalTypes, toggleValue);
         }
       } else {
         // No task configuration, complete without goal types
-        await executeTaskCompletion([]);
+        await executeTaskCompletion([], toggleValue);
       }
     } catch (error) {
       console.error(':error', error);
@@ -148,7 +155,7 @@ export const TaskItem = ({ task }: { task: ITask }) => {
           });
         }
       }
-      await executeTaskCompletion(goalTypes);
+      await executeTaskCompletion(goalTypes, true);
     } catch (error) {
       console.error(':error', error);
     }
@@ -163,6 +170,20 @@ export const TaskItem = ({ task }: { task: ITask }) => {
   const taskStatus = getTaskStatus(task);
   const borderColor = getTaskColorByType(taskStatus);
 
+  const renderStatusIcon = () => {
+    if (isActive) return null;
+
+    if (taskStatus === 'complete') {
+      return <CheckCircle size={20} color={borderColor} />;
+    }
+
+    if (taskStatus === 'inComplete') {
+      return <XCircle size={20} color={borderColor} />;
+    }
+
+    return <View></View>;
+  };
+
   return (
     <>
       <View
@@ -175,20 +196,51 @@ export const TaskItem = ({ task }: { task: ITask }) => {
           <View style={styles.taskHeader}>
             <View style={{ flexDirection: 'row', flex: 1 }}>
               <View>
-                <Text style={styles.taskTitle}>{task.title}</Text>
+                <Text
+                  style={[
+                    styles.taskTitle,
+                    {
+                      textDecorationLine: value ? 'line-through' : 'none',
+                    },
+                  ]}>
+                  {task.title}
+                </Text>
                 <Text style={styles.taskDescription} numberOfLines={3}>
                   {task.description ?? ''}
                 </Text>
               </View>
             </View>
-
-            {isActive && (
-              <SimpleCheckbox
-                color={theme.colors.success}
-                checked={value}
-                onToggle={handleCompleteTask}
-              />
-            )}
+            <View
+              style={{
+                alignItems: 'flex-end',
+                gap: 3,
+              }}>
+              <View style={{ alignItems: 'flex-end', flexDirection: 'row', gap: 8 }}>
+                {isActive ? (
+                  <>
+                    {!value && task.source !== TaskSource.admin && (
+                      <IconButton
+                        style={{
+                          paddingVertical: 2,
+                          backgroundColor: 'transparent',
+                        }}
+                        onPress={() => {
+                          setModalVisible(true);
+                        }}
+                        icon={<Pencil size={16} color={theme.colors.accent} />}
+                      />
+                    )}
+                    <SimpleCheckbox
+                      color={theme.colors.success}
+                      checked={value}
+                      onToggle={handleCompleteTask}
+                    />
+                  </>
+                ) : (
+                  renderStatusIcon()
+                )}
+              </View>
+            </View>
           </View>
 
           <View style={styles.taskMeta}>
@@ -202,11 +254,7 @@ export const TaskItem = ({ task }: { task: ITask }) => {
                 {taskConfiguration?.label ?? task.category}
               </Badge>
             </View>
-            {/*  <View style={[styles.taskCategoryBadge]}>
-              <Text style={[styles.taskBadgeText]}>
-                {taskConfiguration?.label ?? task.category}
-              </Text>
-            </View> */}
+
             <View style={styles.rightFooter}>
               <Text style={styles.taskTime}>
                 {formatTaskTime(task.startTime.toString())} -{' '}
@@ -224,6 +272,23 @@ export const TaskItem = ({ task }: { task: ITask }) => {
         onSubmit={handleModalSubmit}
         taskTitle={task.title}
       />
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(false);
+        }}>
+        <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <AddTaskScreen
+            defaultDate={String(task.date)}
+            task={task}
+            disposeModalHandler={() => {
+              setModalVisible(false);
+            }}
+          />
+        </View>
+      </Modal>
     </>
   );
 };
@@ -271,7 +336,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   taskTitle: {
-    fontSize: 14,
+    fontSize: 22,
     fontWeight: '500',
     color: theme.colors.textColor,
     flex: 1,

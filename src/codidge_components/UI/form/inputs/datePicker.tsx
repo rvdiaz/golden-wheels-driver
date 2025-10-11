@@ -45,18 +45,17 @@ export const DateInputField: React.FC<DateInputFieldProps> = ({
 
   return (
     <>
-      <InputField
-        label={label}
-        value={inputValue}
-        editable={false}
-        rightIcon={
-          <TouchableOpacity onPress={() => setShowModal(true)}>
-            <Calendar size={16} color="#6B7280" style={{ marginRight: 16 }} />
-          </TouchableOpacity>
-        }
-        error={error}
-        errorMessage={errorMessage}
-      />
+      <TouchableOpacity onPress={() => setShowModal(true)}>
+        <InputField
+          label={label}
+          value={inputValue}
+          pointerEvents="none"
+          editable={false}
+          rightIcon={<Calendar size={16} color="#6B7280" style={{ marginRight: 16 }} />}
+          error={error}
+          errorMessage={errorMessage}
+        />
+      </TouchableOpacity>
 
       <Modal transparent animationType="slide" visible={showModal}>
         <View

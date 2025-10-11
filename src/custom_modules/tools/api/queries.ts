@@ -25,9 +25,6 @@ export const getSearchAutoCompleteQuery = gql`
 export const getTransunionPropertyQuery = gql`
   query getTransunionProperties($userId: ID!) {
     getTransunionProperties(userId: $userId) {
-      propertyName
-      rent
-      deposit
       isActive
       addressLine1
       addressLine2
@@ -37,9 +34,6 @@ export const getTransunionPropertyQuery = gql`
       region
       postalCode
       country
-      bankruptcyCheck
-      bankruptcyTimeFrame
-      incomeToRentRatio
       propertyId
     }
   }
@@ -60,7 +54,6 @@ export const getRentApplications = gql`
           postalCode
           country
           propertyId
-          propertyName
         }
         applicants {
           renterStatus

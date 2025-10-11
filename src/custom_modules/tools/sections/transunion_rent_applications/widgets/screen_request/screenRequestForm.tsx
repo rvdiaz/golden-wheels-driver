@@ -11,6 +11,7 @@ import { ITransUnionProperty } from '../../interfaces';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import { Send } from 'lucide-react-native';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import { getRentApplications } from '~/custom_modules/tools/api/queries';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -19,13 +20,20 @@ export const ScreenRequestForm = ({
   onAddScreenView,
 }: {
   disposeModalHandler: () => void;
-  onAddScreenView: () => void;
+  onAddScreenView?: () => void;
 }) => {
   const [emails, setEmails] = useState<string[]>(['']); // Start with
   const user = useReactiveVar(userData);
   const [property, setProperty] = useState<ITransUnionProperty>();
 
-  const [initiateRentAppMutationFn, { loading }] = useMutation(initiateRentApplicationMutation);
+  const [initiateRentAppMutationFn, { loading }] = useMutation(initiateRentApplicationMutation, {
+    refetchQueries: [
+      {
+        query: getRentApplications,
+        variables: { userId: user?.id },
+      },
+    ],
+  });
 
   // Validation function
   const isFormValid = () => {
@@ -48,9 +56,11 @@ export const ScreenRequestForm = ({
           contactEmails: emails, // Add this to your mutation variables
         },
       });
-
-      onAddScreenView();
-      disposeModalHandler();
+      if (onAddScreenView) {
+        onAddScreenView();
+      } else {
+        disposeModalHandler();
+      }
 
       // Reset form
       setProperty(undefined);

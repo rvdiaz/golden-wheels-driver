@@ -1,4 +1,5 @@
 import { StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FadeTransition } from '~/codidge_components/UI/transitions/fadeIn';
 import { theme } from '~/theme/theme';
 
@@ -9,9 +10,10 @@ export const AuthFormWrapper = ({
   children: React.ReactNode;
   header: React.ReactNode;
 }) => {
+  const insets = useSafeAreaInsets();
+
   return (
     <View style={styles.container}>
-      {/* Header Section */}
       <View
         style={{
           paddingHorizontal: 20,
@@ -19,7 +21,7 @@ export const AuthFormWrapper = ({
         {header}
       </View>
       {/* Form Container */}
-      <View style={styles.formContainer}>
+      <View style={[styles.formContainer, { paddingBottom: Math.max(insets.bottom, 0) }]}>
         <View style={styles.contentContainer}>
           <FadeTransition isVisible={true} style={{ flex: 1 }}>
             {children}
@@ -38,7 +40,6 @@ const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
     backgroundColor: '#fff',
-    marginTop: 20,
     borderTopLeftRadius: theme.borderRadius.xxl,
     borderTopRightRadius: theme.borderRadius.xxl,
     overflow: 'hidden',

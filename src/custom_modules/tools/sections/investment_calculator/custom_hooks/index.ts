@@ -83,7 +83,11 @@ interface UseInvestmentFormReturn {
 
   // Actions
   calculateAnalysis: () => void;
-  calculateTarget: (targetCapRate: number, targetCashOnCash: number) => void;
+  calculateTarget: (
+    targetCapRate: number,
+    targetCashOnCash: number,
+    results: CalculationResults
+  ) => void;
   resetForm: () => void;
   updateUnitsCount: (count: number) => void;
   addRenovationItem: () => void;
@@ -250,7 +254,7 @@ export const useInvestmentForm = (): UseInvestmentFormReturn => {
   }, [form]);
 
   const calculateTarget = useCallback(
-    (targetCapRate: number, targetCashOnCash: number) => {
+    (targetCapRate: number, targetCashOnCash: number, results: CalculationResults) => {
       if (!results) return;
 
       const targetData = {

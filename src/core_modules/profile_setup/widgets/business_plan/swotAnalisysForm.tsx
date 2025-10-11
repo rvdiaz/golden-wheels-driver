@@ -1,8 +1,8 @@
 // SWOT Analysis Components - Individual Steps
 import React from 'react';
 
-import { FormWrapper } from '../formsWrapper';
-import { SelectableItemsList } from '../selectableList';
+import { FormWrapper } from './formsWrapper';
+import { SelectableItemsList } from './selectableList';
 import { useSystemSettings } from '~/system_setting/customHook';
 
 // SWOT Strengths Component

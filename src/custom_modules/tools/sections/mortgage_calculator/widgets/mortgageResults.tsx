@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { Calculator, Info, DollarSign, TrendingUp } from 'lucide-react-native';
 import { useFormContext } from 'react-hook-form';
 import { MortgageCalculation, MortgageFormValues } from '../interfaces';
@@ -7,6 +7,7 @@ import { formatCurrency, formatCurrencyDetailed } from '../helpers';
 import { Header } from '~/codidge_components/UI/header';
 import { Card } from '~/codidge_components/UI/card';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import Text from '~/codidge_components/UI/text';
 
 interface MortgageCalculatorResultsProps {
   calculation: MortgageCalculation;
@@ -46,7 +47,7 @@ export const MortgageCalculatorResults: React.FC<MortgageCalculatorResultsProps>
 
   return (
     <PageSafeContainer style={{ flex: 1, backgroundColor: '#F9FAFB', justifyContent: 'flex-end' }}>
-      <Header title="Mortgage Results" rightText="Close" rightAction={onDispose} />
+      <Header showBack={true} onBack={onDispose} title="Mortgage Results" rightAction={onDispose} />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
           {/* Monthly Payment Breakdown */}
@@ -195,31 +196,6 @@ export const MortgageCalculatorResults: React.FC<MortgageCalculatorResultsProps>
           </View>
         </View>
       </ScrollView>
-      {/*  <PrimaryButton
-        size={ButtonSize.LARGE}
-        style={{
-          paddingVertical: 16,
-          marginHorizontal: 16,
-        }}
-        title="Send Results"
-        onPress={() => {
-          setShareModalVisible(true);
-        }}
-        rightWidget={<Share size={16} color="#FFF" style={{ marginLeft: 10 }} />}
-      />
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={shareModalVisible}
-        onRequestClose={() => setShareModalVisible(false)}>
-        <ShareModalMortgage
-          downPayment={downPayment}
-          downPaymentPercent={downPaymentPercent}
-          homePrice={homePrice}
-          calculation={calculation}
-          cancel={() => setShareModalVisible(false)}
-        />
-      </Modal> */}
     </PageSafeContainer>
   );
 };

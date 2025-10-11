@@ -1,235 +1,173 @@
-import React, { useState } from 'react';
-import { ConfirmResetPassword } from '~/codidge_components/auth/forms/confirm_reset_password';
-import { useAuthContext } from '~/codidge_components/auth/context';
-import { useReactiveVar } from '@apollo/client';
-import Constants from 'expo-constants';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { addUserMutation } from './graphql/mutations';
-import { updateUser } from '~/store/user';
-import { pushTokenVar } from '~/store/user/pushToken';
-import { IUser } from '~/store/interface';
-import { signOut } from 'aws-amplify/auth/cognito';
-import { getUserQuery } from './graphql/queries';
-import { IAuthModuleKeys } from '~/codidge_components/auth/interfaces';
-import { SignUpForm } from '~/codidge_components/auth/forms/sign_up';
-import { ForcePasswordChange } from '~/codidge_components/auth/forms/force_password_change';
-import { ResetPassword } from '~/codidge_components/auth/forms/reset_password';
-import { VerifyEmail } from '~/codidge_components/auth/forms/verify_email';
-import { SignInForm } from '~/codidge_components/auth/forms/sign_in';
-import { AuthFormWrapper } from './authContainer';
-import { Image, StyleSheet, Text, View } from 'react-native';
-import { OnboardingStorage } from '../on_boarding';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import Text from '~/codidge_components/UI/text';
+import { TermsAndPrivacy } from './termsAndPrivacy';
+import { Rocket } from 'lucide-react-native';
+import { StepIcon } from '../on_boarding/widgets/stepIcon';
+import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import { FadeTransition } from '~/codidge_components/UI/transitions/fadeIn';
+import { theme } from '~/theme/theme';
+import Background from '~/codidge_components/UI/backgroundImage';
+import { AuthWrapper } from '~/core_modules/auth/authWrapper';
+import { FormProvider, useForm } from 'react-hook-form';
+import { IPersonalData } from '../on_boarding/interface';
+import { OnboardingFlowStorage } from './helpers/onboardingStorage';
+import { LoadingFirstScreen } from '~/navigation/header/loadingFirstScreen';
 
-const tenantId = Constants.expoConfig?.extra?.TENANTID;
+export const StartPointScreen = () => {
+  const [showFirstScreen, setShowFirstScreen] = useState(true);
+  const [loading, setloading] = useState(true);
 
-export const AuthWrapper = ({
-  firstRender,
-  onRegister,
-}: {
-  firstRender: boolean;
-  onRegister: () => void;
-}) => {
-  const { currentView } = useAuthContext();
-  const [addUserFn] = useMutation<{ addUser: IUser }>(addUserMutation);
-  const [getUserFn] = useLazyQuery<{ getUser: IUser }>(getUserQuery);
-  const pushToken = useReactiveVar(pushTokenVar);
-  const [allowLogin, setallowLogin] = useState(false);
+  const methods = useForm<IPersonalData>({
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      mlsNumber: '',
+      brokerage: '',
+      email: '',
+      phone: '',
+      addressLine1: '',
+      region: 'FL',
+      country: 'USA',
+      postalCode: '',
+    },
+    mode: 'onChange',
+  });
 
-  const handleLoginSuccess = async (userId: string) => {
-    try {
-      const user = await getUserFn({
-        variables: {
-          tenant: {
-            tenantId,
-          },
-          token: pushToken,
-          userId,
-        },
-      });
+  // Check onboarding state on mount
+  useEffect(() => {
+    const checkOnboardingState = async () => {
+      const hasPassedFirst = await OnboardingFlowStorage.hasPassedFirstScreen();
 
-      if (!user.data?.getUser) {
-        console.error(user.error);
-        throw Error('Error getting user');
+      if (hasPassedFirst) {
+        setShowFirstScreen(false);
       }
+      setloading(false);
+    };
 
-      updateUser(user.data?.getUser);
-    } catch (error) {
-      console.log('::::error getting customer', error);
-      await signOut();
-    }
+    checkOnboardingState();
+  }, []);
+
+  const handleGetStarted = async () => {
+    await OnboardingFlowStorage.setFirstScreenPassed();
+    setShowFirstScreen(false);
   };
 
-  const handleRegisterSuccess = async (userId: string, formData: any) => {
-    try {
-      const onBoargingData = await OnboardingStorage.getSavedData();
+  if (loading) {
+    return <LoadingFirstScreen />;
+  }
 
-      const personalInfo = onBoargingData?.personalInfo;
-      const financialGoals = onBoargingData?.financialGoals;
-      const swotAnalysis = onBoargingData?.swotAnalysis;
-      const visionMission = onBoargingData?.visionMission;
+  let bodyWidget = <AuthWrapper />;
 
-      const userData = await addUserFn({
-        variables: {
-          tenant: {
-            tenantId: tenantId,
-          },
-          user: {
-            firstName: personalInfo?.firstName,
-            lastName: personalInfo?.lastName,
-            email: formData.email,
-            phone: formData.phone,
-            address: {
-              addressLine1: onBoargingData?.personalInfo.addressLine1,
-              postalCode: onBoargingData?.personalInfo.postalCode,
-              region: onBoargingData?.personalInfo.region,
-              country: onBoargingData?.personalInfo.country,
-              locality: onBoargingData?.personalInfo.city,
-            },
-            notificationToken: pushToken,
-            financialGoals,
-            swotAnalysis,
-            visionMission,
-          },
-          userId,
-        },
-      });
-
-      await OnboardingStorage.setAccountCreated();
-
-      if (!userData.data?.addUser) {
-        throw Error('Error getting user');
-      }
-
-      updateUser(userData.data?.addUser);
-      onRegister();
-    } catch (error) {
-      await signOut();
-      console.log(':::error', error);
-    }
-  };
-
-  const header = (
-    <View style={styles.headerContainer}>
-      <View
-        style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <Image style={styles.image} source={require('assets/auth.png')} resizeMode="contain" />
-      </View>
-
-      <Text style={styles.mainTitle}>Account Creation</Text>
-
-      <Text style={styles.subtitle}>
-        Save your progress by creating your account so you won’t lose what you’ve already built.
-      </Text>
-    </View>
-  );
-
-  if (firstRender && currentView === IAuthModuleKeys.signIn && !allowLogin) {
-    return (
-      <AuthFormWrapper header={header}>
-        <SignUpForm
-          strictView={false}
-          loginScreenRequest={() => {
-            setallowLogin(true);
-          }}
-          onSignUpSuccess={handleRegisterSuccess}
-        />
-      </AuthFormWrapper>
+  if (showFirstScreen) {
+    bodyWidget = (
+      <Background>
+        <View style={styles.container}>
+          <FadeTransition isVisible={true} style={{ flex: 1 }}>
+            <View style={styles.centerContent}>
+              <StepIcon icon={Rocket} />
+              <Text style={styles.mainTitle}>Your journey starts here</Text>
+              <Text style={styles.subtitle}>
+                Share your goals and vision so we can build the perfect plan for you.
+              </Text>
+              <PrimaryButton
+                onPress={handleGetStarted}
+                size={ButtonSize.LARGE}
+                title="Start now"
+                style={styles.buttonStyle}
+              />
+            </View>
+            <View style={styles.bottomContent}>
+              <TermsAndPrivacy />
+            </View>
+          </FadeTransition>
+        </View>
+      </Background>
     );
   }
 
-  switch (currentView) {
-    case IAuthModuleKeys.signUp:
-      return (
-        <AuthFormWrapper header={header}>
-          <SignUpForm onSignUpSuccess={handleRegisterSuccess} />
-        </AuthFormWrapper>
-      );
-
-    case IAuthModuleKeys.forcePasswordChange:
-      return (
-        <AuthFormWrapper header={header}>
-          <ForcePasswordChange onSignUpSuccess={handleRegisterSuccess} />
-        </AuthFormWrapper>
-      );
-
-    case IAuthModuleKeys.resetPassword:
-      return (
-        <AuthFormWrapper header={header}>
-          <ResetPassword onSignUpSuccess={handleRegisterSuccess} />
-        </AuthFormWrapper>
-      );
-
-    case IAuthModuleKeys.confirmResetPassword:
-      return (
-        <AuthFormWrapper header={header}>
-          <ConfirmResetPassword />
-        </AuthFormWrapper>
-      );
-
-    case IAuthModuleKeys.verifyEmail:
-      return (
-        <AuthFormWrapper header={header}>
-          <VerifyEmail onSignUpSuccess={handleRegisterSuccess} />
-        </AuthFormWrapper>
-      );
-
-    default:
-      return (
-        <AuthFormWrapper
-          header={
-            <View style={styles.headerContainer}>
-              <View
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <Image
-                  style={styles.image}
-                  source={require('assets/auth.png')}
-                  resizeMode="contain"
-                />
-              </View>
-
-              <Text style={styles.mainTitle}>Sign In</Text>
-            </View>
-          }>
-          <SignInForm strictView={allowLogin} onLoginSuccess={handleLoginSuccess} />
-        </AuthFormWrapper>
-      );
-  }
+  return (
+    <FormProvider {...methods}>
+      <View
+        style={{
+          backgroundColor: theme.colors.primary,
+          flex: 1,
+        }}>
+        {bodyWidget}
+      </View>
+    </FormProvider>
+  );
 };
 
 const styles = StyleSheet.create({
-  headerContainer: {
-    paddingTop: 60,
+  container: {
+    flex: 1,
     paddingHorizontal: 24,
-    alignItems: 'center',
+    paddingTop: 60,
+    paddingBottom: 40,
+    justifyContent: 'space-between',
   },
-  image: {
-    width: 90,
+  gradientContainer: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
+  },
+  blobGradient: {
+    flex: 1,
+    borderRadius: 999,
+  },
+  centerContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    flex: 1,
+    zIndex: 1,
   },
   mainTitle: {
-    fontSize: 24,
+    fontSize: 40,
     fontWeight: '700',
     color: '#FFFFFF',
     textAlign: 'center',
-    marginVertical: 4,
-    letterSpacing: -0.5,
+    marginVertical: 10,
+    width: '90%',
   },
   subtitle: {
-    width: '100%',
-    fontSize: 14,
+    fontSize: 16,
     color: '#fff',
     textAlign: 'center',
     fontWeight: '400',
+    marginBottom: 10,
+    opacity: 0.9,
+    width: '100%',
   },
-  iconContainer: {
+  buttonStyle: {
+    width: '100%',
+    marginTop: 10,
+  },
+  bottomContent: {
     alignItems: 'center',
-    justifyContent: 'center',
     zIndex: 1,
-    paddingHorizontal: 0,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 10,
+  },
+  footerText: {
+    fontSize: 16,
+  },
+  signInLink: {
+    fontSize: 16,
+    color: theme.colors.accent,
+  },
+  headerContainer: {
+    width: '100%',
+    paddingTop: 60,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  image: {
+    width: 120,
   },
 });

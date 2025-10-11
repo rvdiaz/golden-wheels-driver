@@ -1,9 +1,10 @@
 import React from 'react';
 import { Card } from '~/codidge_components/UI/card';
 import { CrmMetrics } from '../interfaces';
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
 import * as Icons from 'lucide-react-native';
 import Color from 'color'; // small utility to manipulate colors
+import Text from '~/codidge_components/UI/text';
 
 const screenWidth = Dimensions.get('window').width;
 

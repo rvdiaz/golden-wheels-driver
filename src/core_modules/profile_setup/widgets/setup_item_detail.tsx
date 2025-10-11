@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Animated } from 'react-native';
+import { StyleSheet, View, ScrollView, TouchableOpacity, Animated } from 'react-native';
 import { useMutation, useReactiveVar } from '@apollo/client';
 import * as Icons from 'lucide-react-native';
 import { WebView } from 'react-native-webview';
@@ -15,6 +15,7 @@ import { ShimmerPlaceholder } from '~/codidge_components/UI/skeleton/shimmerPlac
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import DescriptionSection from './description_section';
+import Text from '~/codidge_components/UI/text';
 
 interface TaskDetailScreenProps {
   task: IProfileTask;

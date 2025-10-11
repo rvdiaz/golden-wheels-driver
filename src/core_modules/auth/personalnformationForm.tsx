@@ -96,16 +96,17 @@ export const PersonalInformation = ({
             showsVerticalScrollIndicator={false}
             enableOnAndroid={true}
             extraScrollHeight={Platform.OS === 'ios' ? 0 : 80}
-            keyboardShouldPersistTaps="handled">
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag">
             <ScrollView
+              showsVerticalScrollIndicator={false}
+              onScrollBeginDrag={Keyboard.dismiss} // And this
               style={{
                 paddingTop: 30,
-              }}
-              showsVerticalScrollIndicator={false}>
+              }}>
               <View style={styles.inputContainer}>
                 <Controller
                   name="firstName"
-                  control={control}
                   rules={validationRules.firstName}
                   render={({ field: { onChange, value, onBlur } }) => (
                     <InputField

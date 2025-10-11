@@ -1,10 +1,10 @@
 import { TypedNavigator } from '@react-navigation/native';
-import { IModule, IUser, ModuleKeys } from '../interface';
+import { IFeatureModule, IModule, IUser, ModuleKeys } from '../interface';
 import { Ionicons } from '@expo/vector-icons';
 import { moduleScreens } from '../config';
 import { Image } from 'react-native';
 
-export const localToolModules = [];
+export const localToolModules: IFeatureModule[] = [];
 
 export const getTenantRoutes = (user: IUser | null): IModule[] => {
   const userModules = user?.modules ?? [];
@@ -37,6 +37,7 @@ export const getTenantRoutes = (user: IUser | null): IModule[] => {
               isBottomBar: true,
               customIcon: 'tools',
               modules: localToolModules,
+              comingSoon: false,
             },
           ]
         : []

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Modal } from 'react-native';
-import { GoalType, ITask } from '../interfaces';
+import { GoalType, ITask, TaskSource } from '../interfaces';
 import {
   formatTaskTime,
   getDurationInMinutes,
@@ -218,7 +218,7 @@ export const TaskItem = ({ task }: { task: ITask }) => {
               <View style={{ alignItems: 'flex-end', flexDirection: 'row', gap: 8 }}>
                 {isActive ? (
                   <>
-                    {!value && (
+                    {!value && task.source !== TaskSource.admin && (
                       <IconButton
                         style={{
                           paddingVertical: 2,

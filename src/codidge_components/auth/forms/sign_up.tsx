@@ -135,8 +135,12 @@ export const SignUpForm = ({
         showsVerticalScrollIndicator={false}
         enableOnAndroid={true}
         extraScrollHeight={Platform.OS === 'ios' ? 0 : 80}
-        keyboardShouldPersistTaps="handled">
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag">
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          onScrollBeginDrag={Keyboard.dismiss}
+          contentContainerStyle={styles.scrollContent}>
           <View style={styles.formCard}>
             <View style={styles.form}>
               <Controller

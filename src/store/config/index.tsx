@@ -25,6 +25,11 @@ import { ForeClosuresPage } from '~/custom_modules/tools/sections/foreclosures';
 import { OpenHousesPage } from '~/custom_modules/tools/sections/openHouses';
 import { SellerNetSheetPage } from '~/custom_modules/tools/sections/sellerNetSheet';
 import { IARolePlayingPage } from '~/custom_modules/tools/sections/ia_role_playing';
+import { TrainingProgramsScreen } from '~/custom_modules/training/sections/programs/programsList';
+import { TrainingCategoriesScreen } from '~/custom_modules/training/sections/categories/categoriesList';
+import { TrainingModulesScreen } from '~/custom_modules/training/sections/modules/modulesList';
+import { TrainingCoursesScreen } from '~/custom_modules/training/sections/courses/coursesList';
+import { TrainingCourseDetailScreen } from '~/custom_modules/training/sections/courses/courseDetailScreen';
 
 export const moduleScreens: Record<
   ModuleKeys,
@@ -46,8 +51,27 @@ export const moduleScreens: Record<
     body: CRMScreen,
     bottomHeader: SearchCrmBoxIA,
   },
+  //Training
   Training: {
-    body: TrainingScreen,
+    body: TrainingCategoriesScreen,
+  },
+  TrainingDetailPage: {
+    body: CourseDetailsScreen,
+  },
+  TrainingPrograms: {
+    body: TrainingProgramsScreen,
+  },
+  TrainingCategories: {
+    body: TrainingCategoriesScreen,
+  },
+  TrainingModules: {
+    body: TrainingModulesScreen,
+  },
+  TrainingCourses: {
+    body: TrainingCoursesScreen,
+  },
+  TrainingDetailCourses: {
+    body: TrainingCourseDetailScreen,
   },
   //Tools
   Tools: {
@@ -92,9 +116,6 @@ export const moduleScreens: Record<
   //Notifications
   Notifications: {
     body: NotificationsScreen,
-  },
-  TrainingDetailPage: {
-    body: CourseDetailsScreen,
   },
   ContactDetals: {
     body: ContactDetailsScreen,

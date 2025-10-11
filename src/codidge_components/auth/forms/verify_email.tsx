@@ -94,6 +94,19 @@ export const VerifyEmail = ({
   };
 
   const handleCodeChange = (text: string, index: number) => {
+    // Handle paste: if text is longer than 1 character, it's a paste operation
+    if (text.length > 1) {
+      // Extract only numeric characters
+      const pastedCode = text.replace(/[^0-9]/g, '').slice(0, 6);
+      setValue('code', pastedCode);
+
+      // Focus the last input or the next empty one
+      const nextIndex = Math.min(pastedCode.length, 5);
+      inputRefs.current[nextIndex]?.focus();
+      return;
+    }
+
+    // Handle single character input (normal typing)
     const newCode = codeValue.split('');
     newCode[index] = text;
     const updatedCode = newCode.join('');

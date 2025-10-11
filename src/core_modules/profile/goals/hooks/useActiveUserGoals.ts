@@ -19,6 +19,7 @@ export const useActiveUserGoals = () => {
         userId: user?.id,
         userActiveTemplateId: user?.activeTemplateId,
       },
+      fetchPolicy: 'network-only',
     }
   );
 

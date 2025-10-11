@@ -15,7 +15,13 @@ import { getRentApplications } from '~/custom_modules/tools/api/queries';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
-export const ScreenRequestForm = ({ disposeModalHandler }: { disposeModalHandler: () => void }) => {
+export const ScreenRequestForm = ({
+  disposeModalHandler,
+  onAddScreenView,
+}: {
+  disposeModalHandler: () => void;
+  onAddScreenView?: () => void;
+}) => {
   const [emails, setEmails] = useState<string[]>(['']); // Start with
   const user = useReactiveVar(userData);
   const [property, setProperty] = useState<ITransUnionProperty>();
@@ -50,8 +56,11 @@ export const ScreenRequestForm = ({ disposeModalHandler }: { disposeModalHandler
           contactEmails: emails, // Add this to your mutation variables
         },
       });
-
-      disposeModalHandler();
+      if (onAddScreenView) {
+        onAddScreenView();
+      } else {
+        disposeModalHandler();
+      }
 
       // Reset form
       setProperty(undefined);

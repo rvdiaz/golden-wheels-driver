@@ -1,11 +1,12 @@
 import { ApolloClient, ApolloLink, ApolloProvider, HttpLink, InMemoryCache } from '@apollo/client';
-import { setContext } from '@apollo/client/link/context';
 import Constants from 'expo-constants';
 import Navigation from './src/navigation';
 import { Amplify } from 'aws-amplify';
 import { cognitoUserPoolsTokenProvider } from 'aws-amplify/auth/cognito';
 import { loadErrorMessages, loadDevMessages } from '@apollo/client/dev';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { AUTH_TYPE, AuthOptions, createAuthLink } from 'aws-appsync-auth-link';
+import { createSubscriptionHandshakeLink } from 'aws-appsync-subscription-link';
 
 if (Constants.expoConfig?.extra?.EAS_BUILD_PROFILE === 'development') {
   // Adds messages only in a dev environment
@@ -29,26 +30,29 @@ Amplify.configure({
   },
 });
 
-const authLink = setContext(async (_, { headers }) => {
-  try {
-    const tokenTest = await cognitoUserPoolsTokenProvider.getTokens();
+const auth: AuthOptions = {
+  type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
+  jwtToken: async () => {
+    try {
+      const tokens = await cognitoUserPoolsTokenProvider.getTokens();
+      const token = tokens?.idToken?.toString();
 
-    const idToken = tokenTest?.idToken?.toString();
+      if (!token) {
+        throw new Error('No ID token available');
+      }
 
-    return {
-      headers: {
-        ...headers,
-        Authorization: idToken,
-      },
-    };
-  } catch (error) {
-    console.warn('No token found, continuing without auth header');
-    return {
-      headers: {
-        ...headers,
-      },
-    };
-  }
+      return token;
+    } catch (error) {
+      console.error('Error getting token:', error);
+      throw error;
+    }
+  },
+};
+
+const authLink = createAuthLink({
+  url: Constants.expoConfig?.extra?.GRAPHQL_ENDPOINT,
+  region: Constants.expoConfig?.extra?.AWS_REGION,
+  auth,
 });
 
 const removeTypeName = (key: unknown, value: unknown) => (key === '__typename' ? undefined : value);
@@ -63,7 +67,18 @@ const removeTypeNameLink = new ApolloLink((operation, forward) => {
 });
 
 const client = new ApolloClient({
-  link: ApolloLink.from([removeTypeNameLink, authLink, httpLink]),
+  link: ApolloLink.from([
+    removeTypeNameLink,
+    authLink,
+    createSubscriptionHandshakeLink(
+      {
+        url: Constants.expoConfig?.extra?.GRAPHQL_ENDPOINT,
+        region: Constants.expoConfig?.extra?.AWS_REGION,
+        auth,
+      },
+      httpLink
+    ),
+  ]),
   cache: new InMemoryCache(),
 });
 

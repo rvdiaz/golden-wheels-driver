@@ -10,3 +10,13 @@ export interface GetUserNotificationsResponse {
     items: INotification[];
   };
 }
+
+export interface OnNotificationPublishedData {
+  onNotificationPublished: {
+    tenantId: string;
+    userId: string;
+    sent: boolean;
+    showOnApp: boolean;
+    userNotification: INotification;
+  };
+}

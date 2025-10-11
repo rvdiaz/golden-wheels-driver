@@ -19,6 +19,7 @@ import { useSystemSettings } from '~/system_setting/customHook';
 import { LoadingFirstScreen } from './header/loadingFirstScreen';
 import { StartPointScreen } from '~/core_modules/auth';
 import { IAuthModuleKeys } from '~/codidge_components/auth/interfaces';
+import { useGlobalSubscriptions } from '~/hooks/useGlobalSubscriptions';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -98,6 +99,7 @@ export default function Navigation() {
   const userInfo = useReactiveVar(userData);
   const { loading } = useSystemSettings();
 
+  useGlobalSubscriptions();
   usePushNotificationTokenSetup();
 
   const tenantModules = getTenantRoutes(userInfo);

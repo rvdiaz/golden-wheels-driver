@@ -28,9 +28,13 @@ const getPushNotificationToken = async (): Promise<string> => {
   if (finalStatus !== 'granted') {
     return '';
   }
+  // @ts-ignore
+  const { data: fcmToken } = await Notifications.getDevicePushTokenAsync({
+    type: 'fcm',
+  });
 
-  const { data } = await Notifications.getDevicePushTokenAsync();
-  return data;
+  //const { data } = await Notifications.getDevicePushTokenAsync();
+  return fcmToken;
 };
 
 Notifications.setNotificationHandler({
@@ -73,6 +77,8 @@ export const usePushNotificationTokenSetup = () => {
       });
     }
   }, [pushToken, userInfo, getCustomerFn]);
+
+  console.log(':::::pushToken', pushToken);
 
   return {
     pushToken,

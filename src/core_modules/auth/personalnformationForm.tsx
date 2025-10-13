@@ -100,7 +100,6 @@ export const PersonalInformation = ({
             keyboardDismissMode="on-drag">
             <ScrollView
               showsVerticalScrollIndicator={false}
-              onScrollBeginDrag={Keyboard.dismiss} // And this
               style={{
                 paddingTop: 30,
               }}>

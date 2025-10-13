@@ -139,7 +139,7 @@ export const SignUpForm = ({
         keyboardDismissMode="on-drag">
         <ScrollView
           showsVerticalScrollIndicator={false}
-          onScrollBeginDrag={Keyboard.dismiss}
+          
           contentContainerStyle={styles.scrollContent}>
           <View style={styles.formCard}>
             <View style={styles.form}>

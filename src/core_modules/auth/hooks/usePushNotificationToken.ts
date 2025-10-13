@@ -28,10 +28,8 @@ const getPushNotificationToken = async (): Promise<string> => {
   if (finalStatus !== 'granted') {
     return '';
   }
-  // @ts-ignore
-  const { data: fcmToken } = await Notifications.getDevicePushTokenAsync({
-    type: 'fcm',
-  });
+
+  const { data: fcmToken } = await Notifications.getDevicePushTokenAsync();
 
   //const { data } = await Notifications.getDevicePushTokenAsync();
   return fcmToken;

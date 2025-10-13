@@ -96,8 +96,7 @@ export const PersonalInformation = ({
             showsVerticalScrollIndicator={false}
             enableOnAndroid={true}
             extraScrollHeight={Platform.OS === 'ios' ? 0 : 80}
-            keyboardShouldPersistTaps="handled"
-            keyboardDismissMode="on-drag">
+            keyboardShouldPersistTaps="handled">
             <ScrollView
               showsVerticalScrollIndicator={false}
               style={{

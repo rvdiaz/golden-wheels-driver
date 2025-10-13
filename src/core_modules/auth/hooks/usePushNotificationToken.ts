@@ -7,7 +7,6 @@ import Constants from 'expo-constants';
 import { pushTokenVar, setPushToken } from '~/store/user/pushToken';
 import { userData, updateUser } from '~/store/user';
 import { getUserQuery } from '../graphql/queries';
-import { Platform } from 'react-native';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -26,26 +25,22 @@ const getPushNotificationToken = async (): Promise<string> => {
   }
 
   if (finalStatus !== 'granted') {
-    console.log('Push notification permission not granted');
     return '';
   }
 
-  try {
-    const tokenData = await Notifications.getDevicePushTokenAsync();
+  // Use Expo Push Token instead
+  const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
 
-    console.log('Platform:', Platform.OS);
-    console.log('Token data:', tokenData);
-
-    // For iOS, the token is in tokenData.data
-    // For Android, it's also in tokenData.data
-    const token = tokenData.data;
-
-    console.log('Device Push Token:', token);
-    return token;
-  } catch (error) {
-    console.error('Error getting push token:', error);
+  if (!projectId) {
+    console.error('Project ID not found');
     return '';
   }
+
+  const { data: token } = await Notifications.getExpoPushTokenAsync({
+    projectId,
+  });
+
+  return token;
 };
 
 Notifications.setNotificationHandler({

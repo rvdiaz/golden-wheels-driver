@@ -21,8 +21,8 @@ interface ProfileCompletionWidgetProps {
 export const ProfileSetupShortcut: React.FC<ProfileCompletionWidgetProps> = ({
   completedSteps = 0,
   totalSteps = 4,
-  title = 'Agent Setup',
-  description = 'Complete your profile to unlock all features and improve your experience',
+  title = 'Build Your Foundation',
+  description = 'The essential steps every new agent must complete to build a professional foundation and hit the ground running.',
   onButtonPress,
   size = 110,
   strokeWidth = 18,
@@ -44,7 +44,7 @@ export const ProfileSetupShortcut: React.FC<ProfileCompletionWidgetProps> = ({
       {/* Left Side - Text Content */}
       <View style={styles.leftContent}>
         <Text style={styles.title}>{title}</Text>
-        <Text style={styles.description} numberOfLines={3}>
+        <Text style={styles.description} numberOfLines={5}>
           {dynamicDescription}
         </Text>
 
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '800',
     color: '#3730A3',
     marginBottom: 8,
@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
     color: '#10B981',
   },
   percentageText: {
-    fontSize: 11,
+    fontSize: 16,
     fontWeight: '600',
     color: '#6366F1',
   },

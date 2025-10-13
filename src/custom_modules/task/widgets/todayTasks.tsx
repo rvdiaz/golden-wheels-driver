@@ -61,7 +61,7 @@ export const TodayTasks = () => {
 
   // Show TaskList with loading state or actual data
   return (
-    <View style={{ marginTop: 16 }}>
+    <View>
       <TaskList displayList={activeTasks} tasks={allTasks} isLoading={isLoading} />
     </View>
   );

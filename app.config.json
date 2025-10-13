@@ -16,7 +16,17 @@
           "contactsPermission": "Allow $(PRODUCT_NAME) to access your contacts to import business contacts."
         }
       ],
-      "expo-notifications"
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/playstore.png",
+          "color": "#ffffff",
+          "sounds": [],
+          "mode": "production"
+        }
+      ],
+      "@react-native-firebase/app",
+      "@react-native-firebase/messaging"
     ],
     "orientation": "portrait",
     "icon": "assets/appstore.png",
@@ -30,15 +40,19 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.myvirtualboss.realestate",
-      "buildNumber": "1.0.8"
+      "buildNumber": "1.0.9",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "infoPlist": {
+        "UIBackgroundModes": ["remote-notification"]
+      }
     },
     "android": {
       "package": "com.myvirtualboss.realestate",
       "versionCode": 10,
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "googleServicesFile": "./google-services.json"
     },
     "extra": {
-      //"GRAPHQL_ENDPOINT": "http://localhost:4000/graphql",
       "GRAPHQL_ENDPOINT": "https://mliqeu5tf5hqnafxp55hwaekd4.appsync-api.us-east-1.amazonaws.com/graphql",
       "GRAPHQL_API_KEY": "da2-huzxlqwce5bi3odldx5lwaz3dy",
       "COGNITO_USERPOOL_ID": "us-east-1_4aq3CuAAr",

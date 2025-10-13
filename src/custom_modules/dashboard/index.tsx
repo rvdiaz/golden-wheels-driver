@@ -11,8 +11,8 @@ export const Dashboard: React.FC = () => {
     <View style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <ProfileCompletionWidget />
-        <TaskMetricsStats />
         <RentAppShortcut />
+        <TaskMetricsStats />
         <TodayTasks />
       </ScrollView>
     </View>

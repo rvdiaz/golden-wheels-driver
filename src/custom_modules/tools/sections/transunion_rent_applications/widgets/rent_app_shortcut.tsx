@@ -34,7 +34,7 @@ export const RentAppShortcut = () => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, marginBottom: 16 }}>
       <InfoWidget
         title="Rent Application"
         description="Submit your rental application quickly and securely."

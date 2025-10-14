@@ -319,7 +319,6 @@ export const TaskDetailScreen = ({ task, onBack, onPreview, onNext }: TaskDetail
 
           {/* Full Description */}
           {task.htmlDescription && <DescriptionSection htmlDescription={task.htmlDescription} />}
-
           {/* Recommendations */}
           {task.recommendations && (
             <View style={styles.sectionCard}>

@@ -3,7 +3,6 @@ import { Dashboard } from '~/custom_modules/dashboard';
 import { TasksScreen } from '~/custom_modules/task';
 import { CRMScreen } from '~/custom_modules/crm';
 import { ToolsScreen } from '~/custom_modules/tools';
-import { TrainingScreen } from '~/custom_modules/training';
 import { MortgageCalculatorScreen } from '~/custom_modules/tools/sections/mortgage_calculator';
 import { NotificationsScreen } from '~/core_modules/notifications';
 import { ContactDetailsScreen } from '~/custom_modules/crm/widgets/contactDetail';

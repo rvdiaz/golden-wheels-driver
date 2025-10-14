@@ -19,6 +19,7 @@ import { DateTimeInputField } from '~/codidge_components/UI/form/inputs/dateTime
 import moment from 'moment';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { useTasksByUser } from '../hooks/listTask';
+import { useSystemSettings } from '~/system_setting/customHook';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -32,7 +33,7 @@ export const AddTaskScreen = ({
   task?: ITask;
 }) => {
   const user = useReactiveVar(userData);
-  const userTaskSchema = user?.systemData?.tasksConfiguration;
+  const { tasksConfiguration } = useSystemSettings();
 
   const { refetch } = useTasksByUser();
 
@@ -237,7 +238,7 @@ export const AddTaskScreen = ({
                   <DropdownComponent
                     label="Category"
                     required={true}
-                    data={getTaskCategoriesOptions(userTaskSchema ?? [])}
+                    data={getTaskCategoriesOptions(tasksConfiguration ?? [])}
                     placeholder="Select task category"
                     value={value ?? ''}
                     onChange={onChange}

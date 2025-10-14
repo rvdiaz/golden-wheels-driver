@@ -19,11 +19,9 @@ export const CategoryFullDescription = ({
 
   return (
     <>
-      {/* Info Button */}
       <TouchableOpacity onPress={() => setModalVisible(true)}>
-        <AlertCircle size={20} color={theme.colors.primary} />
+        <AlertCircle size={20} color={theme.colors.info} />
       </TouchableOpacity>
-      {/* Description Modal */}
       <Modal
         animationType="fade"
         transparent={true}
@@ -31,7 +29,6 @@ export const CategoryFullDescription = ({
         onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            {/* Header */}
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Task Description</Text>
               <IconButton
@@ -40,13 +37,9 @@ export const CategoryFullDescription = ({
                 icon={<X size={20} color="#6B7280" />}
               />
             </View>
-
-            {/* Description Content */}
             <ScrollView style={styles.descriptionContainer} showsVerticalScrollIndicator={true}>
               <Text style={styles.descriptionText}>{taskHtmlDescription}</Text>
             </ScrollView>
-
-            {/* Close Button */}
             <View
               style={{
                 padding: 14,

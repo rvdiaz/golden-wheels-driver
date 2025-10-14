@@ -65,8 +65,6 @@ export const TasksScreen: React.FC = () => {
     );
   };
 
-
-
   return (
     <View style={styles.container}>
       <TabHeader

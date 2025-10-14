@@ -1,7 +1,8 @@
 export const theme = {
   colors: {
     primary: '#4F46E5', // Indigo-600
-    accent: '#EA580C',
+    //accent: '#EA580C',
+    accent: '#3B82F6',
     primaryText: '#FFFFFF',
     secondary: '#F3F4F6',
     secondaryText: '#374151',
@@ -11,12 +12,14 @@ export const theme = {
     primaryGradient: ['#4F46E5', '#4F46E5'] as const,
     headerBackground: '#1D0D66',
     bodyBackground: '#FFF',
+    primaryBodyBackground: '#E0E7FF',
     menuItemActive: '#312E81',
     menuItemInactive: '#64748B',
     headerModal: '#EEF2FF',
     headerModalText: '#3730A3',
     success: '#22C55E',
     borderNeutralColor: '#E5E7EB',
+    info: '#3B82F6',
   },
   spacing: {
     xs: 4,

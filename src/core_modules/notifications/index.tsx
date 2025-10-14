@@ -1,7 +1,7 @@
-import { useQuery, useReactiveVar } from '@apollo/client';
-import { useNavigation } from '@react-navigation/native';
-import { GetUserNotificationsResponse, INotification } from './interfaces';
-import { getUserNotificationsQuery } from './graphql';
+import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { getUserNotificationsQuery } from './graphql/queries';
+import { markNotificationsAsReadMutation } from './graphql/mutations';
 import { userData } from '~/store/user';
 import Constants from 'expo-constants';
 import { Card } from '~/codidge_components/UI/card';
@@ -12,81 +12,12 @@ import { RefreshControl } from 'react-native-gesture-handler';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
-
-const mockNotifications: INotification[] = [
-  {
-    notificationId: '1',
-    title: 'Welcome to the App!',
-    body: 'Thank you for joining us. Get started by exploring your dashboard.',
-    createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(), // 5 minutes ago
-  },
-  {
-    notificationId: '2',
-    title: 'New Message Received',
-    body: 'John Smith sent you a message about the property inquiry.',
-    createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 minutes ago
-  },
-  {
-    notificationId: '3',
-    title: 'Appointment Reminder',
-    body: 'Your appointment with Sarah Johnson is scheduled for tomorrow at 2:00 PM.',
-    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-  },
-  {
-    notificationId: '4',
-    title: 'Task Due Soon',
-    body: 'Complete property inspection report - due in 3 hours.',
-    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), // 5 hours ago
-  },
-  {
-    notificationId: '5',
-    title: 'Payment Received',
-    body: 'Monthly subscription payment of $49.99 has been processed successfully.',
-    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // Yesterday
-  },
-  {
-    notificationId: '6',
-    title: 'New Lead Alert',
-    body: 'Michael Brown is interested in properties in the downtown area. Budget: $500k-$750k.',
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
-  },
-  {
-    notificationId: '7',
-    title: 'Document Uploaded',
-    body: 'Client uploaded signed contract for 123 Oak Street property.',
-    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
-  },
-  {
-    notificationId: '8',
-    title: 'Market Update',
-    body: 'New market analysis report is available for your area. Average prices increased by 3.2%.',
-    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
-  },
-  {
-    notificationId: '9',
-    title: 'Training Course Available',
-    body: 'New course "Advanced Negotiation Tactics" is now available in your learning portal.',
-    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 1 week ago
-  },
-  {
-    notificationId: '10',
-    title: 'System Maintenance',
-    body: 'Scheduled maintenance will occur on Sunday, March 17th from 2:00 AM to 4:00 AM.',
-    createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), // 10 days ago
-  },
-  {
-    notificationId: '11',
-    title: 'Review Request',
-    body: 'Please take a moment to review your recent property showing experience.',
-    createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(), // 2 weeks ago
-  },
-  {
-    notificationId: '12',
-    title: 'Feature Update',
-    body: 'New calculator tools and report templates have been added to your dashboard.',
-    createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(), // 20 days ago
-  },
-];
+import { useCallback } from 'react';
+import {
+  GetUserNotificationsResponse,
+  INotification,
+  MarkNotificationsReadedResponse,
+} from './interfaces';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -102,9 +33,65 @@ export const NotificationsScreen = () => {
           tenantId,
         },
         userId: user?.id,
-        limit: 50,
+        limit: 30,
       },
+      fetchPolicy: 'cache-and-network',
     }
+  );
+
+  const [markAsRead] = useMutation<MarkNotificationsReadedResponse>(
+    markNotificationsAsReadMutation,
+    {
+      refetchQueries: [
+        {
+          query: getUserNotificationsQuery,
+          variables: {
+            tenant: {
+              tenantId,
+            },
+            userId: user?.id,
+            limit: 30,
+          },
+        },
+      ],
+      awaitRefetchQueries: true,
+    }
+  );
+
+  // Mark notifications as read when screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      const markUnreadNotifications = async () => {
+        if (!data?.getUserNotifications?.items) return;
+
+        const unreadNotificationIds = data.getUserNotifications.items
+          .filter((n) => !n.read)
+          .map((n) => n.notificationId);
+
+        if (unreadNotificationIds.length > 0) {
+          try {
+            await markAsRead({
+              variables: {
+                tenant: {
+                  tenantId,
+                },
+                userId: user?.id,
+                notificationIds: unreadNotificationIds,
+              },
+            });
+          } catch (error) {
+            console.error('Error marking notifications as read:', error);
+          }
+        }
+      };
+
+      // Small delay to ensure data is loaded
+      const timer = setTimeout(() => {
+        markUnreadNotifications();
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }, [data?.getUserNotifications?.items, markAsRead, user?.id])
   );
 
   const formatTimestamp = (timestamp: string) => {
@@ -127,20 +114,27 @@ export const NotificationsScreen = () => {
 
   const renderNotification = ({ item }: { item: INotification }) => {
     return (
-      <Card style={styles.notificationCard}>
+      <Card style={[styles.notificationCard, !item.read && styles.unreadNotification]}>
         <View style={styles.notificationContent}>
-          <View style={styles.notificationIcon}>
-            <Icons.Bell size={20} color="#2563EB" />
+          <View style={[styles.notificationIcon, !item.read && styles.unreadIcon]}>
+            <Icons.Bell size={20} color={!item.read ? '#2563EB' : '#9CA3AF'} />
           </View>
 
           <View style={styles.notificationInfo}>
             <View style={styles.titleRow}>
-              <Text style={styles.notificationTitle} numberOfLines={1}>
-                {item.title}
-              </Text>
+              <View style={styles.titleContainer}>
+                <Text
+                  style={[styles.notificationTitle, !item.read && styles.unreadTitle]}
+                  numberOfLines={1}>
+                  {item.title}
+                </Text>
+                {!item.read && <View style={styles.unreadDot} />}
+              </View>
               <Text style={styles.timestamp}>{formatTimestamp(item.createdAt)}</Text>
             </View>
-            <Text style={styles.notificationBody} numberOfLines={2}>
+            <Text
+              style={[styles.notificationBody, !item.read && styles.unreadBody]}
+              numberOfLines={2}>
               {item.body}
             </Text>
           </View>
@@ -157,7 +151,7 @@ export const NotificationsScreen = () => {
     </View>
   );
 
-  if (loading) {
+  if (loading && !data) {
     return (
       <PageSafeContainer style={styles.container}>
         <Header title="Notifications" showBack onBack={() => navigation.goBack()} />
@@ -198,18 +192,17 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   listContainer: {
     paddingBottom: 20,
   },
   notificationCard: {
     marginBottom: 12,
     borderLeftWidth: 3,
+    borderLeftColor: '#E5E7EB',
+  },
+  unreadNotification: {
     borderLeftColor: '#2563EB',
+    backgroundColor: '#F0F9FF',
   },
   notificationContent: {
     padding: 16,
@@ -220,10 +213,13 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#EEF2FF',
+    backgroundColor: '#F3F4F6',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
+  },
+  unreadIcon: {
+    backgroundColor: '#EEF2FF',
   },
   notificationInfo: {
     flex: 1,
@@ -234,12 +230,28 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 6,
   },
+  titleContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 8,
+  },
   notificationTitle: {
     fontSize: 16,
+    fontWeight: '500',
+    color: '#6B7280',
+    flex: 1,
+  },
+  unreadTitle: {
     fontWeight: '600',
     color: '#1F2937',
-    flex: 1,
-    marginRight: 8,
+  },
+  unreadDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#2563EB',
+    marginLeft: 6,
   },
   timestamp: {
     fontSize: 12,
@@ -248,8 +260,11 @@ const styles = StyleSheet.create({
   },
   notificationBody: {
     fontSize: 14,
-    color: '#6B7280',
+    color: '#9CA3AF',
     lineHeight: 20,
+  },
+  unreadBody: {
+    color: '#6B7280',
   },
   emptyContainer: {
     alignItems: 'center',

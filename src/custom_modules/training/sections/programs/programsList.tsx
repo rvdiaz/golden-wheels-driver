@@ -1,26 +1,34 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Text from '~/codidge_components/UI/text';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { Card } from '~/codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
 import { theme } from '~/theme/theme';
 import { useQuery } from '@apollo/client';
-import { TenantData, TrainingLevel, TrainingProgram } from '../../interfaces';
+import { TrainingLevel, TrainingProgram } from '../../interfaces';
 import { GET_ALL_TRAINING_PROGRAMS } from '../../graphql/queries';
 import { ModuleKeys } from '~/store/interface';
-import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { Header } from '~/codidge_components/UI/header';
+import Constants from 'expo-constants';
+
+const tenantId = Constants.expoConfig?.extra?.TENANTID;
+const categoryId = Constants.expoConfig?.extra?.TRAINING_CATEGORY_ID;
 
 export const TrainingProgramsScreen: React.FC = () => {
   const navigation = useNavigation();
-  const route = useRoute();
-  const { category, tenant } = route.params as { category: any; tenant: TenantData };
+
+  const { category, tenant } = {
+    category: categoryId,
+    tenant: {
+      tenantId: `TENANT#${tenantId}`,
+    },
+  };
 
   const [filterLevel, setFilterLevel] = useState<string>('ALL');
 
   const { data, loading, error } = useQuery(GET_ALL_TRAINING_PROGRAMS, {
-    variables: { tenant, categoryId: category?.categoryId },
+    variables: { tenant, categoryId },
   });
 
   let programs: TrainingProgram[] = data?.getAllTrainingPrograms || [];
@@ -49,67 +57,67 @@ export const TrainingProgramsScreen: React.FC = () => {
 
   if (loading) {
     return (
-      <PageSafeContainer style={styles.container}>
-        <Header
+      <View style={styles.container}>
+        {/*   <Header
           title={category.name}
           onBack={() => {
             navigation.goBack();
           }}
           showBack={true}
-        />
+        /> */}
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
           <Text style={styles.loadingText}>Loading programs...</Text>
         </View>
-      </PageSafeContainer>
+      </View>
     );
   }
 
   if (error) {
     return (
-      <PageSafeContainer style={styles.container}>
-        <Header
+      <View style={styles.container}>
+        {/*      <Header
           title={category.name}
           onBack={() => {
             navigation.goBack();
           }}
           showBack={true}
-        />
+        /> */}
         <View style={styles.centerContainer}>
           <Icons.AlertCircle size={48} color="#EF4444" />
           <Text style={styles.errorText}>Error loading programs</Text>
         </View>
-      </PageSafeContainer>
+      </View>
     );
   }
 
   if (programs.length === 0 && filterLevel === 'ALL') {
     return (
-      <PageSafeContainer style={styles.container}>
-        <Header
+      <View style={styles.container}>
+        {/*    <Header
           title={category.name}
           onBack={() => {
             navigation.goBack();
           }}
           showBack={true}
-        />
+        /> */}
         <View style={styles.centerContainer}>
           <Icons.BookOpen size={48} color="#9CA3AF" />
           <Text style={styles.emptyText}>No training programs available</Text>
         </View>
-      </PageSafeContainer>
+      </View>
     );
   }
 
   return (
-    <PageSafeContainer style={styles.container}>
-      <Header
+    <View style={styles.container}>
+      {/*  <Header
         title={category.name}
         onBack={() => {
           navigation.goBack();
         }}
         showBack={true}
-      />
+      /> */}
       <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
@@ -196,7 +204,7 @@ export const TrainingProgramsScreen: React.FC = () => {
           </View>
         )}
       </ScrollView>
-    </PageSafeContainer>
+    </View>
   );
 };
 

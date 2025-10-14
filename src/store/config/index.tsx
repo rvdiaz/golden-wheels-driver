@@ -53,7 +53,7 @@ export const moduleScreens: Record<
   },
   //Training
   Training: {
-    body: TrainingCategoriesScreen,
+    body: TrainingProgramsScreen,
   },
   TrainingDetailPage: {
     body: CourseDetailsScreen,

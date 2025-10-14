@@ -3,10 +3,17 @@ export interface INotification {
   title: string;
   body: string;
   createdAt: string;
+  read: boolean;
 }
 
 export interface GetUserNotificationsResponse {
   getUserNotifications: {
     items: INotification[];
   };
+}
+
+export interface MarkNotificationsReadedResponse {
+  updated: number;
+  total: number;
+  notificationIds: string[];
 }

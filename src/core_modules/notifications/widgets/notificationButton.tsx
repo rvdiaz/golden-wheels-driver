@@ -3,6 +3,12 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ModuleKeys } from '~/store/interface';
 import Constants from 'expo-constants';
+import { useEffect } from 'react';
+import { useQuery, useReactiveVar } from '@apollo/client';
+import { GetUserNotificationsResponse } from '../interfaces';
+import { getUserNotificationsQuery } from '../graphql/queries';
+import { userData } from '~/store/user';
+import Text from '~/codidge_components/UI/text';
 
 interface NotificationButtonProps {
   navigation: any;
@@ -30,15 +36,16 @@ export const NotificationButton: React.FC<NotificationButtonProps> = ({
         tenantId,
       },
       userId: user?.id,
-      limit: 50,
+      limit: 30,
     },
+    fetchPolicy: 'cache-and-network', // Keep badge updated
   });
 
-  const newNotificationsCount = data?.getUserNotifications?.items?.length ?? 0;
+  // Count only UNREAD notifications
+  const unreadCount = data?.getUserNotifications?.items?.filter((n) => !n.read).length ?? 0;
 
-  const shouldShowBadge = showBadge && newNotificationsCount > 0;
-  // Format badge text (show 99+ for counts over 99)
-  const badgeText = newNotificationsCount > 99 ? '99+' : newNotificationsCount.toString();
+  const shouldShowBadge = showBadge && unreadCount > 0;
+  const badgeText = unreadCount > 99 ? '99+' : unreadCount.toString();
 
   return (
     <TouchableOpacity
@@ -53,106 +60,6 @@ export const NotificationButton: React.FC<NotificationButtonProps> = ({
             <Text style={styles.badgeText}>{badgeText}</Text>
           </View>
         )}
-      </View>
-    </TouchableOpacity>
-  );
-};
-
-// Alternative version with animated badge
-import { useEffect, useRef } from 'react';
-import { Animated } from 'react-native';
-import { useQuery, useReactiveVar } from '@apollo/client';
-import { GetUserNotificationsResponse } from '../interfaces';
-import { getUserNotificationsQuery } from '../graphql';
-import { userData } from '~/store/user';
-import Text from '~/codidge_components/UI/text';
-
-export const AnimatedNotificationButton: React.FC<NotificationButtonProps> = ({
-  navigation,
-  showBadge = true,
-  badgeColor = '#EF4444',
-  iconColor = '#fff',
-  iconSize = 22,
-}) => {
-  const user = useReactiveVar(userData);
-
-  // Don't show badge if count is 0 or showBadge is false
-  const { data } = useQuery<GetUserNotificationsResponse>(getUserNotificationsQuery, {
-    variables: {
-      tenant: {
-        tenantId,
-      },
-      userId: user?.id,
-      limit: 50,
-    },
-  });
-
-  const newNotificationsCount = data?.getUserNotifications?.items?.length ?? 0;
-
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-  const shouldShowBadge = showBadge && newNotificationsCount > 0;
-  const badgeText = newNotificationsCount > 99 ? '99+' : newNotificationsCount.toString();
-
-  // Animate badge when count changes
-  useEffect(() => {
-    if (shouldShowBadge) {
-      Animated.sequence([
-        Animated.timing(scaleAnim, {
-          toValue: 1.3,
-          duration: 150,
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 150,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    }
-  }, [newNotificationsCount]);
-
-  return (
-    <TouchableOpacity
-      onPress={() => navigation.navigate(ModuleKeys.notifications)}
-      style={styles.container}>
-      <View style={styles.iconContainer}>
-        <Ionicons name="notifications-outline" size={iconSize} color={iconColor} />
-
-        {/* Animated Badge */}
-        {shouldShowBadge && (
-          <Animated.View
-            style={[
-              styles.badge,
-              {
-                backgroundColor: badgeColor,
-                transform: [{ scale: scaleAnim }],
-              },
-            ]}>
-            <Text style={styles.badgeText}>{badgeText}</Text>
-          </Animated.View>
-        )}
-      </View>
-    </TouchableOpacity>
-  );
-};
-
-// Version with dot indicator instead of number
-export const NotificationButtonWithDot: React.FC<NotificationButtonProps> = ({
-  navigation,
-  showBadge = true,
-  badgeColor = '#EF4444',
-  iconColor = '#fff',
-  iconSize = 22,
-}) => {
-  return (
-    <TouchableOpacity
-      onPress={() => navigation.navigate(ModuleKeys.notifications)}
-      style={styles.container}>
-      <View style={styles.iconContainer}>
-        <Ionicons name="notifications-outline" size={iconSize} color={iconColor} />
-
-        {/* Dot Badge */}
-        {showBadge && <View style={[styles.dotBadge, { backgroundColor: badgeColor }]} />}
       </View>
     </TouchableOpacity>
   );

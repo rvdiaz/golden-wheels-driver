@@ -61,20 +61,7 @@ export const getUserQuery = gql`
           comingSoon
         }
       }
-      systemData {
-        tasksConfiguration {
-          key
-          description
-          goalKey
-          goalType
-          label
-          fields {
-            goalKey
-            goalType
-            label
-          }
-        }
-      }
+
     }
   }
 `;

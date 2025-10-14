@@ -16,6 +16,7 @@ export const theme = {
     headerModal: '#EEF2FF',
     headerModalText: '#3730A3',
     success: '#22C55E',
+    borderNeutralColor: '#E5E7EB',
   },
   spacing: {
     xs: 4,

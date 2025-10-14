@@ -3,9 +3,9 @@ import { useLazyQuery, useReactiveVar } from '@apollo/client';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
-
 import { pushTokenVar, setPushToken } from '~/store/user/pushToken';
 import { userData, updateUser } from '~/store/user';
+
 import { getUserQuery } from '../graphql/queries';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;

@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { ITask, TaskPriority, TaskSource } from '../interfaces';
-import { ITaskSchemaItem } from '~/store/interface';
+import { ITaskSchemaItem } from '~/system_setting/interfaces';
 
 function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();

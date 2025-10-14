@@ -21,6 +21,8 @@ import { AddTaskScreen } from './addTask';
 import { CheckCircle, Pencil, X, XCircle } from 'lucide-react-native';
 import IconButton from '~/codidge_components/UI/button/IconButton';
 import Text from '~/codidge_components/UI/text';
+import { useSystemSettings } from '~/system_setting/customHook';
+import { CategoryFullDescription } from './categoryFullDescription';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -35,8 +37,10 @@ export const TaskItem = ({ task }: { task: ITask }) => {
     setvalue(task.isCompleted);
   }, [task.isCompleted]);
 
+  const { tasksConfiguration } = useSystemSettings();
+
   const user = useReactiveVar(userData);
-  const userTaskSchema = user?.systemData?.tasksConfiguration;
+
   const [completeTaskFn] = useMutation<{ completeTask: ITask }>(completeTaskMutation, {
     update: (cache, { data: mutationData }) => {
       if (!mutationData?.completeTask) return;
@@ -59,7 +63,7 @@ export const TaskItem = ({ task }: { task: ITask }) => {
     },
   });
 
-  const taskConfiguration = getTaskConfigByKey(task, userTaskSchema ?? []);
+  const taskConfiguration = getTaskConfigByKey(task, tasksConfiguration ?? []);
 
   const executeTaskCompletion = async (goalTypes: GoalType[], completionParam = true) => {
     try {
@@ -195,19 +199,27 @@ export const TaskItem = ({ task }: { task: ITask }) => {
         <View style={styles.taskContent}>
           <View style={styles.taskHeader}>
             <View style={{ flexDirection: 'row', flex: 1 }}>
-              <View>
-                <Text
-                  style={[
-                    styles.taskTitle,
-                    {
-                      textDecorationLine: value ? 'line-through' : 'none',
-                    },
-                  ]}>
-                  {task.title}
-                </Text>
-                <Text style={styles.taskDescription} numberOfLines={3}>
-                  {task.description ?? ''}
-                </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'flex-start',
+                  justifyContent: 'center',
+                  gap: 5,
+                }}>
+                <View>
+                  <Text
+                    style={[
+                      styles.taskTitle,
+                      {
+                        textDecorationLine: value ? 'line-through' : 'none',
+                      },
+                    ]}>
+                    {task.title}
+                  </Text>
+                  <Text style={styles.taskDescription} numberOfLines={3}>
+                    {task.description ?? ''}
+                  </Text>
+                </View>
               </View>
             </View>
             <View
@@ -215,7 +227,7 @@ export const TaskItem = ({ task }: { task: ITask }) => {
                 alignItems: 'flex-end',
                 gap: 3,
               }}>
-              <View style={{ alignItems: 'flex-end', flexDirection: 'row', gap: 8 }}>
+              <View style={{ alignItems: 'flex-end', flexDirection: 'row', gap: 10 }}>
                 {isActive ? (
                   <>
                     {!value && task.source !== TaskSource.admin && (
@@ -238,6 +250,10 @@ export const TaskItem = ({ task }: { task: ITask }) => {
                   </>
                 ) : (
                   renderStatusIcon()
+                )}
+                {/* Info button - only show if there's a description */}
+                {taskConfiguration?.description && (
+                  <CategoryFullDescription taskHtmlDescription={taskConfiguration?.description} />
                 )}
               </View>
             </View>

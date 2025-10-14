@@ -1,5 +1,4 @@
 import { IImage } from '~/codidge_components/interfaces';
-import { GoalType } from '~/custom_modules/task/interfaces';
 
 export enum ModuleKeys {
   dashboard = 'Dashboard',
@@ -98,9 +97,9 @@ export interface IUser {
   modules: IModule[];
   activeTemplateId: string;
   address: IUserAddress;
-  systemData: {
+  /*  systemData: {
     tasksConfiguration: ITaskSchemaItem[];
-  };
+  }; */
   profileSteps: {
     id: string;
     title: string;
@@ -131,15 +130,6 @@ export interface IVisionMission {
   drivesYou: string;
   oneYear: string;
   fiveYear: string;
-}
-
-export interface ITaskSchemaItem {
-  label: string;
-  description: string;
-  key: string;
-  fields: GoalType[];
-  goalKey?: string;
-  goalType?: string; // new: type of the tracked data
 }
 
 export interface IUserAddress {

@@ -61,20 +61,6 @@ export const addUserMutation = gql`
           comingSoon
         }
       }
-      systemData {
-        tasksConfiguration {
-          key
-          description
-          goalKey
-          goalType
-          label
-          fields {
-            goalKey
-            goalType
-            label
-          }
-        }
-      }
     }
   }
 `;
@@ -138,20 +124,6 @@ export const updateUserMutation = gql`
           moduleKey
           available
           comingSoon
-        }
-      }
-      systemData {
-        tasksConfiguration {
-          key
-          description
-          goalKey
-          goalType
-          label
-          fields {
-            goalKey
-            goalType
-            label
-          }
         }
       }
     }

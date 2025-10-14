@@ -15,6 +15,7 @@ import {
   TrendingDown,
   Zap,
 } from 'lucide-react-native';
+import { GoalType } from '~/custom_modules/task/interfaces';
 
 export const iconMap = {
   Users,
@@ -84,4 +85,13 @@ export interface SwottAnalysis {
 // The onboarding schema
 export interface OnBoardingSchema {
   swottAnalysis: SwottAnalysis;
+}
+
+export interface ITaskSchemaItem {
+  label: string;
+  description: string;
+  key: string;
+  fields: GoalType[];
+  goalKey?: string;
+  goalType?: string; // new: type of the tracked data
 }

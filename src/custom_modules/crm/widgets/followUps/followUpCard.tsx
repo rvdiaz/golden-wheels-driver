@@ -4,12 +4,7 @@ import { Clock } from 'lucide-react-native';
 import IconButton from '~/codidge_components/UI/button/IconButton';
 import { IFollowUp, IsDoneValues } from '../../interfaces';
 import * as Icons from 'lucide-react-native';
-import {
-  formatFollowUpDate,
-  handleCallContact,
-  handleEmailContact,
-  handleSmsContact,
-} from '../../helpers';
+import { handleCallContact, handleEmailContact, handleSmsContact } from '../../helpers';
 import Text from '~/codidge_components/UI/text';
 
 interface FollowUpCardProps {
@@ -17,6 +12,69 @@ interface FollowUpCardProps {
   onComplete?: (followUpId: IFollowUp) => void;
   containerStyle?: ViewStyle;
 }
+
+// Enhanced date/time formatting function
+const formatFollowUpDateTime = (date: string, time: string) => {
+  const followUpDate = new Date(date + 'T' + time);
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  // Reset time for date comparison
+  const compareDate = new Date(date + 'T00:00:00');
+  today.setHours(0, 0, 0, 0);
+  tomorrow.setHours(0, 0, 0, 0);
+  yesterday.setHours(0, 0, 0, 0);
+
+  // Format time (12-hour format with AM/PM)
+  const formatTime = (timeStr: string) => {
+    const [hours, minutes] = timeStr.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+    return `${displayHour}:${minutes} ${ampm}`;
+  };
+
+  const formattedTime = formatTime(time);
+
+  // Determine date label
+  if (compareDate.getTime() === today.getTime()) {
+    return `Today at ${formattedTime}`;
+  } else if (compareDate.getTime() === tomorrow.getTime()) {
+    return `Tomorrow at ${formattedTime}`;
+  } else if (compareDate.getTime() === yesterday.getTime()) {
+    return `Yesterday at ${formattedTime}`;
+  } else {
+    // Format as "Oct 15 at 12:57 PM" for other dates
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    const month = months[followUpDate.getMonth()];
+    const day = followUpDate.getDate();
+    const year = followUpDate.getFullYear();
+    const currentYear = new Date().getFullYear();
+
+    // Include year if different from current year
+    if (year !== currentYear) {
+      return `${month} ${day}, ${year} at ${formattedTime}`;
+    } else {
+      return `${month} ${day} at ${formattedTime}`;
+    }
+  }
+};
 
 export const FollowUpCard: React.FC<FollowUpCardProps> = ({
   followUp,
@@ -27,8 +85,8 @@ export const FollowUpCard: React.FC<FollowUpCardProps> = ({
 
   const isOverdue = () => {
     const today = new Date();
-    const followUpDate = new Date(followUp.date + 'T' + followUp.date);
-    return !isCompleted && followUpDate < today;
+    const followUpDateTime = new Date(followUp.date + 'T' + followUp.time);
+    return !isCompleted && followUpDateTime < today;
   };
 
   const overdue = isOverdue();
@@ -76,7 +134,7 @@ export const FollowUpCard: React.FC<FollowUpCardProps> = ({
               overdue && styles.overdueText,
               isCompleted && styles.completedText,
             ]}>
-            {formatFollowUpDate(followUp.date)}
+            {formatFollowUpDateTime(followUp.date as string, followUp.time as string)}
           </Text>
         </View>
 

@@ -77,7 +77,7 @@ export interface IFollowUp {
   followUpId: string;
   userId: string;
   tenantId: string;
-  date: string;
+  date: Date | string;
   time: Date | string;
   notes: string;
   title: string;

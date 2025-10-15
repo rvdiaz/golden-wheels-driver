@@ -136,7 +136,13 @@ const InvestmentCalculatorScreen: React.FC = () => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
         <View style={styles.tabHeaderWrapper}>
-          <GridTabs tabs={tabs} initialTabKey={activeTab} onTabChange={setActiveTab} />
+          <GridTabs
+            activeTabBackground={theme.colors.primary}
+            activeTabColor="#FFF"
+            tabs={tabs}
+            initialTabKey={activeTab}
+            onTabChange={setActiveTab}
+          />
         </View>
         <View style={styles.content}>{renderActiveScene()}</View>
         <View

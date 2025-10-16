@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   taskTitle: {
-    fontSize: 19,
+    fontSize: 16,
     fontWeight: '500',
     color: theme.colors.textColor,
     flex: 1,

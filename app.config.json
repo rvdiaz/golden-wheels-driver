@@ -30,7 +30,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.myvirtualboss.realestate",
-      "buildNumber": "1.1.0"
+      "buildNumber": "1.1.1"
     },
     "android": {
       "package": "com.myvirtualboss.realestate",

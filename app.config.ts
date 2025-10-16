@@ -18,7 +18,9 @@ export default (arg: ConfigContext): ExpoConfig => {
     },
     extra: {
       ...config.extra,
-      GRAPHQL_ENDPOINT: process.env.GRAPHQL_ENDPOINT || 'http://localhost:4000/graphql',
+      GRAPHQL_ENDPOINT:
+        process.env.GRAPHQL_ENDPOINT ||
+        'https://mliqeu5tf5hqnafxp55hwaekd4.appsync-api.us-east-1.amazonaws.com/graphql',
       EAS_BUILD_PROFILE: process.env.EAS_BUILD_PROFILE || 'production',
     },
   } as ExpoConfig;

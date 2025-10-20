@@ -11,7 +11,6 @@ import {
 import * as Icons from 'lucide-react-native';
 import { PhoneContact } from '../../interfaces';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
-import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
 
 interface IContactSelectorProps {
@@ -69,7 +68,7 @@ export const ContactSelector = ({
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <PageSafeContainer style={styles.modalContent}>
+        <View style={styles.modalContent}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Select Contact</Text>
             <TouchableOpacity onPress={onClose}>
@@ -101,7 +100,7 @@ export const ContactSelector = ({
               </View>
             }
           />
-        </PageSafeContainer>
+        </View>
       </KeyboardAvoidingView>
     </Modal>
   );

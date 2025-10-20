@@ -1,8 +1,7 @@
 import { Alert, Linking } from 'react-native';
-import { ContactCategory, ContactType, IContact } from '../interfaces';
-import * as Icons from 'lucide-react-native';
+import { ContactCategory, ContactSort, ContactType, IContact } from '../interfaces';
 
-function capitalize(str: string) {
+export function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
@@ -172,4 +171,55 @@ export const handleEmailContact = (email: string) => {
       }
     })
     .catch((err) => console.error('Error opening email app', err));
+};
+
+export const formatPhoneNumber = (phone: string) => {
+  if (!phone) return '';
+
+  // Remove all non-digit characters
+  const cleaned = phone.replace(/\D/g, '');
+
+  // Format only if it has 10 digits (U.S. standard)
+  if (cleaned.length === 10) {
+    const area = cleaned.slice(0, 3);
+    const middle = cleaned.slice(3, 6);
+    const last = cleaned.slice(6);
+    return `(${area}) ${middle}-${last}`;
+  }
+
+  // For other lengths (international, etc.), just return as-is
+  return phone;
+};
+
+export const formatPhoneNumberInput = (value: string): string => {
+  const cleaned = value.replace(/\D/g, '').slice(0, 10); // Limit to 10 digits
+
+  const length = cleaned.length;
+
+  if (length === 0) return '';
+  if (length <= 3) return `(${cleaned}`;
+  if (length <= 6) return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3)}`;
+  return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+};
+// To store in DB (unformatted)
+export const normalizePhoneNumber = (value: string) => {
+  return value.replace(/\D/g, '');
+};
+
+export const sortContacts = (contacts: IContact[], sort: ContactSort): IContact[] => {
+  return [...contacts].sort((a, b) => {
+    switch (sort) {
+      case ContactSort.NAME_ASC:
+        return a.firstName.localeCompare(b.firstName);
+      case ContactSort.NAME_DESC:
+        return b.firstName.localeCompare(a.firstName);
+      case ContactSort.DATE_NEWEST:
+        // Assuming you have a `createdAt` or `dateAdded` field
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      case ContactSort.DATE_OLDEST:
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      default:
+        return 0;
+    }
+  });
 };

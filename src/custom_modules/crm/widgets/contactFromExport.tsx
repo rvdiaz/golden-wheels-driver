@@ -1,4 +1,3 @@
-// widgets/phoneContactImport/ImportContactsModal.tsx
 import React, { useState, useEffect } from 'react';
 import {
   Modal,
@@ -10,7 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import * as Icons from 'lucide-react-native';
-import { Search, Check, X, Phone, Mail, Building } from 'lucide-react-native';
+import { Check, X, Phone, Mail, Building } from 'lucide-react-native';
 import { theme } from '~/theme/theme';
 import DropdownComponent from '~/codidge_components/UI/dropdown';
 import { CONTACT_CATEGORY_OPTIONS } from '../helpers';
@@ -19,6 +18,9 @@ import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/Primar
 import * as Contacts from 'expo-contacts';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import Text from '~/codidge_components/UI/text';
+import { DragPopupIndicator } from '~/codidge_components/UI/dragIndicator';
+import { getContactUploadConsent, setContactUploadConsent } from '../helpers/storageHelpers';
+import UploadConsentModal from './consentmentModal';
 
 interface PhoneContact {
   id: string;
@@ -49,6 +51,7 @@ export const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
   const [importAsLeads, setImportAsLeads] = useState(true);
   const [loading, setLoading] = useState(false);
   const [importing, setImporting] = useState(false);
+  const [showConsentModal, setShowConsentModal] = useState(false);
 
   const [category, setCategory] = useState(ContactCategory.BUYER);
 
@@ -133,6 +136,29 @@ export const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
     setSelectedContacts(newSelection);
   };
 
+  const handleImportConsent = async () => {
+    const hasConsented = await getContactUploadConsent();
+
+    if (hasConsented) {
+      handleImport(); // proceed directly
+    } else {
+      setShowConsentModal(true); // show modal first
+    }
+  };
+
+  const handleConsentConfirmed = async (dontShowAgain: boolean) => {
+    if (dontShowAgain) {
+      await setContactUploadConsent(true); // save preference
+    }
+
+    setShowConsentModal(false);
+    handleImport(); // now upload
+  };
+
+  const handleConsentCancelled = () => {
+    setShowConsentModal(false);
+  };
+
   const handleImport = async () => {
     if (selectedContacts.size === 0) {
       Alert.alert('No Selection', 'Please select at least one contact to import');
@@ -204,6 +230,7 @@ export const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
     <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={onClose}>
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
+          <DragPopupIndicator />
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.title}>Import Phone Contacts</Text>
@@ -213,10 +240,11 @@ export const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
           </View>
 
           {/* Search Bar */}
-          <View style={styles.searchContainer}>
-            <Search size={20} color="#6B7280" />
+          <View
+            style={{
+              paddingHorizontal: 16,
+            }}>
             <InputField
-              style={styles.searchInput}
               placeholder="Search contacts..."
               value={searchQuery}
               onChangeText={setSearchQuery}
@@ -247,7 +275,7 @@ export const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
           <View
             style={{
               paddingHorizontal: 20,
-              marginTop: 16,
+              marginTop: 8,
             }}>
             <DropdownComponent
               required={true}
@@ -294,7 +322,11 @@ export const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
               }
             />
           )}
-
+          <UploadConsentModal
+            visible={showConsentModal}
+            onConfirm={handleConsentConfirmed}
+            onCancel={handleConsentCancelled}
+          />
           {/* Action Buttons */}
           <View style={styles.actions}>
             <PrimaryButton
@@ -307,16 +339,15 @@ export const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
               onPress={onClose}
               loading={importing}
               title="Cancel"
-              disabled={selectedContacts.size === 0 || importing}
             />
             <PrimaryButton
               size={ButtonSize.LARGE}
               style={{
                 flex: 1,
               }}
-              onPress={handleImport}
+              onPress={handleImportConsent}
               loading={importing}
-              title={`Import ${selectedContacts.size > 0 && `(${selectedContacts.size})`}`}
+              title={`Import ${selectedContacts.size > 0 ? `(${selectedContacts.size})` : ''}`}
               disabled={selectedContacts.size === 0 || importing}
             />
           </View>
@@ -343,9 +374,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    paddingHorizontal: 20,
+    marginTop: 8,
+    marginBottom: 16,
   },
   title: {
     fontSize: 20,
@@ -355,30 +386,11 @@ const styles = StyleSheet.create({
   closeButton: {
     padding: 4,
   },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F9FAFB',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginHorizontal: 20,
-    marginTop: 16,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-  },
-  searchInput: {
-    flex: 1,
-    marginLeft: 12,
-    fontSize: 16,
-    color: '#1F2937',
-  },
   toggleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    marginTop: 16,
   },
   toggleLabel: {
     fontSize: 14,
@@ -412,7 +424,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 12,
   },
   selectionText: {
     fontSize: 14,

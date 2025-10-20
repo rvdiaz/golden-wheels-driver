@@ -220,14 +220,12 @@ export const TaskItem = ({ task }: { task: ITask }) => {
                 gap: 3,
               }}>
               <View style={{ alignItems: 'flex-end', flexDirection: 'row', gap: 10 }}>
-                {isActive && (
-                  <SimpleCheckbox
-                    unCheckColor={theme.colors.success}
-                    color={theme.colors.success}
-                    checked={value}
-                    onToggle={handleCompleteTask}
-                  />
-                )}
+                <SimpleCheckbox
+                  unCheckColor={theme.colors.success}
+                  color={theme.colors.success}
+                  checked={value}
+                  onToggle={handleCompleteTask}
+                />
               </View>
             </View>
           </View>

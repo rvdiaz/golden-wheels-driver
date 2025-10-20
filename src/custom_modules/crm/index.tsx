@@ -10,7 +10,7 @@ import {
   Alert,
 } from 'react-native';
 import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
-import ContactForm from './widgets/addContact';
+import ContactForm from './widgets/formContact';
 import { ContactList } from './widgets/contactList';
 import { ActiveCrmTabs, ContactType, IFollowUp } from './interfaces';
 import { useReactiveVar } from '@apollo/client';

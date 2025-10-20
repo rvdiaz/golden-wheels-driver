@@ -4,6 +4,7 @@ import { Modal, StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'rea
 import { AddTaskScreen } from './addTask';
 import { formatTaskTime } from '../helpers';
 import { theme } from '~/theme/theme';
+import { DragPopupIndicator } from '~/codidge_components/UI/dragIndicator';
 
 export const TaskDetail = ({
   task,
@@ -21,7 +22,7 @@ export const TaskDetail = ({
   return (
     <View style={styles.container}>
       {/* Drag indicator */}
-      <View style={styles.dragIndicator} />
+      <DragPopupIndicator />
 
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={disposeModalHandler} style={styles.closeButton}>
@@ -109,15 +110,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     paddingBottom: 20,
-  },
-  dragIndicator: {
-    width: 40,
-    height: 4,
-    backgroundColor: '#E5E7EB',
-    borderRadius: 2,
-    alignSelf: 'center',
-    marginTop: 12,
-    marginBottom: 8,
   },
   headerContainer: {
     flexDirection: 'row',

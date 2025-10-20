@@ -5,6 +5,7 @@ import { ContactCategory, IContact } from '../interfaces';
 import { useReactiveVar } from '@apollo/client';
 import { crmSearhInput, selectedFiltersVar, selectedSortVar } from '../hooks/tabSelectionVar';
 import { ContactCard } from './contactCard';
+import { sortContacts } from '../helpers';
 
 export const ContactList = ({ contacts }: { title: string; contacts: IContact[] }) => {
   const searchInputValue = useReactiveVar(crmSearhInput);
@@ -31,9 +32,14 @@ export const ContactList = ({ contacts }: { title: string; contacts: IContact[] 
     return matchesSearch && matchesFilter;
   });
 
+  // Then sort
+  const sortedContacts = sortContacts(filteredContacts, selectedSort);
+
+  console.log(':::sortedContacts', sortedContacts);
+
   return (
     <View style={styles.contactsSection}>
-      {filteredContacts.length === 0 ? (
+      {sortedContacts.length === 0 ? (
         <Text style={styles.noContactsText}>
           {searchInputValue
             ? `No contacts found for "${searchInputValue}"`
@@ -41,7 +47,7 @@ export const ContactList = ({ contacts }: { title: string; contacts: IContact[] 
         </Text>
       ) : (
         <FlatList
-          data={filteredContacts}
+          data={sortedContacts}
           renderItem={(item) => <ContactCard contact={item.item} />}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}

@@ -20,6 +20,7 @@ export const theme = {
     success: '#22C55E',
     borderNeutralColor: '#E5E7EB',
     info: '#3B82F6',
+    baseGray: '#F5F5F5',
   },
   spacing: {
     xs: 4,

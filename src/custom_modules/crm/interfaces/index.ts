@@ -10,6 +10,13 @@ export enum ContactCategory {
   INVESTOR = 'investor',
 }
 
+export enum ContactSort {
+  NAME_ASC = 'name_asc',
+  NAME_DESC = 'name_desc',
+  DATE_NEWEST = 'date_newest',
+  DATE_OLDEST = 'date_oldest',
+}
+
 export enum ContactType {
   LEAD = 'lead',
   Contact = 'contact',

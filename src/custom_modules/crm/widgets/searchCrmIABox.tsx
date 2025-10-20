@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { theme } from '~/theme/theme';
 import IconButton from '~/codidge_components/UI/button/IconButton';
-import { ContactCategory } from '../interfaces';
+import { ContactCategory, ContactSort } from '../interfaces';
 import Text from '~/codidge_components/UI/text';
 
 // Get screen dimensions
@@ -69,10 +69,10 @@ export const SearchCrmBoxIA = () => {
   ];
 
   const sortOptions: SortOption[] = [
-    { id: 'name_asc', label: 'Name (A-Z)', icon: 'ArrowUpAZ' },
-    { id: 'name_desc', label: 'Name (Z-A)', icon: 'ArrowDownAZ' },
-    { id: 'date_newest', label: 'Newest First', icon: 'ArrowUp' },
-    { id: 'date_oldest', label: 'Oldest First', icon: 'ArrowDown' },
+    { id: ContactSort.NAME_ASC, label: 'Name (A-Z)', icon: 'ArrowUpAZ' },
+    { id: ContactSort.NAME_DESC, label: 'Name (Z-A)', icon: 'ArrowDownAZ' },
+    { id: ContactSort.DATE_NEWEST, label: 'Newest First', icon: 'ArrowUp' },
+    { id: ContactSort.DATE_OLDEST, label: 'Oldest First', icon: 'ArrowDown' },
   ];
 
   const handleFilterPress = (): void => {
@@ -96,17 +96,17 @@ export const SearchCrmBoxIA = () => {
     selectedFiltersVar(newFilters);
   };
 
-  const selectSort = (sortId: string): void => {
-    selectedSortVar(sortId === selectedSort ? null : sortId);
+  const selectSort = (sortId: ContactSort): void => {
+    selectedSortVar(sortId === selectedSort ? ContactSort.NAME_ASC : sortId);
   };
 
   const clearAll = (): void => {
     selectedFiltersVar(new Set());
-    selectedSortVar(null);
+    selectedSortVar(ContactSort.NAME_ASC);
   };
 
   const getTotalActiveFilters = (): number => {
-    return selectedFilters.size + (selectedSort ? 1 : 0);
+    return selectedFilters.size + (selectedSort !== ContactSort.NAME_ASC ? 1 : 0);
   };
 
   const renderIcon = (
@@ -148,7 +148,7 @@ export const SearchCrmBoxIA = () => {
             <TouchableOpacity
               key={option.id}
               style={[styles.optionItem, selectedSort === option.id && styles.selectedOption]}
-              onPress={() => selectSort(option.id)}>
+              onPress={() => selectSort(option.id as ContactSort)}>
               <View style={styles.optionContent}>
                 {renderIcon(
                   option.icon,

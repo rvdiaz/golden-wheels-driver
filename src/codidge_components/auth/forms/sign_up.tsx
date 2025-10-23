@@ -391,6 +391,7 @@ const styles = StyleSheet.create({
   },
   termsContainer: {
     marginBottom: 12,
+    paddingHorizontal: 6,
   },
   checkboxContainer: {
     flexDirection: 'row',

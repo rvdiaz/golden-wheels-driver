@@ -15,6 +15,10 @@ interface UseProfileSetupConfigResult {
   allTasks: IProfileTask[];
   onBoardingSchema: OnBoardingSchema;
   tasksConfiguration: ITaskSchemaItem[];
+  legal: {
+    mvbTemrs: string;
+    tuTerms: string;
+  };
 }
 
 export const useSystemSettings = (): UseProfileSetupConfigResult => {
@@ -38,11 +42,14 @@ export const useSystemSettings = (): UseProfileSetupConfigResult => {
 
   const onBoardingSchema = parsedConfig.onBoardingSchema;
 
+  const legal = parsedConfig.legal;
+
   return {
     loading,
     categories,
     allTasks,
     onBoardingSchema,
     tasksConfiguration: data?.getSystemConfig?.tasksConfiguration ?? [],
+    legal,
   };
 };

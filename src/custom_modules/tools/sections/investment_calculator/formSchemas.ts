@@ -1,5 +1,5 @@
 // schemas/investmentSchemas.ts
-import { z } from 'zod';
+import { any, z } from 'zod';
 
 // Helper to transform empty strings to 0
 const numberOrEmpty = z.union([z.number(), z.string()]).transform((val) => {
@@ -82,9 +82,7 @@ export const expensesFormSchema = z.object({
 // Financing Schema
 export const financingFormSchema = z.object({
   loanAmount: numberOrEmpty.pipe(z.number().min(0, 'Loan amount cannot be negative')),
-  interestRate: numberOrEmpty.pipe(
-    z.number().min(0, 'Interest rate cannot be negative').max(30, 'Interest rate seems too high')
-  ),
+  interestRate: numberOrEmpty,
   loanTerm: numberOrEmpty.pipe(
     z
       .number()

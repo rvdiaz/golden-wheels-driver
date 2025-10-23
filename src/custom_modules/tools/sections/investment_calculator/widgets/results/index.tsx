@@ -10,7 +10,6 @@ import { Header } from '~/codidge_components/UI/header';
 import Text from '~/codidge_components/UI/text';
 import { UnitsCarousel } from './unitResults';
 import { FutureProjections } from './futureProjections';
-import { FinancialBreakdown } from './finantialBreakdown';
 
 interface ResultsDisplayProps {
   results: CalculationResults;

@@ -29,7 +29,7 @@ const InvestmentCalculatorScreen: React.FC = () => {
     showResults,
     // Actions
     calculateAnalysis,
-    resetForm,
+
     updateUnitsCount,
     addRenovationItem,
     removeRenovationItem,

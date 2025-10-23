@@ -45,11 +45,6 @@ export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) =>
         <Card style={styles.requestCard}>
           {/* Header with Property Name and Overall Status */}
           <View style={styles.header}>
-            <View style={styles.headerLeft}>
-              <Text style={styles.propertyName} numberOfLines={1}>
-                {rentApp.property.propertyName}
-              </Text>
-            </View>
             <View style={[styles.statusBadge, { backgroundColor: statusInfo.bgColor }]}>
               <Text style={[styles.statusText, { color: statusInfo.color }]}>
                 {statusInfo.status}
@@ -150,17 +145,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginBottom: 12,
-  },
-  headerLeft: {
-    flex: 1,
-    marginRight: 12,
-  },
-  propertyName: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1A1A1A',
-    marginBottom: 4,
-    lineHeight: 22,
   },
   statusBadge: {
     paddingHorizontal: 12,

@@ -2,13 +2,12 @@
 import React from 'react';
 import { Controller, UseFieldArrayReturn, UseFormReturn } from 'react-hook-form';
 import { View, StyleSheet, ScrollView } from 'react-native';
-
-import { Building, Calculator, Home, Plus, AlertCircle } from 'lucide-react-native';
+import { Building, Home, Plus, AlertCircle } from 'lucide-react-native';
 import { Card } from '~/codidge_components/UI/card';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
 import { RenovationItemExpandable } from './renovationItem';
-import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import { formatCurrency } from '../helpers';
 import Text from '~/codidge_components/UI/text';
 
@@ -41,8 +40,6 @@ export const ExpensesForm: React.FC<ExpensesFormProps> = ({
   totalRenovationCost,
   onRemoveRenovationItem,
   onAddRenovationItem,
-  onSubmit,
-  isCalculating,
 }) => {
   const {
     control,

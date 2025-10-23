@@ -75,8 +75,9 @@ export const AuthWrapper = () => {
       const personalInfo = await OnboardingFlowStorage.getPersonalInfoCompleted();
 
       if (!pushToken) {
-        Alert.alert('Not token');
-        return;
+        console.log('::::not token creation');
+        //Alert.alert('Not token');
+        //return;
       }
       const userData = await addUserFn({
         variables: {

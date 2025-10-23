@@ -99,8 +99,9 @@ export const PersonalInformation = ({
             keyboardShouldPersistTaps="handled">
             <ScrollView
               showsVerticalScrollIndicator={false}
-              style={{
+              contentContainerStyle={{
                 paddingTop: 30,
+                flexGrow: 1,
               }}>
               <View style={styles.inputContainer}>
                 <Controller

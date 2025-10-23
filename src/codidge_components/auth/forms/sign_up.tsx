@@ -24,6 +24,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import Text from '~/codidge_components/UI/text';
 import { TermsAndConditions } from './terms_and_conditions';
 import { useSystemSettings } from '~/system_setting/customHook';
+import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 
 const schema = yup.object({
   email: yup.string().email('Please enter a valid email').required('Email is required'),
@@ -72,6 +73,7 @@ export const SignUpForm = ({
   const [loading, setloading] = useState(false);
 
   const legal = useSystemSettings().legal;
+  const loadingSettings = useSystemSettings().loading;
 
   const {
     control,
@@ -137,6 +139,10 @@ export const SignUpForm = ({
       Alert.alert('Registration Failed', 'Please try again');
     }
   };
+
+  if (loadingSettings) {
+    return <PageLoading />;
+  }
 
   return (
     <View style={{ flex: 1 }}>

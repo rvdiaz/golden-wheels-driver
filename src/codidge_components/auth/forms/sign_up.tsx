@@ -144,6 +144,8 @@ export const SignUpForm = ({
     return <PageLoading />;
   }
 
+  console.log(':::legal', legal);
+
   return (
     <View style={{ flex: 1 }}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -279,7 +281,9 @@ export const SignUpForm = ({
                         <Text style={styles.termsText}>
                           I agree to the{' '}
                           <TermsAndConditions
-                            sourceUrl={legal.mvbTemrs}
+                            sourceUrl={
+                              legal?.mvbTemrs ?? 'https://myvirtualboss.com/privacy-policy/'
+                            }
                             title="Terms and conditions"
                           />
                         </Text>
@@ -303,8 +307,14 @@ export const SignUpForm = ({
                         </View>
                         <Text style={styles.termsText}>
                           I authorize the app to share my information with{' '}
-                          <TermsAndConditions sourceUrl={legal.tuTerms} title="TransUnion" /> for
-                          credit and rental application verification purposes.
+                          <TermsAndConditions
+                            sourceUrl={
+                              legal?.tuTerms ??
+                              'https://my-virtual-boss-assets.s3.us-east-1.amazonaws.com/privacy-policy-attachment-landloard.pdf'
+                            }
+                            title="TransUnion"
+                          />{' '}
+                          for rental application verification purposes.
                         </Text>
                       </TouchableOpacity>
                       {errors.agreeToDataProcessing && (

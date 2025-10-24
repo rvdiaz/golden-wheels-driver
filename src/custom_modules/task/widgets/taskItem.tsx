@@ -221,6 +221,7 @@ export const TaskItem = ({ task }: { task: ITask }) => {
               }}>
               <View style={{ alignItems: 'flex-end', flexDirection: 'row', gap: 10 }}>
                 <SimpleCheckbox
+                  size={22}
                   unCheckColor={theme.colors.success}
                   color={theme.colors.success}
                   checked={value}

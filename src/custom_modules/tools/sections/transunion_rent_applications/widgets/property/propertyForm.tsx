@@ -75,8 +75,13 @@ export const PropertyForm = ({
         },
       });
 
+      console.log(':::response', response);
+
       // Check if attestations are returned in the response
-      if (response.data?.createTransUnionProperty?.attestations) {
+      if (
+        response.data?.createTransUnionProperty?.attestations?.attestations &&
+        response.data?.createTransUnionProperty?.attestations?.attestations?.length > 0
+      ) {
         const attestations = response.data.createTransUnionProperty.attestations;
 
         // If attestations exist and have items, show the modal
@@ -90,7 +95,9 @@ export const PropertyForm = ({
           return;
         }
       } else {
+        Alert.alert('Success', 'Property created successfully');
         onAddProperty();
+        disposeModalHandler();
         reset();
       }
     } catch (error) {

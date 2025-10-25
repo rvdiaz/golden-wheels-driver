@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { View, StyleSheet, FlatList, ActivityIndicator, Alert, Modal } from 'react-native';
+import { View, StyleSheet, FlatList, Alert, Modal } from 'react-native';
 import Text from '~/codidge_components/UI/text';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
@@ -10,6 +10,7 @@ import { Search } from 'lucide-react-native';
 import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 import { PropertyForm } from './propertyForm';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
+import { PropertyItem } from './propertyItem';
 
 export const TransUnionPropertyList = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,65 +48,8 @@ export const TransUnionPropertyList = () => {
     });
   }, [data?.getTransunionProperties, searchTerm]);
 
-  const formatAddress = (property: ITransUnionProperty) => {
-    const addressParts = [
-      property.addressLine1,
-      property.addressLine2,
-      property.addressLine3,
-      property.addressLine4,
-    ].filter(Boolean);
-
-    const primaryAddress = addressParts.join(', ');
-    const secondaryAddress = [property.locality, property.region, property.postalCode]
-      .filter(Boolean)
-      .join(', ');
-
-    return { primaryAddress, secondaryAddress };
-  };
-
   const renderPropertyItem = ({ item }: { item: ITransUnionProperty }) => {
-    const { primaryAddress, secondaryAddress } = formatAddress(item);
-
-    return (
-      <View style={styles.propertyCard}>
-        {/* Property Header */}
-        <View style={styles.propertyHeader}>
-          <View style={styles.propertyTitle}>
-            <View
-              style={[
-                styles.statusBadge,
-                item.isActive ? styles.activeBadge : styles.inactiveBadge,
-              ]}>
-              <Text
-                style={[
-                  styles.statusText,
-                  item.isActive ? styles.activeText : styles.inactiveText,
-                ]}>
-                {item.isActive ? 'Active' : 'Inactive'}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Address Section */}
-        <View style={styles.addressSection}>
-          <View style={styles.addressIcon}>
-            <Text style={styles.addressIconText}>📍</Text>
-          </View>
-          <View style={styles.addressContent}>
-            <Text style={styles.primaryAddress} numberOfLines={2}>
-              {primaryAddress || 'Address not available'}
-            </Text>
-            {secondaryAddress && (
-              <Text style={styles.secondaryAddress} numberOfLines={1}>
-                {secondaryAddress}
-              </Text>
-            )}
-            {item.country ? <Text style={styles.country}>{item.country}</Text> : <></>}
-          </View>
-        </View>
-      </View>
-    );
+    return <PropertyItem item={item} refetch={refetch} />;
   };
 
   const renderEmptyState = () => (
@@ -228,59 +172,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 8,
   },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    alignSelf: 'flex-start',
-  },
-  activeBadge: {
-    backgroundColor: '#d4edda',
-  },
-  inactiveBadge: {
-    backgroundColor: '#f8d7da',
-  },
-  statusText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  activeText: {
-    color: '#155724',
-  },
-  inactiveText: {
-    color: '#721c24',
-  },
-  addressSection: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  addressIcon: {
-    marginRight: 12,
-    marginTop: 2,
-  },
-  addressIconText: {
-    fontSize: 16,
-  },
-  addressContent: {
-    flex: 1,
-  },
-  primaryAddress: {
-    fontSize: 14,
-    color: '#333333',
-    fontWeight: '500',
-    lineHeight: 22,
-    marginBottom: 4,
-  },
-  secondaryAddress: {
-    fontSize: 12,
-    color: '#666666',
-    marginBottom: 2,
-  },
-  country: {
-    fontSize: 14,
-    color: '#888888',
-    fontStyle: 'italic',
-  },
+
   detailsSection: {
     gap: 12,
   },

@@ -21,6 +21,7 @@ interface OutlineButtonProps {
   leftWidget?: ReactNode;
   style?: ViewStyle;
   textStyle?: TextStyle;
+  color?: string;
 }
 
 const OutlineButton: React.FC<OutlineButtonProps> = ({
@@ -33,6 +34,7 @@ const OutlineButton: React.FC<OutlineButtonProps> = ({
   textStyle,
   rightWidget,
   leftWidget,
+  color,
 }) => {
   const disabledAux = loading || disabled;
   const sizeStyle = sizeStyles[size];
@@ -45,7 +47,7 @@ const OutlineButton: React.FC<OutlineButtonProps> = ({
       style={[
         styles.button,
         {
-          borderColor: disabledAux ? '#D1D5DB' : theme.colors.primary, // gray-300 or brand-500
+          borderColor: disabledAux ? '#D1D5DB' : (color ?? theme.colors.primary), // gray-300 or brand-500
           paddingVertical: sizeStyle.paddingVertical,
           paddingHorizontal: sizeStyle.paddingHorizontal,
         },
@@ -62,7 +64,7 @@ const OutlineButton: React.FC<OutlineButtonProps> = ({
                 styles.text,
                 {
                   fontSize: sizeStyle.fontSize,
-                  color: disabledAux ? '#9CA3AF' : theme.colors.primary, // gray-400 or brand-500
+                  color: disabledAux ? '#9CA3AF' : (color ?? theme.colors.primary), // gray-400 or brand-500
                 },
                 textStyle,
               ]}>

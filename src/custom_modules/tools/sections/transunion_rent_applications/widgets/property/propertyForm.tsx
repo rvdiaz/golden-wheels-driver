@@ -1,13 +1,14 @@
 import { useMutation, useReactiveVar } from '@apollo/client';
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Alert, View } from 'react-native';
 import { Header } from '~/codidge_components/UI/header';
 import { createTransUnionPropertyMutation } from '~/custom_modules/tools/api/mutations';
 import { userData } from '~/store/user';
-import { ITransUnionProperty } from '../../interfaces';
+import { IAttestationGroup, ITransUnionProperty } from '../../interfaces';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import { AttestationModal } from './attestationsPopup';
 
 export const PropertyForm = ({
   disposeModalHandler,
@@ -18,7 +19,16 @@ export const PropertyForm = ({
 }) => {
   const user = useReactiveVar(userData);
 
-  const [addPropertyMutationFn, { loading }] = useMutation(createTransUnionPropertyMutation);
+  const [showAttestationModal, setShowAttestationModal] = useState(false);
+  const [pendingPropertyData, setPendingPropertyData] = useState<ITransUnionProperty | null>(null);
+  const [attestationGroup, setAttestationGroup] = useState<IAttestationGroup | null>(null);
+
+  const [addPropertyMutationFn, { loading }] = useMutation<{
+    createTransUnionProperty: {
+      propertyId: string;
+      attestations: IAttestationGroup;
+    };
+  }>(createTransUnionPropertyMutation);
 
   const {
     control,
@@ -58,156 +68,209 @@ export const PropertyForm = ({
         country: data.country ?? 'USA',
       };
 
-      await addPropertyMutationFn({
+      const response = await addPropertyMutationFn({
         variables: {
           userId: user?.id,
           propertyData,
         },
       });
-      onAddProperty();
 
-      Alert.alert('Success', 'Property created successfully!');
-      reset();
-      disposeModalHandler();
+      // Check if attestations are returned in the response
+      if (response.data?.createTransUnionProperty?.attestations) {
+        const attestations = response.data.createTransUnionProperty.attestations;
+
+        // If attestations exist and have items, show the modal
+        if (attestations.attestations && attestations.attestations.length > 0) {
+          setPendingPropertyData({
+            ...data,
+            propertyId: response.data?.createTransUnionProperty.propertyId,
+          });
+          setAttestationGroup(attestations);
+          setShowAttestationModal(true);
+          return;
+        }
+      } else {
+        onAddProperty();
+        reset();
+      }
     } catch (error) {
-      Alert.alert('Error', 'Failed to create property. Please try again.');
+      Alert.alert('Error', 'Failed to create properonAcceptty. Please try again.');
       console.error('Error creating property:', error);
     }
   };
 
+  const handleAttestationAccept = async () => {
+    if (!pendingPropertyData) return;
+
+    try {
+      Alert.alert('Success', 'Property created successfully with attestations accepted!');
+      reset();
+      setShowAttestationModal(false);
+      setPendingPropertyData(null);
+      setAttestationGroup(null);
+      onAddProperty();
+    } catch (error) {
+      Alert.alert('Error', 'Failed to confirm attestations. Please try again.');
+      console.error('Error confirming attestations:', error);
+    }
+  };
+
+  const handleAttestationDecline = () => {
+    setShowAttestationModal(false);
+    setPendingPropertyData(null);
+    setAttestationGroup(null);
+    Alert.alert(
+      'Property Created',
+      'The property has been created but is currently inactive. Attestations must be accepted before activation.'
+    );
+  };
+
   return (
-    <PageSafeContainer style={styles.container}>
-      <Header
-        title="Add Property"
-        showBack={true}
-        onBack={disposeModalHandler}
-        rightAction={handleSubmit(onSubmit)}
-        rightText="Save"
-        loadingRight={loading}
-        disabledRight={!isValid}
-      />
-      <KeyboardAvoidingView
-        style={styles.keyboardAvoidingView}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={0}>
-        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-          {/* Address Line 1 - Required */}
-          <View style={styles.inputFormWrapper}>
-            <Controller
-              control={control}
-              name="addressLine1"
-              rules={{ required: 'Address line 1 is required' }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <InputField
-                  label="Address Line 1"
-                  value={value}
-                  required={true}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  error={!!errors.addressLine1}
-                  errorMessage={errors.addressLine1?.message}
-                  placeholder="Enter address line 1"
-                />
-              )}
-            />
-          </View>
-
-          {/* Address Line 2 - Optional */}
-          <View style={styles.inputFormWrapper}>
-            <Controller
-              control={control}
-              name="addressLine2"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <InputField
-                  label="Address Line 2"
-                  value={value || ''}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  error={!!errors.addressLine2}
-                  errorMessage={errors.addressLine2?.message}
-                  placeholder="Enter address line 2 (optional)"
-                />
-              )}
-            />
-          </View>
-
-          {/* Locality - Required */}
-          <View style={styles.inputFormWrapper}>
-            <Controller
-              control={control}
-              name="locality"
-              rules={{ required: 'Locality is required' }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <InputField
-                  label="City"
-                  value={value}
-                  required={true}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  error={!!errors.locality}
-                  errorMessage={errors.locality?.message}
-                  placeholder="Enter city"
-                />
-              )}
-            />
-          </View>
-
-          <View style={styles.pairInputContainer}>
-            <View
-              style={[
-                styles.inputFormWrapper,
-                {
-                  flex: 1,
-                },
-              ]}>
+    <>
+      <PageSafeContainer style={styles.container}>
+        <Header
+          title="Add Property"
+          showBack={true}
+          onBack={disposeModalHandler}
+          rightAction={handleSubmit(onSubmit)}
+          rightText="Save"
+          loadingRight={loading}
+          disabledRight={!isValid}
+        />
+        <KeyboardAvoidingView
+          style={styles.keyboardAvoidingView}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={0}>
+          <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+            {/* Address Line 1 - Required */}
+            <View style={styles.inputFormWrapper}>
               <Controller
                 control={control}
-                name="region"
-                rules={{ required: 'Region is required' }}
+                name="addressLine1"
+                rules={{ required: 'Address line 1 is required' }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
-                    label="Region"
+                    label="Address Line 1"
                     value={value}
                     required={true}
                     onChangeText={onChange}
                     onBlur={onBlur}
-                    error={!!errors.region}
-                    errorMessage={errors.region?.message}
-                    placeholder="Ex: FL"
+                    error={!!errors.addressLine1}
+                    errorMessage={errors.addressLine1?.message}
+                    placeholder="Enter address line 1"
                   />
                 )}
               />
             </View>
 
-            <View
-              style={[
-                styles.inputFormWrapper,
-                {
-                  flex: 1,
-                },
-              ]}>
+            {/* Address Line 2 - Optional */}
+            <View style={styles.inputFormWrapper}>
               <Controller
                 control={control}
-                name="postalCode"
-                rules={{ required: 'Postal code is required' }}
+                name="addressLine2"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
-                    label="Postal Code"
-                    value={value}
-                    required={true}
+                    label="Address Line 2"
+                    value={value || ''}
                     onChangeText={onChange}
                     onBlur={onBlur}
-                    error={!!errors.postalCode}
-                    errorMessage={errors.postalCode?.message}
-                    placeholder="Enter postal code"
+                    error={!!errors.addressLine2}
+                    errorMessage={errors.addressLine2?.message}
+                    placeholder="Enter address line 2 (optional)"
                   />
                 )}
               />
             </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </PageSafeContainer>
+
+            {/* Locality - Required */}
+            <View style={styles.inputFormWrapper}>
+              <Controller
+                control={control}
+                name="locality"
+                rules={{ required: 'Locality is required' }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    label="City"
+                    value={value}
+                    required={true}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    error={!!errors.locality}
+                    errorMessage={errors.locality?.message}
+                    placeholder="Enter city"
+                  />
+                )}
+              />
+            </View>
+
+            <View style={styles.pairInputContainer}>
+              <View
+                style={[
+                  styles.inputFormWrapper,
+                  {
+                    flex: 1,
+                  },
+                ]}>
+                <Controller
+                  control={control}
+                  name="region"
+                  rules={{ required: 'Region is required' }}
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <InputField
+                      label="Region"
+                      value={value}
+                      required={true}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      error={!!errors.region}
+                      errorMessage={errors.region?.message}
+                      placeholder="Ex: FL"
+                    />
+                  )}
+                />
+              </View>
+
+              <View
+                style={[
+                  styles.inputFormWrapper,
+                  {
+                    flex: 1,
+                  },
+                ]}>
+                <Controller
+                  control={control}
+                  name="postalCode"
+                  rules={{ required: 'Postal code is required' }}
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <InputField
+                      label="Postal Code"
+                      value={value}
+                      required={true}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      error={!!errors.postalCode}
+                      errorMessage={errors.postalCode?.message}
+                      placeholder="Enter postal code"
+                    />
+                  )}
+                />
+              </View>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </PageSafeContainer>
+      {user?.id && pendingPropertyData?.propertyId && (
+        <AttestationModal
+          userId={user?.id}
+          propertyId={pendingPropertyData?.propertyId}
+          pendingPropertyData={pendingPropertyData}
+          visible={showAttestationModal}
+          attestationGroup={attestationGroup}
+          onAccept={handleAttestationAccept}
+          onDecline={handleAttestationDecline}
+        />
+      )}
+    </>
   );
 };
 

@@ -28,6 +28,9 @@ export const getTaskByUserQuery = gql`
         goalType
         value
       }
+      notificationSettings {
+        enabled
+      }
     }
   }
 `;
@@ -49,6 +52,9 @@ export const getTaskQuery = gql`
         goalKey
         goalType
         value
+      }
+      notificationSettings {
+        enabled
       }
     }
   }

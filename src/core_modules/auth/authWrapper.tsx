@@ -87,6 +87,8 @@ export const AuthWrapper = () => {
           user: {
             firstName: personalInfo?.firstName,
             lastName: personalInfo?.lastName,
+            mlsNumber: personalInfo?.mlsNumber,
+            brokerage: personalInfo?.brokerage,
             email: formData.email,
             phone: formData.phone,
             address: {

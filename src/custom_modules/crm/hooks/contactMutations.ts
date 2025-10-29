@@ -119,7 +119,7 @@ export const useContactsQueries = () => {
   const saveContactToPhone = async (contactData: any) => {
     try {
       // Request permission
-      const { status } = await Contacts.requestPermissionsAsync();
+      const { status } = await Contacts.getPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert('Permission needed', 'Cannot save to contacts without permission');
         return;

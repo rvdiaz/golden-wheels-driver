@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView, Modal } from 'react-native';
+import { View, StyleSheet, ScrollView, Modal } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Header } from '../../../codidge_components/UI/header';
 import * as Icons from 'lucide-react-native';
 import { IContact, IFollowUp } from '../interfaces';
 import ContactForm from './formContact';
-import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
 import { useAddFollowUp } from '../hooks/followUpCreation';
 
 import Constants from 'expo-constants';
@@ -127,6 +126,7 @@ export const ContactDetailsScreen = () => {
                   }}
                   leftWidget={<Icons.Phone size={16} color={theme.colors.textColor} />}
                   title="Call"
+                  onPress={() => handleCallContact(contact.phone)}
                 />
               )}
               {contact.phone && (

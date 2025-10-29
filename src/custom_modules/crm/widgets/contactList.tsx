@@ -35,8 +35,6 @@ export const ContactList = ({ contacts }: { title: string; contacts: IContact[] 
   // Then sort
   const sortedContacts = sortContacts(filteredContacts, selectedSort);
 
-  console.log(':::sortedContacts', sortedContacts);
-
   return (
     <View style={styles.contactsSection}>
       {sortedContacts.length === 0 ? (

@@ -51,6 +51,11 @@ export interface ITask {
   date: Date | string;
   description: string;
   progress: GoalType[];
+  notificationSettings: INotificationsTask;
+}
+
+export interface INotificationsTask {
+  enabled: boolean;
 }
 
 export interface TaskFormValues {
@@ -61,6 +66,9 @@ export interface TaskFormValues {
   endTime: Date | string | null;
   date: Date | string;
   description: string;
+  notificationSettings: {
+    enabled: boolean;
+  };
 }
 
 export interface GoalType {

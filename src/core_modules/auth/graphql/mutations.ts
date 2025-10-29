@@ -8,6 +8,7 @@ export const addUserMutation = gql`
       activeTemplateId
       firstName
       lastName
+      mlsNumber
       phone
       financialGoals {
         avgCommissionByRents
@@ -74,6 +75,8 @@ export const updateUserMutation = gql`
       firstName
       lastName
       phone
+      mlsNumber
+      brokerage
       financialGoals {
         avgCommissionByRents
         avgCommissionBySales

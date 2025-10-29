@@ -120,6 +120,8 @@ export const formatFollowUpDate = (followUpdate: string) => {
 };
 
 export const handleCallContact = (phone: string) => {
+  console.log(':::phone', phone);
+
   if (!phone) {
     Alert.alert('Error', 'No phone number available for this contact');
     return;

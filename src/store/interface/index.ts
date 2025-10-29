@@ -97,6 +97,7 @@ export interface IUser {
   modules: IModule[];
   activeTemplateId: string;
   address: IUserAddress;
+  mlsNumber: string;
   /*  systemData: {
     tasksConfiguration: ITaskSchemaItem[];
   }; */

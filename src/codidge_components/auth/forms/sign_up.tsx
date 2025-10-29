@@ -310,7 +310,7 @@ export const SignUpForm = ({
                           <TermsAndConditions
                             sourceUrl={
                               legal?.tuTerms ??
-                              'https://my-virtual-boss-assets.s3.us-east-1.amazonaws.com/privacy-policy-attachment-landloard.pdf'
+                              'https://d2i7obdpox0xae.cloudfront.net/privacy-policy-attachment-landloard.pdf'
                             }
                             title="TransUnion"
                           />{' '}

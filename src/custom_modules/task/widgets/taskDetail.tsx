@@ -2,26 +2,39 @@ import React, { useState } from 'react';
 import { ITask, TaskSource } from '../interfaces';
 import { Modal, StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { AddTaskScreen } from './addTask';
-import { formatTaskTime } from '../helpers';
+import {
+  formatDate,
+  formatTaskTime,
+  getTaskColorByType,
+  getTaskIconByType,
+  getTaskStatus,
+} from '../helpers';
 import { theme } from '~/theme/theme';
 import { DragPopupIndicator } from '~/codidge_components/UI/dragIndicator';
+import { PriorityBadge } from './priorityBadge';
+import { Badge } from '~/codidge_components/UI/badge';
 
 export const TaskDetail = ({
   task,
   detailDescription,
+  categoryLabel,
   disposeModalHandler,
   value,
 }: {
   disposeModalHandler: () => void;
   detailDescription?: string;
+  categoryLabel: string;
   task: ITask;
   value: boolean;
 }) => {
   const [editTask, seteditTask] = useState(false);
 
+  const taskStatus = getTaskStatus(task);
+  const taskItemColor = getTaskColorByType(taskStatus.key);
+  const taskIcon = getTaskIconByType(taskStatus.key);
+
   return (
     <View style={styles.container}>
-      {/* Drag indicator */}
       <DragPopupIndicator />
 
       <View style={styles.headerContainer}>
@@ -46,10 +59,25 @@ export const TaskDetail = ({
         </View>
 
         {/* Category Section */}
-        {task.category && (
+        {categoryLabel && (
           <View style={styles.section}>
             <Text style={styles.sectionLabel}>Category</Text>
-            <Text style={styles.sectionValue}>{task.category}</Text>
+            <Text style={styles.sectionValue}>{categoryLabel}</Text>
+          </View>
+        )}
+
+        {/* Category Section */}
+        {task.category && (
+          <View style={[styles.section]}>
+            <Text style={styles.sectionLabel}>Priority</Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 5,
+              }}>
+              <PriorityBadge priority={task.priority} />
+            </View>
           </View>
         )}
 
@@ -72,13 +100,42 @@ export const TaskDetail = ({
         {/* Status Section */}
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>Status</Text>
-          <Text style={styles.sectionValue}>{task.isCompleted ? 'Completed' : 'Pending'}</Text>
+          <Badge
+            displayIcon={false}
+            type="normal"
+            style={{
+              backgroundColor: taskItemColor,
+              borderColor: taskItemColor,
+              minWidth: 90,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 5,
+              }}>
+              {taskIcon}
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: '600',
+                  color: '#FFF',
+                }}>
+                {taskStatus.label}
+              </Text>
+            </View>
+          </Badge>
         </View>
 
         {/* Date Section */}
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>Date</Text>
-          <Text style={styles.sectionValue}>{new Date(task.date).toLocaleDateString()}</Text>
+          <Text style={styles.sectionValue}>
+            {formatDate(task.date, false)} {/* true = include time */}
+          </Text>
         </View>
       </ScrollView>
 

@@ -12,22 +12,15 @@ export const TASK_PRIORITY_OPTIONS = Object.values(TaskPriority).map((value) => 
   value,
 }));
 
-export const getTaskColorByPriority = (priority: TaskPriority) => {
-  switch (priority) {
-    case TaskPriority.high:
-      return '#F59E0B ';
-    case TaskPriority.medium:
-      return '#DC2626';
-    case TaskPriority.low:
-      return '#22C55E';
-    default:
-      return '#E2E8F0';
-  }
-};
+export function formatDate(date: Date | string | number, includeTime: boolean = false): string {
+  if (!date) return '';
 
-export const formatTaskDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString();
-};
+  const d = moment(date);
+
+  return includeTime
+    ? d.format('ddd, MMM D, YYYY [at] h:mm A') // Example: Mon, Oct 27, 2025 at 2:30 PM
+    : d.format('dddd, MMM D, YYYY'); // Example: Monday, Oct 27, 2025
+}
 
 export const formatTaskTime = (timeString: string) => {
   const [hours, minutes] = timeString.split(':').map(Number);

@@ -10,6 +10,7 @@ export const getUserQuery = gql`
       lastName
       phone
       mlsNumber
+      brokerage
       financialGoals {
         avgCommissionByRents
         avgCommissionBySales

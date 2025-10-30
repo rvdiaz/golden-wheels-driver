@@ -6,9 +6,7 @@ import {
   getDurationInMinutes,
   getTaskColorByType,
   getTaskConfigByKey,
-  getTaskIconByType,
   getTaskStatus,
-  isActiveTask,
 } from '../helpers';
 import { useMutation, useReactiveVar } from '@apollo/client';
 import { completeTaskMutation } from '../graphql/mutations';
@@ -16,17 +14,16 @@ import { userData } from '~/store/user';
 import Constants from 'expo-constants';
 import { theme } from '~/theme/theme';
 import { SimpleCheckbox } from '~/codidge_components/UI/form/checkbox';
-import { Badge } from '~/codidge_components/UI/badge';
 import { TaskFieldsModal } from '~/codidge_components/UI/customField/modalForm';
 import Text from '~/codidge_components/UI/text';
 import { useSystemSettings } from '~/system_setting/customHook';
 import { TaskDetail } from './taskDetail';
+import { PriorityBadge } from './priorityBadge';
+import { StatusBadge } from './statusBadge';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const TaskItem = ({ task }: { task: ITask }) => {
-  const isActive = isActiveTask(task);
-
   const [value, setvalue] = useState(task.isCompleted ?? false);
   const [showModal, setShowModal] = useState(false);
   const [modalDetailTask, setModalDetailTask] = useState(false);
@@ -171,7 +168,6 @@ export const TaskItem = ({ task }: { task: ITask }) => {
 
   const taskStatus = getTaskStatus(task);
   const taskItemColor = getTaskColorByType(taskStatus.key);
-  const taskIcon = getTaskIconByType(taskStatus.key);
 
   return (
     <TouchableOpacity
@@ -232,34 +228,8 @@ export const TaskItem = ({ task }: { task: ITask }) => {
           </View>
           <View style={styles.taskMeta}>
             <View style={styles.leftFooter}>
-              <Badge
-                displayIcon={false}
-                type="normal"
-                style={{
-                  backgroundColor: taskItemColor,
-                  borderColor: taskItemColor,
-                  minWidth: 110,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 5,
-                  }}>
-                  {taskIcon}
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      fontWeight: '600',
-                      color: '#FFF',
-                    }}>
-                    {taskStatus.label}
-                  </Text>
-                </View>
-              </Badge>
+              <StatusBadge task={task} />
+              <PriorityBadge priority={task.priority} />
             </View>
 
             <View style={styles.rightFooter}>
@@ -299,6 +269,7 @@ export const TaskItem = ({ task }: { task: ITask }) => {
                   borderTopRightRadius: 20,
                 }}>
                 <TaskDetail
+                  categoryLabel={taskConfiguration?.label ?? ''}
                   value={value}
                   task={task}
                   detailDescription={taskConfiguration?.description ?? ''}
@@ -345,6 +316,7 @@ const styles = StyleSheet.create({
   },
   leftFooter: {
     gap: 5,
+    flexDirection: 'row',
   },
   rightFooter: { alignItems: 'flex-end', marginBottom: 4, gap: 2 },
   taskCheckboxEmpty: {

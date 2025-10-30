@@ -23,6 +23,7 @@ import { useContactsQueries } from '../hooks/contactMutations';
 import { ContactSelector } from './contactsPhone/contactSelector';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
+import * as Contacts from 'expo-contacts';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -158,7 +159,9 @@ export default function ContactForm({
           contactData: sanitizedData,
         });
 
-        if (res?.data?.addUserContact && !loadedFromPhone) {
+        const { status } = await Contacts.getPermissionsAsync();
+
+        if (res?.data?.addUserContact && !loadedFromPhone && status === 'granted') {
           Alert.alert(
             'Save to Phone Contacts?',
             'Would you like to also save this contact to your phone?',
@@ -173,7 +176,6 @@ export default function ContactForm({
                 onPress: async () => {
                   try {
                     await saveContactToPhone(data);
-                    Alert.alert('Success', 'Contact saved to phone');
                   } catch (error) {
                     Alert.alert('Error', 'Could not save to phone contacts');
                   }

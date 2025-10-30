@@ -4,7 +4,7 @@
     "slug": "my-own-boss",
     "version": "1.1.0",
     "web": {
-      "favicon": "assets/favicon.png"
+      "favicon": "assets/playstore.png"
     },
     "experiments": {
       "tsconfigPaths": true
@@ -19,10 +19,10 @@
       "expo-notifications"
     ],
     "orientation": "portrait",
-    "icon": "assets/appstore.png",
+    "icon": "assets/playstore.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "assets/splash.png",
+      "image": "assets/playstore.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -30,14 +30,14 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.myvirtualboss.realestate",
-      "buildNumber": "1.1.2",
+      "buildNumber": "13",
       "infoPlist": {
         "NSContactsUsageDescription": "We use your contacts to help you import or export CRM records more easily. Contacts are only uploaded to your account if you give explicit consent."
       }
     },
     "android": {
       "package": "com.myvirtualboss.realestate",
-      "versionCode": 12,
+      "versionCode": 13,
       "edgeToEdgeEnabled": true
     },
     "extra": {

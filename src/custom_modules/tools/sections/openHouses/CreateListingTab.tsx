@@ -24,6 +24,13 @@ import { ButtonSize } from '~/codidge_components/UI/button/types';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
+const mlsDateStringToDate = (dateString: string) => {
+  const parts = dateString.split(' ');
+  if (parts.length !== 3 || parts.at(-1) !== 'UTC') return null;
+  const [date, time] = parts;
+  return new Date(`${date}T${time}.000Z`);
+};
+
 export const CreateListingTab = () => {
   const user = useReactiveVar(userData);
 
@@ -67,6 +74,9 @@ export const CreateListingTab = () => {
 
     setIsLoading(true);
     try {
+      console.log(selectedOpenHouse.mlsLastStatusDate);
+      console.log(mlsDateStringToDate(selectedOpenHouse.mlsLastStatusDate));
+
       const response = await createOpenHouseListing({
         variables: {
           tenant: { tenantId },
@@ -80,7 +90,7 @@ export const CreateListingTab = () => {
             imageUrl: selectedOpenHouse.imageUrl || '',
             mlsAgentEmail: user?.email || selectedOpenHouse.mlsAgent.email,
             mlsAgentFullName: userFullName || selectedOpenHouse.mlsAgent.fullName,
-            mlsLastStatusDate: selectedOpenHouse.mlsLastStatusDate,
+            mlsLastStatusDate: mlsDateStringToDate(selectedOpenHouse.mlsLastStatusDate),
             mlsListingId: selectedOpenHouse.listingId,
             mlsListingPrice: selectedOpenHouse.mlsListingPrice,
             mlsNumber: selectedOpenHouse.mlsNumber,

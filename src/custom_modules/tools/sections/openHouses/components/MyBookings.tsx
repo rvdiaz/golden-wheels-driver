@@ -34,7 +34,7 @@ export const MyBookings = () => {
 
   const loadingInitial = networkStatus === 1 && !data?.getOpenHouseVisitRequests.items.length;
   const myBookings = data?.getOpenHouseVisitRequests.items || [];
-  const [confirmingDelete, setConfirmingDelete] = useState<boolean>(false);
+  const [confirmingDelete, setConfirmingDelete] = useState<string>('');
 
   const fetchMoreResult = () => {
     if (data?.getOpenHouseVisitRequests.lastKey) {
@@ -78,7 +78,7 @@ export const MyBookings = () => {
         },
       });
 
-      setConfirmingDelete(false);
+      setConfirmingDelete('');
 
       updateQuery((prev) => {
         return {
@@ -171,16 +171,17 @@ export const MyBookings = () => {
                   </Text>
                 </View>
               )}
-              {!confirmingDelete && booking.status === OpenHouseVisitRequestStatus.PENDING && (
-                <TouchableOpacity
-                  style={[styles.button, styles.buttonDanger, styles.buttonFlex]}
-                  onPress={() => setConfirmingDelete(true)}
-                  disabled={isLoading}>
-                  <XCircle color="#fff" size={16} />
-                  <Text style={styles.buttonText}>Delete Request</Text>
-                </TouchableOpacity>
-              )}
-              {!!confirmingDelete && (
+              {confirmingDelete !== booking.id &&
+                booking.status === OpenHouseVisitRequestStatus.PENDING && (
+                  <TouchableOpacity
+                    style={[styles.button, styles.buttonDanger, styles.buttonFlex]}
+                    onPress={() => setConfirmingDelete(booking.id)}
+                    disabled={isLoading}>
+                    <XCircle color="#fff" size={16} />
+                    <Text style={styles.buttonText}>Delete Request</Text>
+                  </TouchableOpacity>
+                )}
+              {confirmingDelete === booking.id && (
                 <View style={styles.buttonRow}>
                   <TouchableOpacity
                     style={[styles.button, styles.buttonDanger, styles.buttonFlex]}

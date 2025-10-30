@@ -3,30 +3,39 @@ import * as Icons from 'lucide-react-native';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import Constants from 'expo-constants';
-import { IContact } from '../../interfaces';
-import { getUserContacts } from '../../graphql/queries';
+import { IContact, IFollowUpResponse } from '../../interfaces';
+import { getUserFollowUpsQuery } from '../../graphql/queries';
 import { TaskMetricsCard } from '~/custom_modules/dashboard/widgets/metricCards';
+import moment from 'moment';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const FollowUpMetric = () => {
-  const customer = useReactiveVar(userData);
+  const user = useReactiveVar(userData);
 
-  const { data, loading } = useQuery<{ getUserContacts: IContact[] }>(getUserContacts, {
-    variables: {
-      tenant: {
-        tenantId,
+  const today = moment().format('YYYY-MM-DD');
+  const fifteenDaysLater = moment().add(15, 'days').format('YYYY-MM-DD');
+
+  const { data, loading } = useQuery<{ getUserFollowUps: IFollowUpResponse }>(
+    getUserFollowUpsQuery,
+    {
+      variables: {
+        tenant: {
+          tenantId,
+        },
+        input: {
+          userId: user?.id,
+          dateFrom: today,
+          dateTo: fifteenDaysLater,
+        },
       },
-      userId: customer?.id,
-    },
-  });
-
-  const users = data?.getUserContacts ?? [];
-  const followUp = [];
+    }
+  );
+  const followUps = data?.getUserFollowUps?.followUps ?? [];
 
   const metric = {
-    label: 'Contacts',
-    value: `${followUp.length}`,
+    label: 'CRM',
+    value: `${followUps ? followUps.length : 0}`,
     subLabel: 'Follow-Ups',
     iconName: <Icons.Contact color="#9A3412" size={20} />,
     iconBackgroundColor: '#FDBA74',

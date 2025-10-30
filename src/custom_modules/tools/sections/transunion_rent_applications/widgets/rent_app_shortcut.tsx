@@ -34,7 +34,7 @@ export const RentAppShortcut = () => {
   };
 
   return (
-    <View style={{ flex: 1, marginBottom: 16 }}>
+    <View style={{ flex: 1, marginBottom: 16 }}>  
       <InfoWidget
         title="Rent Application and Screening"
         description="Before you rent, get them verichekd credit, criminal and evictions"

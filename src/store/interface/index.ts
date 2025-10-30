@@ -18,6 +18,7 @@ export enum ModuleKeys {
   iARolePlayTraining = 'AIRolePlayTraining',
   sellerNetSheet = 'SellerNetSheet',
   transUnionRentApplications = 'RentApplications',
+  estimatedClosingCost = 'EstimatedClosingCost',
   //training
   training = 'Training',
   trainingDetailPage = 'TrainingDetailPage',

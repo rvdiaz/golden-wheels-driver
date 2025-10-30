@@ -29,6 +29,7 @@ import { TrainingCategoriesScreen } from '~/custom_modules/training/sections/cat
 import { TrainingModulesScreen } from '~/custom_modules/training/sections/modules/modulesList';
 import { TrainingCoursesScreen } from '~/custom_modules/training/sections/courses/coursesList';
 import { TrainingCourseDetailScreen } from '~/custom_modules/training/sections/courses/courseDetailScreen';
+import EstimatedClosingCostCalculator from '~/custom_modules/tools/sections/estimatedClosingCost';
 
 export const moduleScreens: Record<
   ModuleKeys,
@@ -111,6 +112,9 @@ export const moduleScreens: Record<
   },
   SellerNetSheet: {
     body: SellerNetSheetPage,
+  },
+  EstimatedClosingCost: {
+    body: EstimatedClosingCostCalculator,
   },
   //Notifications
   Notifications: {

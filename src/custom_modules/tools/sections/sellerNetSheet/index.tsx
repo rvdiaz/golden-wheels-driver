@@ -4,7 +4,7 @@ import { View, ScrollView, TextInput, TouchableOpacity, StyleSheet } from 'react
 import { Header } from '~/codidge_components/UI/header';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
-import { Calculator, DollarSign, Home, AlertCircle, MapPin } from 'lucide-react-native';
+import { Calculator, Home, AlertCircle, MapPin } from 'lucide-react-native';
 import { BreakdownItem, detectStateFromZip, GEOGRAPHIC_COSTS, NetSheetResult } from './mocked';
 
 export const SellerNetSheetPage = () => {
@@ -481,10 +481,12 @@ export const SellerNetSheetPage = () => {
               <AlertCircle color="#3b82f6" size={16} />
               <View style={styles.alertContent}>
                 <Text style={styles.alertText}>
-                  <Text style={styles.alertBold}>Location-Based Costs:</Text> This calculator uses
-                  average costs for your zip code area. Actual costs may vary based on specific
-                  title companies, attorneys, and local regulations. Always consult with your real
-                  estate professional for precise estimates.
+                  <Text style={styles.alertBold}>DISCLAIMER:</Text> This is an estimate only for a
+                  single family residential home purchase. Additional third party fees such as real
+                  estate broker fees, county, municipal, state taxes, federal taxes, liens,
+                  judgments, surveys, appraisals, special assessments or surcharges may apply. My
+                  Virtual Boss, Inc. cannot be held responsible for errors or miscalculations due to
+                  website error or user error.
                 </Text>
               </View>
             </View>

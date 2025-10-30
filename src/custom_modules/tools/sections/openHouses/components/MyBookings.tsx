@@ -140,7 +140,8 @@ export const MyBookings = () => {
                   <Text style={styles.requestAddress}>{booking.address}</Text>
                   <Text style={styles.requestMeta}>Property owner: {booking.ownerName}</Text>
                   <Text style={styles.requestMeta}>
-                    Requested: {new Date(booking.date).toLocaleDateString()} at {booking.time}
+                    Requested: {new Date(booking.date + 'T00:00').toLocaleDateString()} at{' '}
+                    {booking.time}
                   </Text>
                 </View>
                 <View>

@@ -52,7 +52,7 @@ export const IncomingBooking = (props: IncomingBookingProps) => {
             <Text style={styles.requestAddress}>{request.address}</Text>
             <Text style={styles.requestMeta}>Requested by: {request.requesterName}</Text>
             <Text style={styles.requestMeta}>
-              Date: {new Date(request.date).toLocaleDateString()} at {request.time}
+              Date: {new Date(request.date + 'T00:00').toLocaleDateString()} at {request.time}
             </Text>
           </View>
 

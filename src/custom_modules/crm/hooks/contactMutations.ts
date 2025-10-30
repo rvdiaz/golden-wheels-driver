@@ -118,13 +118,6 @@ export const useContactsQueries = () => {
 
   const saveContactToPhone = async (contactData: any) => {
     try {
-      // Request permission
-      const { status } = await Contacts.getPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission needed', 'Cannot save to contacts without permission');
-        return;
-      }
-
       // Create the contact
       const contactId = await Contacts.addContactAsync({
         name: `${contactData.firstName} ${contactData.lastName}`,
@@ -148,7 +141,7 @@ export const useContactsQueries = () => {
         note: `Category: ${contactData.category}`,
         // You can add the category as a note or in other fields
       });
-
+      Alert.alert('Success', 'Contact saved to phone');
       return contactId;
     } catch (error) {
       console.error('Error saving to phone:', error);

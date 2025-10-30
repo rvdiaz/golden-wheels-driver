@@ -3,11 +3,8 @@ import { Property } from './property';
 import { IProperty } from '../interfaces';
 import { Owner } from './owner';
 import { MlsHistoryList } from './mlsHistory';
-import { Modal, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { Header } from '~/codidge_components/UI/header';
-import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
-import { Share } from 'lucide-react-native';
-import { ShareModalPropertyDetails } from './shareModal';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 export const PropertyOwnerResults = ({
@@ -21,7 +18,13 @@ export const PropertyOwnerResults = ({
 
   return (
     <PageSafeContainer style={{ flex: 1, backgroundColor: '#F9FAFB', justifyContent: 'flex-end' }}>
-      <Header title="Mortgage Results" rightText="Close" rightAction={dispose} />
+      <Header
+        title=""
+        showBack={true}
+        onBack={dispose}
+        rightText={propertyData.propertyInfo.address.address}
+        rightAction={() => {}}
+      />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
           <Property propertyData={propertyData} />
@@ -31,29 +34,6 @@ export const PropertyOwnerResults = ({
           )}
         </View>
       </ScrollView>
-      <PrimaryButton
-        size={ButtonSize.LARGE}
-        style={{
-          paddingVertical: 16,
-          marginHorizontal: 16,
-        }}
-        title="Send Results"
-        onPress={() => {
-          setShareModalVisible(true);
-        }}
-        rightWidget={<Share size={16} color="#FFF" style={{ marginLeft: 10 }} />}
-      />
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={shareModalVisible}
-        onRequestClose={() => setShareModalVisible(false)}>
-        <ShareModalPropertyDetails
-          cancel={() => {
-            setShareModalVisible(false);
-          }}
-        />
-      </Modal>
     </PageSafeContainer>
   );
 };

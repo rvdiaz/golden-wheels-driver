@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { View, StyleSheet, Image, ImageSourcePropType } from 'react-native';
 import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
@@ -18,6 +18,7 @@ interface InfoWidgetProps {
   backgroundButtonColor?: string;
   titleColor?: string;
   descriptionColor?: string;
+  footer?: ReactNode;
 }
 
 export const InfoWidget: React.FC<InfoWidgetProps> = ({
@@ -33,53 +34,58 @@ export const InfoWidget: React.FC<InfoWidgetProps> = ({
   titleColor = '#3730A3',
   descriptionColor = '#4338CA',
   backgroundButtonColor = theme.colors.primary,
+  footer,
 }) => {
   return (
-    <View style={[styles.container, { backgroundColor }]}>
-      {/* Left Side - Text Content */}
-      <View style={styles.leftContent}>
-        <Text style={[styles.title, { color: titleColor }]}>{title}</Text>
-        <Text style={[styles.description, { color: descriptionColor }]} numberOfLines={3}>
-          {description}
-        </Text>
+    <View style={{ borderRadius: 18, padding: 20, backgroundColor }}>
+      <View style={[styles.container]}>
+        {/* Left Side - Text Content */}
+        <View style={styles.leftContent}>
+          <Text style={[styles.title, { color: titleColor }]}>{title}</Text>
+          <Text style={[styles.description, { color: descriptionColor }]} numberOfLines={3}>
+            {description}
+          </Text>
 
-        <View style={styles.buttonContainer}>
-          <PrimaryButton
-            style={{
-              width: 120,
-              backgroundColor: backgroundButtonColor ?? theme.colors.primary,
-              paddingHorizontal: 10,
-            }}
-            onPress={onButtonPress}
-            size={ButtonSize.MEDIUM}
-            title={buttonText}
-          />
-          {secondButtonText && onSecondButtonPress && (
-            <OutlineButton
-              onPress={onSecondButtonPress}
+          <View style={styles.buttonContainer}>
+            <PrimaryButton
+              style={{
+                width: 120,
+                backgroundColor: backgroundButtonColor ?? theme.colors.primary,
+                paddingHorizontal: 10,
+              }}
+              onPress={onButtonPress}
               size={ButtonSize.MEDIUM}
-              title={secondButtonText}
+              title={buttonText}
             />
-          )}
+            {secondButtonText && onSecondButtonPress && (
+              <OutlineButton
+                onPress={onSecondButtonPress}
+                size={ButtonSize.MEDIUM}
+                title={secondButtonText}
+              />
+            )}
+          </View>
         </View>
-      </View>
 
-      {/* Right Side - Image */}
-      <View style={styles.rightContent}>
-        <View style={[styles.imageContainer, { width: imageSize, height: imageSize }]}>
-          {imageSource ? (
-            <Image
-              source={imageSource}
-              style={[styles.image, { width: imageSize, height: imageSize }]}
-              resizeMode="contain"
-            />
-          ) : (
-            <View style={[styles.placeholderImage, { width: imageSize, height: imageSize }]}>
-              <Text style={styles.placeholderText}>📱</Text>
-            </View>
-          )}
+        {/* Right Side - Image */}
+        <View style={styles.rightContent}>
+          <View style={[styles.imageContainer, { width: imageSize, height: imageSize }]}>
+            {imageSource ? (
+              <Image
+                source={imageSource}
+                style={[styles.image, { width: imageSize, height: imageSize }]}
+                resizeMode="contain"
+              />
+            ) : (
+              <View style={[styles.placeholderImage, { width: imageSize, height: imageSize }]}>
+                <Text style={styles.placeholderText}>📱</Text>
+              </View>
+            )}
+          </View>
         </View>
       </View>
+      {/* Footer Section */}
+      {footer && footer}
     </View>
   );
 };
@@ -97,41 +103,43 @@ export const EnhancedInfoWidget: React.FC<InfoWidgetProps> = ({
   descriptionColor = '#4338CA',
 }) => {
   return (
-    <View style={[styles.enhancedContainer, { backgroundColor }]}>
-      {/* Left Side */}
-      <View style={styles.leftContent}>
-        <View style={styles.titleRow}>
-          <Text style={[styles.title, { color: titleColor }]}>{title}</Text>
+    <View>
+      <View style={[styles.enhancedContainer, { backgroundColor }]}>
+        {/* Left Side */}
+        <View style={styles.leftContent}>
+          <View style={styles.titleRow}>
+            <Text style={[styles.title, { color: titleColor }]}>{title}</Text>
+          </View>
+
+          <Text style={[styles.description, { color: descriptionColor }]} numberOfLines={2}>
+            {description}
+          </Text>
+
+          <PrimaryButton
+            style={{
+              alignSelf: 'flex-start',
+            }}
+            onPress={onButtonPress}
+            size={ButtonSize.MEDIUM}
+            title={buttonText}
+          />
         </View>
 
-        <Text style={[styles.description, { color: descriptionColor }]} numberOfLines={2}>
-          {description}
-        </Text>
-
-        <PrimaryButton
-          style={{
-            alignSelf: 'flex-start',
-          }}
-          onPress={onButtonPress}
-          size={ButtonSize.MEDIUM}
-          title={buttonText}
-        />
-      </View>
-
-      {/* Right Side - Image */}
-      <View style={styles.rightContent}>
-        <View style={[styles.imageContainer, { width: imageSize, height: imageSize }]}>
-          {imageSource ? (
-            <Image
-              source={imageSource}
-              style={[styles.image, { width: imageSize, height: imageSize }]}
-              resizeMode="contain"
-            />
-          ) : (
-            <View style={[styles.placeholderImage, { width: imageSize, height: imageSize }]}>
-              <Text style={styles.placeholderText}>🎯</Text>
-            </View>
-          )}
+        {/* Right Side - Image */}
+        <View style={styles.rightContent}>
+          <View style={[styles.imageContainer, { width: imageSize, height: imageSize }]}>
+            {imageSource ? (
+              <Image
+                source={imageSource}
+                style={[styles.image, { width: imageSize, height: imageSize }]}
+                resizeMode="contain"
+              />
+            ) : (
+              <View style={[styles.placeholderImage, { width: imageSize, height: imageSize }]}>
+                <Text style={styles.placeholderText}>🎯</Text>
+              </View>
+            )}
+          </View>
         </View>
       </View>
     </View>
@@ -140,8 +148,6 @@ export const EnhancedInfoWidget: React.FC<InfoWidgetProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 18,
-    padding: 20,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -159,7 +165,7 @@ const styles = StyleSheet.create({
   },
   leftContent: {
     flex: 1,
-    paddingRight: 20,
+    paddingRight: 10,
   },
   titleRow: {
     flexDirection: 'row',

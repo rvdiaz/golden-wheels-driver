@@ -10,7 +10,6 @@ import {
   getTaskStatus,
 } from '../helpers';
 import { theme } from '~/theme/theme';
-import { DragPopupIndicator } from '~/codidge_components/UI/dragIndicator';
 import { PriorityBadge } from './priorityBadge';
 import { Badge } from '~/codidge_components/UI/badge';
 
@@ -35,8 +34,6 @@ export const TaskDetail = ({
 
   return (
     <View style={styles.container}>
-      <DragPopupIndicator />
-
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={disposeModalHandler} style={styles.closeButton}>
           <Text style={styles.closeText}>✕</Text>
@@ -66,7 +63,7 @@ export const TaskDetail = ({
           </View>
         )}
 
-        {/* Category Section */}
+        {/* Priority Section */}
         {task.category && (
           <View style={[styles.section]}>
             <Text style={styles.sectionLabel}>Priority</Text>
@@ -133,9 +130,7 @@ export const TaskDetail = ({
         {/* Date Section */}
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>Date</Text>
-          <Text style={styles.sectionValue}>
-            {formatDate(task.date, false)} {/* true = include time */}
-          </Text>
+          <Text style={styles.sectionValue}>{formatDate(task.date, false)}</Text>
         </View>
       </ScrollView>
 
@@ -163,10 +158,8 @@ export const TaskDetail = ({
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     backgroundColor: '#ffffff',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingBottom: 20,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -203,7 +196,8 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 20,
     paddingTop: 16,
-    maxHeight: 500, // Limit height for scrolling
+    paddingBottom: 40,
+    flex: 1,
   },
   section: {
     marginBottom: 20,

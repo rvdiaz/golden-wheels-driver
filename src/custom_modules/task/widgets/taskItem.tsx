@@ -20,6 +20,7 @@ import { useSystemSettings } from '~/system_setting/customHook';
 import { TaskDetail } from './taskDetail';
 import { PriorityBadge } from './priorityBadge';
 import { StatusBadge } from './statusBadge';
+import { DraggableBottomSheet } from '~/codidge_components/UI/draggableModalBottomSheet';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -249,39 +250,22 @@ export const TaskItem = ({ task }: { task: ITask }) => {
         onSubmit={handleModalSubmit}
         taskTitle={task.title}
       />
-      <Modal
-        animationType="slide"
-        transparent={true}
+      <DraggableBottomSheet
         visible={modalDetailTask}
-        onRequestClose={() => {
-          setModalDetailTask(false);
-        }}>
-        <TouchableOpacity
-          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }}
-          activeOpacity={1}
-          onPress={() => setModalDetailTask(false)}>
-          <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-            <TouchableOpacity activeOpacity={1} onPress={(e) => e.stopPropagation()}>
-              <View
-                style={{
-                  backgroundColor: '#ffffff',
-                  borderTopLeftRadius: 20,
-                  borderTopRightRadius: 20,
-                }}>
-                <TaskDetail
-                  categoryLabel={taskConfiguration?.label ?? ''}
-                  value={value}
-                  task={task}
-                  detailDescription={taskConfiguration?.description ?? ''}
-                  disposeModalHandler={() => {
-                    setModalDetailTask(false);
-                  }}
-                />
-              </View>
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      </Modal>
+        onClose={() => setModalDetailTask(false)}
+        snapPoints={[0.5, 0.95]} // 50% and 95% of screen height
+        initialSnapIndex={0} // Start at 50% height
+      >
+        <TaskDetail
+          categoryLabel={taskConfiguration?.label ?? ''}
+          value={value}
+          task={task}
+          detailDescription={taskConfiguration?.description ?? ''}
+          disposeModalHandler={() => {
+            setModalDetailTask(false);
+          }}
+        />
+      </DraggableBottomSheet>
     </TouchableOpacity>
   );
 };

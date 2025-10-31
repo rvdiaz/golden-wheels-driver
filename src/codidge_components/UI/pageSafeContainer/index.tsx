@@ -24,6 +24,7 @@ export const PageSafeContainer: React.FC<PageSafeContainerProps> = ({ children, 
 
 const styles = StyleSheet.create({
   base: {
+    backgroundColor: '#FFF',
     flex: 1, // make it fill the screen
   },
 });

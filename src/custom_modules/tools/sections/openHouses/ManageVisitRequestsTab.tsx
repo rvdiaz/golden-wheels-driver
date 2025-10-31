@@ -4,7 +4,7 @@ import { IncomingBookingList } from './components/IncomingBookingList';
 
 export const ManageVisitRequestsTab = () => {
   return (
-    <View style={styles.tabContent}>
+    <View>
       <IncomingBookingList />
       <MyBookings />
     </View>
@@ -12,9 +12,6 @@ export const ManageVisitRequestsTab = () => {
 };
 
 const styles = StyleSheet.create({
-  tabContent: {
-    gap: 16,
-  },
   card: {
     backgroundColor: '#fff',
     borderRadius: 8,

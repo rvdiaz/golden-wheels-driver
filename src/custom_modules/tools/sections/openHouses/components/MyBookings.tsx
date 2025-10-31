@@ -99,7 +99,7 @@ export const MyBookings = () => {
 
   if (loadingInitial) {
     return (
-      <View style={[styles.card, styles.mt16]}>
+      <View style={[styles.card]}>
         <View style={styles.cardHeader}>
           <Send color={theme.colors.primary} size={20} />
           <Text style={styles.cardTitle}>My Requests</Text>
@@ -116,7 +116,7 @@ export const MyBookings = () => {
   }
 
   return (
-    <View style={[styles.card, styles.mt16]}>
+    <View style={[styles.card]}>
       <View style={styles.cardHeader}>
         <Send color={theme.colors.primary} size={20} />
         <Text style={styles.cardTitle}>My Requests</Text>
@@ -192,7 +192,7 @@ export const MyBookings = () => {
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[styles.button, styles.buttonOutline, styles.buttonFlex]}
-                    onPress={() => setConfirmingDelete(false)}
+                    onPress={() => setConfirmingDelete('')}
                     disabled={isLoading}>
                     <Text style={styles.buttonOutlineText}>Cancel</Text>
                   </TouchableOpacity>

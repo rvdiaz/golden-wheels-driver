@@ -111,7 +111,7 @@ export const OpenHouseListingCard = (props: IOpenHouseListingProps) => {
                 />
               </View>
             </View>
-            <View style={styles.inputGroup}>
+            <View>
               <Text style={styles.label}>Message to Publisher (Optional)</Text>
               <InputField
                 style={[styles.input, styles.textArea]}
@@ -273,9 +273,6 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     padding: 16,
-  },
-  inputGroup: {
-    marginBottom: 16,
   },
   label: {
     fontSize: 14,

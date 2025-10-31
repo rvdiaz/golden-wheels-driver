@@ -49,7 +49,6 @@ const ExpiredListingCard: React.FC<PropertyListingCardProps> = ({ listing, onPre
             {/* Price and MLS */}
             <View style={styles.priceRow}>
               <Text style={styles.price}>{formatPrice(listing.mlsListingPrice)}</Text>
-              <Text style={styles.mlsNumber}>MLS: {listing.mlsNumber}</Text>
             </View>
 
             {/* Address */}
@@ -62,17 +61,17 @@ const ExpiredListingCard: React.FC<PropertyListingCardProps> = ({ listing, onPre
             {/* Property Stats */}
             <View style={styles.statsRow}>
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>{listing.bedrooms}</Text>
+                <Text style={styles.statValue}>{listing?.bedrooms ?? '-'}</Text>
                 <Text style={styles.statLabel}>bed</Text>
               </View>
               <View style={styles.statDivider} />
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>{listing.bathrooms}</Text>
+                <Text style={styles.statValue}>{listing?.bathrooms ?? '-'}</Text>
                 <Text style={styles.statLabel}>bath</Text>
               </View>
               <View style={styles.statDivider} />
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>{listing.yearBuilt}</Text>
+                <Text style={styles.statValue}>{listing?.yearBuilt ?? '-'}</Text>
                 <Text style={styles.statLabel}>built</Text>
               </View>
             </View>
@@ -82,11 +81,13 @@ const ExpiredListingCard: React.FC<PropertyListingCardProps> = ({ listing, onPre
         {/* Bottom Section: Additional Details */}
         <View style={styles.bottomSection}>
           {/* Days on Market Info */}
-          <View style={styles.daysOnMarketRow}>
-            <View style={styles.daysOnMarketIndicator} />
-            <Text style={styles.daysOnMarketText}>{listing.mlsDaysOnMarket} days on market</Text>
+          <View style={styles.priceRow}>
+            <View style={styles.daysOnMarketRow}>
+              <View style={styles.daysOnMarketIndicator} />
+              <Text style={styles.daysOnMarketText}>{listing.mlsDaysOnMarket} days on market</Text>
+            </View>
+            <Text style={styles.mlsNumber}>MLS: {listing.mlsNumber}</Text>
           </View>
-
           {/* Property Conditions */}
           {conditions.some((condition) => condition.value) && (
             <View style={styles.conditionsContainer}>
@@ -111,13 +112,13 @@ const ExpiredListingCard: React.FC<PropertyListingCardProps> = ({ listing, onPre
             <View style={styles.financialItem}>
               <Text style={styles.financialLabel}>Est. Value</Text>
               <Text style={styles.financialValue}>
-                {formatPrice(parseFloat(listing.estimatedValue))}
+                {listing.estimatedValue ? formatPrice(parseFloat(listing.estimatedValue)) : '-'}
               </Text>
             </View>
             <View style={styles.financialItemRight}>
               <Text style={styles.financialLabel}>Equity</Text>
               <Text style={styles.equityValue}>
-                {formatPrice(parseFloat(listing.estimatedEquity))}
+                {listing.estimatedEquity ? formatPrice(parseFloat(listing.estimatedEquity)) : '-'}
               </Text>
             </View>
           </View>
@@ -151,7 +152,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   imageContainer: {
-    width: '40%',
+    width: '35%',
     height: 120,
     position: 'relative',
     borderRadius: 8,

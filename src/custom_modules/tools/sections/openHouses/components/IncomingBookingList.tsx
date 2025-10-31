@@ -107,7 +107,7 @@ export const IncomingBookingList = () => {
 
   if (loadingInitial) {
     return (
-      <View style={[styles.card, styles.mt16]}>
+      <View style={[styles.card]}>
         <View style={styles.cardHeader}>
           <Send color={theme.colors.primary} size={20} />
           <Text style={styles.cardTitle}>Incoming Requests</Text>
@@ -156,9 +156,7 @@ export const IncomingBookingList = () => {
           ))
         )}
         {!!data?.getOpenHouseVisitRequests.lastKey && (
-          <TouchableOpacity
-            style={[styles.button, styles.buttonOutline, styles.mt16]}
-            onPress={fetchMoreResult}>
+          <TouchableOpacity style={[styles.button, styles.buttonOutline]} onPress={fetchMoreResult}>
             <Text style={styles.buttonOutlineText}>Load More Listings</Text>
           </TouchableOpacity>
         )}
@@ -238,9 +236,6 @@ const styles = StyleSheet.create({
     color: '#9ca3af',
     marginTop: 4,
     textAlign: 'center',
-  },
-  mt16: {
-    marginTop: 16,
   },
   requestCard: {
     borderWidth: 1,

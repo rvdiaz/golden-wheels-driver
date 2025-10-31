@@ -9,12 +9,12 @@ import Constants from 'expo-constants';
 import { CompositeKey, OpenHouseListing } from './interfaces';
 import { getOpenHouseListingsQuery } from './graphql/queries';
 import { Badge } from './components/badge';
-import { OpenHouseListingCard } from './components/openHouseListing';
 import {
   createOpenHouseVisitRequestMutation,
   deleteOpenHouseListingMutation,
 } from './graphql/mutations';
 import { theme } from '~/theme/theme';
+import { OpenHouseListingCardRefactored } from './components/openHouseListingUIRefactored';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -150,7 +150,7 @@ export const BrowseListingsTab = () => {
   return (
     <View style={styles.tabContent}>
       <View style={styles.headerRow}>
-        <Text style={styles.sectionTitle}>Available Open House Listings</Text>
+        <Text style={styles.sectionTitle}>Available Open Houses</Text>
         <Badge text={`${openHouseListings.length} Properties`} />
       </View>
 
@@ -172,7 +172,7 @@ export const BrowseListingsTab = () => {
 
       {!!openHouseListings.length &&
         openHouseListings.map((listing) => (
-          <OpenHouseListingCard
+          <OpenHouseListingCardRefactored
             key={listing.id}
             listing={listing}
             selected={selectedOpenHouse === listing}
@@ -196,7 +196,7 @@ export const BrowseListingsTab = () => {
 
 const styles = StyleSheet.create({
   tabContent: {
-    gap: 16,
+    gap: 5,
     flexDirection: 'column',
   },
   card: {

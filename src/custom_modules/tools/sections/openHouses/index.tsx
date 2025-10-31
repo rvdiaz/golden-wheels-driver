@@ -5,7 +5,6 @@ import { Header } from '~/codidge_components/UI/header';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
 import { Calendar } from 'lucide-react-native';
-import { mockIncomingRequests, mockMyBookings, OpenHouseBooking } from './mockedData';
 import { CreateListingTab } from './CreateListingTab';
 import { BrowseListingsTab } from './BrowseListingsTab';
 import { theme } from '~/theme/theme';

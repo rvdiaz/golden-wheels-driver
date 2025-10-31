@@ -1,5 +1,15 @@
 import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
-import { Plus, MapPin, FileText, Users, ChevronDown } from 'lucide-react-native';
+import {
+  Plus,
+  MapPin,
+  FileText,
+  Users,
+  ChevronDown,
+  Home,
+  Bed,
+  Bath,
+  Calendar,
+} from 'lucide-react-native';
 import { useState } from 'react';
 import {
   ActivityIndicator,
@@ -10,6 +20,7 @@ import {
   ScrollView,
   TextInput,
   Alert,
+  Image,
 } from 'react-native';
 import Text from '~/codidge_components/UI/text';
 import { getMlsListingQuery } from '../mls_listing/graphql/queries';
@@ -21,6 +32,8 @@ import Constants from 'expo-constants';
 import { theme } from '~/theme/theme';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import { Header } from '~/codidge_components/UI/header';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -39,8 +52,6 @@ export const CreateListingTab = () => {
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const [zipCode, setZipCode] = useState(user?.address?.postalCode || '');
-
   const { data, loading: isLoadingListings } = useQuery<{
     getMlsListing: {
       listings: IMlsListingItemResponse[];
@@ -49,7 +60,6 @@ export const CreateListingTab = () => {
   }>(getMlsListingQuery, {
     variables: {
       input: {
-        zipCode,
         pageSize: 100,
         indexCount: 0,
         daysOld: 9999,
@@ -57,7 +67,7 @@ export const CreateListingTab = () => {
         agentMlsCode: user?.mlsNumber,
       },
     },
-    skip: !zipCode || zipCode.length < 5 || !user?.mlsNumber,
+    skip: !user?.mlsNumber,
   });
 
   const userFullName = `${user?.firstName || ''} ${user?.lastName || ''}`.trim();
@@ -74,9 +84,6 @@ export const CreateListingTab = () => {
 
     setIsLoading(true);
     try {
-      console.log(selectedOpenHouse.mlsLastStatusDate);
-      console.log(mlsDateStringToDate(selectedOpenHouse.mlsLastStatusDate));
-
       const response = await createOpenHouseListing({
         variables: {
           tenant: { tenantId },
@@ -127,17 +134,6 @@ export const CreateListingTab = () => {
       </View>
       <View style={styles.cardContent}>
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Listing Zip Code</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter the zip code to fetch listings"
-            value={zipCode}
-            onChangeText={setZipCode}
-            keyboardType="number-pad"
-            placeholderTextColor="#9ca3af"
-          />
-        </View>
-        <View style={styles.inputGroup}>
           <Text style={styles.label}>Select Open House Property</Text>
           <TouchableOpacity style={styles.dropdown} onPress={() => setShowDropdown(!showDropdown)}>
             {(data?.getMlsListing?.listings.length && (
@@ -155,48 +151,133 @@ export const CreateListingTab = () => {
           <Modal
             visible={showDropdown}
             transparent={true}
-            animationType="fade"
+            animationType="slide"
             onRequestClose={() => setShowDropdown(false)}>
-            <TouchableOpacity
-              style={styles.modalOverlay}
-              activeOpacity={1}
-              onPress={() => setShowDropdown(false)}>
-              <View style={styles.dropdownMenu}>
-                <ScrollView style={styles.dropdownScroll}>
+            <PageSafeContainer>
+              <Header
+                title="Select Property"
+                showBack={true}
+                onBack={() => {
+                  setShowDropdown(false);
+                }}
+              />
+              <View style={styles.modalContainer}>
+                <ScrollView style={styles.propertyList}>
                   {!data?.getMlsListing?.listings.length && (
                     <Text style={styles.noResultsText}>No listings found</Text>
                   )}
                   {data?.getMlsListing?.listings.map((listing) => (
                     <TouchableOpacity
                       key={listing.id}
-                      style={styles.dropdownItem}
+                      style={styles.propertyCard}
                       onPress={() => handleSelectOpenHouse(listing)}>
-                      <Text style={styles.dropdownItemText}>{listing.address.address}</Text>
-                      <Text style={styles.dropdownItemSubtext}>{listing.mlsNumber}</Text>
+                      <View style={styles.propertyCardContent}>
+                        {listing.imageUrl ? (
+                          <Image
+                            source={{ uri: listing.imageUrl }}
+                            style={styles.propertyImage}
+                            resizeMode="cover"
+                          />
+                        ) : (
+                          <View style={[styles.propertyImage, styles.placeholderImage]}>
+                            <Home color="#9ca3af" size={32} />
+                          </View>
+                        )}
+
+                        <View style={styles.propertyInfo}>
+                          <View style={styles.propertyHeader}>
+                            <Text style={styles.propertyPrice}>
+                              ${listing.mlsListingPrice.toLocaleString()}
+                            </Text>
+                            <View style={styles.mlsBadge}>
+                              <Text style={styles.mlsBadgeText}>{listing.mlsNumber}</Text>
+                            </View>
+                          </View>
+
+                          <Text style={styles.propertyAddress}>{listing.address.address}</Text>
+                          <Text style={styles.propertyLocation}>
+                            {listing.address.city}, {listing.address.state} {listing.address.zip}
+                          </Text>
+
+                          {listing?.bedrooms && listing?.bathrooms && listing?.yearBuilt ? (
+                            <View style={styles.propertyStats}>
+                              {listing?.bedrooms && (
+                                <View style={styles.stat}>
+                                  <Bed color="#6b7280" size={14} />
+                                  <Text style={styles.statText}>{listing.bedrooms} beds</Text>
+                                </View>
+                              )}
+                              {listing?.bathrooms && (
+                                <View style={styles.stat}>
+                                  <Bath color="#6b7280" size={14} />
+                                  <Text style={styles.statText}>{listing?.bathrooms} baths</Text>
+                                </View>
+                              )}
+                              {listing?.yearBuilt && (
+                                <View style={styles.stat}>
+                                  <Calendar color="#6b7280" size={14} />
+                                  <Text style={styles.statText}>{listing.yearBuilt}</Text>
+                                </View>
+                              )}
+                            </View>
+                          ) : (
+                            <Text></Text>
+                          )}
+
+                          {listing?.mlsDaysOnMarket && (
+                            <Text style={styles.daysOnMarket}>
+                              {listing.mlsDaysOnMarket} days on market
+                            </Text>
+                          )}
+                        </View>
+                      </View>
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
               </View>
-            </TouchableOpacity>
+            </PageSafeContainer>
           </Modal>
         </View>
 
         {selectedOpenHouse && (
           <View style={styles.selectedPropertyCard}>
-            <View style={styles.listingHeader}>
-              <View style={styles.flex1}>
-                <View style={styles.row}>
-                  <MapPin color="#6b7280" size={16} />
-                  <Text style={styles.listingAddress}>{selectedOpenHouse.address.address}</Text>
+            <View style={styles.selectedPropertyContent}>
+              {selectedOpenHouse.imageUrl ? (
+                <Image
+                  source={{ uri: selectedOpenHouse.imageUrl }}
+                  style={styles.selectedPropertyImage}
+                  resizeMode="cover"
+                />
+              ) : (
+                <View style={[styles.selectedPropertyImage, styles.placeholderImage]}>
+                  <Home color="#9ca3af" size={24} />
                 </View>
-                <View style={styles.listingMeta}>
-                  <View style={styles.row}>
-                    <FileText color="#6b7280" size={14} />
-                    <Text style={styles.metaText}>{selectedOpenHouse.mlsNumber}</Text>
-                  </View>
-                  <View style={styles.row}>
-                    <Users color="#6b7280" size={14} />
-                    <Text style={styles.metaText}>{user?.firstName + ' ' + user?.lastName}</Text>
+              )}
+
+              <View style={styles.selectedPropertyDetails}>
+                <View style={styles.listingHeader}>
+                  <View style={styles.flex1}>
+                    <Text style={styles.selectedPrice}>
+                      ${selectedOpenHouse.mlsListingPrice.toLocaleString()}
+                    </Text>
+                    <View style={styles.row}>
+                      <MapPin color="#6b7280" size={16} />
+                      <Text style={styles.listingAddress}>{selectedOpenHouse.address.address}</Text>
+                    </View>
+                    <Text style={styles.selectedLocation}>
+                      {selectedOpenHouse.address.city}, {selectedOpenHouse.address.state}{' '}
+                      {selectedOpenHouse.address.zip}
+                    </Text>
+                    <View style={styles.listingMeta}>
+                      <View style={styles.row}>
+                        <FileText color="#6b7280" size={14} />
+                        <Text style={styles.metaText}>MLS #{selectedOpenHouse.mlsNumber}</Text>
+                      </View>
+                      <View style={styles.row}>
+                        <Users color="#6b7280" size={14} />
+                        <Text style={styles.metaText}>{userFullName}</Text>
+                      </View>
+                    </View>
                   </View>
                 </View>
               </View>
@@ -288,50 +369,133 @@ const styles = StyleSheet.create({
     color: '#111827',
     flex: 1,
   },
-  modalOverlay: {
+  modalContainer: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  dropdownMenu: {
     backgroundColor: '#fff',
-    borderRadius: 8,
-    width: '100%',
-    maxWidth: 500,
-    maxHeight: 400,
+  },
+  propertyList: {
+    flex: 1,
+    backgroundColor: '#f9fafb',
+  },
+  propertyCard: {
+    backgroundColor: '#fff',
+    marginHorizontal: 16,
+    marginVertical: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    overflow: 'hidden',
+    elevation: 1,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
   },
-  dropdownScroll: {
-    maxHeight: 400,
+  propertyCardContent: {
+    flexDirection: 'row',
+    padding: 12,
   },
-  dropdownItem: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+  propertyImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    marginRight: 12,
   },
-  dropdownItemText: {
-    fontSize: 14,
-    color: '#111827',
-    fontWeight: '500',
+  placeholderImage: {
+    backgroundColor: '#f3f4f6',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  propertyInfo: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  propertyHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginBottom: 4,
   },
-  dropdownItemSubtext: {
+  propertyPrice: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+  },
+  mlsBadge: {
+    backgroundColor: '#f3f4f6',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  mlsBadgeText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#6b7280',
+  },
+  propertyAddress: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 2,
+  },
+  propertyLocation: {
+    fontSize: 13,
+    color: '#6b7280',
+    marginBottom: 8,
+  },
+  propertyStats: {
+    flexDirection: 'row',
+    gap: 16,
+    marginTop: 8,
+  },
+  stat: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  statText: {
     fontSize: 12,
     color: '#6b7280',
   },
+  daysOnMarket: {
+    fontSize: 12,
+    color: '#10b981',
+    fontWeight: '500',
+    marginTop: 4,
+  },
   selectedPropertyCard: {
-    backgroundColor: '#f9fafb',
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderRadius: 6,
-    padding: 16,
+    backgroundColor: '#f0f9ff',
+    borderWidth: 2,
+    borderColor: theme.colors.primary,
+    borderRadius: 8,
+    padding: 12,
     marginBottom: 16,
+  },
+  selectedPropertyContent: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    position: 'relative',
+  },
+  selectedPropertyImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 6,
+    marginRight: 12,
+  },
+  selectedPropertyDetails: {
+    flex: 1,
+  },
+  selectedPrice: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: theme.colors.primary,
+    marginBottom: 4,
+  },
+  selectedLocation: {
+    fontSize: 12,
+    color: '#6b7280',
+    marginTop: 2,
+    marginBottom: 8,
   },
   listingHeader: {
     flexDirection: 'row',
@@ -346,7 +510,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    marginBottom: 8,
+    marginBottom: 4,
   },
   listingAddress: {
     fontSize: 14,
@@ -357,29 +521,25 @@ const styles = StyleSheet.create({
   listingMeta: {
     flexDirection: 'row',
     gap: 16,
-    marginBottom: 8,
     flexWrap: 'wrap',
   },
   metaText: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#6b7280',
   },
-  listingDescription: {
-    fontSize: 13,
-    color: '#4b5563',
-    lineHeight: 18,
-  },
   badge: {
-    backgroundColor: '#dbeafe',
+    backgroundColor: theme.colors.primary + '20',
     paddingVertical: 4,
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     borderRadius: 12,
-    alignSelf: 'flex-start',
+    position: 'absolute',
+    top: 0,
+    right: 0,
   },
   badgeText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600',
-    color: '#1e40af',
+    color: theme.colors.primary,
   },
   input: {
     borderWidth: 1,
@@ -394,29 +554,8 @@ const styles = StyleSheet.create({
     minHeight: 80,
     textAlignVertical: 'top',
   },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 6,
-  },
-  buttonPrimary: {
-    backgroundColor: theme.colors.primary,
-  },
-  buttonDisabled: {
-    backgroundColor: '#d1d5db',
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
-  },
   noResultsText: {
-    padding: 16,
+    padding: 32,
     fontSize: 14,
     color: '#6b7280',
     textAlign: 'center',

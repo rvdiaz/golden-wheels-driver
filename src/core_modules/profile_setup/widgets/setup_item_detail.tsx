@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity, Animated } from 'react-native';
+import { StyleSheet, View, ScrollView, TouchableOpacity, Animated, Linking } from 'react-native';
 import { useMutation, useReactiveVar } from '@apollo/client';
 import * as Icons from 'lucide-react-native';
 import { WebView } from 'react-native-webview';
@@ -45,6 +45,8 @@ export const TaskDetailScreen = ({ task, onBack, onPreview, onNext }: TaskDetail
     task.subitems.every((subitem) => completedSubSteps.includes(subitem.id));
 
   const isTaskCompleted = !!taskProgress && allSubitemsCompleted;
+
+  const recommendations = task.recommendations;
 
   // Toggle individual subitem
   const toggleSubitem = async (subitemId: string) => {
@@ -263,7 +265,6 @@ export const TaskDetailScreen = ({ task, onBack, onPreview, onNext }: TaskDetail
               </View>
             )}
           </View>
-
           {/* Subitems Checklist */}
           {task.subitems.length > 0 && (
             <View style={styles.sectionCard}>
@@ -316,10 +317,14 @@ export const TaskDetailScreen = ({ task, onBack, onPreview, onNext }: TaskDetail
               )}
             </View>
           )}
-
           {/* Full Description */}
-          {task.htmlDescription && <DescriptionSection htmlDescription={task.htmlDescription} />}
+          {task.htmlDescription && (
+            <View style={[styles.sectionCard]}>
+              <DescriptionSection htmlDescription={task.htmlDescription} />
+            </View>
+          )}
           {/* Recommendations */}
+          // Then update the WebView section:
           {task.recommendations && (
             <View style={styles.sectionCard}>
               <Text style={styles.sectionTitle}>Recommendations</Text>
@@ -329,36 +334,72 @@ export const TaskDetailScreen = ({ task, onBack, onPreview, onNext }: TaskDetail
                 scrollEnabled={true}
                 source={{
                   html: `
-                  <!DOCTYPE html>
-                  <html>
-                    <head>
-                      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-                      <style>
-                        body {
-                          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-                          font-size: 14px;
-                          color: #4B5563;
-                          line-height: 1.6;
-                          margin: 0;
-                          padding: 0;
+                <!DOCTYPE html>
+                <html>
+                  <head>
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+                    <style>
+                      body {
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                        font-size: 14px;
+                        color: #4B5563;
+                        line-height: 1.6;
+                        margin: 0;
+                        padding: 0;
+                      }
+                      p { margin: 8px 0; }
+                      ul, ol { margin: 8px 0; padding-left: 20px; }
+                      li { margin: 4px 0; }
+                      h1, h2, h3, h4, h5, h6 { color: #1F2937; margin: 12px 0 8px 0; }
+                      a { 
+                        color: ${theme.colors.primary}; 
+                        text-decoration: underline;
+                        font-weight: 500;
+                      }
+                      a:active {
+                        opacity: 0.7;
+                      }
+                    </style>
+                    <script>
+                      // Intercept all link clicks
+                      document.addEventListener('click', function(e) {
+                        if(e.target.tagName === 'A') {
+                          e.preventDefault();
+                          const href = e.target.getAttribute('href');
+                          if(href) {
+                            window.ReactNativeWebView.postMessage(JSON.stringify({
+                              type: 'link_click',
+                              url: href
+                            }));
+                          }
+                          return false;
                         }
-                        p { margin: 8px 0; }
-                        ul, ol { margin: 8px 0; padding-left: 20px; }
-                        li { margin: 4px 0; }
-                        h1, h2, h3, h4, h5, h6 { color: #1F2937; margin: 12px 0 8px 0; }
-                        a { color: ${theme.colors.primary}; }
-                      </style>
-                    </head>
-                    <body>
-                      ${task.recommendations}
-                    </body>
-                  </html>
+                      });
+                    </script>
+                  </head>
+                  <body>
+                    ${task.recommendations}
+                  </body>
+                </html>
                 `,
                 }}
                 showsVerticalScrollIndicator={false}
                 showsHorizontalScrollIndicator={false}
                 androidLayerType="hardware"
-                javaScriptEnabled={false}
+                javaScriptEnabled={true} // IMPORTANT: Change this to true
+                onMessage={(event) => {
+                  try {
+                    const message = JSON.parse(event.nativeEvent.data);
+                    if (message.type === 'link_click' && message.url) {
+                      // Open URL in device's default browser
+                      Linking.openURL(message.url).catch((err) => {
+                        console.error('Failed to open URL:', err);
+                      });
+                    }
+                  } catch (error) {
+                    console.error('Error handling WebView message:', error);
+                  }
+                }}
               />
             </View>
           )}

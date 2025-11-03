@@ -324,7 +324,6 @@ export const TaskDetailScreen = ({ task, onBack, onPreview, onNext }: TaskDetail
             </View>
           )}
           {/* Recommendations */}
-          // Then update the WebView section:
           {task.recommendations && (
             <View style={styles.sectionCard}>
               <Text style={styles.sectionTitle}>Recommendations</Text>

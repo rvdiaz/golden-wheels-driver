@@ -63,7 +63,7 @@ export default function HtmlViewer({
             const data = JSON.parse(event.nativeEvent.data);
             if (data.height && data.height > 0) {
               // Add some padding to ensure nothing is cut off
-              setWebViewHeight(data.height + 20);
+              setWebViewHeight(data.height + 5);
             }
           } catch (e) {
             console.log('Error parsing WebView message:', e);

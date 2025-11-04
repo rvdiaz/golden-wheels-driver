@@ -3,6 +3,7 @@ import { SubscriptionPlan } from '../interfaces';
 import { getSubscriptionPlans } from '../graphql';
 import Constants from 'expo-constants';
 import { useMemo } from 'react';
+import { apiKeyClient } from '~/store/config/apolloClient';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -15,6 +16,7 @@ export const useSubscriptionPlanList = () => {
           tenantId,
         },
       },
+      client: apiKeyClient,
     }
   );
 

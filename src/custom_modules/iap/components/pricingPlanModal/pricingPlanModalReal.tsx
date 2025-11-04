@@ -1,4 +1,4 @@
-import { useIAP } from 'expo-iap';
+import { initConnection, useIAP } from 'expo-iap';
 import { PricingPlanModalView } from '../pricingPlanModalView';
 import { userData } from '~/store/user';
 import { useApolloClient, useReactiveVar } from '@apollo/client';
@@ -41,9 +41,15 @@ export const PricingPlanModal = () => {
     },
   });
 
+  console.log('IAP connected:', connected);
+
   useEffect(() => {
     if (connected && !loading) {
-      fetchProducts({ type: 'subs', skus: plans.map((plan) => plan.productId) });
+      initConnection().then(() => {
+        console.log('IAP connection initialized');
+        console.log('Fetching products for SKUs:', plans.map((plan) => plan.productId));
+  fetchProducts({ type: 'subs', skus: plans.map((plan) => plan.productId) });
+      });
     }
   }, [connected, fetchProducts, plans, loading]);
 

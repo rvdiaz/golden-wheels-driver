@@ -12,7 +12,7 @@ export const updateSubscriptionStatus = async (status?: ISubscriptionStatus) => 
   subscriptionStatusData(status);
 };
 
-export const paywallVisibility = makeVar<boolean>(true);
+export const paywallVisibility = makeVar<boolean>(false);
 
 export const setPaywallVisibility = (visible: boolean) => {
   paywallVisibility(visible);

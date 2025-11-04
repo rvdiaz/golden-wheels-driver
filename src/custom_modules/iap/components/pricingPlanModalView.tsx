@@ -8,6 +8,7 @@ import { theme } from '~/theme/theme';
 import { PricingPlanItem } from './pricingPlanItem';
 import { useSubscriptionPlanList } from '../hooks/useSubscriptionPlanList';
 import type { ProductSubscription } from 'expo-iap';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export interface IPricingPlanModalViewProps {
   subscriptions: ProductSubscription[];
@@ -16,6 +17,8 @@ export interface IPricingPlanModalViewProps {
 
 export const PricingPlanModalView = (args: IPricingPlanModalViewProps) => {
   const { subscriptions, requestPurchase } = args;
+
+  const insets = useSafeAreaInsets();
 
   const visible = useReactiveVar(paywallVisibility);
   const onClose = () => setPaywallVisibility(false);
@@ -30,7 +33,10 @@ export const PricingPlanModalView = (args: IPricingPlanModalViewProps) => {
         (plan) =>
           ['', billingPeriod].includes(plan.billingPeriod ?? '') &&
           (plan.productId === 'free-lifetime' ||
-            subscriptions?.some((product) => product.id === plan.productId))
+            //temporarily disabled to allow free plan selection
+            true
+                      //  subscriptions?.some((product) => product.id === plan.productId)
+                      )
       ),
     [allPlans, subscriptions, billingPeriod]
   );
@@ -65,7 +71,10 @@ export const PricingPlanModalView = (args: IPricingPlanModalViewProps) => {
       onRequestClose={onClose}
       statusBarTranslucent>
       <StatusBar barStyle="light-content" />
-      <View style={styles.modalContainer}>
+      <View style={[styles.modalContainer, {
+        paddingTop: insets.top,
+        marginBottom: insets.bottom,
+      }]}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Choose Your Plan</Text>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
@@ -137,8 +146,6 @@ const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: theme.colors.headerBackground,
     flex: 1,
-    paddingTop: StatusBar.currentHeight || 0,
-    marginBottom: 24,
   },
   modalContent: {
     flex: 1,

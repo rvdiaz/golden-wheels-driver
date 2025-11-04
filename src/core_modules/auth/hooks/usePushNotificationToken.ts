@@ -84,8 +84,6 @@ export const usePushNotificationTokenSetup = () => {
     }
   }, [pushToken, userInfo, getCustomerFn]);
 
-  console.log(':::::pushToken', pushToken);
-
   return {
     pushToken,
     userInfo,

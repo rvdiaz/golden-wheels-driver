@@ -7,12 +7,12 @@ export const EXP_STATUS_OPTIONS = Object.values(ExpiredStatus).map((value) => ({
 }));
 
 // Format price with commas
-export const formatPrice = (price: number): string => {
+export const formatPrice = (price: number, digits = 0): string => {
   return price.toLocaleString('en-US', {
     style: 'currency',
     currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
   });
 };
 

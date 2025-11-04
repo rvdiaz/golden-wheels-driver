@@ -6,6 +6,7 @@ import { Amplify } from 'aws-amplify';
 import { cognitoUserPoolsTokenProvider } from 'aws-amplify/auth/cognito';
 import { loadErrorMessages, loadDevMessages } from '@apollo/client/dev';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { PricingPlanModal } from '~/custom_modules/iap/components/pricingPlanModal';
 
 if (Constants.expoConfig?.extra?.EAS_BUILD_PROFILE === 'development') {
   // Adds messages only in a dev environment
@@ -72,6 +73,7 @@ export default function App() {
     <ApolloProvider client={client}>
       <SafeAreaProvider>
         <Navigation />
+        <PricingPlanModal />
       </SafeAreaProvider>
     </ApolloProvider>
   );

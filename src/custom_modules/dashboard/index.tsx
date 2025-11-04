@@ -5,6 +5,7 @@ import { TodayTasks } from '../task/widgets/todayTasks';
 import { theme } from '~/theme/theme';
 import { ProfileCompletionWidget } from './widgets/setupStatusGraph';
 import { RentAppShortcut } from '../tools/sections/transunion_rent_applications/widgets/rent_app_shortcut';
+import { SubscriptionButton } from '~/custom_modules/iap/components/subscriptionButton';
 
 export const Dashboard: React.FC = () => {
   return (
@@ -14,6 +15,7 @@ export const Dashboard: React.FC = () => {
         <RentAppShortcut />
         <TaskMetricsStats />
         <TodayTasks />
+        <SubscriptionButton />
       </ScrollView>
     </View>
   );

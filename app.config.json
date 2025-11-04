@@ -30,7 +30,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.myvirtualboss.realestate",
-      "buildNumber": "13",
+      "buildNumber": "14",
       "infoPlist": {
         "NSContactsUsageDescription": "We use your contacts to help you import or export CRM records more easily. Contacts are only uploaded to your account if you give explicit consent."
       },

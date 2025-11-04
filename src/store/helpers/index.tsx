@@ -9,39 +9,20 @@ export const localToolModules: IFeatureModule[] = [];
 export const getTenantRoutes = (user: IUser | null): IModule[] => {
   const userModules = user?.modules ?? [];
 
-  const hasToolsModule = userModules.some((mod) => mod.moduleKey === ModuleKeys.tools);
+  const resModules = userModules.map((module) => {
+    if (module.moduleKey !== ModuleKeys.tools) return module;
 
-  return userModules
-    .map((module) => {
-      if (module.moduleKey !== ModuleKeys.tools) return module;
+    const backendTools = module.modules ?? [];
 
-      const backendTools = module.modules ?? [];
+    const mergedTools = [...backendTools, ...localToolModules];
 
-      const mergedTools = [...backendTools];
+    return {
+      ...module,
+      modules: mergedTools,
+    };
+  });
 
-      return {
-        ...module,
-        modules: mergedTools,
-      };
-    })
-    .concat(
-      !hasToolsModule
-        ? [
-            {
-              label: 'Tools',
-              moduleKey: ModuleKeys.tools,
-              path: '/tools',
-              type: 'main',
-              metaData: '{}',
-              icon: 'hammer-outline',
-              isBottomBar: true,
-              customIcon: 'tools',
-              modules: localToolModules,
-              comingSoon: false,
-            },
-          ]
-        : []
-    );
+  return resModules;
 };
 
 export const customIcons: Record<string, { active: any; inactive: any }> = {

@@ -33,7 +33,8 @@
       "buildNumber": "13",
       "infoPlist": {
         "NSContactsUsageDescription": "We use your contacts to help you import or export CRM records more easily. Contacts are only uploaded to your account if you give explicit consent."
-      }
+      },
+      "icon": "assets/playstore.png"
     },
     "android": {
       "package": "com.myvirtualboss.realestate",

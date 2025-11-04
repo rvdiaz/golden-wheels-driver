@@ -24,11 +24,11 @@ export const ResultsWrapper = ({
   return (
     <PageSafeContainer style={{ flex: 1, backgroundColor: '#F9FAFB', justifyContent: 'flex-end' }}>
       <Header
-        title="Quick CMA Tool"
-        rightText="Close"
-        rightAction={() => {
+        onBack={() => {
           dispose();
         }}
+        showBack={true}
+        title="Quick CMA"
       />
       <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
         <MarketValueCard

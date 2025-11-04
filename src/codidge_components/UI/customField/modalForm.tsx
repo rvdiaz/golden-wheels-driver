@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Modal, TouchableOpacity, ScrollView } from 'react-native';
+import { View, StyleSheet, Modal, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import { theme } from '~/theme/theme';
 import InputField from '../form/inputs/inputField';
 import PrimaryButton from '../button/PrimaryButton';
 import { ButtonSize } from '../button/OutlineButton';
 import { GoalType } from '~/custom_modules/task/interfaces';
 import Text from '../text';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 interface TaskFieldsModalProps {
   visible: boolean;
@@ -95,26 +96,30 @@ export const TaskFieldsModal: React.FC<TaskFieldsModalProps> = ({
             <Text style={styles.modalTitle}>{taskTitle}</Text>
             <Text style={styles.modalSubtitle}>Please fill in the required information</Text>
           </View>
-
-          <ScrollView
-            style={styles.modalContent}
+          <KeyboardAwareScrollView
             showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-            bounces={false}>
-            {fields.map((field) => (
-              <View key={field.goalKey} style={styles.fieldContainer}>
-                <Text style={styles.fieldLabel}>{field.label}</Text>
-                <InputField
-                  value={fieldValues[field.goalKey] || ''}
-                  onChangeText={(value) => handleFieldChange(field.goalKey, value)}
-                  placeholder={field.label ? `Enter ${field.label.toLowerCase()}` : ''}
-                  keyboardType="numeric"
-                  error={!!errors[field.goalKey]}
-                  errorMessage={errors[field.goalKey]}
-                />
-              </View>
-            ))}
-          </ScrollView>
+            enableOnAndroid={true}
+            keyboardShouldPersistTaps="handled">
+            <ScrollView
+              style={styles.modalContent}
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+              bounces={false}>
+              {fields.map((field) => (
+                <View key={field.goalKey} style={styles.fieldContainer}>
+                  <Text style={styles.fieldLabel}>{field.label}</Text>
+                  <InputField
+                    value={fieldValues[field.goalKey] || ''}
+                    onChangeText={(value) => handleFieldChange(field.goalKey, value)}
+                    placeholder={field.label ? `Enter ${field.label.toLowerCase()}` : ''}
+                    keyboardType="numeric"
+                    error={!!errors[field.goalKey]}
+                    errorMessage={errors[field.goalKey]}
+                  />
+                </View>
+              ))}
+            </ScrollView>
+          </KeyboardAwareScrollView>
 
           <View style={styles.modalActions}>
             <PrimaryButton
@@ -168,7 +173,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     padding: 20,
-    maxHeight: 300,
+    maxHeight: '90%',
   },
   fieldContainer: {
     marginBottom: 16,

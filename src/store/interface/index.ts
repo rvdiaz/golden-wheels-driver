@@ -19,6 +19,7 @@ export enum ModuleKeys {
   sellerNetSheet = 'SellerNetSheet',
   transUnionRentApplications = 'RentApplications',
   estimatedClosingCost = 'EstimatedClosingCost',
+  incomeCalculator = 'IncomeCalculator',
   //training
   training = 'Training',
   trainingDetailPage = 'TrainingDetailPage',

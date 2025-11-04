@@ -18,6 +18,8 @@ import {
   INotification,
   MarkNotificationsReadedResponse,
 } from './interfaces';
+import * as Notifications from 'expo-notifications';
+import { theme } from '~/theme/theme';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -88,6 +90,7 @@ export const NotificationsScreen = () => {
       // Small delay to ensure data is loaded
       const timer = setTimeout(() => {
         markUnreadNotifications();
+        Notifications.setBadgeCountAsync(0);
       }, 500);
 
       return () => clearTimeout(timer);
@@ -117,7 +120,7 @@ export const NotificationsScreen = () => {
       <Card style={[styles.notificationCard, !item.read && styles.unreadNotification]}>
         <View style={styles.notificationContent}>
           <View style={[styles.notificationIcon, !item.read && styles.unreadIcon]}>
-            <Icons.Bell size={20} color={!item.read ? '#2563EB' : '#9CA3AF'} />
+            <Icons.Bell size={20} color={!item.read ? '#2563EB' : '#666'} />
           </View>
 
           <View style={styles.notificationInfo}>
@@ -198,7 +201,7 @@ const styles = StyleSheet.create({
   notificationCard: {
     marginBottom: 12,
     borderLeftWidth: 3,
-    borderLeftColor: '#E5E7EB',
+    borderLeftColor: theme.colors.borderNeutralColor,
   },
   unreadNotification: {
     borderLeftColor: '#2563EB',
@@ -239,7 +242,7 @@ const styles = StyleSheet.create({
   notificationTitle: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#6B7280',
+    color: '#666',
     flex: 1,
   },
   unreadTitle: {
@@ -255,12 +258,12 @@ const styles = StyleSheet.create({
   },
   timestamp: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: '#666',
     flexShrink: 0,
   },
   notificationBody: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: '#666',
     lineHeight: 20,
   },
   unreadBody: {

@@ -40,8 +40,13 @@ export const TabHeader: React.FC<TabHeaderProps> = ({
             key={tab.key}
             style={[styles.tab, activeTab === tab.key && styles.activeTab]}
             onPress={() => handleTabPress(tab.key)}>
-            {tab.Icon && <tab.Icon size={18} color={'#0A0A0A'} />}
-            <Text style={[styles.tabText]}>{tab.label}</Text>
+            {tab.Icon && (
+              <tab.Icon
+                size={16}
+                color={activeTab === tab.key ? theme.colors.primary : '#6B7280'}
+              />
+            )}
+            <Text style={styles.tabText}>{tab.label}</Text>
             {tab?.indexNumber ? (
               <View
                 style={{
@@ -477,6 +482,7 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     paddingHorizontal: 3,
     marginBottom: 10,
+    gap: 2,
   },
   tab: {
     flex: 1,
@@ -494,7 +500,7 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#0A0A0A',
+    color: theme.colors.menuItemActive,
     marginLeft: 2,
   },
 });

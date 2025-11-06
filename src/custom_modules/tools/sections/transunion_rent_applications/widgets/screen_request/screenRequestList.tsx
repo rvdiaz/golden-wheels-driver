@@ -13,10 +13,14 @@ import * as Icons from 'lucide-react-native';
 import IconButton from '~/codidge_components/UI/button/IconButton';
 import { theme } from '~/theme/theme';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
+import { TabHeader } from '~/codidge_components/UI/tabs';
+import { getRequestStatus } from '../../helpers';
 
 export const ScreenRequestList = ({ onBack }: { onBack: () => void }) => {
   const user = useReactiveVar(userData);
   const [modalVisible, setModalVisible] = useState(false);
+
+  const [screen, setScreen] = useState('inProgress');
 
   const { loading, error, data, refetch } = useQuery<{
     getUserRentApplications: {
@@ -33,7 +37,7 @@ export const ScreenRequestList = ({ onBack }: { onBack: () => void }) => {
     return (
       <PageSafeContainer>
         <Header
-          title="Rental Applications"
+          title="Applications"
           showBack={true}
           onBack={() => {
             onBack();
@@ -60,7 +64,7 @@ export const ScreenRequestList = ({ onBack }: { onBack: () => void }) => {
     return (
       <PageSafeContainer>
         <Header
-          title="Rental Applications"
+          title="Applications"
           showBack={true}
           onBack={() => {
             onBack();
@@ -95,10 +99,20 @@ export const ScreenRequestList = ({ onBack }: { onBack: () => void }) => {
     );
   }
 
+  const appsInProgress = rentApplicationsList.filter((rent) => {
+    const statusInfo = getRequestStatus(rent.applicants);
+    return statusInfo.status !== 'Complete';
+  });
+
+  const completedApps = rentApplicationsList.filter((rent) => {
+    const statusInfo = getRequestStatus(rent.applicants);
+    return statusInfo.status === 'Complete';
+  });
+
   return (
     <PageSafeContainer>
       <Header
-        title="Rental Applications"
+        title="Applications"
         showBack={true}
         onBack={() => {
           onBack();
@@ -114,8 +128,30 @@ export const ScreenRequestList = ({ onBack }: { onBack: () => void }) => {
         <PageLoading />
       ) : (
         <View style={styles.container}>
+          <TabHeader
+            containerStyle={{
+              paddingHorizontal: 0,
+            }}
+            tabs={[
+              {
+                label: 'In Progress',
+                key: 'inProgress',
+                Icon: Icons.Hourglass,
+                indexNumber: appsInProgress.length,
+              },
+              {
+                label: 'Completed',
+                key: 'completed',
+                Icon: Icons.CheckCircle,
+                indexNumber: completedApps.length,
+              },
+            ]}
+            onTabChange={(tabKey) => {
+              setScreen(tabKey);
+            }}
+          />
           <FlatList
-            data={rentApplicationsList}
+            data={screen !== 'completed' ? appsInProgress : completedApps}
             renderItem={({ item }) => <ScreenRequestItem rentApp={item} />}
             keyExtractor={(item) => item.rentApplicationId}
             showsVerticalScrollIndicator={false}

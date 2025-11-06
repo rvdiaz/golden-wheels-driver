@@ -69,7 +69,7 @@ export const calculateMortgage = ({
   const monthlyTax = (price * (taxRate / 100)) / 12;
   const monthlyInsurance = insurance / 12;
   const monthlyPMI = down < price * 0.2 ? (loanAmount * (pmi / 100)) / 12 : 0;
-  const monthlyHOA = hoa / 12;
+  const monthlyHOA = hoa;
 
   // Total monthly payment
   const totalMonthly = monthlyPI + monthlyTax + monthlyInsurance + monthlyPMI + monthlyHOA;

@@ -19,7 +19,12 @@ import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
 
 interface PropertySearchData {
-  address: string;
+  propData: {
+    displayName: string;
+    address: string;
+    placeId: string;
+    meta: any;
+  };
 }
 
 export const PropertyEstimationsPage = () => {
@@ -29,13 +34,18 @@ export const PropertyEstimationsPage = () => {
 
   const { control, handleSubmit, watch } = useForm<PropertySearchData>({
     defaultValues: {
-      address: '',
+      propData: {
+        displayName: '',
+        address: '',
+        placeId: '',
+        meta: '',
+      },
     },
   });
 
-  const selectedAddress = watch('address'); // ✅ Watch address for button state
+  const selectedAddress = watch('propData'); // ✅ Watch address for button state
 
-  const [getPropertyDetailsFn, { data, loading, error }] = useLazyQuery<{
+  const [getPropertyDetailsFn, { data, loading }] = useLazyQuery<{
     getPropertyEstimations: {
       avm: PropertyEstimatorAvm;
       comps: IPropertyInfo[];
@@ -49,7 +59,8 @@ export const PropertyEstimationsPage = () => {
     try {
       await getPropertyDetailsFn({
         variables: {
-          propertyId: data.address,
+          propertyId: data.propData.placeId,
+          propertyAddress: data.propData.address,
           needClosestProperties: true,
         },
       });
@@ -72,11 +83,11 @@ export const PropertyEstimationsPage = () => {
           {/* ✅ React Hook Form Controlled AutoComplete */}
           <Controller
             control={control}
-            name="address"
+            name="propData"
             render={({ field: { onChange } }) => (
               <SearchAddressAutoComplete
-                onSelection={(address) => {
-                  onChange(address); // ✅ Update form value
+                onSelection={(propData) => {
+                  onChange(propData); // ✅ Update form value
                 }}
               />
             )}

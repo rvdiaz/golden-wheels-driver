@@ -20,8 +20,6 @@ export const MortgageCalculatorResults: React.FC<MortgageCalculatorResultsProps>
 }) => {
   const { watch } = useFormContext<MortgageFormValues>();
 
-  const [shareModalVisible, setShareModalVisible] = useState(false);
-
   const downPayment = watch('downPayment');
   const homePrice = watch('homePrice');
 

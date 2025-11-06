@@ -104,7 +104,7 @@ const LocationAutocomplete = ({ onSelection }: { onSelection: (taxRate: number) 
     if (searchTerm.trim().length > 1 && suggestions.length === 0 && !selectedLocation) {
       return (
         <View style={styles.emptyState}>
-          <Text style={styles.emptyText}>No locations found for "{searchTerm}"</Text>
+          <Text style={styles.emptyText}>No property tax rate found for "{searchTerm}"</Text>
         </View>
       );
     }

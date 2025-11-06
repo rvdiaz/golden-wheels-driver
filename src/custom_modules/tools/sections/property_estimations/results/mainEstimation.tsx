@@ -60,54 +60,57 @@ export const MarketValueCard = ({
           <Text style={styles.valueLabel}>Average Market Value</Text>
 
           {/* Property Address */}
-          <View style={styles.addressContainer}>
-            <Feather name="map-pin" size={14} color="#065f46" />
-            <View style={styles.addressText}>
-              <Text style={styles.addressLine}>
-                {propertyInfo.address.address}, {propertyInfo.address.state}{' '}
-                {propertyInfo.address.zip}
-              </Text>
+          {propertyInfo && (
+            <View style={styles.addressContainer}>
+              <Feather name="map-pin" size={14} color="#065f46" />
+              <View style={styles.addressText}>
+                <Text style={styles.addressLine}>
+                  {propertyInfo?.address?.address}, {propertyInfo?.address?.state}{' '}
+                  {propertyInfo?.address?.zip}
+                </Text>
+              </View>
             </View>
-          </View>
-
+          )}
           {/* Property Details Grid */}
-          <View style={styles.detailsContainer}>
-            <View style={styles.detailsGrid}>
-              {/* Bedrooms & Bathrooms */}
-              <View style={styles.detailRow}>
-                <View style={styles.detailItem}>
-                  <MaterialIcons name="bed" size={16} color="#059669" />
-                  <Text style={styles.detailText}>{propertyInfo.bedrooms} Beds</Text>
+          {propertyInfo && (
+            <View style={styles.detailsContainer}>
+              <View style={styles.detailsGrid}>
+                {/* Bedrooms & Bathrooms */}
+                <View style={styles.detailRow}>
+                  <View style={styles.detailItem}>
+                    <MaterialIcons name="bed" size={16} color="#059669" />
+                    <Text style={styles.detailText}>{propertyInfo.bedrooms} Beds</Text>
+                  </View>
+                  <View style={styles.detailItem}>
+                    <MaterialIcons name="bathtub" size={16} color="#059669" />
+                    <Text style={styles.detailText}>{propertyInfo.bathrooms} Baths</Text>
+                  </View>
                 </View>
-                <View style={styles.detailItem}>
-                  <MaterialIcons name="bathtub" size={16} color="#059669" />
-                  <Text style={styles.detailText}>{propertyInfo.bathrooms} Baths</Text>
-                </View>
-              </View>
 
-              {/* Year Built & Lot Size */}
-              <View style={styles.detailRow}>
-                <View style={styles.detailItem}>
-                  <MaterialIcons name="calendar-today" size={16} color="#059669" />
-                  <Text style={styles.detailText}>Built {propertyInfo.yearBuilt}</Text>
+                {/* Year Built & Lot Size */}
+                <View style={styles.detailRow}>
+                  <View style={styles.detailItem}>
+                    <MaterialIcons name="calendar-today" size={16} color="#059669" />
+                    <Text style={styles.detailText}>Built {propertyInfo.yearBuilt}</Text>
+                  </View>
+                  <View style={styles.detailItem}>
+                    <MaterialIcons name="landscape" size={16} color="#059669" />
+                    <Text style={styles.detailText}>
+                      {formatSquareFeet(propertyInfo.lotSquareFeet)} sq ft
+                    </Text>
+                  </View>
                 </View>
-                <View style={styles.detailItem}>
-                  <MaterialIcons name="landscape" size={16} color="#059669" />
-                  <Text style={styles.detailText}>
-                    {formatSquareFeet(propertyInfo.lotSquareFeet)} sq ft
-                  </Text>
-                </View>
-              </View>
 
-              {/* Property Use & Land Use */}
-              <View style={styles.detailRow}>
-                <View style={styles.detailItem}>
-                  <MaterialIcons name="home" size={16} color="#059669" />
-                  <Text style={styles.detailText}>{propertyInfo.propertyUse}</Text>
+                {/* Property Use & Land Use */}
+                <View style={styles.detailRow}>
+                  <View style={styles.detailItem}>
+                    <MaterialIcons name="home" size={16} color="#059669" />
+                    <Text style={styles.detailText}>{propertyInfo.propertyUse}</Text>
+                  </View>
                 </View>
               </View>
             </View>
-          </View>
+          )}
         </View>
       </LinearGradient>
     </View>

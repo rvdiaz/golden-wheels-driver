@@ -79,8 +79,16 @@ export const getPropertyQuery = gql`
 `;
 
 export const getPropertyEstimationQuery = gql`
-  query getPropertyEstimations($propertyId: String!, $needClosestProperties: Boolean) {
-    getPropertyEstimations(propertyId: $propertyId, needClosestProperties: $needClosestProperties) {
+  query getPropertyEstimations(
+    $propertyId: String!
+    $propertyAddress: String!
+    $needClosestProperties: Boolean
+  ) {
+    getPropertyEstimations(
+      propertyId: $propertyId
+      propertyAddress: $propertyAddress
+      needClosestProperties: $needClosestProperties
+    ) {
       avm {
         address
         apn

@@ -25,7 +25,7 @@ interface ISearchResults {
 }
 
 interface Props {
-  onSelection: (address: string) => void;
+  onSelection: (address: ISuggestionsApp) => void;
 }
 
 const SearchAddressAutoComplete: React.FC<Props> = ({ onSelection }) => {
@@ -69,7 +69,7 @@ const SearchAddressAutoComplete: React.FC<Props> = ({ onSelection }) => {
   /** Handle location selection */
   const handleLocationSelect = useCallback(
     (location: ISuggestionsApp) => {
-      onSelection(location.placeId);
+      onSelection(location);
       setSearchTerm(location.displayName);
       setSelectedLocation(location);
       setIsOpen(false);

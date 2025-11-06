@@ -4,13 +4,17 @@ import Text from '~/codidge_components/UI/text';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import { getRentApplications } from '~/custom_modules/tools/api/queries';
-import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 import { ScreenRequestForm } from './screenRequestForm';
-import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import { IRentApplication } from '../../interfaces';
 import { ScreenRequestItem } from './screenRequestItem';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import { Header } from '~/codidge_components/UI/header';
+import * as Icons from 'lucide-react-native';
+import IconButton from '~/codidge_components/UI/button/IconButton';
+import { theme } from '~/theme/theme';
+import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 
-export const ScreenRequestList = () => {
+export const ScreenRequestList = ({ onBack }: { onBack: () => void }) => {
   const user = useReactiveVar(userData);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -25,17 +29,28 @@ export const ScreenRequestList = () => {
     },
   });
 
-  if (loading) {
-    return <PageLoading />;
-  }
-
   if (error) {
     return (
-      <View style={styles.errorState}>
-        <Text style={styles.errorIcon}>⚠️</Text>
-        <Text style={styles.errorTitle}>Unable to load screening requests</Text>
-        <Text style={styles.errorSubtitle}>Please check your connection and try again</Text>
-      </View>
+      <PageSafeContainer>
+        <Header
+          title="Rental Applications"
+          showBack={true}
+          onBack={() => {
+            onBack();
+          }}
+          rightWidget={
+            <IconButton
+              onPress={() => {}}
+              icon={<Icons.Plus color={theme.colors.primary} size={18} />}
+            />
+          }
+        />
+        <View style={styles.errorState}>
+          <Text style={styles.errorIcon}>⚠️</Text>
+          <Text style={styles.errorTitle}>Unable to load screening requests</Text>
+          <Text style={styles.errorSubtitle}>Please check your connection and try again</Text>
+        </View>
+      </PageSafeContainer>
     );
   }
 
@@ -43,68 +58,90 @@ export const ScreenRequestList = () => {
 
   if (!rentApplicationsList || rentApplicationsList.length === 0) {
     return (
-      <View style={styles.centerContainer}>
-        <Text style={styles.emptyText}>No screening requests found</Text>
-        <FloatingMenu
-          title="Screen Tenant"
-          icon="Plus"
-          onPress={() => {
-            setModalVisible(true);
+      <PageSafeContainer>
+        <Header
+          title="Rental Applications"
+          showBack={true}
+          onBack={() => {
+            onBack();
           }}
-        />
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            setModalVisible(false);
-          }}>
-          <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-            <ScreenRequestForm
-              disposeModalHandler={() => {
-                setModalVisible(false);
-              }}
+          rightWidget={
+            <IconButton
+              onPress={() => {}}
+              icon={<Icons.Plus color={theme.colors.primary} size={18} />}
             />
-          </View>
-        </Modal>
-      </View>
+          }
+        />
+        <View style={styles.centerContainer}>
+          <Text style={styles.emptyText}>No screening requests found</Text>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              setModalVisible(false);
+            }}>
+            <View
+              style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+              <ScreenRequestForm
+                disposeModalHandler={() => {
+                  setModalVisible(false);
+                }}
+              />
+            </View>
+          </Modal>
+        </View>
+      </PageSafeContainer>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={rentApplicationsList}
-        renderItem={({ item }) => <ScreenRequestItem rentApp={item} />}
-        keyExtractor={(item) => item.rentApplicationId}
-        showsVerticalScrollIndicator={false}
-        onRefresh={refetch}
-        refreshing={loading}
-        contentContainerStyle={styles.listContainer}
-      />
-      <FloatingMenu
-        title="Screen Tenant"
-        icon="Plus"
-        onPress={() => {
-          setModalVisible(true);
+    <PageSafeContainer>
+      <Header
+        title="Rental Applications"
+        showBack={true}
+        onBack={() => {
+          onBack();
         }}
-      />
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(false);
-        }}>
-        <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <ScreenRequestForm
-            disposeModalHandler={() => {
-              setModalVisible(false);
-            }}
+        rightWidget={
+          <IconButton
+            onPress={() => {}}
+            icon={<Icons.Plus color={theme.colors.primary} size={18} />}
           />
+        }
+      />
+      {loading ? (
+        <PageLoading />
+      ) : (
+        <View style={styles.container}>
+          <FlatList
+            data={rentApplicationsList}
+            renderItem={({ item }) => <ScreenRequestItem rentApp={item} />}
+            keyExtractor={(item) => item.rentApplicationId}
+            showsVerticalScrollIndicator={false}
+            onRefresh={refetch}
+            refreshing={loading}
+            contentContainerStyle={styles.listContainer}
+          />
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              setModalVisible(false);
+            }}>
+            <View
+              style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+              <ScreenRequestForm
+                disposeModalHandler={() => {
+                  setModalVisible(false);
+                }}
+              />
+            </View>
+          </Modal>
         </View>
-      </Modal>
-    </View>
+      )}
+    </PageSafeContainer>
   );
 };
 

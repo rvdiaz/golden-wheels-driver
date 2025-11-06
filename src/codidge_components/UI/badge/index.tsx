@@ -23,7 +23,11 @@ export const Badge: React.FC<BadgeProps> = ({
 }) => {
   // color mapping
   const typeColors = {
-    success: { bg: '#34D399', border: '#059669', icon: <CheckCircle size={14} color="white" /> },
+    success: {
+      bg: theme.colors.success,
+      border: '#059669',
+      icon: <CheckCircle size={14} color="white" />,
+    },
     error: { bg: '#F87171', border: '#B91C1C', icon: <XCircle size={14} color="white" /> },
     warning: { bg: '#FBBF24', border: '#B45309', icon: <AlertTriangle size={14} color="white" /> },
     info: { bg: '#60A5FA', border: '#2563EB', icon: <Info size={14} color="white" /> },

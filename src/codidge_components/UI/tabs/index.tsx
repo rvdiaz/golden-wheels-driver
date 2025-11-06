@@ -293,10 +293,7 @@ export const CompactTabHeader: React.FC<TabHeaderProps> = ({
                 </View>
               )}
             </View>
-            <Text
-              style={[styles.compactTabText, activeTab === tab.key && styles.compactActiveTabText]}>
-              {tab.label}
-            </Text>
+            <Text style={[styles.compactTabText]}>{tab.label}</Text>
           </TouchableOpacity>
         ))}
       </View>

@@ -11,8 +11,13 @@ import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 import { PropertyForm } from './propertyForm';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import { PropertyItem } from './propertyItem';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import { Header } from '~/codidge_components/UI/header';
+import IconButton from '~/codidge_components/UI/button/IconButton';
+import { theme } from '~/theme/theme';
+import * as Icons from 'lucide-react-native';
 
-export const TransUnionPropertyList = () => {
+export const TransUnionPropertyList = ({ onBack }: { onBack: () => void }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -66,69 +71,103 @@ export const TransUnionPropertyList = () => {
     </View>
   );
 
-  const renderLoadingState = () => <PageLoading />;
-
-  const renderErrorState = () => (
-    <View style={styles.errorState}>
-      <Text style={styles.errorIcon}>⚠️</Text>
-      <Text style={styles.errorTitle}>Unable to load properties</Text>
-      <Text style={styles.errorSubtitle}>Please check your connection and try again</Text>
-    </View>
-  );
-
-  if (loading) return renderLoadingState();
-  if (error) return renderErrorState();
+  if (error)
+    return (
+      <PageSafeContainer>
+        <Header
+          title="Properties"
+          showBack={true}
+          onBack={() => {
+            onBack();
+          }}
+          rightWidget={
+            <IconButton
+              onPress={() => {
+                setModalVisible(true);
+              }}
+              icon={<Icons.Plus color={theme.colors.primary} size={18} />}
+            />
+          }
+        />
+        <View style={styles.errorState}>
+          <Text style={styles.errorIcon}>⚠️</Text>
+          <Text style={styles.errorTitle}>Unable to load properties</Text>
+          <Text style={styles.errorSubtitle}>Please check your connection and try again</Text>
+        </View>
+      </PageSafeContainer>
+    );
 
   return (
-    <View style={styles.container}>
-      {/* Search Header */}
-      <View style={styles.searchContainer}>
-        <InputField
-          placeholder="Search properties by name or address"
-          value={searchTerm}
-          onChangeText={setSearchTerm}
-          leftIcon={<Search size={16} />}
-          label="Search Properties"
-        />
-      </View>
-
-      {/* Properties List */}
-      <FlatList
-        data={filteredProperties}
-        renderItem={renderPropertyItem}
-        keyExtractor={(item, index) => item.propertyId || `property-${index}`}
-        contentContainerStyle={styles.listContainer}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={renderEmptyState}
-        onRefresh={refetch}
-        refreshing={loading}
-      />
-      <FloatingMenu
-        title="Add Property"
-        icon="Plus"
-        onPress={() => {
-          setModalVisible(true);
+    <PageSafeContainer
+      style={{
+        backgroundColor: theme.colors.surfaceSectionsBackgroundColor,
+      }}>
+      <Header
+        title="Properties"
+        showBack={true}
+        onBack={() => {
+          onBack();
+        }}
+        rightWidget={
+          <IconButton
+            onPress={() => {
+              setModalVisible(true);
+            }}
+            icon={<Icons.Plus color={theme.colors.primary} size={18} />}
+          />
+        }
+        contentContainerStyle={{
+          borderBottomWidth: 0,
         }}
       />
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(false);
-        }}>
-        <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <PropertyForm
-            disposeModalHandler={() => {
-              setModalVisible(false);
-            }}
-            onAddProperty={() => {
-              refetch();
-            }}
+      {loading ? (
+        <PageLoading />
+      ) : (
+        <View style={styles.container}>
+          {/* Search Header */}
+          <View style={styles.searchContainer}>
+            <InputField
+              placeholder="Search properties by name or address"
+              value={searchTerm}
+              onChangeText={setSearchTerm}
+              leftIcon={<Search size={16} />}
+            />
+          </View>
+
+          {/* Properties List */}
+          <FlatList
+            data={filteredProperties}
+            renderItem={renderPropertyItem}
+            keyExtractor={(item, index) => item.propertyId || `property-${index}`}
+            contentContainerStyle={styles.listContainer}
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={renderEmptyState}
+            onRefresh={refetch}
+            refreshing={loading}
+            ItemSeparatorComponent={() => <View style={{ height: 12 }} />} // <-- gap here
           />
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              setModalVisible(false);
+            }}>
+            <View
+              style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+              <PropertyForm
+                disposeModalHandler={() => {
+                  setModalVisible(false);
+                }}
+                onAddProperty={() => {
+                  refetch();
+                }}
+              />
+            </View>
+          </Modal>
         </View>
-      </Modal>
-    </View>
+      )}
+    </PageSafeContainer>
   );
 };
 

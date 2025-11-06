@@ -7,6 +7,9 @@ import { AttestationModal } from './attestationsPopup';
 import { useLazyQuery, useReactiveVar } from '@apollo/client';
 import { getTransUnionPropertyAttestationsQuery } from '~/custom_modules/tools/api/queries';
 import { userData } from '~/store/user';
+import { theme } from '~/theme/theme';
+import * as Icons from 'lucide-react-native';
+import { Badge } from '~/codidge_components/UI/badge';
 
 export const PropertyItem = ({ item, refetch }: { item: ITransUnionProperty; refetch: any }) => {
   const user = useReactiveVar(userData);
@@ -47,36 +50,24 @@ export const PropertyItem = ({ item, refetch }: { item: ITransUnionProperty; ref
 
   return (
     <View style={styles.propertyCard}>
-      {/* Property Header */}
-      <View style={styles.propertyHeader}>
-        <View style={styles.propertyTitle}>
-          <View style={[styles.statusBadge, isActive ? styles.activeBadge : styles.inactiveBadge]}>
-            <Text style={[styles.statusText, isActive ? styles.activeText : styles.inactiveText]}>
-              {isActive ? 'Active' : 'Inactive'}
-            </Text>
-          </View>
+      <View style={styles.toolTextWrapper}>
+        <View style={styles.toolIcon}>
+          <Icons.School size={22} color={theme.colors.textColor} />
+        </View>
+        <View style={styles.titleContainer}>
+          <Text style={styles.toolTitle}>{primaryAddress || 'Address not available'}</Text>
+          <Text style={styles.toolDescription}>{secondaryAddress}</Text>
         </View>
       </View>
+      <Badge
+        displayIcon={false}
+        style={{
+          borderWidth: 0,
+        }}
+        type="success">
+        Active
+      </Badge>
 
-      {/* Address Section */}
-      <View style={styles.addressSection}>
-        <View style={styles.addressIcon}>
-          <Text style={styles.addressIconText}>📍</Text>
-        </View>
-        <View style={styles.addressContent}>
-          <Text style={styles.primaryAddress} numberOfLines={2}>
-            {primaryAddress || 'Address not available'}
-          </Text>
-          {secondaryAddress && (
-            <Text style={styles.secondaryAddress} numberOfLines={1}>
-              {secondaryAddress}
-            </Text>
-          )}
-          {item.country ? <Text style={styles.country}>{item.country}</Text> : <></>}
-        </View>
-      </View>
-
-      {/* Activation Button - Only show when inactive */}
       {!isActive && (
         <TouchableOpacity
           style={styles.activateButton}
@@ -115,37 +106,14 @@ export const PropertyItem = ({ item, refetch }: { item: ITransUnionProperty; ref
 
 const styles = StyleSheet.create({
   propertyCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
+    borderRadius: theme.borderRadius.lg,
     padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  propertyHeader: {
-    marginBottom: 12,
-  },
-  propertyTitle: {
+    backgroundColor: '#FFF',
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
   },
-  propertyName: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#1a1a1a',
-    flex: 1,
-    marginRight: 8,
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    alignSelf: 'flex-start',
-  },
+
   activeBadge: {
     backgroundColor: '#d4edda',
   },
@@ -162,37 +130,6 @@ const styles = StyleSheet.create({
   inactiveText: {
     color: '#721c24',
   },
-  addressSection: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  addressIcon: {
-    marginRight: 12,
-    marginTop: 2,
-  },
-  addressIconText: {
-    fontSize: 16,
-  },
-  addressContent: {
-    flex: 1,
-  },
-  primaryAddress: {
-    fontSize: 14,
-    color: '#333333',
-    fontWeight: '500',
-    lineHeight: 22,
-    marginBottom: 4,
-  },
-  secondaryAddress: {
-    fontSize: 12,
-    color: '#666666',
-    marginBottom: 2,
-  },
-  country: {
-    fontSize: 14,
-    color: '#888888',
-    fontStyle: 'italic',
-  },
   activateButton: {
     backgroundColor: '#007AFF',
     borderRadius: 8,
@@ -202,6 +139,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 48,
+  },
+  titleContainer: {
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
+    gap: 6,
   },
   activateButtonText: {
     color: '#ffffff',
@@ -213,5 +155,34 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 12,
     opacity: 0.9,
+  },
+  toolTextWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  toolContent: {
+    padding: 16,
+    gap: 16,
+  },
+  toolIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: theme.borderRadius.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: theme.colors.baseGray,
+  },
+  toolTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1E1B4B',
+  },
+  toolDescription: {
+    fontSize: 14,
+    color: '#737373',
+  },
+  toolCardDisabled: {
+    opacity: 0.6,
   },
 });

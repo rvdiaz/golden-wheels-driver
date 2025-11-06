@@ -1,3 +1,4 @@
+import { capitalize } from '~/custom_modules/crm/helpers';
 import { IExtendedRenterInput, ITransUnionProperty } from '../interfaces';
 import { Minus, Eye, Clock, CheckCircle } from 'lucide-react-native';
 
@@ -134,7 +135,7 @@ export const formatAddress = (property: ITransUnionProperty) => {
   ].filter(Boolean);
 
   const primaryAddress = addressParts.join(', ');
-  const secondaryAddress = [property.locality, property.region, property.postalCode]
+  const secondaryAddress = [capitalize(property.locality), property.region, property.postalCode]
     .filter(Boolean)
     .join(', ');
 

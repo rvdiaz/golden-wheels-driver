@@ -1,5 +1,5 @@
-import React, { ReactNode } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import * as Icons from 'lucide-react-native';
 import PrimaryButton, { ButtonSize } from './PrimaryButton';
 
@@ -7,12 +7,14 @@ interface FloatingMenuProps {
   title?: string;
   icon?: keyof typeof Icons;
   onPress?: () => void;
+  style?: StyleProp<ViewStyle>;
 }
 
 export const FloatingMenu: React.FC<FloatingMenuProps> = ({
   title = 'Add',
   icon = 'Plus',
   onPress = () => {},
+  style, // receive custom style
 }) => {
   const IconComponent = (Icons[icon] ?? Icons.Plus) as React.ComponentType<{
     size: number;
@@ -24,7 +26,7 @@ export const FloatingMenu: React.FC<FloatingMenuProps> = ({
       onPress={onPress}
       title={title}
       size={ButtonSize.LARGE}
-      style={styles.fab}
+      style={[styles.fab, style]}
       leftWidget={<IconComponent size={20} color="#fff" />}
     />
   );

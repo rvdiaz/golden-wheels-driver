@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { TouchableOpacity, StyleSheet, ViewStyle, TextStyle, View } from 'react-native';
+import { TouchableOpacity, StyleSheet, ViewStyle, TextStyle, View, StyleProp } from 'react-native';
 import { LoadingSpinner } from '../loading/loadingSpinner';
 import { theme } from '~/theme/theme';
 import { sizeStyles } from './types';
@@ -19,8 +19,8 @@ interface PrimaryButtonProps {
   title: string;
   rightWidget?: ReactNode;
   leftWidget?: ReactNode;
-  style?: ViewStyle;
-  textStyle?: TextStyle;
+  style?: StyleProp<ViewStyle>; // ✅ FIXED
+  textStyle?: StyleProp<TextStyle>; // ✅ FIXED
 }
 
 const PrimaryButton: React.FC<PrimaryButtonProps> = ({

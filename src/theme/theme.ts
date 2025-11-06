@@ -13,6 +13,7 @@ export const theme = {
     headerBackground: '#1D0D66',
     bodyBackground: '#FFF',
     primaryBodyBackground: '#E0E7FF',
+    surfaceSectionsBackgroundColor: '#F1F5F9',
     menuItemActive: '#312E81',
     menuItemInactive: '#64748B',
     headerModal: '#EEF2FF',

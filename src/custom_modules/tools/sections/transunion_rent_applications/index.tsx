@@ -1,31 +1,23 @@
 import { useNavigation } from '@react-navigation/native';
-import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Card } from '~/codidge_components/UI/card';
+import { Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Header } from '~/codidge_components/UI/header';
-import { TabHeader } from '~/codidge_components/UI/tabs';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import { theme } from '~/theme/theme';
+import * as Icons from 'lucide-react-native';
+import Text from '~/codidge_components/UI/text';
+import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
+import { useState } from 'react';
+import { ScreenRequestForm } from './widgets/screen_request/screenRequestForm';
+import { PageTransition } from '~/codidge_components/UI/pageTransition';
 import { TransUnionPropertyList } from './widgets/property/propertyList';
 import { ScreenRequestList } from './widgets/screen_request/screenRequestList';
-import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
-
-enum RentalAppScreen {
-  TransUnionPropertyList = 'TransUnionPropertyList',
-  TransUnionScreenRequestList = 'TransUnionScreenRequestList',
-  TransUnionRentersList = 'TransUnionRentersList',
-}
 
 export const TransunionRentsApplications = () => {
   const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
 
-  const [screen, setScreen] = useState<RentalAppScreen>(
-    RentalAppScreen.TransUnionScreenRequestList
-  );
-
-  let body = <TransUnionPropertyList />;
-
-  if (screen === RentalAppScreen.TransUnionScreenRequestList) {
-    body = <ScreenRequestList />;
-  }
+  const [seeProperties, setSeeProperties] = useState(false);
+  const [seeScreens, setSeeScreens] = useState(false);
 
   return (
     <PageSafeContainer style={styles.container}>
@@ -36,26 +28,81 @@ export const TransunionRentsApplications = () => {
           navigation.goBack();
         }}
       />
-      <Card style={styles.card}>
-        <View style={styles.tabsContainer}>
-          <TabHeader
-            tabs={[
-              {
-                label: 'Screening',
-                key: RentalAppScreen.TransUnionScreenRequestList,
-              },
-              {
-                label: 'Properties',
-                key: RentalAppScreen.TransUnionPropertyList,
-              },
-            ]}
-            onTabChange={(tabKey) => {
-              setScreen(tabKey as RentalAppScreen);
+      <View style={styles.toolContent}>
+        <TouchableOpacity
+          key={'properties'}
+          style={styles.toolCard}
+          onPress={() => {
+            setSeeProperties(true);
+          }}>
+          <View style={styles.toolTextWrapper}>
+            <View style={styles.toolIcon}>
+              <Icons.HousePlus size={22} color={theme.colors.menuItemActive} />
+            </View>
+            <View style={styles.titleContainer}>
+              <Text style={styles.toolTitle}>Properties</Text>
+              <Text style={styles.toolDescription}>Build your professional identity</Text>
+            </View>
+          </View>
+          <Icons.ChevronRight size={24} color={theme.colors.menuItemActive} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          key={'screens'}
+          style={styles.toolCard}
+          onPress={() => {
+            setSeeScreens(true);
+          }}>
+          <View style={styles.toolTextWrapper}>
+            <View style={styles.toolIcon}>
+              <Icons.FileUser size={22} color={theme.colors.menuItemActive} />
+            </View>
+            <View style={styles.titleContainer}>
+              <Text style={styles.toolTitle}>Applications</Text>
+              <Text style={styles.toolDescription}>Build your professional identity</Text>
+            </View>
+          </View>
+          <Icons.ChevronRight size={24} color={theme.colors.menuItemActive} />
+        </TouchableOpacity>
+      </View>
+      <PageTransition isVisible={seeProperties} duration={350}>
+        <TransUnionPropertyList
+          onBack={() => {
+            setSeeProperties(false);
+          }}
+        />
+      </PageTransition>
+      <PageTransition isVisible={seeScreens} duration={350}>
+        <ScreenRequestList
+          onBack={() => {
+            setSeeScreens(false);
+          }}
+        />
+      </PageTransition>
+      {!seeProperties && !seeScreens && (
+        <FloatingMenu
+          title="Screen Tenant"
+          icon="Plus"
+          onPress={() => {
+            setModalVisible(true);
+          }}
+          style={{ bottom: 40, right: 30 }}
+        />
+      )}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(false);
+        }}>
+        <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <ScreenRequestForm
+            disposeModalHandler={() => {
+              setModalVisible(false);
             }}
           />
-          <View style={styles.bodyContainer}>{body}</View>
         </View>
-      </Card>
+      </Modal>
     </PageSafeContainer>
   );
 };
@@ -63,6 +110,7 @@ export const TransunionRentsApplications = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: theme.colors.surfaceSectionsBackgroundColor,
   },
   card: {
     marginHorizontal: 16,
@@ -75,5 +123,47 @@ const styles = StyleSheet.create({
   },
   bodyContainer: {
     flex: 1,
+  },
+  titleContainer: {
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  toolCard: {
+    borderRadius: theme.borderRadius.lg,
+    padding: 16,
+    backgroundColor: '#FFF',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  toolTextWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  toolContent: {
+    padding: 16,
+    gap: 16,
+  },
+  toolIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: '50%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#E0E7FF',
+  },
+  toolTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1E1B4B',
+  },
+  toolDescription: {
+    fontSize: 14,
+    color: '#737373',
+  },
+  toolCardDisabled: {
+    opacity: 0.6,
   },
 });

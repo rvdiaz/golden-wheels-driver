@@ -53,9 +53,9 @@ export const getRequestStatus = (
 
   if (hasOtherPending) {
     return {
-      status: 'In Progress',
-      color: '#ff9500',
-      bgColor: '#fff3e0',
+      status: 'Pending',
+      color: '#FFF',
+      bgColor: '#3B82F6',
     };
   }
 
@@ -90,9 +90,9 @@ export const getApplicantStatus = (
   switch (renterStatus.toLowerCase()) {
     case 'pending':
       return {
-        status: 'Not Started',
-        color: '#666',
-        bgColor: '#f5f5f5',
+        status: 'Pending',
+        color: '#FFF',
+        bgColor: '#3B82F6',
         icon: Minus,
       };
     case 'viewed':

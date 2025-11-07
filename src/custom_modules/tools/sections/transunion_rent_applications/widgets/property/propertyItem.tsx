@@ -64,8 +64,8 @@ export const PropertyItem = ({ item, refetch }: { item: ITransUnionProperty; ref
         style={{
           borderWidth: 0,
         }}
-        type="success">
-        Active
+        type={isActive ? 'success' : 'error'}>
+        {isActive ? 'Active' : 'Inactive'}
       </Badge>
 
       {!isActive && (

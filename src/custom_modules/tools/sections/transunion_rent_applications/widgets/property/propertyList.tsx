@@ -7,15 +7,15 @@ import { getTransunionPropertyQuery } from '~/custom_modules/tools/api/queries';
 import { ITransUnionProperty } from '../../interfaces';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { Search } from 'lucide-react-native';
-import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 import { PropertyForm } from './propertyForm';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import { PropertyItem } from './propertyItem';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { Header } from '~/codidge_components/UI/header';
-import IconButton from '~/codidge_components/UI/button/IconButton';
 import { theme } from '~/theme/theme';
-import * as Icons from 'lucide-react-native';
+import { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
+import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
+import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 
 export const TransUnionPropertyList = ({ onBack }: { onBack: () => void }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -80,17 +80,16 @@ export const TransUnionPropertyList = ({ onBack }: { onBack: () => void }) => {
           onBack={() => {
             onBack();
           }}
-          rightWidget={
-            <IconButton
-              onPress={() => {
-                setModalVisible(true);
-              }}
-              icon={<Icons.Plus color={theme.colors.primary} size={18} />}
-            />
-          }
         />
         <View style={styles.errorState}>
           <Text style={styles.errorIcon}>⚠️</Text>
+          <PrimaryButton
+            title="Try Again"
+            size={ButtonSize.LARGE}
+            onPress={() => {
+              refetch();
+            }}
+          />
           <Text style={styles.errorTitle}>Unable to load properties</Text>
           <Text style={styles.errorSubtitle}>Please check your connection and try again</Text>
         </View>
@@ -108,14 +107,6 @@ export const TransUnionPropertyList = ({ onBack }: { onBack: () => void }) => {
         onBack={() => {
           onBack();
         }}
-        rightWidget={
-          <IconButton
-            onPress={() => {
-              setModalVisible(true);
-            }}
-            icon={<Icons.Plus color={theme.colors.primary} size={18} />}
-          />
-        }
         contentContainerStyle={{
           borderBottomWidth: 0,
         }}
@@ -127,7 +118,7 @@ export const TransUnionPropertyList = ({ onBack }: { onBack: () => void }) => {
           {/* Search Header */}
           <View style={styles.searchContainer}>
             <InputField
-              placeholder="Search properties by name or address"
+              placeholder="Search by name or address"
               value={searchTerm}
               onChangeText={setSearchTerm}
               leftIcon={<Search size={16} />}
@@ -145,6 +136,16 @@ export const TransUnionPropertyList = ({ onBack }: { onBack: () => void }) => {
             onRefresh={refetch}
             refreshing={loading}
             ItemSeparatorComponent={() => <View style={{ height: 12 }} />} // <-- gap here
+          />
+          <FloatingMenu
+            title="Add Property"
+            icon="Plus"
+            style={{
+              backgroundColor: theme.colors.primary,
+            }}
+            onPress={() => {
+              setModalVisible(true);
+            }}
           />
           <Modal
             animationType="slide"
@@ -180,6 +181,7 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 2,
     backgroundColor: '#ffffff',
+    gap: 14,
   },
   listContainer: {
     padding: 16,
@@ -298,7 +300,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#dc3545',
-    marginBottom: 8,
+    marginVertical: 8,
     textAlign: 'center',
   },
   errorSubtitle: {

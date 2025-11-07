@@ -1,18 +1,30 @@
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import Text from '~/codidge_components/UI/text';
 import React, { useState } from 'react';
-import { Card } from '~/codidge_components/UI/card';
-import { formatTransunionDate, getApplicantStatus, getRequestStatus } from '../../helpers';
+import * as Icons from 'lucide-react-native';
+import {
+  formatAddress,
+  formatTransunionDate,
+  getApplicantStatus,
+  getRequestStatus,
+} from '../../helpers';
 import { IExtendedRenterInput, IRentApplication } from '../../interfaces';
 import { theme } from '~/theme/theme';
 import { PdfReportModal } from './applicantPdfViewer';
+import { Badge } from '~/codidge_components/UI/badge';
+import IconButton from '~/codidge_components/UI/button/IconButton';
+import OutlineButton, { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
 
 export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedApplicant, setSelectedApplicant] = useState<IExtendedRenterInput | null>(null);
 
+  const [showApplicants, setShowApplicants] = useState(false);
+
   const statusInfo = getRequestStatus(rentApp.applicants);
   const hasApplicants = rentApp.applicants.length > 0;
+
+  const { primaryAddress, secondaryAddress } = formatAddress(rentApp.property);
 
   const handleRequestPress = (item: IRentApplication) => {
     console.log('Navigate to details for:');
@@ -41,73 +53,139 @@ export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) =>
 
   return (
     <>
-      <TouchableOpacity onPress={() => handleRequestPress(rentApp)} activeOpacity={0.8}>
-        <Card style={styles.requestCard}>
-          {/* Header with Property Name and Overall Status */}
-          <View style={styles.header}>
-            <View style={[styles.statusBadge, { backgroundColor: statusInfo.bgColor }]}>
-              <Text style={[styles.statusText, { color: statusInfo.color }]}>
-                {statusInfo.status}
-              </Text>
+      <TouchableOpacity
+        onPress={() => {
+          setShowApplicants((prev) => !prev);
+        }}
+        activeOpacity={0.8}>
+        <View style={styles.requestCard}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <View style={styles.titleContainer}>
+              <Text style={styles.toolTitle}>{primaryAddress}</Text>
+              <Text style={styles.toolDescription}>{secondaryAddress}</Text>
             </View>
-          </View>
-
-          {/* Property Address */}
-          <View style={styles.addressContainer}>
-            <Text style={styles.addressIcon}>📍</Text>
-            <Text style={styles.address} numberOfLines={2}>
-              {rentApp.property.addressLine1}, {rentApp.property.region},{' '}
-              {rentApp.property.postalCode}
-            </Text>
+            <OutlineButton
+              title="Applicants"
+              size={ButtonSize.SMALL}
+              color={theme.colors.info}
+              rightWidget={
+                showApplicants ? (
+                  <Icons.ChevronUp color={theme.colors.info} size={18} />
+                ) : (
+                  <Icons.ChevronDown color={theme.colors.info} size={18} />
+                )
+              }
+              onPress={() => {
+                setShowApplicants((prev) => !prev);
+              }}
+            />
           </View>
 
           {/* Applicants List */}
-          {hasApplicants && (
-            <View>
-              <Text style={styles.applicantsHeader}>Applicants</Text>
+          {showApplicants && hasApplicants && (
+            <View
+              style={{
+                marginTop: 16,
+              }}>
               {rentApp.applicants.map((applicant) => {
                 const applicantStatus = getApplicantStatus(applicant.renterStatus);
                 const canViewReport = !!applicant.reportPdfUrl;
                 const IconComponent = applicantStatus.icon;
 
+                if (canViewReport) {
+                  return (
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: theme.colors.baseGray,
+                        padding: 20,
+                        borderRadius: theme.borderRadius.lg,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginBottom: 8,
+                      }}
+                      onPress={(event) => handleApplicantPress(applicant, event)}>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          gap: 5,
+                        }}>
+                        <Icons.Link size={18} color={theme.colors.textColor} />
+                        <Text style={[styles.viewReportText, { fontWeight: 700, marginRight: 2 }]}>
+                          Report.pdf
+                        </Text>
+                        <Text style={styles.viewReportText}>
+                          {`${applicant.firstName} ${applicant.lastName}`}
+                        </Text>
+                      </View>
+                      <IconButton
+                        style={{
+                          borderWidth: 1,
+                          borderColor: theme.colors.borderNeutralColor,
+                        }}
+                        icon={<Icons.Download size={18} color={theme.colors.textColor} />}
+                      />
+                    </TouchableOpacity>
+                  );
+                }
+
                 return (
                   <TouchableOpacity
+                    onPress={(event) => {
+                      event.stopPropagation();
+                    }}
                     key={applicant.screeningRequestId}
-                    style={[styles.applicantItem, canViewReport && styles.applicantItemPressable]}
-                    onPress={(event) => handleApplicantPress(applicant, event)}
-                    activeOpacity={canViewReport ? 0.7 : 1}
-                    disabled={!canViewReport}>
+                    style={styles.applicantItem}>
                     <View style={styles.applicantContent}>
                       <View style={styles.applicantInfo}>
-                        <Text style={styles.applicantEmail}>{applicant.emailAddress}</Text>
+                        <Text
+                          style={
+                            styles.applicantName
+                          }>{`${applicant.firstName} ${applicant.lastName}`}</Text>
                       </View>
 
                       <View style={styles.applicantStatusContainer}>
-                        {canViewReport ? (
-                          <Text style={styles.viewReportText}>View Report →</Text>
-                        ) : (
-                          <View
-                            style={[
-                              styles.applicantStatusBadge,
-                              { backgroundColor: applicantStatus.bgColor },
-                            ]}>
-                            <View style={styles.statusContent}>
-                              <IconComponent
-                                size={16}
-                                color={applicantStatus.color}
-                                style={styles.statusIcon}
-                              />
-                              <Text
-                                style={[
-                                  styles.applicantStatusText,
-                                  { color: applicantStatus.color },
-                                ]}>
-                                {applicantStatus.status}
-                              </Text>
-                            </View>
+                        <View
+                          style={[
+                            styles.applicantStatusBadge,
+                            { backgroundColor: applicantStatus.bgColor },
+                          ]}>
+                          <View style={styles.statusContent}>
+                            <Badge
+                              displayIcon={false}
+                              style={{
+                                borderWidth: 0,
+                                backgroundColor: applicantStatus.bgColor,
+                              }}
+                              contentStyle={{
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: 5,
+                              }}
+                              textStyle={{
+                                color: applicantStatus.color,
+                              }}>
+                              {applicantStatus.status}
+                            </Badge>
                           </View>
-                        )}
+                        </View>
                       </View>
+                    </View>
+                    <View
+                      style={[
+                        styles.footer,
+                        {
+                          marginTop: 8,
+                        },
+                      ]}>
+                      <View style={styles.applicantInfo}>
+                        <Text style={styles.applicantEmail}>{applicant.emailAddress}</Text>
+                      </View>
+                      <Text style={styles.dateText}>{formatTransunionDate(rentApp.createdAt)}</Text>
                     </View>
                   </TouchableOpacity>
                 );
@@ -117,11 +195,22 @@ export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) =>
 
           {/* Footer with Count and Date/Time */}
           <View style={styles.footer}>
-            <View style={styles.footerRight}>
+            <Badge
+              displayIcon={false}
+              style={{
+                borderWidth: 0,
+                backgroundColor: statusInfo.bgColor,
+              }}
+              textStyle={{
+                color: statusInfo.color,
+              }}>
+              {statusInfo.status}
+            </Badge>
+            <View>
               <Text style={styles.dateText}>{formatTransunionDate(rentApp.createdAt)}</Text>
             </View>
           </View>
-        </Card>
+        </View>
       </TouchableOpacity>
       {/* Reports Modal */}
       <PdfReportModal
@@ -135,63 +224,28 @@ export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) =>
 
 const styles = StyleSheet.create({
   requestCard: {
-    marginBottom: 16,
-    padding: 16,
-    marginHorizontal: 4,
     borderRadius: theme.borderRadius.lg,
+    padding: 16,
+    backgroundColor: '#FFF',
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  titleContainer: {
     alignItems: 'flex-start',
-    marginBottom: 12,
+    flexWrap: 'wrap',
+    gap: 6,
   },
-  statusBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    minWidth: 80,
-    alignItems: 'center',
-  },
-  statusText: {
-    fontSize: 11,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-  },
-  addressContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 16,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: '#F8F9FA',
-    borderRadius: 8,
-  },
-  addressIcon: {
+  toolTitle: {
     fontSize: 14,
-    marginRight: 8,
-    marginTop: 1,
-  },
-  address: {
-    fontSize: 13,
-    color: '#4A4A4A',
-    lineHeight: 18,
-    flex: 1,
-  },
-  applicantsHeader: {
-    fontSize: 12,
     fontWeight: '600',
-    color: '#0066CC',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 8,
+    color: '#1E1B4B',
+  },
+  toolDescription: {
+    fontSize: 14,
+    color: '#737373',
   },
   applicantItem: {
     marginBottom: 8,
-    padding: 12,
-    backgroundColor: '#F8F9FA',
-    borderRadius: 8,
+    padding: 10,
+    borderRadius: theme.borderRadius.lg,
     borderWidth: 1,
     borderColor: '#E5E5E5',
   },
@@ -208,6 +262,10 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 12,
   },
+  footerInfo: {
+    flex: 1,
+    marginRight: 12,
+  },
   applicantHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -220,8 +278,8 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   applicantEmail: {
-    fontSize: 11,
-    color: '#666666',
+    fontSize: 12,
+    color: '#737373',
     fontStyle: 'italic',
   },
   applicantStatusContainer: {
@@ -242,22 +300,19 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   viewReportText: {
-    fontSize: 10,
-    color: '#0066CC',
-    fontWeight: '500',
+    fontSize: 14,
+    color: theme.colors.textColor,
+    fontWeight: '400',
   },
   footer: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  footerRight: {
-    alignItems: 'flex-end',
+    marginTop: 16,
   },
   dateText: {
     fontSize: 12,
-    color: '#666666',
-    fontWeight: '500',
+    color: '#737373',
   },
   statusContent: {
     flexDirection: 'row',

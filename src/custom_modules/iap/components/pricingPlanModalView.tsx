@@ -34,9 +34,8 @@ export const PricingPlanModalView = (args: IPricingPlanModalViewProps) => {
           ['', billingPeriod].includes(plan.billingPeriod ?? '') &&
           (plan.productId === 'free-lifetime' ||
             //temporarily disabled to allow free plan selection
-            true
-                      //  subscriptions?.some((product) => product.id === plan.productId)
-                      )
+            true)
+          //  subscriptions?.some((product) => product.id === plan.productId)
       ),
     [allPlans, subscriptions, billingPeriod]
   );
@@ -71,10 +70,14 @@ export const PricingPlanModalView = (args: IPricingPlanModalViewProps) => {
       onRequestClose={onClose}
       statusBarTranslucent>
       <StatusBar barStyle="light-content" />
-      <View style={[styles.modalContainer, {
-        paddingTop: insets.top,
-        marginBottom: insets.bottom,
-      }]}>
+      <View
+        style={[
+          styles.modalContainer,
+          {
+            paddingTop: insets.top,
+            marginBottom: insets.bottom,
+          },
+        ]}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Choose Your Plan</Text>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>

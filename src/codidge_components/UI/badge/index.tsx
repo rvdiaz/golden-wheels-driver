@@ -10,6 +10,7 @@ interface BadgeProps {
   children: React.ReactNode;
   type?: BadgeType;
   style?: ViewStyle;
+  contentStyle?: ViewStyle;
   textStyle?: TextStyle;
   displayIcon?: boolean;
 }
@@ -20,6 +21,7 @@ export const Badge: React.FC<BadgeProps> = ({
   style,
   displayIcon = true,
   textStyle,
+  contentStyle,
 }) => {
   // color mapping
   const typeColors = {
@@ -38,7 +40,7 @@ export const Badge: React.FC<BadgeProps> = ({
 
   return (
     <View style={[styles.badge, { backgroundColor: bg, borderColor: border }, style]}>
-      <View style={styles.content}>
+      <View style={[styles.content, contentStyle]}>
         {displayIcon && icon}
         <Text style={[styles.badgeText, textStyle]}>{children}</Text>
       </View>

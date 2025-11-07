@@ -15,6 +15,8 @@ import { theme } from '~/theme/theme';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import { TabHeader } from '~/codidge_components/UI/tabs';
 import { getRequestStatus } from '../../helpers';
+import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
+import { ButtonSize } from '~/codidge_components/UI/button/types';
 
 export const ScreenRequestList = ({ onBack }: { onBack: () => void }) => {
   const user = useReactiveVar(userData);
@@ -69,14 +71,16 @@ export const ScreenRequestList = ({ onBack }: { onBack: () => void }) => {
           onBack={() => {
             onBack();
           }}
-          rightWidget={
-            <IconButton
-              onPress={() => {}}
-              icon={<Icons.Plus color={theme.colors.primary} size={18} />}
-            />
-          }
         />
         <View style={styles.centerContainer}>
+          <OutlineButton
+            onPress={() => {
+              setModalVisible(true);
+            }}
+            size={ButtonSize.LARGE}
+            title="Screen Tenant"
+            leftWidget={<Icons.Plus color={theme.colors.primary} size={20} />}
+          />
           <Text style={styles.emptyText}>No screening requests found</Text>
           <Modal
             animationType="slide"
@@ -110,19 +114,16 @@ export const ScreenRequestList = ({ onBack }: { onBack: () => void }) => {
   });
 
   return (
-    <PageSafeContainer>
+    <PageSafeContainer
+      style={{
+        backgroundColor: theme.colors.surfaceSectionsBackgroundColor,
+      }}>
       <Header
         title="Applications"
         showBack={true}
         onBack={() => {
           onBack();
         }}
-        rightWidget={
-          <IconButton
-            onPress={() => {}}
-            icon={<Icons.Plus color={theme.colors.primary} size={18} />}
-          />
-        }
       />
       {loading ? (
         <PageLoading />
@@ -158,6 +159,7 @@ export const ScreenRequestList = ({ onBack }: { onBack: () => void }) => {
             onRefresh={refetch}
             refreshing={loading}
             contentContainerStyle={styles.listContainer}
+            ItemSeparatorComponent={() => <View style={{ height: 12 }} />} // <-- gap here
           />
           <Modal
             animationType="slide"
@@ -175,6 +177,16 @@ export const ScreenRequestList = ({ onBack }: { onBack: () => void }) => {
               />
             </View>
           </Modal>
+          {/* <FloatingMenu
+            title="Screen Tenant"
+            icon="Plus"
+            style={{
+              backgroundColor: theme.colors.primary,
+            }}
+            onPress={() => {
+              setModalVisible(true);
+            }}
+          /> */}
         </View>
       )}
     </PageSafeContainer>
@@ -184,7 +196,8 @@ export const ScreenRequestList = ({ onBack }: { onBack: () => void }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 16,
+    marginTop: 4,
   },
   centerContainer: {
     flex: 1,
@@ -201,6 +214,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     textAlign: 'center',
+    marginTop: 16,
   },
   listContainer: {
     paddingBottom: 20,

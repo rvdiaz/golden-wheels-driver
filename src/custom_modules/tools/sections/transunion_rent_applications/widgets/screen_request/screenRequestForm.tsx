@@ -12,6 +12,7 @@ import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/Primar
 import { Send } from 'lucide-react-native';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { getRentApplications } from '~/custom_modules/tools/api/queries';
+import { theme } from '~/theme/theme';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -75,18 +76,18 @@ export const ScreenRequestForm = ({
     <PageSafeContainer style={styles.container}>
       <Header title="Screening Request" showBack={true} onBack={disposeModalHandler} />
 
+      {/* Property Selection */}
+      <PropertySelectorWidget
+        onPropertySelect={(propData) => {
+          setProperty(propData);
+        }}
+        selectedProperty={property}
+        label="Property *"
+        placeholder="Select a property for screening"
+      />
+
       <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
         <View style={styles.bodyContainer}>
-          {/* Property Selection */}
-          <PropertySelectorWidget
-            onPropertySelect={(propData) => {
-              setProperty(propData);
-            }}
-            selectedProperty={property}
-            label="Property *"
-            placeholder="Select a property for screening"
-          />
-
           {/* Email Selection */}
           <MultipleContactEmails
             emails={emails ?? []}
@@ -124,13 +125,16 @@ export const ScreenRequestForm = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#ffffff',
+    backgroundColor: theme.colors.surfaceSectionsBackgroundColor,
   },
   scrollContainer: {
     flex: 1,
   },
   bodyContainer: {
+    marginHorizontal: 16,
+    borderRadius: theme.borderRadius.lg,
+    paddingVertical: 10,
     paddingHorizontal: 16,
-    paddingBottom: 32,
+    backgroundColor: '#FFF',
   },
 });

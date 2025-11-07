@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import Text from '~/codidge_components/UI/text';
 import { formatAddress } from '../../helpers';
 import { IAttestationGroup, ITransUnionProperty } from '../../interfaces';
@@ -11,7 +11,17 @@ import { theme } from '~/theme/theme';
 import * as Icons from 'lucide-react-native';
 import { Badge } from '~/codidge_components/UI/badge';
 
-export const PropertyItem = ({ item, refetch }: { item: ITransUnionProperty; refetch: any }) => {
+export const PropertyItem = ({
+  item,
+  refetch,
+  containerStyle,
+  showBadge,
+}: {
+  item: ITransUnionProperty;
+  refetch: any;
+  containerStyle?: ViewStyle;
+  showBadge?: boolean;
+}) => {
   const user = useReactiveVar(userData);
 
   const { primaryAddress, secondaryAddress } = formatAddress(item);
@@ -49,7 +59,7 @@ export const PropertyItem = ({ item, refetch }: { item: ITransUnionProperty; ref
   };
 
   return (
-    <View style={styles.propertyCard}>
+    <View style={[styles.propertyCard, containerStyle && containerStyle]}>
       <View style={styles.toolTextWrapper}>
         <View style={styles.toolIcon}>
           <Icons.School size={22} color={theme.colors.textColor} />
@@ -59,15 +69,16 @@ export const PropertyItem = ({ item, refetch }: { item: ITransUnionProperty; ref
           <Text style={styles.toolDescription}>{secondaryAddress}</Text>
         </View>
       </View>
-      <Badge
-        displayIcon={false}
-        style={{
-          borderWidth: 0,
-        }}
-        type={isActive ? 'success' : 'error'}>
-        {isActive ? 'Active' : 'Inactive'}
-      </Badge>
-
+      {showBadge && (
+        <Badge
+          displayIcon={false}
+          style={{
+            borderWidth: 0,
+          }}
+          type={isActive ? 'success' : 'error'}>
+          {isActive ? 'Active' : 'Inactive'}
+        </Badge>
+      )}
       {!isActive && (
         <TouchableOpacity
           style={styles.activateButton}
@@ -113,7 +124,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-
   activeBadge: {
     backgroundColor: '#d4edda',
   },

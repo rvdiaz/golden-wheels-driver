@@ -7,8 +7,8 @@ import {
   Alert,
   Modal,
   TouchableOpacity,
-  Pressable,
 } from 'react-native';
+import * as Icons from 'lucide-react-native';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import { getTransunionPropertyQuery } from '~/custom_modules/tools/api/queries';
@@ -20,6 +20,10 @@ import { Header } from '~/codidge_components/UI/header';
 import { theme } from '~/theme/theme';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
+import { formatAddress } from '../../helpers';
+import { PropertyItem } from './propertyItem';
+import TextButton from '~/codidge_components/UI/button/TextButton';
+import { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 
 // Property Selector Widget Component
 interface PropertySelectorWidgetProps {
@@ -55,30 +59,61 @@ export const PropertySelectorWidget: React.FC<PropertySelectorWidgetProps> = ({
   };
 
   return (
-    <>
-      <View style={styles.widgetContainer}>
-        {label && <Text style={styles.widgetLabel}>{label}</Text>}
-        <Pressable
-          style={[
-            styles.selectorButton,
-            error && styles.selectorButtonError,
-            disabled && styles.selectorButtonDisabled,
-          ]}
-          onPress={() => !disabled && setModalVisible(true)}
-          disabled={disabled}>
-          <View style={styles.selectorContent}>
-            <Text
-              style={[
-                styles.selectorText,
-                !selectedProperty && styles.selectorPlaceholder,
-                disabled && styles.selectorTextDisabled,
-              ]}
-              numberOfLines={1}>
-              {selectedProperty ? formatSelectedPropertyDisplay(selectedProperty) : placeholder}
-            </Text>
-            <ChevronDown size={20} color={disabled ? '#ccc' : '#666'} />
-          </View>
-        </Pressable>
+    <View style={styles.widgetContainer}>
+      <View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 8,
+          }}>
+          {label && <Text style={styles.widgetLabel}>{label}</Text>}
+          {selectedProperty && (
+            <TextButton
+              textStyle={{
+                color: theme.colors.info,
+              }}
+              size={ButtonSize.LARGE}
+              title="Change"
+              onPress={() => !disabled && setModalVisible(true)}
+            />
+          )}
+        </View>
+        {selectedProperty ? (
+          <PropertyItem
+            item={selectedProperty}
+            refetch={() => {}}
+            containerStyle={{
+              borderWidth: 1,
+              borderColor: theme.colors.borderNeutralColor,
+            }}
+          />
+        ) : (
+          <TouchableOpacity
+            style={[
+              styles.selectorButton,
+              error && styles.selectorButtonError,
+              disabled && styles.selectorButtonDisabled,
+            ]}
+            onPress={() => !disabled && setModalVisible(true)}
+            disabled={disabled}>
+            <View style={styles.selectorContent}>
+              <Icons.Home size={18} color="#737373" />
+              <Text
+                style={[
+                  styles.selectorText,
+                  !selectedProperty && styles.selectorPlaceholder,
+                  disabled && styles.selectorTextDisabled,
+                ]}
+                numberOfLines={1}>
+                {selectedProperty ? formatSelectedPropertyDisplay(selectedProperty) : placeholder}
+              </Text>
+              <ChevronDown size={20} color={disabled ? '#ccc' : '#666'} />
+            </View>
+          </TouchableOpacity>
+        )}
+
         {error && <Text style={styles.errorText}>{error}</Text>}
       </View>
 
@@ -88,7 +123,7 @@ export const PropertySelectorWidget: React.FC<PropertySelectorWidgetProps> = ({
         onPropertySelect={handlePropertySelect}
         selectedPropertyId={selectedProperty?.propertyId}
       />
-    </>
+    </View>
   );
 };
 
@@ -320,13 +355,16 @@ export const PropertySelectorModal: React.FC<PropertySelectorModalProps> = ({
 const styles = StyleSheet.create({
   // Widget Styles
   widgetContainer: {
-    marginVertical: 16,
+    margin: 16,
+    borderRadius: theme.borderRadius.lg,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    backgroundColor: '#FFF',
   },
   widgetLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
+    color: '#737373',
   },
   selectorButton: {
     borderWidth: 1,
@@ -347,6 +385,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    gap: 5,
   },
   selectorText: {
     fontSize: 16,

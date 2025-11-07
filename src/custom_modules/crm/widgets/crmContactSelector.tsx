@@ -8,10 +8,13 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import Text from '~/codidge_components/UI/text';
-import { Search, Plus, X, Trash2, UserPlus, Users } from 'lucide-react-native';
+import { Search, X, Trash2, UserPlus } from 'lucide-react-native';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { useContactsQueries } from '../hooks/contactMutations';
 import IconButton from '~/codidge_components/UI/button/IconButton';
+import { ButtonSize } from '~/codidge_components/UI/button/types';
+import { theme } from '~/theme/theme';
+import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
 
 // Contact Interface (adjust according to your contact structure)
 interface IContact {
@@ -161,15 +164,9 @@ export const MultipleContactEmails: React.FC<MultipleContactEmailsProps> = ({
   const hasValidEmails = emails.some((email) => email && isValidEmail(email));
 
   return (
-    <View style={styles.multipleEmailsContainer}>
+    <View>
       <View style={styles.multipleEmailsHeader}>
         <Text style={styles.multipleEmailsLabel}>{label}</Text>
-        {emails.length < maxEmails && (
-          <TouchableOpacity style={styles.addEmailButton} onPress={addEmailSlot}>
-            <Plus size={16} color="#007AFF" />
-            <Text style={styles.addEmailText}>Add Applicant</Text>
-          </TouchableOpacity>
-        )}
       </View>
 
       {emails.map((email, index) => (
@@ -188,19 +185,19 @@ export const MultipleContactEmails: React.FC<MultipleContactEmailsProps> = ({
               placeholder={`Email ${index + 1}`}
               label=""
               error={getEmailError(email, index)}
-              showContactsButton={true}
+              showContactsButton={false}
             />
           </View>
           {emails.length > minEmails && (
-            <IconButton
-              onPress={() => removeEmailSlot(index)}
-              icon={<Trash2 size={20} color="#dc3545" />}
-            />
-            /*   <TouchableOpacity
-              style={styles.removeEmailButton}
-              onPress={() => removeEmailSlot(index)}>
-              <Trash2 size={20} color="#dc3545" />
-            </TouchableOpacity> */
+            <View
+              style={{
+                minHeight: 48,
+              }}>
+              <IconButton
+                onPress={() => removeEmailSlot(index)}
+                icon={<Trash2 size={20} color="#dc3545" />}
+              />
+            </View>
           )}
         </View>
       ))}
@@ -209,6 +206,15 @@ export const MultipleContactEmails: React.FC<MultipleContactEmailsProps> = ({
       {error && <Text style={styles.errorText}>{error}</Text>}
       {!hasValidEmails && emails.some((e) => e) && (
         <Text style={styles.warningText}>Please enter at least one valid email address</Text>
+      )}
+      {emails.length < maxEmails && (
+        <OutlineButton
+          size={ButtonSize.LARGE}
+          onPress={addEmailSlot}
+          color={theme.colors.info}
+          title="Add Applicant"
+          leftWidget={<UserPlus size={20} color={theme.colors.info} />}
+        />
       )}
     </View>
   );
@@ -406,7 +412,7 @@ export const ContactSelectorModal: React.FC<ContactSelectorModalProps> = ({
 const styles = StyleSheet.create({
   // Email Input Styles
   inputContainer: {
-    marginVertical: 4,
+    marginVertical: 1,
   },
   inputLabel: {
     fontSize: 16,
@@ -447,28 +453,25 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 14,
     color: '#dc3545',
-    marginTop: 4,
+    marginVertical: 8,
   },
   warningText: {
     fontSize: 14,
     color: '#ff8c00',
-    marginTop: 4,
-  },
-
-  // Multiple Emails Styles
-  multipleEmailsContainer: {
     marginVertical: 8,
   },
+  // Multiple Emails Styles
   multipleEmailsHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 4,
+    marginTop: 10,
   },
   multipleEmailsLabel: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
-    color: '#333',
+    color: '#737373',
   },
   addEmailButton: {
     flexDirection: 'row',
@@ -487,6 +490,7 @@ const styles = StyleSheet.create({
   emailSlotContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   emailSlotContent: {
     flex: 1,

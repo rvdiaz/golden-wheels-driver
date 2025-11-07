@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Modal, TouchableOpacity, StyleSheet, Linking, Alert } from 'react-native';
+import { View, Modal, TouchableOpacity, StyleSheet, Linking, Alert, Share } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { IExtendedRenterInput } from '../../interfaces';
 import Text from '~/codidge_components/UI/text';
@@ -20,15 +20,12 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({ visible, onClose
     }
 
     try {
-      const supported = await Linking.canOpenURL(pdfUrl);
-      if (supported) {
-        await Linking.openURL(pdfUrl);
-      } else {
-        Alert.alert('Error', 'Unable to open PDF for download');
-      }
+      await Share.share({
+        url: pdfUrl, // works on iOS and Android (PDF link)
+        message: `View the report: ${pdfUrl}`,
+      });
     } catch (error) {
-      console.error('Error opening PDF:', error);
-      Alert.alert('Error', 'Unable to open PDF for download');
+      console.error('Share failed:', error);
     }
   };
 

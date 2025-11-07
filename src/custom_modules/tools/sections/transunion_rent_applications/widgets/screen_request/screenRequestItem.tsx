@@ -14,6 +14,8 @@ import { PdfReportModal } from './applicantPdfViewer';
 import { Badge } from '~/codidge_components/UI/badge';
 import IconButton from '~/codidge_components/UI/button/IconButton';
 import OutlineButton, { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
+import { capitalize } from '~/custom_modules/crm/helpers';
+import TextButton from '~/codidge_components/UI/button/TextButton';
 
 export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -25,11 +27,6 @@ export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) =>
   const hasApplicants = rentApp.applicants.length > 0;
 
   const { primaryAddress, secondaryAddress } = formatAddress(rentApp.property);
-
-  const handleRequestPress = (item: IRentApplication) => {
-    console.log('Navigate to details for:');
-    // navigation.navigate('ScreeningRequestDetails', { requestId: item.screeningRequestId });
-  };
 
   const handleApplicantPress = (applicant: IExtendedRenterInput, event: any) => {
     // Stop event propagation to prevent triggering the parent TouchableOpacity
@@ -122,12 +119,24 @@ export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) =>
                           {`${applicant.firstName} ${applicant.lastName}`}
                         </Text>
                       </View>
-                      <IconButton
-                        style={{
-                          borderWidth: 1,
-                          borderColor: theme.colors.borderNeutralColor,
+                      <TextButton
+                        onPress={() => {
+                          const canViewReport = [
+                            'ReportsRequested',
+                            'completed',
+                            'Approved',
+                          ].includes(applicant.renterStatus);
+
+                          if (canViewReport) {
+                            setSelectedApplicant(applicant);
+                            setModalVisible(true);
+                          }
                         }}
-                        icon={<Icons.Download size={18} color={theme.colors.textColor} />}
+                        textStyle={{
+                          color: theme.colors.info,
+                        }}
+                        size={ButtonSize.LARGE}
+                        title="View"
                       />
                     </TouchableOpacity>
                   );
@@ -145,7 +154,7 @@ export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) =>
                         <Text
                           style={
                             styles.applicantName
-                          }>{`${applicant.firstName} ${applicant.lastName}`}</Text>
+                          }>{`${capitalize(applicant.firstName)} ${capitalize(applicant.lastName)}`}</Text>
                       </View>
 
                       <View style={styles.applicantStatusContainer}>

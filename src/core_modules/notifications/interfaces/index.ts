@@ -12,6 +12,16 @@ export interface GetUserNotificationsResponse {
   };
 }
 
+export interface OnNotificationPublishedData {
+  onNotificationPublished: {
+    tenantId: string;
+    userId: string;
+    sent: boolean;
+    showOnApp: boolean;
+    userNotification: INotification;
+  };
+}
+
 export interface MarkNotificationsReadedResponse {
   updated: number;
   total: number;

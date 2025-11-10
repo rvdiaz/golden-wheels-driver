@@ -9,6 +9,7 @@ import { GetUserNotificationsResponse } from '../interfaces';
 import { getUserNotificationsQuery } from '../graphql/queries';
 import { userData } from '~/store/user';
 import Text from '~/codidge_components/UI/text';
+import { getUserNotificationsVariables } from '../helpers';
 
 interface NotificationButtonProps {
   navigation: any;
@@ -31,13 +32,7 @@ export const NotificationButton: React.FC<NotificationButtonProps> = ({
 
   // Don't show badge if count is 0 or showBadge is false
   const { data } = useQuery<GetUserNotificationsResponse>(getUserNotificationsQuery, {
-    variables: {
-      tenant: {
-        tenantId,
-      },
-      userId: user?.id,
-      limit: 30,
-    },
+    variables: getUserNotificationsVariables(user?.id),
     fetchPolicy: 'cache-and-network', // Keep badge updated
   });
 

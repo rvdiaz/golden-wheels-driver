@@ -97,7 +97,7 @@ export const PrequalifiedLoanScreen: React.FC = () => {
       monthlyDebts: 500,
       downPaymentAmount: 50000,
       interestRate: 7.0,
-      propertyTaxRate: 1.25,
+      propertyTaxRate: 1.28,
       insuranceRate: 0.35,
       hoaFees: 0,
       closingCostPercentage: 3.0,
@@ -405,7 +405,7 @@ export const PrequalifiedLoanScreen: React.FC = () => {
               render={({ field: { onChange, value } }) => (
                 <InputField
                   style={styles.input}
-                  placeholder="1.25"
+                  placeholder="1.28"
                   value={value?.toString() || ''}
                   onChangeText={(text) => onChange(parseFloat(text) || 0)}
                   keyboardType="numeric"

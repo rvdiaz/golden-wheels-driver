@@ -20,6 +20,7 @@ export interface RegisterFormData {
   password: string;
   confirmPassword: string;
   agreeToTerms: boolean;
+  agreeToDataProcessing: boolean;
 }
 
 export interface ResetPasswordFormData {

@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Text from '../text';
+import { theme } from '~/theme/theme';
 
 interface DropdownItem {
   label: string;
@@ -84,7 +85,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 12,
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.lg,
     borderColor: '#ccc',
   },
   icon: {

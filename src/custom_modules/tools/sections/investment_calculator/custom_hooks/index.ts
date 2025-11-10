@@ -1,7 +1,6 @@
 // hooks/useInvestmentForm.ts
 import { useState, useEffect, useCallback } from 'react';
 import { useForm, useFieldArray, UseFormReturn } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
 import {
@@ -13,6 +12,7 @@ import {
   DEFAULT_EXPENSE_VALUES,
   DEFAULT_FINANCING_VALUES,
   DEFAULT_UNIT,
+  InvestmentFormData,
 } from '../interfaces';
 import { calculateInvestmentAnalysis, calculateTargetAnalysis } from '../helpers';
 
@@ -60,9 +60,8 @@ const investmentFormSchema = z.object({
 
   // Financing
   loanAmount: z.number().min(0),
-  interestRate: z.number().min(0).max(50),
   loanTerm: z.number().min(1).max(50),
-
+  interestRate: z.number().min(0),
   // Arrays
   units: z.array(unitSchema),
   renovationItems: z.array(renovationItemSchema),
@@ -120,7 +119,6 @@ export const useInvestmentForm = (): UseInvestmentFormReturn => {
   const [nextRenovationId, setNextRenovationId] = useState(1);
 
   const form = useForm<InvestmentFormSchema>({
-    resolver: zodResolver(investmentFormSchema),
     defaultValues: getDefaultFormValues(),
     mode: 'onChange',
   });
@@ -242,7 +240,8 @@ export const useInvestmentForm = (): UseInvestmentFormReturn => {
       }
 
       const formData = form.getValues();
-      const calculationResults = calculateInvestmentAnalysis(formData);
+
+      const calculationResults = calculateInvestmentAnalysis(formData as InvestmentFormData);
 
       setResults(calculationResults);
       setShowResults(true);

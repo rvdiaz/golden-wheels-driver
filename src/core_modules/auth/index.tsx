@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Text from '~/codidge_components/UI/text';
-import { TermsAndPrivacy } from './termsAndPrivacy';
 import { Rocket } from 'lucide-react-native';
 import { StepIcon } from '../on_boarding/widgets/stepIcon';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
@@ -77,9 +76,6 @@ export const StartPointScreen = () => {
                 style={styles.buttonStyle}
               />
             </View>
-            <View style={styles.bottomContent}>
-              <TermsAndPrivacy />
-            </View>
           </FadeTransition>
         </View>
       </Background>
@@ -142,10 +138,6 @@ const styles = StyleSheet.create({
   buttonStyle: {
     width: '100%',
     marginTop: 10,
-  },
-  bottomContent: {
-    alignItems: 'center',
-    zIndex: 1,
   },
   footer: {
     flexDirection: 'row',

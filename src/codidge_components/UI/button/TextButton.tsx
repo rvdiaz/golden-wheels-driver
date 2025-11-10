@@ -19,6 +19,7 @@ interface TextButtonProps {
   style?: ViewStyle;
   textStyle?: TextStyle;
   rightWidget?: ReactNode;
+  leftWidget?: ReactNode;
 }
 
 const TextButton: React.FC<TextButtonProps> = ({
@@ -30,6 +31,7 @@ const TextButton: React.FC<TextButtonProps> = ({
   style,
   textStyle,
   rightWidget,
+  leftWidget,
 }) => {
   const disabledAux = loading || disabled;
   const sizeStyle = sizeStyles[size];
@@ -47,6 +49,7 @@ const TextButton: React.FC<TextButtonProps> = ({
         },
         style,
       ]}>
+      {leftWidget && leftWidget}
       {loading ? (
         <ActivityIndicator color="#6B7280" />
       ) : (

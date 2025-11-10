@@ -10,6 +10,25 @@ export const searchLocationsQueries = gql`
   }
 `;
 
+export const getTransUnionPropertyAttestationsQuery = gql`
+  query getTransunionPropertiesAttestations($userId: ID!, $propertyId: ID!) {
+    getTransunionPropertiesAttestations(userId: $userId, propertyId: $propertyId) {
+      propertyId
+      attestations {
+        attestationGroupId
+        attestations {
+          attestationId
+          attestationTypeId
+          name
+          legalText
+          affirmativeRequired
+          additionalInformation
+        }
+      }
+    }
+  }
+`;
+
 export const getSearchAutoCompleteQuery = gql`
   query AutocompleteSearch($input: String!) {
     autoCompleteSearch(input: $input) {

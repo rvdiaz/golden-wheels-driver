@@ -173,19 +173,21 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({ form }) => {
               <Controller
                 control={control}
                 name="interestRate"
-                render={({ field: { onChange, value } }) => (
+                render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
                     style={[styles.input /* errors.interestRate &&   styles.inputError*/]}
                     placeholder="7.5"
-                    value={value?.toString() || ''}
-                    onChangeText={(text) => onChange(parseFloat(text) || 0)}
-                    keyboardType="numeric"
+                    value={typeof value === 'number' && value !== 0 ? String(value) : value || ''}
+                    onChangeText={(text) => {
+                      // Allow valid partial numeric input (e.g., "7.", "7,5")
+                      if (text === '' || /^\d*([.,]\d*)?$/.test(text)) {
+                        onChange(text);
+                      }
+                    }}
+                    keyboardType="decimal-pad"
                   />
                 )}
               />
-              {/*  {errors.interestRate && (
-                <Text style={styles.errorText}>{errors.interestRate.message}</Text>
-              )} */}
             </View>
 
             {/* Loan Term */}

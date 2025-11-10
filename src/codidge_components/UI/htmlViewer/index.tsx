@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ViewStyle } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
@@ -7,9 +7,11 @@ import { theme } from '~/theme/theme';
 export default function HtmlViewer({
   htmlDescription,
   title,
+  containerStyle,
 }: {
   htmlDescription: string;
   title?: string;
+  containerStyle?: ViewStyle;
 }) {
   const [webViewHeight, setWebViewHeight] = useState(200); // Increased fallback height
 
@@ -45,7 +47,7 @@ export default function HtmlViewer({
   `;
 
   return (
-    <View style={styles.sectionCard}>
+    <View style={[styles.sectionCard, containerStyle]}>
       {title && <Text style={styles.sectionTitle}>{title}</Text>}
       <WebView
         style={[styles.webview, { height: webViewHeight }]}
@@ -61,7 +63,7 @@ export default function HtmlViewer({
             const data = JSON.parse(event.nativeEvent.data);
             if (data.height && data.height > 0) {
               // Add some padding to ensure nothing is cut off
-              setWebViewHeight(data.height + 20);
+              setWebViewHeight(data.height + 5);
             }
           } catch (e) {
             console.log('Error parsing WebView message:', e);

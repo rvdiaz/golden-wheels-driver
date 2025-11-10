@@ -81,22 +81,25 @@ export const SimpleCheckbox = ({
   onToggle,
   size = 20,
   color = theme.colors.primary,
+  unCheckColor = theme.colors.borderNeutralColor,
 }: {
   checked?: boolean;
   onToggle?: (checked: boolean) => void;
   size?: number;
   color?: string;
+  unCheckColor?: string;
 }) => {
   return (
     <TouchableOpacity
+      hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
       onPress={() => onToggle?.(!checked)}
       style={[
         styles.simpleCheckbox,
         {
           width: size,
           height: size,
-          backgroundColor: checked ? color : 'transparent',
-          borderColor: color,
+          backgroundColor: checked ? color : '#FFFFFF',
+          borderColor: checked ? color : unCheckColor,
         },
       ]}
       activeOpacity={0.7}>
@@ -116,7 +119,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   simpleCheckbox: {
-    borderWidth: 2,
+    borderWidth: 1,
     borderRadius: 4,
     justifyContent: 'center',
     alignItems: 'center',

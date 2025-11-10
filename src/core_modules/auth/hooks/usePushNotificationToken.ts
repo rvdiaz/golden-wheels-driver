@@ -3,9 +3,9 @@ import { useLazyQuery, useReactiveVar } from '@apollo/client';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
-
 import { pushTokenVar, setPushToken } from '~/store/user/pushToken';
 import { userData, updateUser } from '~/store/user';
+
 import { getUserQuery } from '../graphql/queries';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
@@ -17,7 +17,6 @@ const getPushNotificationToken = async (): Promise<string> => {
   }
 
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
-
   let finalStatus = existingStatus;
 
   if (existingStatus !== 'granted') {
@@ -29,8 +28,19 @@ const getPushNotificationToken = async (): Promise<string> => {
     return '';
   }
 
-  const { data } = await Notifications.getDevicePushTokenAsync();
-  return data;
+  // Use Expo Push Token instead
+  const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
+
+  if (!projectId) {
+    console.error('Project ID not found');
+    return '';
+  }
+
+  const { data: token } = await Notifications.getExpoPushTokenAsync({
+    projectId,
+  });
+
+  return token;
 };
 
 Notifications.setNotificationHandler({

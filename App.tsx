@@ -7,6 +7,7 @@ import { loadErrorMessages, loadDevMessages } from '@apollo/client/dev';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AUTH_TYPE, AuthOptions, createAuthLink } from 'aws-appsync-auth-link';
 import { createSubscriptionHandshakeLink } from 'aws-appsync-subscription-link';
+import { PricingPlanModal } from '~/custom_modules/iap/components/pricingPlanModal';
 
 if (Constants.expoConfig?.extra?.EAS_BUILD_PROFILE === 'development') {
   // Adds messages only in a dev environment
@@ -87,6 +88,7 @@ export default function App() {
     <ApolloProvider client={client}>
       <SafeAreaProvider>
         <Navigation />
+        <PricingPlanModal />
       </SafeAreaProvider>
     </ApolloProvider>
   );

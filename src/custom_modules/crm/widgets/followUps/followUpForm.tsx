@@ -9,7 +9,7 @@ import {
   Platform,
   Alert,
 } from 'react-native';
-import { X, User } from 'lucide-react-native';
+import { User } from 'lucide-react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { IContact, IFollowUp } from '../../interfaces';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
@@ -19,11 +19,12 @@ import moment from 'moment';
 import { Header } from '~/codidge_components/UI/header';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
+import { ContactSelector } from '../contactSelector';
 
 interface FollowUpFormValues {
   contactId: string;
   title: string;
-  date: string;
+  date: Date | string;
   time: Date | string | null;
   notes?: string;
 }
@@ -45,8 +46,9 @@ export const AddFollowUpModal: React.FC<AddFollowUpModalProps> = ({
   loading = false,
   defaultContact,
 }) => {
-  const [showContactList, setShowContactList] = useState<boolean>(false);
   const [selectedContact, setSelectedContact] = useState<IContact | null>(null);
+
+  const currentDate = moment().format('YYYY-MM-DD');
 
   const {
     control,
@@ -58,8 +60,8 @@ export const AddFollowUpModal: React.FC<AddFollowUpModalProps> = ({
     defaultValues: {
       contactId: '',
       title: '',
-      date: '',
-      time: new Date(new Date().setHours(9, 0, 0, 0)), // Date at 09:00 today
+      date: currentDate,
+      time: new Date(), // Date at 09:00 today
       notes: '',
     },
   });
@@ -67,11 +69,6 @@ export const AddFollowUpModal: React.FC<AddFollowUpModalProps> = ({
   // Set default date to tomorrow and contactId when modal opens
   useEffect(() => {
     if (visible) {
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const formattedDate = moment(tomorrow).format('YYYY-MM-DD');
-      setValue('date', formattedDate);
-
       // Set contactId if defaultContact is provided
       if (defaultContact) {
         setValue('contactId', defaultContact.id);
@@ -83,12 +80,11 @@ export const AddFollowUpModal: React.FC<AddFollowUpModalProps> = ({
     reset({
       contactId: '',
       title: '',
-      date: '',
-      time: new Date(new Date().setHours(9, 0, 0, 0)), // Date at 09:00 today
+      date: currentDate,
+      time: new Date(), // Date at 09:00 today
       notes: '',
     });
     setSelectedContact(null);
-    setShowContactList(false);
   };
 
   const handleClose = () => {
@@ -99,7 +95,6 @@ export const AddFollowUpModal: React.FC<AddFollowUpModalProps> = ({
   const handleSelectContact = (contact: IContact) => {
     setSelectedContact(contact);
     setValue('contactId', contact.id);
-    setShowContactList(false);
   };
 
   const onSubmit = async (data: FollowUpFormValues) => {
@@ -167,7 +162,7 @@ export const AddFollowUpModal: React.FC<AddFollowUpModalProps> = ({
               rightAction={handleSubmit(onSubmit)}
               rightText="Save"
               loadingRight={loading}
-              disabledRight={!isValid}
+              /* disabledRight={!isValid} */
             />
             <ScrollView style={styles.formContainer} showsVerticalScrollIndicator={false}>
               {/* Contact Selection or Display */}
@@ -198,44 +193,15 @@ export const AddFollowUpModal: React.FC<AddFollowUpModalProps> = ({
                     name="contactId"
                     rules={{ required: 'Contact is required' }}
                     render={({ fieldState: { error } }) => (
-                      <View>
-                        <Text style={styles.label}>Contact *</Text>
-                        <TouchableOpacity
-                          style={[styles.contactSelector, error && styles.contactSelectorError]}
-                          onPress={() => setShowContactList(!showContactList)}>
-                          <User size={20} color="#6B7280" />
-                          <Text
-                            style={[
-                              styles.contactSelectorText,
-                              !selectedContact && styles.placeholder,
-                            ]}>
-                            {selectedContact
-                              ? `${selectedContact.firstName} ${selectedContact.lastName || ''}`.trim()
-                              : 'Select contact'}
-                          </Text>
-                        </TouchableOpacity>
-                        {error && <Text style={styles.errorText}>{error.message}</Text>}
-
-                        {showContactList && (
-                          <View style={styles.contactList}>
-                            <ScrollView style={styles.contactScrollView} nestedScrollEnabled>
-                              {contacts.map((contact) => (
-                                <TouchableOpacity
-                                  key={contact.id}
-                                  style={styles.contactItem}
-                                  onPress={() => handleSelectContact(contact)}>
-                                  <Text style={styles.contactItemName}>
-                                    {contact.firstName} {contact.lastName}
-                                  </Text>
-                                  {contact.phone && (
-                                    <Text style={styles.contactItemPhone}>{contact.phone}</Text>
-                                  )}
-                                </TouchableOpacity>
-                              ))}
-                            </ScrollView>
-                          </View>
-                        )}
-                      </View>
+                      <ContactSelector
+                        contacts={contacts}
+                        selectedContact={selectedContact}
+                        onSelectContact={handleSelectContact}
+                        label="Contact"
+                        required={true}
+                        error={!!error}
+                        errorMessage={error?.message}
+                      />
                     )}
                   />
                 </View>
@@ -282,7 +248,7 @@ export const AddFollowUpModal: React.FC<AddFollowUpModalProps> = ({
                   render={({ field: { onChange, value } }) => (
                     <DateInputField
                       label="Date"
-                      value={value ? new Date(value) : new Date()}
+                      value={value as Date}
                       onChangeText={(date) => {
                         const formatted = moment(date).format('YYYY-MM-DD');
                         onChange(formatted);
@@ -374,7 +340,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   fieldContainer: {
-    marginBottom: 20,
+    marginBottom: 12,
   },
   label: {
     fontSize: 16,

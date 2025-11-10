@@ -14,9 +14,15 @@ export const ToolsScreen: React.FC = () => {
 
   const currentUserData = useReactiveVar(userData);
 
-  const userTools =
-    currentUserData?.modules.find((mod) => mod.moduleKey === ModuleKeys.tools)?.modules ?? [];
+  const userToolsConfig = currentUserData?.modules.find(
+    (mod) => mod.moduleKey === ModuleKeys.tools
+  );
 
+  const layout = JSON.parse(userToolsConfig?.metaData);
+  const moduleLayout = layout.moduleLayout || {};
+  const columns = layout.columns || 2;
+
+  const userTools = userToolsConfig?.modules ?? [];
   const currentTools = [...userTools, ...localToolModules];
 
   // Function to adjust color opacity
@@ -87,9 +93,20 @@ export const ToolsScreen: React.FC = () => {
 
   const availableTools = currentTools.filter((too) => too.available);
 
-  // Split tools into two columns for masonry effect
-  const leftColumn = availableTools.filter((_, index) => index % 2 === 0);
-  const rightColumn = availableTools.filter((_, index) => index % 2 === 1);
+  // Assign column & order from metadata
+  const modulesWithPosition = availableTools.map((tool, index) => ({
+    ...tool,
+    column: moduleLayout[tool.moduleKey]?.column ?? (index % columns) + 1,
+    order: moduleLayout[tool.moduleKey]?.order ?? index,
+  }));
+
+  // Divide into columns
+  const columnsData = [];
+  for (let i = 1; i <= columns; i++) {
+    columnsData.push(
+      modulesWithPosition.filter((tool) => tool.column === i).sort((a, b) => a.order - b.order)
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -101,10 +118,19 @@ export const ToolsScreen: React.FC = () => {
           </Text>
         </View>
 
-        <View style={styles.masonryContainer}>
-          <View style={styles.column}>{leftColumn.map((tool) => renderTool(tool))}</View>
-          <View style={styles.column}>{rightColumn.map((tool) => renderTool(tool))}</View>
-        </View>
+        {layout.layout === 'masonry' ? (
+          // ✅ Masonry layout with multiple columns
+          <View style={{ flexDirection: 'row' }}>
+            {columnsData.map((column, colIndex) => (
+              <View key={colIndex} style={{ flex: 1, paddingHorizontal: 4 }}>
+                {column.map((tool) => renderTool(tool))}
+              </View>
+            ))}
+          </View>
+        ) : (
+          // ✅ Fallback: Single column layout
+          <View>{availableTools.map((tool) => renderTool(tool))}</View>
+        )}
       </ScrollView>
     </View>
   );

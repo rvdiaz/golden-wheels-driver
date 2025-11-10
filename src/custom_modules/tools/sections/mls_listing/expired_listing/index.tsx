@@ -14,6 +14,7 @@ import { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
 import * as Icons from 'lucide-react-native';
 import PropertyListScreen from './results/expiredListingListContainer';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import Text from '~/codidge_components/UI/text';
 
 const iconsSize = 16;
 const pageSize = 20;
@@ -48,6 +49,7 @@ export const ExpiredListingPage = () => {
 
   const onSubmit = async (formData: IExpiredListingForm) => {
     try {
+      setShowResults(false);
       const res = await getExpiredListingFn({
         variables: {
           input: {
@@ -56,6 +58,7 @@ export const ExpiredListingPage = () => {
             status: ExpiredStatus.active,
             pageSize,
             indexCount: 0,
+            sold: false,
           },
         },
       });
@@ -67,11 +70,11 @@ export const ExpiredListingPage = () => {
   };
 
   const fetchMoreResults = async () => {
-    /*   const zipCode = getValues('zipCode');
+    const zipCode = getValues('zipCode');
     const daysOld = getValues('daysOld');
     setLoadingMore(true);
 
-    if (data?.getMlsListing.indexCount !== 0) {
+    if (data?.getMlsListing.indexCount !== 0 && !!data?.getMlsListing.indexCount) {
       const res = await getExpiredListingFn({
         variables: {
           input: {
@@ -80,17 +83,21 @@ export const ExpiredListingPage = () => {
             status: ExpiredStatus.active,
             pageSize,
             indexCount: data?.getMlsListing.indexCount ?? 0,
+            sold: false,
           },
         },
       });
+
       if (res.data?.getMlsListing?.listings && res.data?.getMlsListing?.listings.length > 0) {
-        console.log(':::es.data?.getMlsListing?.listings', res.data?.getMlsListing?.listings);
         setResults((prev) => [...prev, ...(res.data?.getMlsListing?.listings ?? [])]); // append
       }
     }
 
-    setLoadingMore(false); */
+    setLoadingMore(false);
   };
+
+  const ceroResults =
+    data?.getMlsListing.listings.length === 0 && results.length === 0 && showResults;
 
   return (
     <PageSafeContainer style={styles.container}>
@@ -140,12 +147,28 @@ export const ExpiredListingPage = () => {
               rightWidget={<Icons.ChevronRight color="#FFF" />}
             />
           </View>
+          {ceroResults && (
+            <View
+              style={[
+                styles.container,
+                {
+                  padding: 16,
+                  alignItems: 'center',
+                },
+              ]}>
+              <Text style={styles.title}>No Listings Found</Text>
+              <Text style={styles.description}>
+                We couldn’t find any expired listings for that ZIP code. Try adjusting your search
+                criteria or using a different area.
+              </Text>
+            </View>
+          )}
         </ScrollView>
       </Card>
       <Modal
         animationType="slide"
         transparent={true}
-        visible={showResults}
+        visible={showResults && !ceroResults}
         onRequestClose={() => {
           setShowResults(false);
         }}>
@@ -178,5 +201,18 @@ const styles = StyleSheet.create({
     gap: 16,
     padding: 24,
     flex: 1,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1E293B',
+    marginTop: 16,
+  },
+  description: {
+    textAlign: 'center',
+    color: '#64748B',
+    marginTop: 8,
+    fontSize: 14,
+    lineHeight: 20,
   },
 });

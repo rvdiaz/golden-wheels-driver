@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView, Modal } from 'react-native';
+import { View, StyleSheet, ScrollView, Modal } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Header } from '../../../codidge_components/UI/header';
-import { Card } from '../../../codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
 import { IContact, IFollowUp } from '../interfaces';
-import ContactForm from './addContact';
-import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
+import ContactForm from './formContact';
 import { useAddFollowUp } from '../hooks/followUpCreation';
 
 import Constants from 'expo-constants';
@@ -15,6 +13,8 @@ import { useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import {
+  capitalize,
+  formatPhoneNumber,
   getCategoryColors,
   getUserInitials,
   handleCallContact,
@@ -22,6 +22,10 @@ import {
   handleSmsContact,
 } from '../helpers';
 import Text from '~/codidge_components/UI/text';
+import { theme } from '~/theme/theme';
+import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
+import { ButtonSize } from '~/codidge_components/UI/button/types';
+import TextButton from '~/codidge_components/UI/button/TextButton';
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const ContactDetailsScreen = () => {
@@ -46,19 +50,39 @@ export const ContactDetailsScreen = () => {
   return (
     <PageSafeContainer style={styles.container}>
       <Header
-        title="Contact Details"
+        title=""
         showBack
         onBack={() => {
           navigation.goBack();
         }}
-        rightText="Edit"
-        rightAction={() => {
-          setmodal(true);
+        rightWidget={
+          <TextButton
+            onPress={() => {
+              setmodal(true);
+            }}
+            textStyle={{
+              color: theme.colors.primary,
+            }}
+            leftWidget={
+              <Icons.Pencil
+                size={14}
+                color={theme.colors.primary}
+                style={{
+                  marginRight: 5,
+                }}
+              />
+            }
+            size={ButtonSize.LARGE}
+            title="Edit"
+          />
+        }
+        contentContainerStyle={{
+          backgroundColor: 'transparent',
+          borderBottomWidth: 0,
         }}
       />
-
       <ScrollView style={styles.content}>
-        <Card style={styles.profileCard}>
+        <View style={styles.profileCard}>
           <View style={styles.profileHeader}>
             <View
               style={[
@@ -76,66 +100,113 @@ export const ContactDetailsScreen = () => {
                 <Text style={styles.profileName}>{contact.firstName}</Text>
                 <Text style={styles.profileName}> {contact.lastName}</Text>
               </View>
-              <Text style={styles.profileStatus}>{contact?.category?.toUpperCase()}</Text>
+              {/* Category badge */}
+              <View
+                style={[
+                  styles.categoryBadge,
+                  {
+                    backgroundColor: categoryColors.bg,
+                  },
+                ]}>
+                <Text style={[styles.categoryText, { color: categoryColors.text }]}>
+                  {contact.category ? contact.category?.toUpperCase() : ''}
+                </Text>
+              </View>
             </View>
-            <OutlineButton
-              onPress={() => {
-                setFollowUpCreationModal(true);
-              }}
-              title="Follow Up"
-            />
+
+            <View style={styles.actions}>
+              {contact.phone && (
+                <PrimaryButton
+                  style={{
+                    backgroundColor: theme.colors.baseGray,
+                    flex: 1,
+                  }}
+                  textStyle={{
+                    color: theme.colors.textColor,
+                  }}
+                  leftWidget={<Icons.Phone size={16} color={theme.colors.textColor} />}
+                  title="Call"
+                  onPress={() => handleCallContact(contact.phone)}
+                />
+              )}
+              {contact.phone && (
+                <PrimaryButton
+                  onPress={() => handleSmsContact(contact.phone)}
+                  style={{
+                    backgroundColor: theme.colors.baseGray,
+                    flex: 1,
+                  }}
+                  textStyle={{
+                    color: theme.colors.textColor,
+                  }}
+                  leftWidget={<Icons.MessageCircle size={16} color={theme.colors.textColor} />}
+                  title="SMS"
+                />
+              )}
+
+              {contact.email && (
+                <PrimaryButton
+                  onPress={() => handleEmailContact(contact.email)}
+                  style={{
+                    backgroundColor: theme.colors.baseGray,
+                    flex: 1,
+                  }}
+                  textStyle={{
+                    color: theme.colors.textColor,
+                  }}
+                  leftWidget={<Icons.Mail size={16} color={theme.colors.textColor} />}
+                  title="Email"
+                />
+              )}
+            </View>
           </View>
 
           <View style={styles.contactInfo}>
             {contact.email && (
               <View style={styles.contactItem}>
-                <Icons.Mail size={20} color="#6B7280" />
+                <Text style={styles.contactLabel}>Full name</Text>
+                <Text style={styles.contactText}>
+                  {capitalize(contact.firstName)} {capitalize(contact.lastName)}
+                </Text>
+              </View>
+            )}
+            {contact.address && (
+              <View style={styles.contactItem}>
+                <Text style={styles.contactLabel}>Address</Text>
+                <Text style={styles.contactText}>{contact.address}</Text>
+              </View>
+            )}
+            {contact.email && (
+              <View style={styles.contactItem}>
+                <Text style={styles.contactLabel}>Email Address</Text>
                 <Text style={styles.contactText}>{contact.email}</Text>
               </View>
             )}
             {contact.phone && (
               <View style={styles.contactItem}>
-                <Icons.Phone size={20} color="#6B7280" />
-                <Text style={styles.contactText}>{contact.phone}</Text>
+                <Text style={styles.contactLabel}>Phone number</Text>
+                <Text style={styles.contactText}>{formatPhoneNumber(contact.phone)}</Text>
               </View>
             )}
           </View>
-
-          <View style={styles.actions}>
-            {contact.phone && (
-              <TouchableOpacity
-                onPress={() => handleCallContact(contact.phone)}
-                style={styles.actionButton}>
-                <Icons.Phone size={18} color="#2563EB" />
-                <Text style={styles.actionText}>Call</Text>
-              </TouchableOpacity>
-            )}
-            {contact.phone && (
-              <TouchableOpacity
-                onPress={() => handleSmsContact(contact.phone)}
-                style={styles.actionButton}>
-                <Icons.MessageCircle size={18} color="#10B981" />
-                <Text style={styles.actionText}>SMS</Text>
-              </TouchableOpacity>
-            )}
-            {contact.email && (
-              <TouchableOpacity
-                onPress={() => handleEmailContact(contact.email)}
-                style={styles.actionButton}>
-                <Icons.Mail size={18} color="#8B5CF6" />
-                <Text style={styles.actionText}>Email</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        </Card>
+        </View>
 
         {contact.notes && (
-          <Card style={styles.notesCard}>
+          <View style={styles.notesCard}>
             <Text style={styles.sectionTitle}>Notes</Text>
             <Text style={styles.notesText}>{contact.notes}</Text>
-          </Card>
+          </View>
         )}
       </ScrollView>
+      <View style={styles.footer}>
+        <PrimaryButton
+          onPress={() => {
+            setFollowUpCreationModal(true);
+          }}
+          size={ButtonSize.LARGE}
+          title="Follow Up"
+        />
+      </View>
       <Modal
         animationType="slide"
         transparent={true}
@@ -195,10 +266,10 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
   profileCard: {
-    padding: 20,
     marginBottom: 16,
   },
   avatar: {
@@ -207,24 +278,26 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginBottom: 16,
   },
   initials: {
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: 14,
+    fontWeight: '400',
   },
   profileHeader: {
-    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 20,
   },
   profileInfo: {
     flex: 1,
   },
   actions: {
+    width: '100%',
     flexDirection: 'row',
     gap: 8,
     paddingBottom: 16,
+    marginTop: 20,
   },
   actionButton: {
     flex: 1,
@@ -246,27 +319,33 @@ const styles = StyleSheet.create({
   },
   profileName: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1F2937',
+    fontWeight: '600',
+    color: theme.colors.textColor,
     marginBottom: 4,
   },
   profileStatus: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#EF4444',
   },
   contactInfo: {
     marginBottom: 20,
+    gap: 20,
   },
   contactItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
     marginBottom: 12,
+    gap: 8,
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  contactLabel: {
+    fontSize: 16,
+    color: theme.colors.textColor,
+    fontWeight: '700',
   },
   contactText: {
     fontSize: 16,
     color: '#374151',
-    marginLeft: 12,
   },
   activityCard: {
     padding: 20,
@@ -323,5 +402,22 @@ const styles = StyleSheet.create({
     color: '#2563EB',
     marginLeft: 8,
     fontWeight: '600',
+  },
+  categoryBadge: {
+    alignSelf: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  categoryText: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  footer: {
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB',
+    paddingTop: 10,
+    paddingHorizontal: 16,
   },
 });

@@ -10,6 +10,13 @@ export enum ContactCategory {
   INVESTOR = 'investor',
 }
 
+export enum ContactSort {
+  NAME_ASC = 'name_asc',
+  NAME_DESC = 'name_desc',
+  DATE_NEWEST = 'date_newest',
+  DATE_OLDEST = 'date_oldest',
+}
+
 export enum ContactType {
   LEAD = 'lead',
   Contact = 'contact',
@@ -77,7 +84,7 @@ export interface IFollowUp {
   followUpId: string;
   userId: string;
   tenantId: string;
-  date: string;
+  date: Date | string;
   time: Date | string;
   notes: string;
   title: string;

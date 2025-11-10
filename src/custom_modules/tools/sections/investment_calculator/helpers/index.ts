@@ -157,7 +157,7 @@ export const calculateInvestmentAnalysis = (formData: InvestmentFormData): Calcu
     formData.loanAmount > 0
       ? calculateMonthlyMortgagePayment(
           formData.loanAmount,
-          formData.interestRate,
+          formData.interestRate as number,
           formData.loanTerm
         )
       : 0;
@@ -193,7 +193,7 @@ export const calculateInvestmentAnalysis = (formData: InvestmentFormData): Calcu
     formData.propertyValue,
     formData.loanAmount,
     monthlyMortgagePayment,
-    formData.interestRate,
+    formData.interestRate as number,
     formData.loanTerm,
     3
   );
@@ -207,7 +207,7 @@ export const calculateInvestmentAnalysis = (formData: InvestmentFormData): Calcu
     formData.propertyValue,
     formData.loanAmount,
     monthlyMortgagePayment,
-    formData.interestRate,
+    formData.interestRate as number,
     formData.loanTerm,
     5
   );

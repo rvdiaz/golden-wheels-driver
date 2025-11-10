@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import { theme } from '~/theme/theme';
 import { ProgressRing } from './ring_status_circle';
 import Text from '~/codidge_components/UI/text';
+import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
+import { SkipAllModal } from './skip_all_modal';
+import { useMutation, useReactiveVar } from '@apollo/client';
+import { updateUserMutation } from '~/core_modules/auth/graphql/mutations';
+import { updateUser, userData } from '~/store/user';
+import { useSystemSettings } from '~/system_setting/customHook';
+import Constants from 'expo-constants';
 
 interface ProfileCompletionWidgetProps {
   completedSteps: number;
@@ -18,18 +25,26 @@ interface ProfileCompletionWidgetProps {
   strokeWidth?: number;
 }
 
+const tenantId = Constants.expoConfig?.extra?.TENANTID;
+
 export const ProfileSetupShortcut: React.FC<ProfileCompletionWidgetProps> = ({
   completedSteps = 0,
   totalSteps = 4,
-  title = 'Agent Setup',
-  description = 'Complete your profile to unlock all features and improve your experience',
+  title = 'Build Your Foundation',
+  description = 'The essential steps every new agent must complete to build a professional foundation and hit the ground running.',
   onButtonPress,
   size = 110,
   strokeWidth = 18,
 }) => {
+  const { allTasks } = useSystemSettings();
+
+  const [showSkipModal, setShowSkipModal] = useState(false);
+
   // Calculate progress percentage
   const progress = completedSteps / totalSteps;
   const percentage = Math.round(progress * 100);
+
+  const user = useReactiveVar(userData);
 
   // Determine if profile is complete
   const isComplete = completedSteps === totalSteps;
@@ -39,26 +54,73 @@ export const ProfileSetupShortcut: React.FC<ProfileCompletionWidgetProps> = ({
     ? 'Your profile is complete! You can now access all features.'
     : description;
 
+  const [updateUserFn, { loading: isSkipping }] = useMutation(updateUserMutation);
+
+  const handleSkipAll = async () => {
+    if (!user) return;
+
+    try {
+      const skippedProfileSteps = allTasks.map((task) => ({
+        id: task.id,
+        title: task.title,
+        subSteps: task.subitems.map((subitem) => subitem.id),
+      }));
+
+      await updateUserFn({
+        variables: {
+          tenant: {
+            tenantId: tenantId,
+          },
+          updates: {
+            profileSteps: skippedProfileSteps,
+            profileSetupSkipped: true,
+          },
+          userId: user.id,
+        },
+      });
+
+      updateUser({
+        ...user,
+        profileSteps: skippedProfileSteps,
+        profileSetupSkipped: true,
+      });
+
+      setShowSkipModal(false);
+    } catch (error) {
+      console.error('Error skipping all tasks:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       {/* Left Side - Text Content */}
       <View style={styles.leftContent}>
         <Text style={styles.title}>{title}</Text>
-        <Text style={styles.description} numberOfLines={3}>
+        <Text style={styles.description} numberOfLines={5}>
           {dynamicDescription}
         </Text>
-
-        <PrimaryButton
+        <View
           style={{
-            width: 120,
-            backgroundColor: theme.colors.primary,
-            paddingHorizontal: 10,
-          }}
-          onPress={onButtonPress}
-          size={ButtonSize.MEDIUM}
-          title={completedSteps > 0 ? 'Continue Setup' : 'Start Now'}
-        />
-        {/* Action Button */}
+            flexDirection: 'row',
+            gap: 8,
+          }}>
+          <PrimaryButton
+            style={{
+              width: 120,
+              backgroundColor: theme.colors.primary,
+              paddingHorizontal: 10,
+            }}
+            onPress={onButtonPress}
+            size={ButtonSize.MEDIUM}
+            title={completedSteps > 0 ? 'Continue Setup' : 'Start Now'}
+          />
+          <OutlineButton
+            title="Dismiss"
+            onPress={() => {
+              setShowSkipModal(true);
+            }}
+          />
+        </View>
       </View>
 
       {/* Right Side - Progress Ring */}
@@ -77,6 +139,14 @@ export const ProfileSetupShortcut: React.FC<ProfileCompletionWidgetProps> = ({
         {/* Percentage indicator */}
         <Text style={styles.percentageText}>{percentage}%</Text>
       </View>
+      <SkipAllModal
+        isSkipping={isSkipping}
+        dismiss={() => {
+          setShowSkipModal(false);
+        }}
+        handleSkipAll={handleSkipAll}
+        showSkipModal={showSkipModal}
+      />
     </View>
   );
 };
@@ -255,7 +325,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '800',
     color: '#3730A3',
     marginBottom: 8,
@@ -330,7 +400,7 @@ const styles = StyleSheet.create({
     color: '#10B981',
   },
   percentageText: {
-    fontSize: 11,
+    fontSize: 16,
     fontWeight: '600',
     color: '#6366F1',
   },

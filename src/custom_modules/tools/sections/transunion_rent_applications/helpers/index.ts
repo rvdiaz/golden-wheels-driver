@@ -1,4 +1,4 @@
-import { IExtendedRenterInput } from '../interfaces';
+import { IExtendedRenterInput, ITransUnionProperty } from '../interfaces';
 import { Minus, Eye, Clock, CheckCircle } from 'lucide-react-native';
 
 export const formatTransunionDate = (isoString: string): string => {
@@ -123,4 +123,20 @@ export const getApplicantStatus = (
         icon: Minus,
       };
   }
+};
+
+export const formatAddress = (property: ITransUnionProperty) => {
+  const addressParts = [
+    property.addressLine1,
+    property.addressLine2,
+    property.addressLine3,
+    property.addressLine4,
+  ].filter(Boolean);
+
+  const primaryAddress = addressParts.join(', ');
+  const secondaryAddress = [property.locality, property.region, property.postalCode]
+    .filter(Boolean)
+    .join(', ');
+
+  return { primaryAddress, secondaryAddress };
 };

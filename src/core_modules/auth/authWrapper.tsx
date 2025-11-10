@@ -16,7 +16,7 @@ import { ResetPassword } from '~/codidge_components/auth/forms/reset_password';
 import { VerifyEmail } from '~/codidge_components/auth/forms/verify_email';
 import { SignInForm } from '~/codidge_components/auth/forms/sign_in';
 import { AuthFormWrapper } from './authLayout';
-import { StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import Text from '~/codidge_components/UI/text';
 import IconButton from '~/codidge_components/UI/button/IconButton';
 import {
@@ -74,6 +74,11 @@ export const AuthWrapper = () => {
     try {
       const personalInfo = await OnboardingFlowStorage.getPersonalInfoCompleted();
 
+      if (!pushToken) {
+        console.log('::::not token creation');
+        //Alert.alert('Not token');
+        //return;
+      }
       const userData = await addUserFn({
         variables: {
           tenant: {
@@ -82,6 +87,8 @@ export const AuthWrapper = () => {
           user: {
             firstName: personalInfo?.firstName,
             lastName: personalInfo?.lastName,
+            mlsNumber: personalInfo?.mlsNumber,
+            brokerage: personalInfo?.brokerage,
             email: formData.email,
             phone: formData.phone,
             address: {

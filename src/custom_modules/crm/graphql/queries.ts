@@ -17,6 +17,7 @@ export const getUserContacts = gql`
       type
       convertedAt
       updatedAt
+      createdAt
     }
   }
 `;

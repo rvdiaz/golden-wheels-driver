@@ -111,6 +111,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 4,
+    paddingHorizontal: 5,
   },
   title: {
     fontSize: 16,

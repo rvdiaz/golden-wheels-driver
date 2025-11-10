@@ -1,5 +1,3 @@
-import { string } from 'yup';
-
 export interface ITransUnionProperty {
   rent?: number; // Nullable
   deposit?: number; // Nullable
@@ -65,4 +63,29 @@ export interface IRentApplication {
   applicants: IExtendedRenterInput[];
   createdAt: string;
   status: string;
+}
+
+export interface IAttestation {
+  attestationId: number;
+  attestationTypeId: number;
+  name: string;
+  legalText: string;
+  affirmativeRequired: boolean;
+  additionalInformation?: string;
+}
+
+export interface IAttestationGroup {
+  attestationGroupId: number;
+  attestations: IAttestation[];
+}
+
+export interface AttestationModalProps {
+  userId: string;
+  propertyId: string;
+  visible: boolean;
+  attestationGroup: IAttestationGroup | null;
+  onAccept: () => void;
+  onDecline: () => void;
+  loading?: boolean;
+  pendingPropertyData: ITransUnionProperty;
 }

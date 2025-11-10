@@ -13,6 +13,7 @@ export const getUserNotificationsQuery = gql`
         title
         body
         createdAt
+        read
       }
     }
   }

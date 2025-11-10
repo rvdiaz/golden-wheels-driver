@@ -1,5 +1,13 @@
 import React from 'react';
-import { View, StyleSheet, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Alert,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  Switch,
+} from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { Header } from '~/codidge_components/UI/header';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
@@ -19,6 +27,10 @@ import { DateTimeInputField } from '~/codidge_components/UI/form/inputs/dateTime
 import moment from 'moment';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { useTasksByUser } from '../hooks/listTask';
+import { useSystemSettings } from '~/system_setting/customHook';
+import { Bell } from 'lucide-react-native';
+import Text from '~/codidge_components/UI/text';
+import { theme } from '~/theme/theme';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -32,7 +44,7 @@ export const AddTaskScreen = ({
   task?: ITask;
 }) => {
   const user = useReactiveVar(userData);
-  const userTaskSchema = user?.systemData?.tasksConfiguration;
+  const { tasksConfiguration } = useSystemSettings();
 
   const { refetch } = useTasksByUser();
 
@@ -70,6 +82,9 @@ export const AddTaskScreen = ({
         : null,
       date: task?.date ?? defaultDate,
       description: task?.description ?? '',
+      notificationSettings: task?.notificationSettings ?? {
+        enabled: false,
+      },
     },
   });
 
@@ -154,6 +169,8 @@ export const AddTaskScreen = ({
         disposeModalHandler();
       }
     } catch (error: any) {
+      console.log(':::error', error);
+
       if (error.graphQLErrors?.length > 0) {
         const gqlError = error.graphQLErrors[0].message;
 
@@ -237,7 +254,7 @@ export const AddTaskScreen = ({
                   <DropdownComponent
                     label="Category"
                     required={true}
-                    data={getTaskCategoriesOptions(userTaskSchema ?? [])}
+                    data={getTaskCategoriesOptions(tasksConfiguration ?? [])}
                     placeholder="Select task category"
                     value={value ?? ''}
                     onChange={onChange}
@@ -360,6 +377,24 @@ export const AddTaskScreen = ({
                 }}
               />
             </View>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 5,
+              borderTopWidth: 1,
+              paddingTop: 10,
+              borderTopColor: theme.colors.borderNeutralColor,
+            }}>
+            <Text style={{ flex: 1, fontSize: 16 }}>Enable reminder notification</Text>
+            <Controller
+              control={control}
+              name="notificationSettings.enabled"
+              render={({ field: { value, onChange } }) => (
+                <Switch onValueChange={onChange} value={value} />
+              )}
+            />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

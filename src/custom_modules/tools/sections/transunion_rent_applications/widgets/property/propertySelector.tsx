@@ -121,13 +121,13 @@ export const PropertySelectorModal: React.FC<PropertySelectorModalProps> = ({
     },
   });
 
+  const activesProperties = data?.getTransunionProperties.filter((prop: any) => prop.isActive);
+
   // Filter properties based on search term
   const filteredProperties = useMemo(() => {
-    if (!data?.getTransunionProperties) return [];
+    if (!activesProperties) return [];
 
-    const properties = Array.isArray(data.getTransunionProperties)
-      ? data.getTransunionProperties
-      : [data.getTransunionProperties];
+    const properties = Array.isArray(activesProperties) ? activesProperties : [activesProperties];
 
     if (!searchTerm.trim()) return properties;
 
@@ -140,7 +140,7 @@ export const PropertySelectorModal: React.FC<PropertySelectorModalProps> = ({
         property.postalCode?.toLowerCase().includes(searchLower)
       );
     });
-  }, [data?.getTransunionProperties, searchTerm]);
+  }, [activesProperties, searchTerm]);
 
   const formatAddress = (property: ITransUnionProperty) => {
     const addressParts = [

@@ -96,13 +96,12 @@ export const PersonalInformation = ({
             showsVerticalScrollIndicator={false}
             enableOnAndroid={true}
             extraScrollHeight={Platform.OS === 'ios' ? 0 : 80}
-            keyboardShouldPersistTaps="handled"
-            keyboardDismissMode="on-drag">
+            keyboardShouldPersistTaps="handled">
             <ScrollView
               showsVerticalScrollIndicator={false}
-              onScrollBeginDrag={Keyboard.dismiss} // And this
-              style={{
+              contentContainerStyle={{
                 paddingTop: 30,
+                flexGrow: 1,
               }}>
               <View style={styles.inputContainer}>
                 <Controller

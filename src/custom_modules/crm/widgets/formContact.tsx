@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -17,12 +17,13 @@ import { useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import Constants from 'expo-constants';
 import DropdownComponent from '~/codidge_components/UI/dropdown';
-import { CONTACT_CATEGORY_OPTIONS, CONTACT_TYPE_OPTIONS } from '../helpers';
+import { CONTACT_CATEGORY_OPTIONS, CONTACT_TYPE_OPTIONS, formatPhoneNumberInput } from '../helpers';
 import { theme } from '~/theme/theme';
 import { useContactsQueries } from '../hooks/contactMutations';
 import { ContactSelector } from './contactsPhone/contactSelector';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
+import * as Contacts from 'expo-contacts';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -34,6 +35,7 @@ export default function ContactForm({
   contact?: IContact;
 }) {
   const user = useReactiveVar(userData);
+  const [loadedFromPhone, setLoadedFromPhone] = useState(false);
 
   const {
     control,
@@ -45,7 +47,7 @@ export default function ContactForm({
     defaultValues: {
       firstName: contact?.firstName ?? '',
       lastName: contact?.lastName ?? '',
-      phone: contact?.phone ?? '',
+      phone: contact?.phone ? formatPhoneNumberInput(contact?.phone) : '',
       email: contact?.email ?? '',
       address: contact?.address ?? '',
       notes: contact?.notes ?? '',
@@ -113,17 +115,23 @@ export default function ContactForm({
         .join(' at ');
       setValue('notes', `Company: ${companyInfo}`);
     }
+    setLoadedFromPhone(true);
     setShowPhoneContacts(false);
   };
 
   const onSubmit = async (data: IContact) => {
     try {
+      const sanitizedData = {
+        ...data,
+        phone: data.phone.replace(/\D/g, ''),
+      };
+
       if (contact?.id) {
         const res = await handleUpdateContact({
           tenant: { tenantId },
           userId: user?.id,
           contactId: contact.id,
-          contactData: data,
+          contactData: sanitizedData,
         });
 
         const updatedContact = res?.data?.updateUserContact;
@@ -148,10 +156,12 @@ export default function ContactForm({
         const res = await handleAddContact({
           tenant: { tenantId },
           userId: user?.id,
-          contactData: data,
+          contactData: sanitizedData,
         });
 
-        if (res?.data?.addUserContact) {
+        const { status } = await Contacts.getPermissionsAsync();
+
+        if (res?.data?.addUserContact && !loadedFromPhone && status === 'granted') {
           Alert.alert(
             'Save to Phone Contacts?',
             'Would you like to also save this contact to your phone?',
@@ -166,7 +176,6 @@ export default function ContactForm({
                 onPress: async () => {
                   try {
                     await saveContactToPhone(data);
-                    Alert.alert('Success', 'Contact saved to phone');
                   } catch (error) {
                     Alert.alert('Error', 'Could not save to phone contacts');
                   }
@@ -300,26 +309,33 @@ export default function ContactForm({
                 name="phone"
                 rules={{
                   required: 'Phone number is required',
-                  pattern: {
-                    value: /^[\+]?[1-9][\d]{0,15}$/,
-                    message: 'Please enter a valid phone number',
+                  validate: (value) => {
+                    const digits = value.replace(/\D/g, ''); // remove formatting
+                    if (digits.length < 10) return 'Please enter a valid phone number';
+                    return true;
                   },
                 }}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <InputField
-                    leftIcon={<Icons.Phone size={16} color="#6B7280" />}
-                    label="Phone"
-                    required={true}
-                    placeholder="(555) 123-4567"
-                    placeholderTextColor="#9ca3af"
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    keyboardType="phone-pad"
-                    error={!!errors.phone}
-                    errorMessage={errors.phone?.message}
-                  />
-                )}
+                render={({ field: { onChange, onBlur, value } }) => {
+                  const handleChange = (text: string) => {
+                    const formatted = formatPhoneNumberInput(text);
+                    onChange(formatted);
+                  };
+
+                  return (
+                    <InputField
+                      leftIcon={<Icons.Phone size={16} color="#6B7280" />}
+                      label="Phone"
+                      required={true}
+                      placeholder="(555) 123-4567"
+                      placeholderTextColor="#9ca3af"
+                      value={value}
+                      onChangeText={handleChange}
+                      keyboardType="phone-pad"
+                      error={!!errors.phone}
+                      errorMessage={errors.phone?.message}
+                    />
+                  );
+                }}
               />
             </View>
           </View>

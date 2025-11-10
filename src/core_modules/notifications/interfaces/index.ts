@@ -3,6 +3,7 @@ export interface INotification {
   title: string;
   body: string;
   createdAt: string;
+  read: boolean;
 }
 
 export interface GetUserNotificationsResponse {
@@ -19,4 +20,10 @@ export interface OnNotificationPublishedData {
     showOnApp: boolean;
     userNotification: INotification;
   };
+}
+
+export interface MarkNotificationsReadedResponse {
+  updated: number;
+  total: number;
+  notificationIds: string[];
 }

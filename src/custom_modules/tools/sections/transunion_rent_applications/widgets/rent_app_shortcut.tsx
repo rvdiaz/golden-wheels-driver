@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, View, Animated } from 'react-native';
+import { Modal, View, Animated, StyleSheet, Image } from 'react-native';
 import { InfoWidget } from '~/custom_modules/dashboard/widgets/rentApplication';
 import { ScreenRequestForm } from './screen_request/screenRequestForm';
 import { useNavigation } from '@react-navigation/native';
@@ -34,10 +34,10 @@ export const RentAppShortcut = () => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, marginBottom: 16 }}>  
       <InfoWidget
-        title="Rent Application"
-        description="Submit your rental application quickly and securely."
+        title="Rent Application and Screening"
+        description="Before you rent, get them verichekd credit, criminal and evictions"
         imageSource={require('assets/rentApplication.png')}
         backgroundColor="#E1F1FF"
         buttonText="Screen Applicant"
@@ -49,6 +49,23 @@ export const RentAppShortcut = () => {
         onButtonPress={() => {
           setModalVisible(true);
         }}
+        footer={
+          <View style={styles.footerContainer}>
+            <Text style={styles.footerText}>Powered by</Text>
+            <View style={styles.footerLogos}>
+              <Image
+                source={{ uri: 'https://d2i7obdpox0xae.cloudfront.net/verichekd_logo_back.png' }}
+                style={{ height: 40, width: 80 }}
+                resizeMode="contain"
+              />
+              <Image
+                source={require('assets/tu-logo.png')}
+                style={{ height: 30, width: 80, marginBottom: 10 }}
+                resizeMode="contain"
+              />
+            </View>
+          </View>
+        }
       />
       <Modal
         animationType="slide"
@@ -92,3 +109,26 @@ export const RentAppShortcut = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  footerContainer: {
+    marginTop: 5,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+  },
+  footerText: {
+    fontSize: 12,
+    color: '#6B7280', // subtle gray text
+    marginBottom: 8,
+    fontWeight: '500',
+    letterSpacing: 0.3,
+    paddingTop: 13,
+  },
+  footerLogos: {
+    marginLeft: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10, // works in RN 0.71+, or use marginRight manually
+  },
+});

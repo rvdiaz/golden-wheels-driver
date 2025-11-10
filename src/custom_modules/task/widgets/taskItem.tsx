@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Modal } from 'react-native';
-import { GoalType, ITask, TaskSource } from '../interfaces';
+import { View, StyleSheet, Modal, TouchableOpacity } from 'react-native';
+import { GoalType, ITask } from '../interfaces';
 import {
   formatTaskTime,
   getDurationInMinutes,
   getTaskColorByType,
   getTaskConfigByKey,
   getTaskStatus,
-  isActiveTask,
 } from '../helpers';
 import { useMutation, useReactiveVar } from '@apollo/client';
 import { completeTaskMutation } from '../graphql/mutations';
@@ -15,28 +14,29 @@ import { userData } from '~/store/user';
 import Constants from 'expo-constants';
 import { theme } from '~/theme/theme';
 import { SimpleCheckbox } from '~/codidge_components/UI/form/checkbox';
-import { Badge } from '~/codidge_components/UI/badge';
 import { TaskFieldsModal } from '~/codidge_components/UI/customField/modalForm';
-import { AddTaskScreen } from './addTask';
-import { CheckCircle, Pencil, X, XCircle } from 'lucide-react-native';
-import IconButton from '~/codidge_components/UI/button/IconButton';
 import Text from '~/codidge_components/UI/text';
+import { useSystemSettings } from '~/system_setting/customHook';
+import { TaskDetail } from './taskDetail';
+import { PriorityBadge } from './priorityBadge';
+import { StatusBadge } from './statusBadge';
+import { DraggableBottomSheet } from '~/codidge_components/UI/draggableModalBottomSheet';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const TaskItem = ({ task }: { task: ITask }) => {
-  const isActive = isActiveTask(task);
-
   const [value, setvalue] = useState(task.isCompleted ?? false);
   const [showModal, setShowModal] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalDetailTask, setModalDetailTask] = useState(false);
 
   useEffect(() => {
     setvalue(task.isCompleted);
   }, [task.isCompleted]);
 
+  const { tasksConfiguration } = useSystemSettings();
+
   const user = useReactiveVar(userData);
-  const userTaskSchema = user?.systemData?.tasksConfiguration;
+
   const [completeTaskFn] = useMutation<{ completeTask: ITask }>(completeTaskMutation, {
     update: (cache, { data: mutationData }) => {
       if (!mutationData?.completeTask) return;
@@ -59,7 +59,7 @@ export const TaskItem = ({ task }: { task: ITask }) => {
     },
   });
 
-  const taskConfiguration = getTaskConfigByKey(task, userTaskSchema ?? []);
+  const taskConfiguration = getTaskConfigByKey(task, tasksConfiguration ?? []);
 
   const executeTaskCompletion = async (goalTypes: GoalType[], completionParam = true) => {
     try {
@@ -168,46 +168,47 @@ export const TaskItem = ({ task }: { task: ITask }) => {
   };
 
   const taskStatus = getTaskStatus(task);
-  const borderColor = getTaskColorByType(taskStatus);
-
-  const renderStatusIcon = () => {
-    if (isActive) return null;
-
-    if (taskStatus === 'complete') {
-      return <CheckCircle size={20} color={borderColor} />;
-    }
-
-    if (taskStatus === 'inComplete') {
-      return <XCircle size={20} color={borderColor} />;
-    }
-
-    return <View></View>;
-  };
+  const taskItemColor = getTaskColorByType(taskStatus.key);
 
   return (
-    <>
+    <TouchableOpacity
+      onPress={() => {
+        setModalDetailTask(true);
+      }}>
       <View
         key={task.id}
         style={[
           styles.taskItem,
-          { backgroundColor: 'white', borderBottomWidth: 4, borderBottomColor: borderColor },
+          {
+            backgroundColor: '#F8FAFC',
+            borderBottomWidth: 3, // Changed from 4 to 3 to match notification style
+            borderBottomColor: value ? '#E5E7EB' : taskItemColor, // Gray when completed, taskItemColor when active
+          },
         ]}>
         <View style={styles.taskContent}>
           <View style={styles.taskHeader}>
             <View style={{ flexDirection: 'row', flex: 1 }}>
-              <View>
-                <Text
-                  style={[
-                    styles.taskTitle,
-                    {
-                      textDecorationLine: value ? 'line-through' : 'none',
-                    },
-                  ]}>
-                  {task.title}
-                </Text>
-                <Text style={styles.taskDescription} numberOfLines={3}>
-                  {task.description ?? ''}
-                </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'flex-start',
+                  justifyContent: 'center',
+                  gap: 5,
+                }}>
+                <View>
+                  <Text
+                    style={[
+                      styles.taskTitle,
+                      {
+                        textDecorationLine: value ? 'line-through' : 'none',
+                      },
+                    ]}>
+                    {task.title}
+                  </Text>
+                  <Text style={styles.taskDescription} numberOfLines={3}>
+                    {task.description ?? ''}
+                  </Text>
+                </View>
               </View>
             </View>
             <View
@@ -215,44 +216,21 @@ export const TaskItem = ({ task }: { task: ITask }) => {
                 alignItems: 'flex-end',
                 gap: 3,
               }}>
-              <View style={{ alignItems: 'flex-end', flexDirection: 'row', gap: 8 }}>
-                {isActive ? (
-                  <>
-                    {!value && task.source !== TaskSource.admin && (
-                      <IconButton
-                        style={{
-                          paddingVertical: 2,
-                          backgroundColor: 'transparent',
-                        }}
-                        onPress={() => {
-                          setModalVisible(true);
-                        }}
-                        icon={<Pencil size={16} color={theme.colors.accent} />}
-                      />
-                    )}
-                    <SimpleCheckbox
-                      color={theme.colors.success}
-                      checked={value}
-                      onToggle={handleCompleteTask}
-                    />
-                  </>
-                ) : (
-                  renderStatusIcon()
-                )}
+              <View style={{ alignItems: 'flex-end', flexDirection: 'row', gap: 10 }}>
+                <SimpleCheckbox
+                  size={22}
+                  unCheckColor={theme.colors.success}
+                  color={theme.colors.success}
+                  checked={value}
+                  onToggle={handleCompleteTask}
+                />
               </View>
             </View>
           </View>
-
           <View style={styles.taskMeta}>
             <View style={styles.leftFooter}>
-              <Badge
-                displayIcon={false}
-                type="normal"
-                textStyle={{
-                  color: '#636363',
-                }}>
-                {taskConfiguration?.label ?? task.category}
-              </Badge>
+              <StatusBadge task={task} />
+              <PriorityBadge priority={task.priority} />
             </View>
 
             <View style={styles.rightFooter}>
@@ -272,24 +250,23 @@ export const TaskItem = ({ task }: { task: ITask }) => {
         onSubmit={handleModalSubmit}
         taskTitle={task.title}
       />
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(false);
-        }}>
-        <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <AddTaskScreen
-            defaultDate={String(task.date)}
-            task={task}
-            disposeModalHandler={() => {
-              setModalVisible(false);
-            }}
-          />
-        </View>
-      </Modal>
-    </>
+      <DraggableBottomSheet
+        visible={modalDetailTask}
+        onClose={() => setModalDetailTask(false)}
+        snapPoints={[0.5, 0.95]} // 50% and 95% of screen height
+        initialSnapIndex={0} // Start at 50% height
+      >
+        <TaskDetail
+          categoryLabel={taskConfiguration?.label ?? ''}
+          value={value}
+          task={task}
+          detailDescription={taskConfiguration?.description ?? ''}
+          disposeModalHandler={() => {
+            setModalDetailTask(false);
+          }}
+        />
+      </DraggableBottomSheet>
+    </TouchableOpacity>
   );
 };
 
@@ -315,9 +292,15 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 2,
     borderColor: '#F3F4F6',
+    borderBottomWidth: 3,
+    borderBottomColor: '#E5E7EB', // Default gray
+  },
+  completedTask: {
+    borderBottomColor: '#E5E7EB', // Gray for completed
   },
   leftFooter: {
     gap: 5,
+    flexDirection: 'row',
   },
   rightFooter: { alignItems: 'flex-end', marginBottom: 4, gap: 2 },
   taskCheckboxEmpty: {
@@ -336,7 +319,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   taskTitle: {
-    fontSize: 22,
+    fontSize: 16,
     fontWeight: '500',
     color: theme.colors.textColor,
     flex: 1,

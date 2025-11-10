@@ -16,7 +16,7 @@ export const addContactMutation = gql`
       notes
       type
       convertedAt
-      updatedAt
+      createdAt
     }
   }
 `;
@@ -48,6 +48,7 @@ export const updateContactMutation = gql`
       type
       convertedAt
       updatedAt
+      createdAt
     }
   }
 `;

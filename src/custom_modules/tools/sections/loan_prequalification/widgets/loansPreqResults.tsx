@@ -16,6 +16,7 @@ import { Card } from '~/codidge_components/UI/card';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
 import { GridTabs } from '~/codidge_components/UI/tabs';
+import { theme } from '~/theme/theme';
 
 interface LoanProgram {
   name: string;
@@ -109,7 +110,8 @@ export const LoansPreqResults: React.FC<LoansPreqResultsProps> = ({ results, onD
           initialTabKey={activeTab}
           onTabChange={setActiveTab}
           containerStyle={styles.tabContainer}
-          activeTabBackground="#FFFFFF"
+          activeTabBackground={theme.colors.primary}
+          activeTabColor="#FFF"
         />
       </View>
 

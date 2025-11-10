@@ -46,7 +46,7 @@ export interface ExpenseFormData {
 
 export interface FinancingFormData {
   loanAmount: number;
-  interestRate: number;
+  interestRate: any;
   loanTerm: number;
 }
 

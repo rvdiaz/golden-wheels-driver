@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Modal, TouchableOpacity, StyleSheet, Linking, Alert } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { IExtendedRenterInput } from '../../interfaces';
-import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
 
 interface PdfReportModalProps {
@@ -106,7 +105,7 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({ visible, onClose
       animationType="slide"
       presentationStyle="pageSheet"
       onRequestClose={onClose}>
-      <PageSafeContainer style={styles.container}>
+      <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
@@ -123,7 +122,7 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({ visible, onClose
         </View>
 
         {renderContent()}
-      </PageSafeContainer>
+      </View>
     </Modal>
   );
 };

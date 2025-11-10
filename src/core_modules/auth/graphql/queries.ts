@@ -9,6 +9,8 @@ export const getUserQuery = gql`
       firstName
       lastName
       phone
+      mlsNumber
+      brokerage
       financialGoals {
         avgCommissionByRents
         avgCommissionBySales
@@ -59,20 +61,6 @@ export const getUserQuery = gql`
           moduleKey
           available
           comingSoon
-        }
-      }
-      systemData {
-        tasksConfiguration {
-          key
-          description
-          goalKey
-          goalType
-          label
-          fields {
-            goalKey
-            goalType
-            label
-          }
         }
       }
     }

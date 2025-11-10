@@ -11,10 +11,12 @@ export const TaskList = ({
   tasks,
   displayList,
   isLoading = false,
+  title = 'My Tasks',
 }: {
   tasks: ITask[];
   displayList: ITask[];
   isLoading?: boolean;
+  title?: string;
 }) => {
   // Show loading skeleton when isLoading is true
   if (isLoading) {
@@ -29,7 +31,7 @@ export const TaskList = ({
   return (
     <View style={styles.tasksCard}>
       <View style={styles.tasksHeader}>
-        <Text style={styles.tasksTitle}>Today's Tasks</Text>
+        <Text style={styles.tasksTitle}>{title}</Text>
         <Text style={styles.tasksDate}>
           {completedCount}/{totalTasks} Complete
         </Text>

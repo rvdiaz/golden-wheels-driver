@@ -16,6 +16,7 @@ interface TabHeaderProps {
   onTabChange?: (key: string) => void;
   containerStyle?: ViewStyle; // <-- NEW PROP
   activeTabBackground?: string;
+  activeTabColor?: string;
 }
 
 export const TabHeader: React.FC<TabHeaderProps> = ({
@@ -194,6 +195,7 @@ export const GridTabs: React.FC<TabHeaderProps> = ({
   onTabChange,
   containerStyle,
   activeTabBackground = '#FFF',
+  activeTabColor = theme.colors.primary,
 }) => {
   const [activeTab, setActiveTab] = useState(initialTabKey || tabs[0].key);
 
@@ -224,19 +226,29 @@ export const GridTabs: React.FC<TabHeaderProps> = ({
             onPress={() => handleTabPress(tab.key)}>
             <View style={styles.compactIconContainer}>
               {tab.Icon && (
-                <tab.Icon
-                  size={16}
-                  color={activeTab === tab.key ? theme.colors.primary : '#6B7280'}
-                />
+                <tab.Icon size={16} color={activeTab === tab.key ? activeTabColor : '#6B7280'} />
               )}
               {!!tab?.indexNumber && (
                 <View style={styles.compactBadge}>
-                  <Text style={styles.compactBadgeText}>{tab.indexNumber}</Text>
+                  <Text
+                    style={[
+                      styles.compactBadgeText,
+                      {
+                        color: activeTab === tab.key ? activeTabColor : '#6B7280',
+                      },
+                    ]}>
+                    {tab.indexNumber}
+                  </Text>
                 </View>
               )}
             </View>
             <Text
-              style={[styles.compactTabText, activeTab === tab.key && styles.compactActiveTabText]}>
+              style={[
+                styles.compactTabText,
+                activeTab === tab.key && {
+                  color: activeTabColor,
+                },
+              ]}>
               {tab.label}
             </Text>
           </TouchableOpacity>
@@ -437,9 +449,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#6B7280',
     textAlign: 'center',
-  },
-  compactActiveTabText: {
-    color: theme.colors.primary,
   },
   compactBadge: {
     position: 'absolute',

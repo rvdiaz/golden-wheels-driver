@@ -8,6 +8,7 @@ export const addUserMutation = gql`
       activeTemplateId
       firstName
       lastName
+      mlsNumber
       phone
       financialGoals {
         avgCommissionByRents
@@ -59,20 +60,6 @@ export const addUserMutation = gql`
           moduleKey
           available
           comingSoon
-        }
-      }
-      systemData {
-        tasksConfiguration {
-          key
-          description
-          goalKey
-          goalType
-          label
-          fields {
-            goalKey
-            goalType
-            label
-          }
         }
       }
     }
@@ -88,6 +75,8 @@ export const updateUserMutation = gql`
       firstName
       lastName
       phone
+      mlsNumber
+      brokerage
       financialGoals {
         avgCommissionByRents
         avgCommissionBySales
@@ -138,20 +127,6 @@ export const updateUserMutation = gql`
           moduleKey
           available
           comingSoon
-        }
-      }
-      systemData {
-        tasksConfiguration {
-          key
-          description
-          goalKey
-          goalType
-          label
-          fields {
-            goalKey
-            goalType
-            label
-          }
         }
       }
     }

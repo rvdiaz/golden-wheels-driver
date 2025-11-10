@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { getActiveTasks } from '../helpers';
+import { getActiveTasks, getCustomTasks } from '../helpers';
 import { TaskList } from './taskList';
 import * as Icons from 'lucide-react-native';
 import { useTasksByUser } from '../hooks/listTask';
@@ -44,6 +44,7 @@ export const TodayTasks = () => {
 
   // Check if ALL tasks are actually completed (marked as isCompleted: true)
   const allTasksCompleted = allTasks.length > 0 && allTasks.every((task) => task.isCompleted);
+  const customTask = getCustomTasks(activeTasks);
 
   // Show completion widget ONLY when all tasks are actually completed
   if (allTasksCompleted && !isLoading) {
@@ -55,14 +56,14 @@ export const TodayTasks = () => {
   }
 
   // Show loading or empty state when no active tasks, but always show TaskList for loading
-  if (activeTasks.length === 0 && !isLoading) {
+  if (customTask.length === 0 && !isLoading) {
     return null;
   }
 
   // Show TaskList with loading state or actual data
   return (
-    <View style={{ marginTop: 16 }}>
-      <TaskList displayList={activeTasks} tasks={allTasks} isLoading={isLoading} />
+    <View>
+      <TaskList displayList={customTask} tasks={allTasks} isLoading={isLoading} />
     </View>
   );
 };

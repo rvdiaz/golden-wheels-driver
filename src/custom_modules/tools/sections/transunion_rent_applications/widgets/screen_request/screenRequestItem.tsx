@@ -98,7 +98,7 @@ export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) =>
                       key={applicant.screeningRequestId}
                       style={{
                         backgroundColor: theme.colors.baseGray,
-                        padding: 20,
+                        padding: 14,
                         borderRadius: theme.borderRadius.lg,
                         flexDirection: 'row',
                         alignItems: 'center',

@@ -215,13 +215,15 @@ export const ExpensesForm: React.FC<ExpensesFormProps> = ({
               <View style={styles.sectionsRow}>
                 <View style={styles.sectionColumn}>
                   <View style={[styles.sectionHeader, styles.currentHeader]}>
-                    <Text style={[styles.sectionTitle, styles.currentTitle]}>Current Expenses</Text>
+                    <Text style={[styles.sectionTitle, styles.currentTitle]}>
+                      Current{'\n'}Expenses
+                    </Text>
                   </View>
                 </View>
                 <View style={styles.sectionColumn}>
                   <View style={[styles.sectionHeader, styles.projectedHeader]}>
                     <Text style={[styles.sectionTitle, styles.projectedTitle]}>
-                      Projected Expenses
+                      Projected{'\n'}Expenses
                     </Text>
                   </View>
                 </View>

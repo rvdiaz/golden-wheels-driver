@@ -9,8 +9,9 @@ import { useQuery } from '@apollo/client';
 import { TrainingLevel, TrainingProgram } from '../../interfaces';
 import { GET_ALL_TRAINING_PROGRAMS } from '../../graphql/queries';
 import { ModuleKeys } from '~/store/interface';
-import { Header } from '~/codidge_components/UI/header';
 import Constants from 'expo-constants';
+import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
+import { ButtonSize } from '~/codidge_components/UI/button/types';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 const categoryId = Constants.expoConfig?.extra?.TRAINING_CATEGORY_ID;
@@ -27,7 +28,7 @@ export const TrainingProgramsScreen: React.FC = () => {
 
   const [filterLevel, setFilterLevel] = useState<string>('ALL');
 
-  const { data, loading, error } = useQuery(GET_ALL_TRAINING_PROGRAMS, {
+  const { data, loading, error, refetch } = useQuery(GET_ALL_TRAINING_PROGRAMS, {
     variables: { tenant, categoryId },
   });
 
@@ -58,13 +59,6 @@ export const TrainingProgramsScreen: React.FC = () => {
   if (loading) {
     return (
       <View style={styles.container}>
-        {/*   <Header
-          title={category.name}
-          onBack={() => {
-            navigation.goBack();
-          }}
-          showBack={true}
-        /> */}
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
           <Text style={styles.loadingText}>Loading programs...</Text>
@@ -76,16 +70,16 @@ export const TrainingProgramsScreen: React.FC = () => {
   if (error) {
     return (
       <View style={styles.container}>
-        {/*      <Header
-          title={category.name}
-          onBack={() => {
-            navigation.goBack();
-          }}
-          showBack={true}
-        /> */}
         <View style={styles.centerContainer}>
           <Icons.AlertCircle size={48} color="#EF4444" />
           <Text style={styles.errorText}>Error loading programs</Text>
+          <PrimaryButton
+            title="Retry"
+            size={ButtonSize.LARGE}
+            onPress={async () => {
+              await refetch();
+            }}
+          />
         </View>
       </View>
     );
@@ -94,13 +88,6 @@ export const TrainingProgramsScreen: React.FC = () => {
   if (programs.length === 0 && filterLevel === 'ALL') {
     return (
       <View style={styles.container}>
-        {/*    <Header
-          title={category.name}
-          onBack={() => {
-            navigation.goBack();
-          }}
-          showBack={true}
-        /> */}
         <View style={styles.centerContainer}>
           <Icons.BookOpen size={48} color="#9CA3AF" />
           <Text style={styles.emptyText}>No training programs available</Text>
@@ -111,13 +98,6 @@ export const TrainingProgramsScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/*  <Header
-        title={category.name}
-        onBack={() => {
-          navigation.goBack();
-        }}
-        showBack={true}
-      /> */}
       <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
@@ -249,6 +229,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#EF4444',
     marginTop: 16,
+    marginBottom: 10,
   },
   emptyText: {
     fontSize: 18,

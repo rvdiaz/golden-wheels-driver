@@ -130,19 +130,19 @@ export const DraggableBottomSheet: React.FC<DraggableBottomSheetProps> = ({
         {/* Backdrop */}
         <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={closeSheet} />
 
-        {/* Bottom Sheet */}
+        {/* Bottom Sheet - Now the entire sheet is draggable */}
         <Animated.View
+          {...panResponder.panHandlers}
           style={[
             styles.bottomSheet,
             {
               transform: [{ translateY }],
             },
           ]}>
-          {/* Drag Handle */}
-          <View {...panResponder.panHandlers} style={styles.dragHandleContainer}>
+          {/* Drag Handle - Still visible but not the only draggable area */}
+          <View style={styles.dragHandleContainer}>
             <View style={styles.dragHandle} />
           </View>
-
           {/* Content */}
           <View style={styles.content}>{children}</View>
         </Animated.View>

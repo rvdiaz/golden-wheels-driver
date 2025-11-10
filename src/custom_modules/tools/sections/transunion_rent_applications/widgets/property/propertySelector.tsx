@@ -14,16 +14,16 @@ import { userData } from '~/store/user';
 import { getTransunionPropertyQuery } from '~/custom_modules/tools/api/queries';
 import { ITransUnionProperty } from '../../interfaces';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
-import { Search, ChevronDown, Plus, X } from 'lucide-react-native';
+import { Search, ChevronDown } from 'lucide-react-native';
 import { PropertyForm } from './propertyForm';
 import { Header } from '~/codidge_components/UI/header';
 import { theme } from '~/theme/theme';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
-import { formatAddress } from '../../helpers';
 import { PropertyItem } from './propertyItem';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
 
 // Property Selector Widget Component
 interface PropertySelectorWidgetProps {
@@ -211,25 +211,6 @@ export const PropertySelectorModal: React.FC<PropertySelectorModalProps> = ({
 
         {/* Property Content */}
         <View style={styles.selectablePropertyContent}>
-          {/* Property Header */}
-          <View style={styles.propertyHeader}>
-            <View style={styles.propertyTitleRow}>
-              <View
-                style={[
-                  styles.statusBadge,
-                  item.isActive ? styles.activeBadge : styles.inactiveBadge,
-                ]}>
-                <Text
-                  style={[
-                    styles.statusText,
-                    item.isActive ? styles.activeText : styles.inactiveText,
-                  ]}>
-                  {item.isActive ? 'Active' : 'Inactive'}
-                </Text>
-              </View>
-            </View>
-          </View>
-
           {/* Address Section */}
           <View style={styles.selectableAddressSection}>
             <Text style={styles.selectablePrimaryAddress} numberOfLines={1}>
@@ -318,10 +299,20 @@ export const PropertySelectorModal: React.FC<PropertySelectorModalProps> = ({
 
           {/* Add New Property Button */}
           <View style={styles.addButtonContainer}>
-            <TouchableOpacity style={styles.addButton} onPress={() => setShowPropertyForm(true)}>
-              <Plus size={20} color="#007AFF" />
-              <Text style={styles.addButtonText}>Add New Property</Text>
-            </TouchableOpacity>
+            <OutlineButton
+              title="Add Property"
+              size={ButtonSize.LARGE}
+              leftWidget={
+                <Icons.Plus
+                  color={theme.colors.primary}
+                  size={18}
+                  onPress={() => setShowPropertyForm(true)}
+                />
+              }
+              onPress={() => {
+                setShowPropertyForm(true);
+              }}
+            />
           </View>
 
           {/* Properties List */}
@@ -430,30 +421,12 @@ const styles = StyleSheet.create({
   },
   addButtonContainer: {
     paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  addButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#007AFF',
-    backgroundColor: '#f8f9ff',
-  },
-  addButtonText: {
-    fontSize: 16,
-    color: '#007AFF',
-    fontWeight: '600',
-    marginLeft: 8,
+    paddingTop: 0,
+    paddingBottom: 16,
   },
   formContainer: {
     flex: 1,
   },
-
-  // Selectable Property Item Styles
   listContainer: {
     paddingHorizontal: 20,
     paddingBottom: 32,
@@ -462,18 +435,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     padding: 16,
     marginBottom: 12,
-    borderWidth: 2,
-    borderColor: '#f0f0f0',
+    borderWidth: 1,
     flexDirection: 'row',
+    borderRadius: theme.borderRadius.lg,
+    borderColor: theme.colors.borderNeutralColor,
     alignItems: 'flex-start',
   },
   selectedPropertyCard: {
-    borderColor: '#007AFF',
-    backgroundColor: '#f8f9ff',
+    borderColor: theme.colors.primary,
   },
   selectionIndicator: {
     marginRight: 12,
-    marginTop: 2,
   },
   radioButton: {
     width: 20,
@@ -486,13 +458,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   radioButtonSelected: {
-    borderColor: '#007AFF',
+    borderColor: theme.colors.primary,
   },
   radioButtonInner: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#007AFF',
+    backgroundColor: theme.colors.primary,
   },
   selectablePropertyContent: {
     flex: 1,
@@ -500,11 +472,7 @@ const styles = StyleSheet.create({
   propertyHeader: {
     marginBottom: 8,
   },
-  propertyTitleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-  },
+
   selectablePropertyName: {
     fontSize: 16,
     fontWeight: '600',
@@ -513,40 +481,18 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   selectableAddressSection: {
-    gap: 2,
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
+    gap: 6,
   },
   selectablePrimaryAddress: {
     fontSize: 14,
-    color: '#333333',
-    fontWeight: '500',
+    fontWeight: '600',
+    color: '#1E1B4B',
   },
   selectableSecondaryAddress: {
-    fontSize: 13,
-    color: '#666666',
-  },
-
-  // Shared Styles
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    alignSelf: 'flex-start',
-  },
-  activeBadge: {
-    backgroundColor: '#d4edda',
-  },
-  inactiveBadge: {
-    backgroundColor: '#f8d7da',
-  },
-  statusText: {
-    fontSize: 11,
-    fontWeight: '600',
-  },
-  activeText: {
-    color: '#155724',
-  },
-  inactiveText: {
-    color: '#721c24',
+    fontSize: 14,
+    color: '#737373',
   },
   loadingContainer: {
     flex: 1,

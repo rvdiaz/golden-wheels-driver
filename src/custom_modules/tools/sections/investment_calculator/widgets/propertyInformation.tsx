@@ -6,6 +6,7 @@ import { Card } from '~/codidge_components/UI/card';
 import { Home, Percent } from 'lucide-react-native';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import Text from '~/codidge_components/UI/text';
+import LocationAutocomplete from '~/custom_modules/tools/widgets/locationPropertyTax';
 
 interface PropertyFormProps {
   form: UseFormReturn<any>;
@@ -76,6 +77,19 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({ form }) => {
               {/*  {errors.address && (
                 <Text style={styles.errorText}>{errors.address.message}</Text>
               )} */}
+            </View>
+
+            <View style={styles.inputContainer}>
+              <LocationAutocomplete
+                onSelection={(propTax) => {
+                  if (watchedPropertyValue && propTax) {
+                    setValue(
+                      'projectedPropertyTaxes',
+                      ((propTax / 100) * watchedPropertyValue) / 12
+                    );
+                  }
+                }}
+              />
             </View>
 
             {/* Asking Price */}

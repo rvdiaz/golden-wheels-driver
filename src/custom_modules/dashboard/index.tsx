@@ -15,7 +15,7 @@ export const Dashboard: React.FC = () => {
         <RentAppShortcut />
         <TaskMetricsStats />
         <TodayTasks />
-        <SubscriptionButton />
+        {/*    <SubscriptionButton /> */}
       </ScrollView>
     </View>
   );

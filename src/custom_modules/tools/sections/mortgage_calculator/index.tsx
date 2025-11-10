@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView, Modal } from 'react-native';
+import { View, StyleSheet, ScrollView, Modal, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useForm, FormProvider } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
@@ -12,6 +12,7 @@ import { calculateMortgage } from './helpers';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export const MortgageCalculatorScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -97,28 +98,34 @@ export const MortgageCalculatorScreen: React.FC = () => {
             navigation.goBack();
           }}
         />
-        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-          <Card style={styles.formCard}>
-            <View style={styles.cardHeader}>
-              <Icons.Calculator size={24} color="#2563EB" />
-              <Text style={styles.cardTitle}>Mortgage Payment Calculator</Text>
-            </View>
-            <Text style={styles.cardSubtitle}>Calculate monthly mortgage payments</Text>
+        <KeyboardAwareScrollView
+          showsVerticalScrollIndicator={false}
+          enableOnAndroid={true}
+          extraScrollHeight={Platform.OS === 'ios' ? 0 : 80}
+          keyboardShouldPersistTaps="handled">
+          <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+            <Card style={styles.formCard}>
+              <View style={styles.cardHeader}>
+                <Icons.Calculator size={24} color="#2563EB" />
+                <Text style={styles.cardTitle}>Mortgage Payment Calculator</Text>
+              </View>
+              <Text style={styles.cardSubtitle}>Calculate monthly mortgage payments</Text>
 
-            <MortgageCalculatorForm
-              isDownPaymentPercent={isDownPaymentPercent}
-              setIsDownPaymentPercent={setIsDownPaymentPercent}
-            />
-            <PrimaryButton
-              size={ButtonSize.LARGE}
-              title="Show Results"
-              onPress={() => {
-                setshowResults(true);
-              }}
-              rightWidget={<Icons.ChevronRight color="#FFF" />}
-            />
-          </Card>
-        </ScrollView>
+              <MortgageCalculatorForm
+                isDownPaymentPercent={isDownPaymentPercent}
+                setIsDownPaymentPercent={setIsDownPaymentPercent}
+              />
+              <PrimaryButton
+                size={ButtonSize.LARGE}
+                title="Show Results"
+                onPress={() => {
+                  setshowResults(true);
+                }}
+                rightWidget={<Icons.ChevronRight color="#FFF" />}
+              />
+            </Card>
+          </ScrollView>
+        </KeyboardAwareScrollView>
         <Modal
           animationType="slide"
           transparent={true}

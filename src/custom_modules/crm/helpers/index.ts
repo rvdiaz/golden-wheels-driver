@@ -2,13 +2,22 @@ import { Alert, Linking } from 'react-native';
 import { ContactCategory, ContactSort, ContactType, IContact } from '../interfaces';
 
 export function capitalize(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  if (str) {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  }
+  return str;
 }
 
 export const CONTACT_CATEGORY_OPTIONS = Object.values(ContactCategory).map((value) => ({
   label: capitalize(value),
   value,
 }));
+
+// Email validation helper
+export const isValidEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
 
 export const CONTACT_TYPE_OPTIONS = Object.values(ContactType).map((value) => ({
   label: capitalize(value),

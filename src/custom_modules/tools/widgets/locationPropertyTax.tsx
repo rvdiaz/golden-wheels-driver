@@ -117,7 +117,7 @@ const LocationAutocomplete = ({ onSelection }: { onSelection: (taxRate: number) 
       {/* Input Field */}
       <View style={styles.inputContainer}>
         <InputField
-          label="County, City (Optional)"
+          label="County/City (Optional for accuracy)"
           ref={inputRef}
           value={searchTerm}
           onChangeText={handleInputChange}

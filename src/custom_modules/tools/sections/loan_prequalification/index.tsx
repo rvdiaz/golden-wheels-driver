@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Modal } from 'react-native';
+import { View, StyleSheet, ScrollView, Modal, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
@@ -11,6 +11,8 @@ import { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
+import LocationAutocomplete from '../../widgets/locationPropertyTax';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 interface PrequalifiedFormData {
   monthlyIncome: number;
@@ -91,6 +93,7 @@ export const PrequalifiedLoanScreen: React.FC = () => {
     control,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<PrequalifiedFormData>({
     defaultValues: {
       monthlyIncome: 5000,
@@ -286,190 +289,201 @@ export const PrequalifiedLoanScreen: React.FC = () => {
   return (
     <PageSafeContainer style={styles.container}>
       <Header title="Prequalified Loan Calculator" showBack onBack={() => navigation.goBack()} />
-
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Client Information Card */}
-        <Card style={styles.formCard}>
-          <View style={styles.cardHeader}>
-            <Icons.User size={24} color="#2563EB" />
-            <Text style={styles.cardTitle}>Client Information</Text>
-          </View>
-          <Text style={styles.cardSubtitle}>Enter your client's financial information</Text>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Monthly Gross Income ($)</Text>
-            <Controller
-              control={control}
-              name="monthlyIncome"
-              rules={{ required: 'Monthly income is required', min: 1 }}
-              render={({ field: { onChange, value } }) => (
-                <InputField
-                  style={styles.input}
-                  placeholder="5,000"
-                  value={value?.toString() || ''}
-                  onChangeText={(text) => onChange(parseFloat(text) || 0)}
-                  keyboardType="numeric"
-                  hint="Total monthly income before taxes"
-                  error={!!errors.monthlyIncome}
-                  errorMessage={errors.monthlyIncome?.message}
-                />
-              )}
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Monthly Long-Term Obligations ($)</Text>
-            <Controller
-              control={control}
-              name="monthlyDebts"
-              render={({ field: { onChange, value } }) => (
-                <InputField
-                  style={styles.input}
-                  placeholder="500"
-                  value={value?.toString() || ''}
-                  onChangeText={(text) => onChange(parseFloat(text) || 0)}
-                  keyboardType="numeric"
-                  hint="Car payments, credit cards, student loans, etc."
-                />
-              )}
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Funds Available ($)</Text>
-            <Controller
-              control={control}
-              name="downPaymentAmount"
-              rules={{ required: 'Funds available is required', min: 1 }}
-              render={({ field: { onChange, value } }) => (
-                <InputField
-                  style={styles.input}
-                  placeholder="50,000"
-                  value={value?.toString() || ''}
-                  onChangeText={(text) => onChange(parseFloat(text) || 0)}
-                  keyboardType="numeric"
-                  hint="Total cash for down payment and closing costs"
-                  error={!!errors.downPaymentAmount}
-                  errorMessage={errors.downPaymentAmount?.message}
-                />
-              )}
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Interest Rate (%)</Text>
-            <Controller
-              control={control}
-              name="interestRate"
-              render={({ field: { onChange, value } }) => (
-                <InputField
-                  style={styles.input}
-                  placeholder="7.0"
-                  value={value?.toString() || ''}
-                  onChangeText={(text) => onChange(parseFloat(text) || 0)}
-                  keyboardType="numeric"
-                  hint="Current market rate for 30-year fixed"
-                />
-              )}
-            />
-          </View>
-
-          <View style={styles.infoBox}>
-            <Icons.Info size={16} color="#2563EB" />
-            <View style={{ flex: 1 }}>
-              <Text style={styles.infoTitle}>Loan Requirements:</Text>
-              <Text style={styles.infoText}>
-                <Text style={{ fontWeight: '600' }}>Conventional:</Text> Housing ≤ 28%, Total Debt ≤
-                36%
-              </Text>
-              <Text style={styles.infoText}>
-                <Text style={{ fontWeight: '600' }}>FHA:</Text> Housing ≤ 31%, Total Debt ≤ 43%
-              </Text>
+      <KeyboardAwareScrollView
+        showsVerticalScrollIndicator={false}
+        enableOnAndroid={true}
+        extraScrollHeight={Platform.OS === 'ios' ? 0 : 80}
+        keyboardShouldPersistTaps="handled">
+        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          {/* Client Information Card */}
+          <Card style={styles.formCard}>
+            <View style={styles.cardHeader}>
+              <Icons.User size={24} color="#2563EB" />
+              <Text style={styles.cardTitle}>Client Information</Text>
             </View>
-          </View>
-        </Card>
+            <Text style={styles.cardSubtitle}>Enter your client's financial information</Text>
 
-        {/* Home Expenses Card */}
-        <Card style={styles.formCard}>
-          <View style={styles.cardHeader}>
-            <Icons.Home size={24} color="#2563EB" />
-            <Text style={styles.cardTitle}>Home Expenses</Text>
-          </View>
-          <Text style={styles.cardSubtitle}>Property-related costs and fees</Text>
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Monthly Gross Income ($)</Text>
+              <Controller
+                control={control}
+                name="monthlyIncome"
+                rules={{ required: 'Monthly income is required', min: 1 }}
+                render={({ field: { onChange, value } }) => (
+                  <InputField
+                    style={styles.input}
+                    placeholder="5,000"
+                    value={value?.toString() || ''}
+                    onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                    keyboardType="numeric"
+                    hint="Total monthly income before taxes"
+                    error={!!errors.monthlyIncome}
+                    errorMessage={errors.monthlyIncome?.message}
+                  />
+                )}
+              />
+            </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Property Tax (% annually)</Text>
-            <Controller
-              control={control}
-              name="propertyTaxRate"
-              render={({ field: { onChange, value } }) => (
-                <InputField
-                  style={styles.input}
-                  placeholder="1.28"
-                  value={value?.toString() || ''}
-                  onChangeText={(text) => onChange(parseFloat(text) || 0)}
-                  keyboardType="numeric"
-                  hint="Typical: 0.5% - 2.5%"
-                />
-              )}
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Monthly Long-Term Obligations ($)</Text>
+              <Controller
+                control={control}
+                name="monthlyDebts"
+                render={({ field: { onChange, value } }) => (
+                  <InputField
+                    style={styles.input}
+                    placeholder="500"
+                    value={value?.toString() || ''}
+                    onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                    keyboardType="numeric"
+                    hint="Car payments, credit cards, student loans, etc."
+                  />
+                )}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Funds Available ($)</Text>
+              <Controller
+                control={control}
+                name="downPaymentAmount"
+                rules={{ required: 'Funds available is required', min: 1 }}
+                render={({ field: { onChange, value } }) => (
+                  <InputField
+                    style={styles.input}
+                    placeholder="50,000"
+                    value={value?.toString() || ''}
+                    onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                    keyboardType="numeric"
+                    hint="Total cash for down payment and closing costs"
+                    error={!!errors.downPaymentAmount}
+                    errorMessage={errors.downPaymentAmount?.message}
+                  />
+                )}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Interest Rate (%)</Text>
+              <Controller
+                control={control}
+                name="interestRate"
+                render={({ field: { onChange, value } }) => (
+                  <InputField
+                    style={styles.input}
+                    placeholder="7.0"
+                    value={value?.toString() || ''}
+                    onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                    keyboardType="numeric"
+                    hint="Current market rate for 30-year fixed"
+                  />
+                )}
+              />
+            </View>
+
+            <View style={styles.infoBox}>
+              <Icons.Info size={16} color="#2563EB" />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.infoTitle}>Loan Requirements:</Text>
+                <Text style={styles.infoText}>
+                  <Text style={{ fontWeight: '600' }}>Conventional:</Text> Housing ≤ 28%, Total Debt
+                  ≤ 36%
+                </Text>
+                <Text style={styles.infoText}>
+                  <Text style={{ fontWeight: '600' }}>FHA:</Text> Housing ≤ 31%, Total Debt ≤ 43%
+                </Text>
+              </View>
+            </View>
+          </Card>
+
+          {/* Home Expenses Card */}
+          <Card style={styles.formCard}>
+            <View style={styles.cardHeader}>
+              <Icons.Home size={24} color="#2563EB" />
+              <Text style={styles.cardTitle}>Home Expenses</Text>
+            </View>
+            <Text style={styles.cardSubtitle}>Property-related costs and fees</Text>
+
+            <LocationAutocomplete
+              onSelection={(propTax) => {
+                setValue('propertyTaxRate', propTax);
+              }}
             />
-          </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Insurance (% annually)</Text>
-            <Controller
-              control={control}
-              name="insuranceRate"
-              render={({ field: { onChange, value } }) => (
-                <InputField
-                  style={styles.input}
-                  placeholder="0.35"
-                  value={value?.toString() || ''}
-                  onChangeText={(text) => onChange(parseFloat(text) || 0)}
-                  keyboardType="numeric"
-                  hint="Typical: 0.25% - 0.75%"
-                />
-              )}
-            />
-          </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Property Tax (% annually)</Text>
+              <Controller
+                control={control}
+                name="propertyTaxRate"
+                render={({ field: { onChange, value } }) => (
+                  <InputField
+                    style={styles.input}
+                    placeholder="1.28"
+                    value={value?.toString() || ''}
+                    onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                    keyboardType="numeric"
+                    hint="Typical: 0.5% - 2.5%"
+                  />
+                )}
+              />
+            </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Monthly HOA Fees ($)</Text>
-            <Controller
-              control={control}
-              name="hoaFees"
-              render={({ field: { onChange, value } }) => (
-                <InputField
-                  style={styles.input}
-                  placeholder="0"
-                  value={value?.toString() || ''}
-                  onChangeText={(text) => onChange(parseFloat(text) || 0)}
-                  keyboardType="numeric"
-                  hint="Optional"
-                />
-              )}
-            />
-          </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Insurance (% annually)</Text>
+              <Controller
+                control={control}
+                name="insuranceRate"
+                render={({ field: { onChange, value } }) => (
+                  <InputField
+                    style={styles.input}
+                    placeholder="0.35"
+                    value={value?.toString() || ''}
+                    onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                    keyboardType="numeric"
+                    hint="Typical: 0.25% - 0.75%"
+                  />
+                )}
+              />
+            </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Closing Costs (%)</Text>
-            <Controller
-              control={control}
-              name="closingCostPercentage"
-              render={({ field: { onChange, value } }) => (
-                <InputField
-                  style={styles.input}
-                  placeholder="3.0"
-                  value={value?.toString() || ''}
-                  onChangeText={(text) => onChange(parseFloat(text) || 0)}
-                  keyboardType="numeric"
-                  hint="Typical: 2-4%"
-                />
-              )}
-            />
-          </View>
-        </Card>
-      </ScrollView>
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Monthly HOA Fees ($)</Text>
+              <Controller
+                control={control}
+                name="hoaFees"
+                render={({ field: { onChange, value } }) => (
+                  <InputField
+                    style={styles.input}
+                    placeholder="0"
+                    value={value?.toString() || ''}
+                    onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                    keyboardType="numeric"
+                    hint="Optional"
+                  />
+                )}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Closing Costs (%)</Text>
+              <Controller
+                control={control}
+                name="closingCostPercentage"
+                render={({ field: { onChange, value } }) => (
+                  <InputField
+                    style={styles.input}
+                    placeholder="3.0"
+                    value={value?.toString() || ''}
+                    onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                    keyboardType="numeric"
+                    hint="Typical: 2-4%"
+                  />
+                )}
+              />
+            </View>
+          </Card>
+        </ScrollView>
+      </KeyboardAwareScrollView>
 
       {/* Fixed Footer Button */}
       <View style={styles.footer}>

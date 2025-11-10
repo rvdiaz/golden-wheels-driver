@@ -12,7 +12,6 @@ import { IExtendedRenterInput, IRentApplication } from '../../interfaces';
 import { theme } from '~/theme/theme';
 import { PdfReportModal } from './applicantPdfViewer';
 import { Badge } from '~/codidge_components/UI/badge';
-import IconButton from '~/codidge_components/UI/button/IconButton';
 import OutlineButton, { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
 import { capitalize } from '~/custom_modules/crm/helpers';
 import TextButton from '~/codidge_components/UI/button/TextButton';
@@ -96,6 +95,7 @@ export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) =>
                 if (canViewReport) {
                   return (
                     <TouchableOpacity
+                      key={applicant.screeningRequestId}
                       style={{
                         backgroundColor: theme.colors.baseGray,
                         padding: 20,
@@ -151,10 +151,14 @@ export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) =>
                     style={styles.applicantItem}>
                     <View style={styles.applicantContent}>
                       <View style={styles.applicantInfo}>
-                        <Text
-                          style={
-                            styles.applicantName
-                          }>{`${capitalize(applicant.firstName)} ${capitalize(applicant.lastName)}`}</Text>
+                        {applicant.firstName ? (
+                          <Text
+                            style={
+                              styles.applicantName
+                            }>{`${capitalize(applicant.firstName)} ${capitalize(applicant.lastName)}`}</Text>
+                        ) : (
+                          <Text>-----</Text>
+                        )}
                       </View>
 
                       <View style={styles.applicantStatusContainer}>
@@ -295,8 +299,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   applicantStatusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
     borderRadius: 12,
     minWidth: 70,
     alignItems: 'center',

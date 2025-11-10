@@ -15,6 +15,7 @@ import IconButton from '~/codidge_components/UI/button/IconButton';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
 import { theme } from '~/theme/theme';
 import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
+import { isValidEmail } from '../helpers';
 
 // Contact Interface (adjust according to your contact structure)
 interface IContact {
@@ -27,12 +28,6 @@ interface IContact {
   company?: string;
   // Add other contact properties as needed
 }
-
-// Email validation helper
-const isValidEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
 
 // Contact Email Input Component
 interface ContactEmailInputProps {
@@ -465,7 +460,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: 10,
     marginTop: 10,
   },
   multipleEmailsLabel: {

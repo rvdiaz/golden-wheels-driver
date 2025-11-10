@@ -1,5 +1,5 @@
 import { useMutation, useReactiveVar } from '@apollo/client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Alert, View } from 'react-native';
 import { Header } from '~/codidge_components/UI/header';
@@ -9,6 +9,11 @@ import { IAttestationGroup, ITransUnionProperty } from '../../interfaces';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { AttestationModal } from './attestationsPopup';
+import SearchAddressAutoComplete from '~/custom_modules/tools/widgets/searchAutoComplete';
+import TextButton from '~/codidge_components/UI/button/TextButton';
+import { ButtonSize } from '~/codidge_components/UI/button/types';
+import { theme } from '~/theme/theme';
+import * as Icons from 'lucide-react-native';
 
 export const PropertyForm = ({
   disposeModalHandler,
@@ -23,6 +28,8 @@ export const PropertyForm = ({
   const [pendingPropertyData, setPendingPropertyData] = useState<ITransUnionProperty | null>(null);
   const [attestationGroup, setAttestationGroup] = useState<IAttestationGroup | null>(null);
 
+  const [isManualEntry, setIsManualEntry] = useState(false);
+
   const [addPropertyMutationFn, { loading }] = useMutation<{
     createTransUnionProperty: {
       propertyId: string;
@@ -34,8 +41,8 @@ export const PropertyForm = ({
     control,
     handleSubmit,
     reset,
-
-    formState: { errors, isValid },
+    setValue,
+    formState: { errors },
   } = useForm<ITransUnionProperty>({
     defaultValues: {
       deposit: undefined,
@@ -75,16 +82,12 @@ export const PropertyForm = ({
         },
       });
 
-      console.log(':::response', response);
-
-      // Check if attestations are returned in the response
       if (
         response.data?.createTransUnionProperty?.attestations?.attestations &&
         response.data?.createTransUnionProperty?.attestations?.attestations?.length > 0
       ) {
         const attestations = response.data.createTransUnionProperty.attestations;
 
-        // If attestations exist and have items, show the modal
         if (attestations.attestations && attestations.attestations.length > 0) {
           setPendingPropertyData({
             ...data,
@@ -101,7 +104,7 @@ export const PropertyForm = ({
         reset();
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to create properonAcceptty. Please try again.');
+      Alert.alert('Error', 'Failed to create property. Please try again.');
       console.error('Error creating property:', error);
     }
   };
@@ -132,6 +135,12 @@ export const PropertyForm = ({
     );
   };
 
+  useEffect(() => {
+    if (!showAttestationModal) {
+      disposeModalHandler();
+    }
+  }, [showAttestationModal]);
+
   return (
     <>
       <PageSafeContainer style={styles.container}>
@@ -142,7 +151,6 @@ export const PropertyForm = ({
           rightAction={handleSubmit(onSubmit)}
           rightText="Save"
           loadingRight={loading}
-          disabledRight={!isValid}
         />
         <KeyboardAvoidingView
           style={styles.keyboardAvoidingView}
@@ -150,7 +158,60 @@ export const PropertyForm = ({
           keyboardVerticalOffset={0}>
           <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
             {/* Address Line 1 - Required */}
-            <View style={styles.inputFormWrapper}>
+            <View>
+              {!isManualEntry && (
+                <SearchAddressAutoComplete
+                  onSelection={(address) => {
+                    const meta = address.meta ? JSON.parse(address.meta) : {};
+
+                    const addressLine1 = `${meta.house} ${meta.street}`;
+                    const city = meta.city;
+                    const state = meta.state;
+                    const zip = meta.zip;
+
+                    setValue('addressLine1', addressLine1);
+                    setValue('region', state);
+                    setValue('locality', city);
+                    setValue('postalCode', zip);
+                  }}
+                  labelStyle={{
+                    marginBottom: 8,
+                  }}
+                />
+              )}
+              <View
+                style={{
+                  marginLeft: 'auto',
+                }}>
+                <TextButton
+                  size={ButtonSize.LARGE}
+                  textStyle={{
+                    color: theme.colors.primary,
+                  }}
+                  style={{
+                    gap: 10,
+                  }}
+                  title={isManualEntry ? 'Back to search' : `Enter manually`}
+                  rightWidget={
+                    !isManualEntry && <Icons.MoveRight color={theme.colors.primary} size={16} />
+                  }
+                  leftWidget={
+                    isManualEntry && <Icons.MoveLeft color={theme.colors.primary} size={16} />
+                  }
+                  onPress={() => {
+                    setIsManualEntry((prev) => !prev);
+                  }}
+                />
+              </View>
+            </View>
+
+            <View
+              style={[
+                styles.inputFormWrapper,
+                !isManualEntry && {
+                  display: 'none',
+                },
+              ]}>
               <Controller
                 control={control}
                 name="addressLine1"
@@ -171,7 +232,13 @@ export const PropertyForm = ({
             </View>
 
             {/* Address Line 2 - Optional */}
-            <View style={styles.inputFormWrapper}>
+            <View
+              style={[
+                styles.inputFormWrapper,
+                !isManualEntry && {
+                  display: 'none',
+                },
+              ]}>
               <Controller
                 control={control}
                 name="addressLine2"
@@ -190,7 +257,13 @@ export const PropertyForm = ({
             </View>
 
             {/* Locality - Required */}
-            <View style={styles.inputFormWrapper}>
+            <View
+              style={[
+                styles.inputFormWrapper,
+                !isManualEntry && {
+                  display: 'none',
+                },
+              ]}>
               <Controller
                 control={control}
                 name="locality"
@@ -210,7 +283,13 @@ export const PropertyForm = ({
               />
             </View>
 
-            <View style={styles.pairInputContainer}>
+            <View
+              style={[
+                styles.pairInputContainer,
+                !isManualEntry && {
+                  display: 'none',
+                },
+              ]}>
               <View
                 style={[
                   styles.inputFormWrapper,

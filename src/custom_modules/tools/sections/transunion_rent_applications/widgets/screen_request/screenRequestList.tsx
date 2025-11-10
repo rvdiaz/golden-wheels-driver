@@ -72,33 +72,37 @@ export const ScreenRequestList = ({ onBack }: { onBack: () => void }) => {
             onBack();
           }}
         />
-        <View style={styles.centerContainer}>
-          <OutlineButton
-            onPress={() => {
-              setModalVisible(true);
-            }}
-            size={ButtonSize.LARGE}
-            title="Screen Tenant"
-            leftWidget={<Icons.Plus color={theme.colors.primary} size={20} />}
-          />
-          <Text style={styles.emptyText}>No screening requests found</Text>
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => {
-              setModalVisible(false);
-            }}>
-            <View
-              style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-              <ScreenRequestForm
-                disposeModalHandler={() => {
-                  setModalVisible(false);
-                }}
-              />
-            </View>
-          </Modal>
-        </View>
+        {loading ? (
+          <PageLoading />
+        ) : (
+          <View style={styles.centerContainer}>
+            <OutlineButton
+              onPress={() => {
+                setModalVisible(true);
+              }}
+              size={ButtonSize.LARGE}
+              title="Screen Tenant"
+              leftWidget={<Icons.Plus color={theme.colors.primary} size={20} />}
+            />
+            <Text style={styles.emptyText}>No screening requests found</Text>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                setModalVisible(false);
+              }}>
+              <View
+                style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                <ScreenRequestForm
+                  disposeModalHandler={() => {
+                    setModalVisible(false);
+                  }}
+                />
+              </View>
+            </Modal>
+          </View>
+        )}
       </PageSafeContainer>
     );
   }
@@ -177,16 +181,6 @@ export const ScreenRequestList = ({ onBack }: { onBack: () => void }) => {
               />
             </View>
           </Modal>
-          {/* <FloatingMenu
-            title="Screen Tenant"
-            icon="Plus"
-            style={{
-              backgroundColor: theme.colors.primary,
-            }}
-            onPress={() => {
-              setModalVisible(true);
-            }}
-          /> */}
         </View>
       )}
     </PageSafeContainer>

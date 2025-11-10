@@ -36,6 +36,7 @@ export const getSearchAutoCompleteQuery = gql`
         placeId
         displayName
         address
+        meta
       }
     }
   }

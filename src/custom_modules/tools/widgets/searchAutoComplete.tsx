@@ -7,6 +7,7 @@ import {
   Keyboard,
   ScrollView,
   TextInput,
+  TextStyle,
 } from 'react-native';
 import Text from '~/codidge_components/UI/text';
 import { useLazyQuery } from '@apollo/client';
@@ -26,9 +27,10 @@ interface ISearchResults {
 
 interface Props {
   onSelection: (address: ISuggestionsApp) => void;
+  labelStyle?: TextStyle;
 }
 
-const SearchAddressAutoComplete: React.FC<Props> = ({ onSelection }) => {
+const SearchAddressAutoComplete: React.FC<Props> = ({ onSelection, labelStyle }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<ISuggestionsApp | null>(null);
@@ -50,7 +52,7 @@ const SearchAddressAutoComplete: React.FC<Props> = ({ onSelection }) => {
       } else {
         setIsOpen(false);
       }
-    }, 300);
+    }, 500);
 
     return () => clearTimeout(handler);
   }, [searchTerm, getSearchFn, skipFetch]);
@@ -71,6 +73,7 @@ const SearchAddressAutoComplete: React.FC<Props> = ({ onSelection }) => {
     (location: ISuggestionsApp) => {
       onSelection(location);
       setSearchTerm(location.displayName);
+
       setSelectedLocation(location);
       setIsOpen(false);
       setSkipFetch(true); // ✅ Disable search
@@ -112,6 +115,7 @@ const SearchAddressAutoComplete: React.FC<Props> = ({ onSelection }) => {
           label="Full Address"
           labelStyle={{
             marginBottom: 18,
+            ...labelStyle,
           }}
           ref={inputRef}
           value={searchTerm}

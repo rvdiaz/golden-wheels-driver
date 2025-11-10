@@ -65,37 +65,6 @@ const InvestmentCalculatorScreen: React.FC = () => {
   const isFirstTab = currentTabIndex === 0;
   const isLastTab = currentTabIndex === tabs.length - 1;
 
-  const renderActiveScene = () => {
-    switch (activeTab) {
-      case 'property':
-        return <PropertyForm form={form} />;
-      case 'units':
-        return (
-          <MobileUnitsForm
-            form={form}
-            unitsFieldArray={unitsFieldArray}
-            removeUnit={removeUnit}
-            onUpdateUnitsCount={updateUnitsCount}
-          />
-        );
-      case 'expenses':
-        return (
-          <ExpensesForm
-            form={form}
-            totalRenovationCost={totalRenovationCost}
-            onAddRenovationItem={addRenovationItem}
-            onRemoveRenovationItem={removeRenovationItem}
-            renovationFieldArray={renovationFieldArray}
-            isCalculating={isCalculating}
-            onSubmit={calculateAnalysis}
-          />
-        );
-
-      default:
-        return <PropertyForm form={form} />;
-    }
-  };
-
   const handleNext = () => {
     if (isLastTab) {
       // On last tab, trigger form submission
@@ -117,6 +86,8 @@ const InvestmentCalculatorScreen: React.FC = () => {
       setActiveTab(prevTab.key);
     }
   };
+
+  console.log(':::activeTab', activeTab);
 
   return (
     <PageSafeContainer
@@ -144,7 +115,42 @@ const InvestmentCalculatorScreen: React.FC = () => {
             onTabChange={setActiveTab}
           />
         </View>
-        <View style={styles.content}>{renderActiveScene()}</View>
+        <View style={styles.content}>
+          <View
+            style={{
+              display: activeTab === 'property' ? 'flex' : 'none',
+              flex: 1,
+            }}>
+            <PropertyForm form={form} />
+          </View>
+          <View
+            style={{
+              display: activeTab === 'units' ? 'flex' : 'none',
+              flex: 1,
+            }}>
+            <MobileUnitsForm
+              form={form}
+              unitsFieldArray={unitsFieldArray}
+              removeUnit={removeUnit}
+              onUpdateUnitsCount={updateUnitsCount}
+            />
+          </View>
+          <View
+            style={{
+              display: activeTab === 'expenses' ? 'flex' : 'none',
+              flex: 1,
+            }}>
+            <ExpensesForm
+              form={form}
+              totalRenovationCost={totalRenovationCost}
+              onAddRenovationItem={addRenovationItem}
+              onRemoveRenovationItem={removeRenovationItem}
+              renovationFieldArray={renovationFieldArray}
+              isCalculating={isCalculating}
+              onSubmit={calculateAnalysis}
+            />
+          </View>
+        </View>
         <View
           style={{
             paddingHorizontal: 16,

@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Animated, Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Header } from '~/codidge_components/UI/header';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { theme } from '~/theme/theme';
@@ -18,6 +18,28 @@ export const TransunionRentsApplications = () => {
 
   const [seeProperties, setSeeProperties] = useState(false);
   const [seeScreens, setSeeScreens] = useState(false);
+
+  const [showConfirmation, setShowConfirmation] = useState(true);
+  const [fadeAnim] = useState(new Animated.Value(0));
+
+  const showConfirmationToast = () => {
+    setShowConfirmation(true);
+    Animated.sequence([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.delay(2500),
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setShowConfirmation(false);
+    });
+  };
 
   return (
     <PageSafeContainer style={styles.container}>
@@ -100,9 +122,32 @@ export const TransunionRentsApplications = () => {
             disposeModalHandler={() => {
               setModalVisible(false);
             }}
+            onAddScreenView={() => {
+              setModalVisible(false);
+              showConfirmationToast();
+            }}
           />
         </View>
       </Modal>
+      {/* Confirmation Toast */}
+      {showConfirmation && (
+        <Animated.View
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: 20,
+            right: 20,
+            backgroundColor: '#4CAF50',
+            padding: 16,
+            borderRadius: 8,
+            opacity: fadeAnim,
+            zIndex: 1000,
+          }}>
+          <Text style={{ color: 'white', textAlign: 'center', fontWeight: 'bold' }}>
+            ✓ Application submitted successfully!
+          </Text>
+        </Animated.View>
+      )}
     </PageSafeContainer>
   );
 };

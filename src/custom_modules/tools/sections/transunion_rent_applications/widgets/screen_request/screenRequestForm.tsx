@@ -13,6 +13,7 @@ import { Send } from 'lucide-react-native';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { getRentApplications } from '~/custom_modules/tools/api/queries';
 import { theme } from '~/theme/theme';
+import { isValidEmail } from '~/custom_modules/crm/helpers';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -38,12 +39,16 @@ export const ScreenRequestForm = ({
 
   // Validation function
   const isFormValid = () => {
-    if (!property || !emails || emails?.length === 0) return false;
+    const invalidEmails = emails.find((em) => !isValidEmail(em));
+
+    if (!property || !emails || invalidEmails || invalidEmails === '' || emails[0] === '')
+      return false;
     return true;
   };
 
   const onSave = async () => {
-    if (!isFormValid()) return;
+    const isValid = isFormValid();
+    if (!isValid) return;
 
     try {
       await initiateRentAppMutationFn({

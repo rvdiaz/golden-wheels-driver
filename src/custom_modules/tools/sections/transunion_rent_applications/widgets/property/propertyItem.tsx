@@ -120,9 +120,6 @@ const styles = StyleSheet.create({
     borderRadius: theme.borderRadius.lg,
     padding: 16,
     backgroundColor: '#FFF',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
   },
   activeBadge: {
     backgroundColor: '#d4edda',

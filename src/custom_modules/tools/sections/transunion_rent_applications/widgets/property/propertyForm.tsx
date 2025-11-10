@@ -100,6 +100,7 @@ export const PropertyForm = ({
       } else {
         Alert.alert('Success', 'Property created successfully');
         onAddProperty();
+        console.log(':::disposeModalHandlersss');
         disposeModalHandler();
         reset();
       }
@@ -134,12 +135,6 @@ export const PropertyForm = ({
       'The property has been created but is currently inactive. Attestations must be accepted before activation.'
     );
   };
-
-  useEffect(() => {
-    if (!showAttestationModal) {
-      disposeModalHandler();
-    }
-  }, [showAttestationModal]);
 
   return (
     <>

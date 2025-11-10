@@ -100,9 +100,6 @@ export interface IUser {
   activeTemplateId: string;
   address: IUserAddress;
   mlsNumber: string;
-  /*  systemData: {
-    tasksConfiguration: ITaskSchemaItem[];
-  }; */
   profileSteps: {
     id: string;
     title: string;

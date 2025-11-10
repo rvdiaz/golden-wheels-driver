@@ -87,8 +87,6 @@ const InvestmentCalculatorScreen: React.FC = () => {
     }
   };
 
-  console.log(':::activeTab', activeTab);
-
   return (
     <PageSafeContainer
       style={{

@@ -107,12 +107,16 @@ export const ScreenRequestList = ({ onBack }: { onBack: () => void }) => {
     );
   }
 
-  const appsInProgress = rentApplicationsList.filter((rent) => {
+  const sortedRentApps = [...rentApplicationsList].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+
+  const appsInProgress = sortedRentApps.filter((rent) => {
     const statusInfo = getRequestStatus(rent.applicants);
     return statusInfo.status !== 'Complete';
   });
 
-  const completedApps = rentApplicationsList.filter((rent) => {
+  const completedApps = sortedRentApps.filter((rent) => {
     const statusInfo = getRequestStatus(rent.applicants);
     return statusInfo.status === 'Complete';
   });

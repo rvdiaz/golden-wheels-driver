@@ -18,10 +18,10 @@ import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 
 export const TransUnionPropertyList = ({ onBack }: { onBack: () => void }) => {
+  const user = useReactiveVar(userData);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
-
-  const user = useReactiveVar(userData);
 
   const { data, loading, error, refetch } = useQuery(getTransunionPropertyQuery, {
     variables: { userId: user?.id },
@@ -96,6 +96,8 @@ export const TransUnionPropertyList = ({ onBack }: { onBack: () => void }) => {
       </PageSafeContainer>
     );
 
+  console.log(':::modalVisible', modalVisible);
+
   return (
     <PageSafeContainer
       style={{
@@ -147,27 +149,26 @@ export const TransUnionPropertyList = ({ onBack }: { onBack: () => void }) => {
               setModalVisible(true);
             }}
           />
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => {
-              setModalVisible(false);
-            }}>
-            <View
-              style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-              <PropertyForm
-                disposeModalHandler={() => {
-                  setModalVisible(false);
-                }}
-                onAddProperty={() => {
-                  refetch();
-                }}
-              />
-            </View>
-          </Modal>
         </View>
       )}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(false);
+        }}>
+        <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <PropertyForm
+            disposeModalHandler={() => {
+              setModalVisible(false);
+            }}
+            onAddProperty={() => {
+              refetch();
+            }}
+          />
+        </View>
+      </Modal>
     </PageSafeContainer>
   );
 };

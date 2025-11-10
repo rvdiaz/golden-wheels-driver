@@ -20,6 +20,7 @@ import {
 } from './interfaces';
 import * as Notifications from 'expo-notifications';
 import { theme } from '~/theme/theme';
+import { getUserNotificationsVariables } from './helpers';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -47,13 +48,7 @@ export const NotificationsScreen = () => {
       refetchQueries: [
         {
           query: getUserNotificationsQuery,
-          variables: {
-            tenant: {
-              tenantId,
-            },
-            userId: user?.id,
-            limit: 30,
-          },
+          variables: getUserNotificationsVariables(user?.id),
         },
       ],
       awaitRefetchQueries: true,

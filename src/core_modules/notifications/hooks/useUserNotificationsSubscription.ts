@@ -1,14 +1,14 @@
 import { useReactiveVar, useSubscription } from '@apollo/client';
 import { userData } from '~/store/user';
-import { getUserNotificationsQuery, onNotificationPublishedSubscription } from '../graphql';
+import { getUserNotificationsQuery, onNotificationPublishedSubscription } from '../graphql/queries';
 import Constants from 'expo-constants';
 import { GetUserNotificationsResponse, OnNotificationPublishedData } from '../interfaces';
+import { getUserNotificationsVariables } from '../helpers';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const useUserNotificationsSubscription = () => {
   const userInfo = useReactiveVar(userData);
-
   useSubscription<OnNotificationPublishedData>(onNotificationPublishedSubscription, {
     variables: {
       tenantId,
@@ -33,13 +33,7 @@ export const useUserNotificationsSubscription = () => {
       client.cache.updateQuery<GetUserNotificationsResponse>(
         {
           query: getUserNotificationsQuery,
-          variables: {
-            tenant: {
-              tenantId,
-            },
-            userId: userInfo?.id,
-            limit: 50,
-          },
+          variables: getUserNotificationsVariables(userInfo?.id),
         },
         (prev) => {
           if (!prev) {

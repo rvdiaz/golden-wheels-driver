@@ -14,7 +14,7 @@ import { useLazyQuery } from '@apollo/client';
 import { getSearchAutoCompleteQuery } from '../api/queries';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 
-interface ISuggestionsApp {
+export interface ISuggestionsApp {
   displayName: string;
   address: string;
   placeId: string;

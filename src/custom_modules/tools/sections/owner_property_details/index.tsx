@@ -20,7 +20,7 @@ interface PropertySearchData {
 
 export const PropertyInfoScreen: React.FC = () => {
   const navigation = useNavigation();
-  const [showResults, setShowResults] = useState(false);
+  const [showResults, setShowResults] = useState(true);
 
   const {
     control,
@@ -73,7 +73,7 @@ export const PropertyInfoScreen: React.FC = () => {
             render={({ field: { onChange } }) => (
               <SearchAddressAutoComplete
                 onSelection={(address) => {
-                  onChange(address);
+                  onChange(address.placeId);
                 }}
               />
             )}
@@ -91,22 +91,23 @@ export const PropertyInfoScreen: React.FC = () => {
           />
         </Card>
       </View>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={showResults}
-        onRequestClose={() => {
-          setShowResults(false);
-        }}>
-        {data?.getPropertyData && (
+
+      {data?.getPropertyData && (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showResults}
+          onRequestClose={() => {
+            setShowResults(false);
+          }}>
           <PropertyOwnerResults
             dispose={() => {
               setShowResults(false);
             }}
             propertyData={data?.getPropertyData}
           />
-        )}
-      </Modal>
+        </Modal>
+      )}
     </PageSafeContainer>
   );
 };

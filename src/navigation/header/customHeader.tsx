@@ -17,7 +17,7 @@ interface CustomHeaderProps {
   navigation: any;
   route: ModuleKeys;
   title?: string;
-  showBackButton?: boolean;
+  onBack?: () => void;
   backgroundColor?: string;
   textColor?: string;
   widgetComponent?: React.ReactNode;
@@ -35,6 +35,7 @@ export const CustomHeader: React.FC<CustomHeaderProps> = ({
   widgetBackgroundColor,
   borderRadius = 24,
   headerHeight = 56,
+  onBack,
 }) => {
   const userInfo = useReactiveVar(userData);
 
@@ -70,6 +71,15 @@ export const CustomHeader: React.FC<CustomHeaderProps> = ({
         {/* Main Header Content */}
         <View style={[styles.headerContent, { height: headerHeight }]}>
           {/* Left Section */}
+          {onBack && (
+            <IconButton
+              style={{
+                backgroundColor: 'transparent',
+              }}
+              onPress={onBack}
+              icon={<Icons.ChevronLeft size={20} color="#FFF" />}
+            />
+          )}
           <View style={styles.leftSection}>
             {isDashboard && (
               <Text style={styles.dateText} numberOfLines={1}>

@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { Header } from '../../codidge_components/UI/header';
 import { Card } from '../../codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -79,159 +78,188 @@ export const ProfileScreen: React.FC = () => {
     <PageSafeContainer style={styles.container}>
       <Header title="Profile" showBack onBack={() => navigation.goBack()} />
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Profile Header */}
-        <Card style={styles.profileHeader}>
-          <View style={styles.avatarContainer}>
-            <Icons.User size={50} color="#6B7280" />
-          </View>
-          <Text style={styles.profileName}>
-            {user?.firstName} {user?.lastName}
-          </Text>
-
-          <View style={styles.infoSection}>
-            <View style={styles.infoRow}>
-              <Icons.Mail size={16} color="#6B7280" />
-              <Text style={styles.infoText}>{user?.email}</Text>
+    <ProfileScreensWrapper
+      header={
+        <View style={{ width: '100%' }}>
+          <Header
+            title={'My Profile'}
+            showBack={true}
+            contentContainerStyle={{
+              backgroundColor: 'transparent',
+              borderBottomWidth: 0,
+            }}
+            contentStyle={{
+              paddingVertical: 0,
+            }}
+            titleStyles={{ color: '#fff' }}
+            leftWidget={
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.goBack();
+                }}>
+                <Icons.ChevronLeftIcon color="#FFF" />
+              </TouchableOpacity>
+            }
+          />
+        </View>
+      }>
+      <View style={styles.container}>
+        {/* <Header title="Profile" showBack onBack={() => navigation.goBack()} /> */}
+        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          {/* Profile Header */}
+          <Card style={styles.profileHeader}>
+            <View style={styles.avatarContainer}>
+              <Icons.User size={50} color="#6B7280" />
             </View>
-            {user?.phone && (
+            <Text style={styles.profileName}>
+              {user?.firstName} {user?.lastName}
+            </Text>
+
+            <View style={styles.infoSection}>
               <View style={styles.infoRow}>
-                <Icons.Phone size={16} color="#6B7280" />
-                <Text style={styles.infoText}>{user.phone}</Text>
+                <Icons.Mail size={16} color="#6B7280" />
+                <Text style={styles.infoText}>{user?.email}</Text>
               </View>
-            )}
-            {user?.address && (
-              <View style={styles.infoRow}>
-                <Icons.MapPin size={16} color="#6B7280" />
-                <Text style={styles.infoText}>
-                  {[
-                    user.address.addressLine1,
-                    user.address.locality,
-                    user.address.region,
-                    user.address.postalCode,
-                  ]
-                    .filter(Boolean)
-                    .join(', ')}
-                </Text>
-              </View>
-            )}
-          </View>
-        </Card>
-
-        {/* Income Overview */}
-        <Card style={styles.statsCard}>
-          <View style={styles.sectionHeader}>
-            <Icons.DollarSign size={20} color="#2563EB" />
-            <Text style={styles.sectionTitle}>Income Overview</Text>
-          </View>
-
-          {incomeLoading ? (
-            <View
-              style={{
-                height: 100,
-                flex: 1,
-                justifyContent: 'center',
-              }}>
-              <LoadingSpinner color="gray" />
-            </View>
-          ) : (
-            <>
-              <View style={styles.mainStat}>
-                <Text style={styles.mainStatLabel}>Total Income</Text>
-                <Text style={styles.mainStatValue}>
-                  ${incomeStats.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                </Text>
-              </View>
-
-              <View style={styles.miniStatsRow}>
-                <View style={styles.miniStat}>
-                  <Text style={styles.miniStatNumber}>
-                    ${incomeStats.thisMonth.toLocaleString()}
+              {user?.phone && (
+                <View style={styles.infoRow}>
+                  <Icons.Phone size={16} color="#6B7280" />
+                  <Text style={styles.infoText}>{user.phone}</Text>
+                </View>
+              )}
+              {user?.address && (
+                <View style={styles.infoRow}>
+                  <Icons.MapPin size={16} color="#6B7280" />
+                  <Text style={styles.infoText}>
+                    {[
+                      user.address.addressLine1,
+                      user.address.locality,
+                      user.address.region,
+                      user.address.postalCode,
+                    ]
+                      .filter(Boolean)
+                      .join(', ')}
                   </Text>
-                  <Text style={styles.miniStatLabel}>This Month</Text>
                 </View>
-                <View style={styles.miniStat}>
-                  <Text style={styles.miniStatNumber}>{incomeStats.pending}</Text>
-                  <Text style={styles.miniStatLabel}>Pending</Text>
-                </View>
-                <View style={styles.miniStat}>
-                  <Text style={styles.miniStatNumber}>{incomeStats.completed}</Text>
-                  <Text style={styles.miniStatLabel}>Completed</Text>
-                </View>
-              </View>
-            </>
-          )}
-        </Card>
-
-        {/* Goals Overview */}
-        <Card style={styles.statsCard}>
-          <View style={styles.sectionHeader}>
-            <Icons.Target size={20} color="#10B981" />
-            <Text style={styles.sectionTitle}>Goals Progress</Text>
-          </View>
-
-          {goalsLoading ? (
-            <View
-              style={{
-                height: 100,
-                flex: 1,
-                justifyContent: 'center',
-              }}>
-              <LoadingSpinner color="gray" />
+              )}
             </View>
-          ) : (
-            <>
-              <View style={styles.progressCircleContainer}>
-                <View style={styles.progressCircle}>
-                  <Text style={styles.progressPercentage}>{goalsStats.avgProgress}%</Text>
-                  <Text style={styles.progressLabel}>Avg Progress</Text>
-                </View>
-              </View>
+          </Card>
 
-              <View style={styles.miniStatsRow}>
-                <View style={styles.miniStat}>
-                  <Text style={styles.miniStatNumber}>{goalsStats.active}</Text>
-                  <Text style={styles.miniStatLabel}>Active Goals</Text>
-                </View>
-                <View style={styles.miniStat}>
-                  <Text style={styles.miniStatNumber}>{goalsStats.completed}</Text>
-                  <Text style={styles.miniStatLabel}>Completed</Text>
-                </View>
-                <View style={styles.miniStat}>
-                  <Text style={styles.miniStatNumber}>{goalsStats.total}</Text>
-                  <Text style={styles.miniStatLabel}>Total Goals</Text>
-                </View>
-              </View>
-            </>
-          )}
-        </Card>
-
-        {/* Quick Actions */}
-        <Card style={styles.menuCard}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate(ModuleKeys.income as never)}
-            style={styles.menuItem}>
-            <View style={[styles.iconContainer, { backgroundColor: '#DBEAFE' }]}>
+          {/* Income Overview */}
+          <Card style={styles.statsCard}>
+            <View style={styles.sectionHeader}>
               <Icons.DollarSign size={20} color="#2563EB" />
+              <Text style={styles.sectionTitle}>Income Overview</Text>
             </View>
-            <Text style={styles.menuText}>Manage Incomes</Text>
-            <Icons.ChevronRight size={20} color="#9CA3AF" />
-          </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => navigation.navigate(ModuleKeys.goals as never)}
-            style={styles.menuItem}>
-            <View style={[styles.iconContainer, { backgroundColor: '#D1FAE5' }]}>
+            {incomeLoading ? (
+              <View
+                style={{
+                  height: 100,
+                  flex: 1,
+                  justifyContent: 'center',
+                }}>
+                <LoadingSpinner color="gray" />
+              </View>
+            ) : (
+              <>
+                <View style={styles.mainStat}>
+                  <Text style={styles.mainStatLabel}>Total Income</Text>
+                  <Text style={styles.mainStatValue}>
+                    ${incomeStats.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                  </Text>
+                </View>
+
+                <View style={styles.miniStatsRow}>
+                  <View style={styles.miniStat}>
+                    <Text style={styles.miniStatNumber}>
+                      ${incomeStats.thisMonth.toLocaleString()}
+                    </Text>
+                    <Text style={styles.miniStatLabel}>This Month</Text>
+                  </View>
+                  <View style={styles.miniStat}>
+                    <Text style={styles.miniStatNumber}>{incomeStats.pending}</Text>
+                    <Text style={styles.miniStatLabel}>Pending</Text>
+                  </View>
+                  <View style={styles.miniStat}>
+                    <Text style={styles.miniStatNumber}>{incomeStats.completed}</Text>
+                    <Text style={styles.miniStatLabel}>Completed</Text>
+                  </View>
+                </View>
+              </>
+            )}
+          </Card>
+
+          {/* Goals Overview */}
+          <Card style={styles.statsCard}>
+            <View style={styles.sectionHeader}>
               <Icons.Target size={20} color="#10B981" />
+              <Text style={styles.sectionTitle}>Goals Progress</Text>
             </View>
-            <Text style={styles.menuText}>Manage Goals</Text>
-            <Icons.ChevronRight size={20} color="#9CA3AF" />
-          </TouchableOpacity>
 
-          <AccountDeletionModal />
-          <LogoutButton />
-        </Card>
-      </ScrollView>
-    </PageSafeContainer>
+            {goalsLoading ? (
+              <View
+                style={{
+                  height: 100,
+                  flex: 1,
+                  justifyContent: 'center',
+                }}>
+                <LoadingSpinner color="gray" />
+              </View>
+            ) : (
+              <>
+                <View style={styles.progressCircleContainer}>
+                  <View style={styles.progressCircle}>
+                    <Text style={styles.progressPercentage}>{goalsStats.avgProgress}%</Text>
+                    <Text style={styles.progressLabel}>Avg Progress</Text>
+                  </View>
+                </View>
+
+                <View style={styles.miniStatsRow}>
+                  <View style={styles.miniStat}>
+                    <Text style={styles.miniStatNumber}>{goalsStats.active}</Text>
+                    <Text style={styles.miniStatLabel}>Active Goals</Text>
+                  </View>
+                  <View style={styles.miniStat}>
+                    <Text style={styles.miniStatNumber}>{goalsStats.completed}</Text>
+                    <Text style={styles.miniStatLabel}>Completed</Text>
+                  </View>
+                  <View style={styles.miniStat}>
+                    <Text style={styles.miniStatNumber}>{goalsStats.total}</Text>
+                    <Text style={styles.miniStatLabel}>Total Goals</Text>
+                  </View>
+                </View>
+              </>
+            )}
+          </Card>
+
+          {/* Quick Actions */}
+          <Card style={styles.menuCard}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate(ModuleKeys.income as never)}
+              style={styles.menuItem}>
+              <View style={[styles.iconContainer, { backgroundColor: '#DBEAFE' }]}>
+                <Icons.DollarSign size={20} color="#2563EB" />
+              </View>
+              <Text style={styles.menuText}>Manage Incomes</Text>
+              <Icons.ChevronRight size={20} color="#9CA3AF" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate(ModuleKeys.goals as never)}
+              style={styles.menuItem}>
+              <View style={[styles.iconContainer, { backgroundColor: '#D1FAE5' }]}>
+                <Icons.Target size={20} color="#10B981" />
+              </View>
+              <Text style={styles.menuText}>Manage Goals</Text>
+              <Icons.ChevronRight size={20} color="#9CA3AF" />
+            </TouchableOpacity>
+
+            <AccountDeletionModal />
+            <LogoutButton />
+          </Card>
+        </ScrollView>
+      </View>
+    </ProfileScreensWrapper>
   );
 };
 

@@ -14,8 +14,6 @@ export const PropertyOwnerResults = ({
   propertyData: IProperty;
   dispose: () => void;
 }) => {
-  const [shareModalVisible, setShareModalVisible] = useState(false);
-
   return (
     <PageSafeContainer style={{ flex: 1, backgroundColor: '#F9FAFB', justifyContent: 'flex-end' }}>
       <Header

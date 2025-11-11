@@ -30,8 +30,20 @@ export const getSubscriptionPlans = gql`
 `;
 
 export const validatePurchaseMutation = gql`
-  mutation validatePurchase($tenant: TenantData!, $userId: ID!, $purchaseData: PurchaseInput!) {
-    validatePurchase(tenant: $tenant, userId: $userId, purchaseData: $purchaseData) {
+  mutation validatePurchase(
+    $tenant: TenantData!
+    $userId: ID!
+    $platform: String!
+    $appAppleId: Float
+    $purchase: AWSJSON!
+  ) {
+    validatePurchase(
+      tenant: $tenant
+      userId: $userId
+      platform: $platform
+      appAppleId: $appAppleId
+      purchase: $purchase
+    ) {
       id
       status
       error

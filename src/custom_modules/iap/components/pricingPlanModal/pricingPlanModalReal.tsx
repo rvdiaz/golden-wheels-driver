@@ -2,7 +2,7 @@ import { initConnection, useIAP } from 'expo-iap';
 import { PricingPlanModalView } from '../pricingPlanModalView';
 import { userData } from '~/store/user';
 import { useApolloClient, useReactiveVar } from '@apollo/client';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useSubscriptionPlanList } from '../../hooks/useSubscriptionPlanList';
 import { validatePurchaseOnServer } from '../../helper';
 import { Alert } from 'react-native';
@@ -13,28 +13,37 @@ export const PricingPlanModal = () => {
 
   const client = useApolloClient();
 
+  const purchaseRef = useRef({
+    transactionDate: 0,
+  });
+
   const { plans, loading } = useSubscriptionPlanList();
   const { subscriptions, fetchProducts, requestPurchase, connected, finishTransaction } = useIAP({
     onPurchaseError(error) {
       console.error('Purchase error:', error);
     },
     async onPurchaseSuccess(purchase) {
-      console.log('Purchase successful:', purchase);
+      console.log('Purchase update:', purchase);
+
+      if (purchaseRef.current.transactionDate === purchase.transactionDate) {
+        console.log('Duplicate purchase event detected, ignoring.');
+        return;
+      }
+      purchaseRef.current.transactionDate = purchase.transactionDate;
 
       if (!['purchased', 'restored'].includes(purchase.purchaseState)) {
         console.warn('Purchase not completed. Current state:', purchase.purchaseState);
-        return;
-      }
-
-      const success = await validatePurchaseOnServer(userId, purchase, client);
-
-      if (success) {
-        Alert.alert('Purchase Successful', 'Thank you for your purchase!');
       } else {
-        Alert.alert(
-          'Purchase Failed',
-          'There was an issue validating your purchase. Please try again later.'
-        );
+        const success = await validatePurchaseOnServer(userId, purchase, client);
+
+        if (success) {
+          console.log('Purchase Successful', 'Thank you for your purchase!');
+        } else {
+          Alert.alert(
+            'Purchase Failed',
+            'There was an issue validating your purchase. Please try again later.'
+          );
+        }
       }
 
       await finishTransaction({ purchase, isConsumable: false });
@@ -47,8 +56,11 @@ export const PricingPlanModal = () => {
     if (connected && !loading) {
       initConnection().then(() => {
         console.log('IAP connection initialized');
-        console.log('Fetching products for SKUs:', plans.map((plan) => plan.productId));
-  fetchProducts({ type: 'subs', skus: plans.map((plan) => plan.productId) });
+        console.log(
+          'Fetching products for SKUs:',
+          plans.map((plan) => plan.productId)
+        );
+        fetchProducts({ type: 'subs', skus: plans.map((plan) => plan.productId) });
       });
     }
   }, [connected, fetchProducts, plans, loading]);

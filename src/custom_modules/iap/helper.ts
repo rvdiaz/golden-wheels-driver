@@ -1,6 +1,11 @@
 import { ApolloClient } from '@apollo/client';
 import type { Purchase } from 'expo-iap';
 import { validatePurchaseMutation } from './graphql';
+import { Platform } from 'react-native';
+import Constants from 'expo-constants';
+
+const tenantId = Constants.expoConfig?.extra?.TENANTID;
+const appAppleId = Constants.expoConfig?.extra?.APPLE_APP_ID;
 
 export const validatePurchaseOnServer = async (
   userId: string,
@@ -12,14 +17,18 @@ export const validatePurchaseOnServer = async (
       mutation: validatePurchaseMutation,
       variables: {
         tenant: {
-          id: 'default',
+          tenantId,
         },
         userId,
+        appAppleId,
+        platform: Platform.OS,
         purchase: JSON.stringify(purchase),
       },
     });
 
-    if (result.data?.validatePurchase?.status !== 'SUCCESS') {
+    console.log('Server validation result:', result.data);
+
+    if (result.data?.validatePurchase?.status !== 'VALIDATED') {
       console.error('Server validation failed:', result.data?.validatePurchase?.error);
       return false;
     }

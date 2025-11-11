@@ -2,7 +2,7 @@
   "expo": {
     "name": "My Virtual Boss",
     "slug": "my-own-boss",
-    "version": "1.1.2",
+    "version": "1.1.3",
     "web": {
       "favicon": "assets/playstore.png"
     },
@@ -30,7 +30,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.myvirtualboss.realestate",
-      "buildNumber": "16",
+      "buildNumber": "17",
       "infoPlist": {
         "NSContactsUsageDescription": "We use your contacts to help you import or export CRM records more easily. Contacts are only uploaded to your account if you give explicit consent."
       },
@@ -38,17 +38,19 @@
     },
     "android": {
       "package": "com.myvirtualboss.realestate",
-      "versionCode": 14,
+      "versionCode": 15,
       "edgeToEdgeEnabled": true
     },
     "extra": {
       //"GRAPHQL_ENDPOINT": "http://localhost:4000/graphql",
       "GRAPHQL_ENDPOINT": "https://mliqeu5tf5hqnafxp55hwaekd4.appsync-api.us-east-1.amazonaws.com/graphql",
       "GRAPHQL_API_KEY": "da2-huzxlqwce5bi3odldx5lwaz3dy",
+      "AWS_REGION": "us-east-1",
       "COGNITO_USERPOOL_ID": "us-east-1_4aq3CuAAr",
       "COGNITO_CLIENT_ID": "77e3rsh7jds1lmvsuq4jt8j0h0",
       "TRAINING_CATEGORY_ID": "431bcd10-c7f0-4e42-835b-bef57d2be968",
       "TENANTID": "usa-my-own-boss",
+      "APPLE_APP_ID": 6752781766,
       "eas": {
         "projectId": "777406c6-4dff-46d3-a876-88315ae37291"
       }

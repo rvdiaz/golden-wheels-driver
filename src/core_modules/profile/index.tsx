@@ -4,7 +4,6 @@ import { Card } from '../../codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ModuleKeys } from '~/store/interface';
-import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import { useQuery } from '@apollo/client';
@@ -16,6 +15,8 @@ import { LogoutButton } from '~/codidge_components/auth/widgets/logoutButton';
 import { LoadingSpinner } from '~/codidge_components/UI/loading/loadingSpinner';
 import { AccountDeletionModal } from './accountDeletion';
 import Text from '~/codidge_components/UI/text';
+import { ProfileScreensWrapper } from '../profile_setup/widgets/wrapper';
+import { Header } from '~/codidge_components/UI/header';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -75,9 +76,6 @@ export const ProfileScreen: React.FC = () => {
   }, [goals]);
 
   return (
-    <PageSafeContainer style={styles.container}>
-      <Header title="Profile" showBack onBack={() => navigation.goBack()} />
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
     <ProfileScreensWrapper
       header={
         <View style={{ width: '100%' }}>

@@ -31,6 +31,8 @@ import { TrainingCoursesScreen } from '~/custom_modules/training/sections/course
 import { TrainingCourseDetailScreen } from '~/custom_modules/training/sections/courses/courseDetailScreen';
 import EstimatedClosingCostCalculator from '~/custom_modules/tools/sections/estimatedClosingCost';
 import { IncomeCalculatorPage } from '~/custom_modules/tools/sections/income_calculator';
+import { PrivacyPolicyScreen } from '~/core_modules/profile/privacyPolicy';
+import { FeedbacksScreen } from '~/core_modules/profile/feedbacks';
 
 export const moduleScreens: Record<
   ModuleKeys,
@@ -135,5 +137,11 @@ export const moduleScreens: Record<
   },
   Goals: {
     body: GoalsScreen,
+  },
+  PrivacyPolicy: {
+    body: PrivacyPolicyScreen,
+  },
+  FeedBack: {
+    body: FeedbacksScreen,
   },
 };

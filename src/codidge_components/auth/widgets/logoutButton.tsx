@@ -26,11 +26,9 @@ export const LogoutButton = () => {
 
   return (
     <TouchableOpacity style={[styles.menuItem, { borderBottomWidth: 0 }]} onPress={handleSignOut}>
-      <Icons.LogOut size={20} color="#EF4444" />
-      <Text style={[styles.menuText, { color: '#EF4444' }]}>
-        {loadingLogout ? 'Signing out' : 'Sign Out'}
-      </Text>
-      <Icons.ChevronRight size={20} color="#9CA3AF" />
+      <Icons.LogOut size={24} />
+      <Text style={[styles.menuText]}>{loadingLogout ? 'Signing out' : 'Sign Out'}</Text>
+      <Icons.ChevronRight size={24} />
     </TouchableOpacity>
   );
 };
@@ -40,7 +38,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 16,
-    paddingHorizontal: 20,
+    marginLeft: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
   },

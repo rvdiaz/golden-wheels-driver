@@ -58,7 +58,15 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Center section */}
         <View style={styles.centerSection}>
-          <Text style={[styles.title, titleStyles]} numberOfLines={1}>
+          <Text
+            style={[
+              styles.title,
+              titleStyles,
+              showBack && {
+                marginLeft: -24,
+              },
+            ]}
+            numberOfLines={1}>
             {title}
           </Text>
         </View>
@@ -111,10 +119,10 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 4,
-    paddingHorizontal: 5,
+    paddingLeft: 5,
   },
   title: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
     color: theme.colors.headerModalText,
   },

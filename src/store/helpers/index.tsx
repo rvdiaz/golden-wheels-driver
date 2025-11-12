@@ -4,12 +4,62 @@ import { Ionicons } from '@expo/vector-icons';
 import { moduleScreens } from '../config';
 import { Image } from 'react-native';
 
+export const localMainModules: IModule[] = [
+  {
+    label: 'Profile',
+    moduleKey: ModuleKeys.profile,
+    path: '/profile',
+    type: 'main',
+    metaData: '{}',
+    icon: 'calendar-outline',
+    modules: [
+      {
+        label: 'Income',
+        moduleKey: ModuleKeys.income,
+        metaData: {},
+        available: true,
+        comingSoon: false,
+      },
+      {
+        label: 'Goals',
+        moduleKey: ModuleKeys.goals,
+        metaData: {},
+        available: true,
+        comingSoon: false,
+      },
+      {
+        label: 'Privacy Policy',
+        moduleKey: ModuleKeys.privacyPolicy,
+        metaData: {},
+        available: true,
+        comingSoon: false,
+      },
+      {
+        label: 'Feedback',
+        moduleKey: ModuleKeys.feedBack,
+        metaData: {},
+        available: true,
+        comingSoon: false,
+      },
+    ],
+  },
+];
+
 export const localToolModules: IFeatureModule[] = [];
 
 export const getTenantRoutes = (user: IUser | null): IModule[] => {
   const userModules = user?.modules ?? [];
 
-  const resModules = userModules.map((module) => {
+  const sanitizeBackendTools = [
+    ...userModules.filter((tool) => {
+      if (!localMainModules.find((t) => t.moduleKey === tool.moduleKey)?.moduleKey) {
+        return tool;
+      }
+    }),
+    ...localMainModules,
+  ];
+
+  const resModules = sanitizeBackendTools.map((module) => {
     if (module.moduleKey !== ModuleKeys.tools) return module;
 
     const backendTools = module.modules ?? [];

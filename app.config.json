@@ -16,6 +16,12 @@
           "contactsPermission": "Allow $(PRODUCT_NAME) to access your contacts to import business contacts."
         }
       ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to attach screenshots or images when submitting feedback."
+        }
+      ],
       "expo-notifications"
     ],
     "orientation": "portrait",

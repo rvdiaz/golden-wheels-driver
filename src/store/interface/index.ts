@@ -34,18 +34,20 @@ export enum ModuleKeys {
   profile = 'Profile',
   income = 'Incomes',
   goals = 'Goals',
+  privacyPolicy = 'PrivacyPolicy',
+  feedBack = 'FeedBack',
 }
 
 export interface IFeatureModule {
   label?: string;
   moduleKey: ModuleKeys;
   metaData?: any;
-  description: string;
-  icon: string;
-  color: string;
-  backgroundColor: string;
-  available: boolean;
-  comingSoon: boolean;
+  description?: string;
+  icon?: string;
+  color?: string;
+  backgroundColor?: string;
+  available?: boolean;
+  comingSoon?: boolean;
   modules?: IFeatureModule[];
 }
 
@@ -79,7 +81,7 @@ export interface IModule {
   icon?: string;
   isBottomBar?: boolean;
   customIcon?: string;
-  comingSoon: boolean;
+  comingSoon?: boolean;
 }
 
 export enum StatusUser {

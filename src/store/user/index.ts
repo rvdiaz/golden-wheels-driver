@@ -9,6 +9,9 @@ export const userData = makeVar<(IUser & { loadedFromStorage?: boolean }) | null
 
 const updateSubscriptionStatusFromUser = (user?: IUser | null) => {
   if (!user || !user.subscription) {
+    updateSubscriptionStatus({
+      hasActiveSubscription: false,
+    });
     return;
   }
 
@@ -17,7 +20,7 @@ const updateSubscriptionStatusFromUser = (user?: IUser | null) => {
     const endDate = new Date(subscription.endDate);
 
     updateSubscriptionStatus({
-      hasSubscription:
+      hasActiveSubscription:
         subscription.status === UserSubscriptionStatus.ACTIVE || endDate > new Date(),
       expiryDate: endDate,
       planName: subscription.productId,

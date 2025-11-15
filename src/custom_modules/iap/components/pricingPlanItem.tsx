@@ -4,15 +4,17 @@ import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
 import { formatPrice } from '~/custom_modules/tools/sections/mls_listing/helpers';
 import { SubscriptionPlan } from '../interfaces';
+import { ProductSubscription, ProductSubscriptionAndroid, ProductSubscriptionIOS } from 'expo-iap';
 
 interface PricingPlanItemProps {
   plan: SubscriptionPlan;
+  subscription?: ProductSubscription;
   isSelected: boolean;
   setSelected: (productId: string) => void;
 }
 
 export const PricingPlanItem = (props: PricingPlanItemProps) => {
-  const { plan, isSelected, setSelected } = props;
+  const { plan, subscription, isSelected, setSelected } = props;
   const [expanded, setExpanded] = useState(false);
 
   const firstBillingDate = useMemo(() => {
@@ -24,6 +26,37 @@ export const PricingPlanItem = (props: PricingPlanItemProps) => {
       day: 'numeric',
     });
   }, [plan.trialPeriodDays, plan.hasTrial]);
+
+  const data = useMemo(() => {
+    if (subscription?.platform === 'ios') {
+      const iosProductSubscription = subscription as ProductSubscriptionIOS;
+
+      const hasTrial =
+        !!iosProductSubscription?.introductoryPricePaymentModeIOS &&
+        iosProductSubscription?.introductoryPricePaymentModeIOS !== 'empty';
+
+      const priceDifference = !!iosProductSubscription?.price
+        ? plan.price - iosProductSubscription.price
+        : 0;
+
+      const discount =
+        priceDifference > 0 ? `Save ${((priceDifference / plan.price) * 100).toFixed(0)}%` : '';
+
+      return {
+        price: iosProductSubscription?.price || plan.price,
+        hasTrial,
+        discount,
+      };
+    }
+
+    const androidProductSubscription = subscription as ProductSubscriptionAndroid;
+
+    return {
+      price: androidProductSubscription?.price || plan.price,
+      hasTrial: plan.hasTrial,
+      discount: plan.discount || '',
+    };
+  }, [subscription, plan]);
 
   return (
     <View key={plan.productId} style={[styles.planCard, isSelected && styles.planCardSelected]}>
@@ -42,15 +75,15 @@ export const PricingPlanItem = (props: PricingPlanItemProps) => {
         {isSelected && <Ionicons name="checkmark-circle" size={24} color="#4F46E5" />}
       </View>
 
-      {!!plan.price && (
+      {!!data.price && (
         <View style={styles.priceContainer}>
           <View style={styles.priceRow}>
             <Text style={styles.price}>
-              {plan.hasTrial ? formatPrice(0, 2) : formatPrice(plan.price, 2)}
+              {plan.hasTrial ? formatPrice(0, 2) : formatPrice(data.price, 2)}
             </Text>
             <View>
               {plan.hasTrial && (
-                <Text style={styles.trialText}>then {formatPrice(plan.price, 2)}</Text>
+                <Text style={styles.trialText}>then {formatPrice(data.price, 2)}</Text>
               )}
               {plan.billingPeriod && (
                 <Text style={styles.billingPeriod}>
@@ -60,9 +93,9 @@ export const PricingPlanItem = (props: PricingPlanItemProps) => {
               )}
             </View>
           </View>
-          {plan.discount && (
+          {data.discount && (
             <View style={styles.discountBadge}>
-              <Text style={styles.discountText}>{plan.discount}</Text>
+              <Text style={styles.discountText}>{data.discount}</Text>
             </View>
           )}
         </View>

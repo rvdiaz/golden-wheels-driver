@@ -2,7 +2,7 @@ import { makeVar } from '@apollo/client';
 
 interface ISubscriptionStatus {
   hasSubscription: boolean;
-  expiryDate?: string;
+  expiryDate?: Date;
   planName?: string;
 }
 

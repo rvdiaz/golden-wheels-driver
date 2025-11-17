@@ -18,6 +18,7 @@ import { userData } from '~/store/user';
 import { IUser } from '~/store/interface';
 import { theme } from '~/theme/theme';
 import IconButton from '~/codidge_components/UI/button/IconButton';
+import { Badge } from '~/codidge_components/UI/badge';
 
 interface OwnerDetailsProps {
   ownerInfo: IOwnerInfo[];
@@ -167,24 +168,30 @@ const PhoneItemWithActions: React.FC<{
         <View style={styles.contactInfoSection}>
           <Text>{phone.phoneDisplay}</Text>
         </View>
-        <View style={styles.actionButtonsContainer}>
-          <IconButton
-            style={{
-              backgroundColor: theme.colors.info,
-              padding: 8,
-            }}
-            onPress={() => handleCallContact(phone.phone ?? '')}
-            icon={<Icons.Phone size={16} color={'#FFF'} />}
-          />
-          <IconButton
-            style={{
-              backgroundColor: theme.colors.success,
-              padding: 8,
-            }}
-            onPress={() => setSmsModalVisible(true)}
-            icon={<Icons.MessageSquare size={16} color={'#FFF'} />}
-          />
-        </View>
+        {phone.doNotCall ? (
+          <Badge displayIcon={false} type="error">
+            Do not call
+          </Badge>
+        ) : (
+          <View style={styles.actionButtonsContainer}>
+            <IconButton
+              style={{
+                backgroundColor: theme.colors.info,
+                padding: 8,
+              }}
+              onPress={() => handleCallContact(phone.phone ?? '')}
+              icon={<Icons.Phone size={16} color={'#FFF'} />}
+            />
+            <IconButton
+              style={{
+                backgroundColor: theme.colors.success,
+                padding: 8,
+              }}
+              onPress={() => setSmsModalVisible(true)}
+              icon={<Icons.MessageSquare size={16} color={'#FFF'} />}
+            />
+          </View>
+        )}
       </View>
 
       {/* SMS Template Modal */}

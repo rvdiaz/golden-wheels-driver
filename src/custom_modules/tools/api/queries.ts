@@ -192,6 +192,7 @@ export const getPropertyOwnerQuery = gql`
       phones {
         phone
         phoneDisplay
+        doNotCall
       }
       fullName
       mailAddress {

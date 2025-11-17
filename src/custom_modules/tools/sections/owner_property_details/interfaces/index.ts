@@ -77,6 +77,7 @@ export interface IOwnerInfo {
 export interface IPhone {
   phone?: string;
   phoneDisplay?: string;
+  doNotCall: boolean;
 }
 
 export interface IEmail {

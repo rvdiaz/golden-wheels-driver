@@ -11,8 +11,8 @@ import { PropertyOwnerResults } from './results';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import { useLazyQuery } from '@apollo/client';
 import { IProperty } from './interfaces';
-import { getPropertyQuery } from './graphql/queries';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import { getPropertyQuery } from '../../api/queries';
 
 interface PropertySearchData {
   address: string;
@@ -35,7 +35,7 @@ export const PropertyInfoScreen: React.FC = () => {
 
   const selectedAddress = watch('address'); // ✅ Watch address for button state
 
-  const [getPropertyDetailsFn, { data, loading, error }] = useLazyQuery<{
+  const [getPropertyDetailsFn, { data, loading }] = useLazyQuery<{
     getPropertyData: IProperty;
   }>(getPropertyQuery, {
     fetchPolicy: 'network-only', // ✅ Always fetch from backend
@@ -46,7 +46,7 @@ export const PropertyInfoScreen: React.FC = () => {
       await getPropertyDetailsFn({
         variables: {
           propertyId: data.address,
-          needOwnerContact: true,
+          needOwnerContact: false,
         },
       });
       setShowResults(true);

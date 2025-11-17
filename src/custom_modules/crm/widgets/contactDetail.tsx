@@ -6,7 +6,6 @@ import * as Icons from 'lucide-react-native';
 import { IContact, IFollowUp } from '../interfaces';
 import ContactForm from './formContact';
 import { useAddFollowUp } from '../hooks/followUpCreation';
-
 import Constants from 'expo-constants';
 import { AddFollowUpModal } from './followUps/followUpForm';
 import { useReactiveVar } from '@apollo/client';

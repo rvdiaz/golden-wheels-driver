@@ -1,14 +1,12 @@
 import React, { useRef, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Animated } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Animated, Image } from 'react-native';
 import { IMlsListingItemResponse } from '../../interfaces';
 import { calculateDaysOnMarket, formatPrice } from '../../helpers';
 import { Card } from '~/codidge_components/UI/card';
 import { Badge } from '~/codidge_components/UI/badge';
-import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
-import { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
-import { PhoneCall } from 'lucide-react-native';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
+import { RequestOwnerModal } from '../../../owner_property_details/results/owner/requestOwnerModal';
 
 interface PropertyDetailScreenProps {
   listing: IMlsListingItemResponse;
@@ -50,179 +48,188 @@ const ExpiredListingDetail: React.FC<PropertyDetailScreenProps> = ({
   }, []);
 
   return (
-    <PageSafeContainer style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-          <Text style={styles.closeText}>← Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Property Details</Text>
-        <View style={styles.headerSpacer} />
-      </View>
-
-      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
-        {/* Hero Image Section */}
-        <View style={styles.heroImageContainer}>
-          <Animated.Image
-            source={{ uri: listing.imageUrl }}
-            style={[
-              styles.heroImage,
-              imageAnimatedValue && {
-                transform: [
-                  {
-                    scale: imageAnimatedValue.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0.2, 1], // Scale from small card size to full
-                    }),
-                  },
-                ],
-              },
-            ]}
-            resizeMode="cover"
-          />
-
-          {/* Overlay Info on Image */}
-          <View style={styles.imageOverlay}>
-            <View style={[styles.daysOverlay, daysOnMarket === 0 && styles.newListingOverlay]}>
-              <Text style={styles.daysText}>
-                {daysOnMarket === 0 ? 'NEW LISTING' : `${daysOnMarket} DAYS ON MARKET`}
-              </Text>
-            </View>
-
-            <View style={styles.priceOverlay}>
-              <Text style={styles.heroPrice}>{formatPrice(listing.mlsListingPrice)}</Text>
-              <Text style={styles.mlsNumberOverlay}>MLS: {listing.mlsNumber}</Text>
-            </View>
-          </View>
+    <>
+      <PageSafeContainer style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <Text style={styles.closeText}>← Back</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Property Details</Text>
+          <View style={styles.headerSpacer} />
         </View>
 
-        {/* Animated Content */}
-        <Animated.View
-          style={[
-            styles.contentContainer,
-            {
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }],
-            },
-          ]}>
-          {/* Main Property Info Card */}
-          <Card style={styles.mainInfoCard}>
-            <Text style={styles.address}>{listing.address.address}</Text>
-            <Text style={styles.cityState}>
-              {listing.address.city}, {listing.address.state} {listing.address.zip}
-            </Text>
+        <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
+          {/* Hero Image Section */}
+          <View
+            style={{
+              paddingHorizontal: 16,
+            }}>
+            <Image source={require('assets/realty-logo.png')} style={styles.bannerImage} />
+          </View>
+          <View style={styles.heroImageContainer}>
+            <Animated.Image
+              source={{ uri: listing.imageUrl }}
+              style={[
+                styles.heroImage,
+                imageAnimatedValue && {
+                  transform: [
+                    {
+                      scale: imageAnimatedValue.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0.2, 1], // Scale from small card size to full
+                      }),
+                    },
+                  ],
+                },
+              ]}
+              resizeMode="cover"
+            />
 
-            {/* Property Stats */}
-            <View style={styles.statsContainer}>
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>{listing.bedrooms}</Text>
-                <Text style={styles.statLabel}>Bedrooms</Text>
+            {/* Overlay Info on Image */}
+            <View style={styles.imageOverlay}>
+              <View style={[styles.daysOverlay, daysOnMarket === 0 && styles.newListingOverlay]}>
+                <Text style={styles.daysText}>
+                  {daysOnMarket === 0 ? 'NEW LISTING' : `${daysOnMarket} DAYS ON MARKET`}
+                </Text>
               </View>
-              <View style={styles.statDivider} />
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>{listing.bathrooms}</Text>
-                <Text style={styles.statLabel}>Bathrooms</Text>
-              </View>
-              <View style={styles.statDivider} />
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>{listing.yearBuilt}</Text>
-                <Text style={styles.statLabel}>Year Built</Text>
-              </View>
-            </View>
-          </Card>
 
-          {/* Market Information */}
-          <Card style={styles.infoCard}>
-            <Text style={styles.cardTitle}>Market Information</Text>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Days on Market</Text>
-              <Text style={styles.infoValue}>{listing.mlsDaysOnMarket} days</Text>
+              <View style={styles.priceOverlay}>
+                <Text style={styles.heroPrice}>{formatPrice(listing.mlsListingPrice)}</Text>
+                <Text style={styles.mlsNumberOverlay}>MLS: {listing.mlsNumber}</Text>
+              </View>
             </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Listing Status</Text>
-              <Text style={styles.infoValue}>Expired</Text>
-            </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Last Status Date</Text>
-              <Text style={styles.infoValue}>
-                {new Date(listing.mlsLastStatusDate).toLocaleDateString()}
+          </View>
+
+          {/* Animated Content */}
+          <Animated.View
+            style={[
+              styles.contentContainer,
+              {
+                opacity: fadeAnim,
+                transform: [{ translateY: slideAnim }],
+              },
+            ]}>
+            {/* Main Property Info Card */}
+            <Card style={styles.mainInfoCard}>
+              <Text style={styles.address}>{listing.address.address}</Text>
+              <Text style={styles.cityState}>
+                {listing.address.city}, {listing.address.state} {listing.address.zip}
               </Text>
-            </View>
-          </Card>
 
-          {/* Financial Information */}
-          <Card style={styles.infoCard}>
-            <Text style={styles.cardTitle}>Financial Details</Text>
-            <View style={styles.financialGrid}>
-              <View style={styles.financialItem}>
-                <Text style={styles.financialLabel}>List Price</Text>
-                <Text style={styles.financialValue}>{formatPrice(listing.mlsListingPrice)}</Text>
-              </View>
-              <View style={styles.financialItem}>
-                <Text style={styles.financialLabel}>Estimated Value</Text>
-                <Text style={styles.financialValuePositive}>
-                  {formatPrice(parseFloat(listing.estimatedValue))}
-                </Text>
-              </View>
-              <View style={styles.financialItem}>
-                <Text style={styles.financialLabel}>Estimated Equity</Text>
-                <Text style={styles.financialValuePositive}>
-                  {formatPrice(parseFloat(listing.estimatedEquity))}
-                </Text>
-              </View>
-            </View>
-          </Card>
-
-          {/* Property Conditions */}
-          {conditions.some((condition) => condition.value) && (
-            <Card style={styles.infoCard}>
-              <Text style={styles.cardTitle}>Property Conditions</Text>
-              <View style={styles.conditionsGrid}>
-                {conditions.map(
-                  (condition) =>
-                    condition.value && (
-                      <Badge
-                        key={condition.key}
-                        style={styles.conditionBadgeLarge}
-                        textStyle={styles.conditionTextLarge}
-                        displayIcon={false}
-                        type="success">
-                        {condition.label}
-                      </Badge>
-                    )
-                )}
+              {/* Property Stats */}
+              <View style={styles.statsContainer}>
+                <View style={styles.statItem}>
+                  <Text style={styles.statValue}>{listing.bedrooms}</Text>
+                  <Text style={styles.statLabel}>Bedrooms</Text>
+                </View>
+                <View style={styles.statDivider} />
+                <View style={styles.statItem}>
+                  <Text style={styles.statValue}>{listing.bathrooms}</Text>
+                  <Text style={styles.statLabel}>Bathrooms</Text>
+                </View>
+                <View style={styles.statDivider} />
+                <View style={styles.statItem}>
+                  <Text style={styles.statValue}>{listing.yearBuilt}</Text>
+                  <Text style={styles.statLabel}>Year Built</Text>
+                </View>
               </View>
             </Card>
-          )}
 
-          {/* Agent Information */}
-          <Card style={styles.infoCard}>
-            <Text style={styles.cardTitle}>Listing Agent</Text>
-            <View style={styles.agentInfo}>
-              <View style={styles.agentDetails}>
-                <Text style={styles.agentName}>{listing.mlsAgent.fullName}</Text>
-                {listing.mlsAgent.email && (
-                  <Text style={styles.agentCompany}>{listing.mlsAgent.email}</Text>
-                )}
-                {listing.mlsAgent.fullName && (
-                  <Text style={styles.agentContact}>📞 {listing.mlsAgent.fullName}</Text>
-                )}
+            {/* Market Information */}
+            <Card style={styles.infoCard}>
+              <Text style={styles.cardTitle}>Market Information</Text>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Days on Market</Text>
+                <Text style={styles.infoValue}>{listing.mlsDaysOnMarket} days</Text>
               </View>
-            </View>
-          </Card>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Listing Status</Text>
+                <Text style={styles.infoValue}>{listing.customStatus}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Last Status Date</Text>
+                <Text style={styles.infoValue}>
+                  {new Date(listing.mlsLastStatusDate).toLocaleDateString()}
+                </Text>
+              </View>
+            </Card>
 
-          {/* Action Buttons */}
-        </Animated.View>
-      </ScrollView>
-      <View style={styles.actionButtonsContainer}>
-        <PrimaryButton
-          style={{ flex: 1 }}
-          size={ButtonSize.LARGE}
-          title="Contact Owner"
-          rightWidget={<PhoneCall size={16} color="#fff" />}
+            {/* Financial Information */}
+            <Card style={styles.infoCard}>
+              <Text style={styles.cardTitle}>Financial Details</Text>
+              <View style={styles.financialGrid}>
+                <View style={styles.financialItem}>
+                  <Text style={styles.financialLabel}>List Price</Text>
+                  <Text style={styles.financialValue}>{formatPrice(listing.mlsListingPrice)}</Text>
+                </View>
+                <View style={styles.financialItem}>
+                  <Text style={styles.financialLabel}>Estimated Value</Text>
+                  <Text style={styles.financialValuePositive}>
+                    {formatPrice(parseFloat(listing.estimatedValue))}
+                  </Text>
+                </View>
+                <View style={styles.financialItem}>
+                  <Text style={styles.financialLabel}>Estimated Equity</Text>
+                  <Text style={styles.financialValuePositive}>
+                    {formatPrice(parseFloat(listing.estimatedEquity))}
+                  </Text>
+                </View>
+              </View>
+            </Card>
+
+            {/* Property Conditions */}
+            {conditions.some((condition) => condition.value) && (
+              <Card style={styles.infoCard}>
+                <Text style={styles.cardTitle}>Property Conditions</Text>
+                <View style={styles.conditionsGrid}>
+                  {conditions.map(
+                    (condition) =>
+                      condition.value && (
+                        <Badge
+                          key={condition.key}
+                          style={styles.conditionBadgeLarge}
+                          textStyle={styles.conditionTextLarge}
+                          displayIcon={false}
+                          type="success">
+                          {condition.label}
+                        </Badge>
+                      )
+                  )}
+                </View>
+              </Card>
+            )}
+
+            {/* Agent Information */}
+            <Card style={styles.infoCard}>
+              <Text style={styles.cardTitle}>Listing Agent</Text>
+              <View style={styles.agentInfo}>
+                <View style={styles.agentDetails}>
+                  <Text style={styles.agentName}>{listing.mlsAgent.fullName}</Text>
+                  {listing.mlsAgent.email && (
+                    <Text style={styles.agentCompany}>{listing.mlsAgent.email}</Text>
+                  )}
+                  {listing.mlsAgent.fullName && (
+                    <Text style={styles.agentContact}>📞 {listing.mlsAgent.fullName}</Text>
+                  )}
+                </View>
+              </View>
+            </Card>
+
+            {/* Action Buttons */}
+          </Animated.View>
+        </ScrollView>
+        <RequestOwnerModal
+          address={listing.address.address}
+          city={listing.address.city}
+          first_name=""
+          last_name=""
+          state={listing.address.state}
+          zip={listing.address.zip}
+          feature="expired"
         />
-      </View>
-    </PageSafeContainer>
+      </PageSafeContainer>
+    </>
   );
 };
 
@@ -448,7 +455,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
     marginTop: 8,
-    marginBottom: 32,
     paddingHorizontal: 16,
     paddingVertical: 4,
   },
@@ -477,6 +483,11 @@ const styles = StyleSheet.create({
     color: '#3B82F6',
     fontSize: 16,
     fontWeight: '700',
+  },
+  bannerImage: {
+    width: 80,
+    height: 80,
+    objectFit: 'contain',
   },
 });
 

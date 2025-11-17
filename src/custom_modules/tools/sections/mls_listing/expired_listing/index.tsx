@@ -1,7 +1,6 @@
 import { useLazyQuery } from '@apollo/client';
 import React, { useState } from 'react';
 import { Modal, ScrollView, StyleSheet, View } from 'react-native';
-import { getMlsListingQuery } from '../graphql/queries';
 import { ExpiredStatus, IExpiredListingForm, IMlsListingItemResponse } from '../interfaces';
 import { Controller, useForm } from 'react-hook-form';
 import { Header } from '~/codidge_components/UI/header';
@@ -15,6 +14,7 @@ import * as Icons from 'lucide-react-native';
 import PropertyListScreen from './results/expiredListingListContainer';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
+import { getMlsListingQuery } from '~/custom_modules/tools/api/queries';
 
 const iconsSize = 16;
 const pageSize = 20;
@@ -172,7 +172,7 @@ export const ExpiredListingPage = () => {
         onRequestClose={() => {
           setShowResults(false);
         }}>
-        {results && (
+         {results&& (
           <PropertyListScreen
             loadMore={async () => {
               await fetchMoreResults();

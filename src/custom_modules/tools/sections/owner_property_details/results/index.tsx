@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Property } from './property';
 import { IProperty } from '../interfaces';
-import { Owner } from './owner';
 import { MlsHistoryList } from './mlsHistory';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Header } from '~/codidge_components/UI/header';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import { RequestOwnerModal } from './owner/requestOwnerModal';
 
 export const PropertyOwnerResults = ({
   propertyData,
@@ -26,12 +26,20 @@ export const PropertyOwnerResults = ({
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
           <Property propertyData={propertyData} />
-          <Owner ownerInfo={propertyData.ownerInfo} />
           {propertyData?.mlsHistory?.length > 0 && (
             <MlsHistoryList mlsHistory={propertyData.mlsHistory} />
           )}
         </View>
       </ScrollView>
+      <RequestOwnerModal
+        address={propertyData.propertyInfo.address.address}
+        city={propertyData.propertyInfo.address.city}
+        first_name=""
+        last_name=""
+        state={propertyData.propertyInfo.address.state}
+        zip={propertyData.propertyInfo.address.zip}
+        feature="propDetail"
+      />
     </PageSafeContainer>
   );
 };

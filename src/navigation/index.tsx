@@ -95,7 +95,7 @@ function TabsWithCustomHeader({ tenantModules }: { tenantModules: IModule[] }) {
   );
 }
 
-export default function Navigation() {
+export const Navigation = () => {
   const userInfo = useReactiveVar(userData);
   const { loading } = useSystemSettings();
 
@@ -138,4 +138,4 @@ export default function Navigation() {
       </Stack.Navigator>
     </NavigationContainer>
   );
-}
+};

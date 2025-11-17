@@ -11,7 +11,7 @@ import { ProfileScreen } from '~/core_modules/profile';
 import { PropertyInfoScreen } from '~/custom_modules/tools/sections/owner_property_details';
 import { UserIncomes } from '~/core_modules/profile/income';
 import { ExpiredListingPage } from '~/custom_modules/tools/sections/mls_listing/expired_listing';
-import { DashboardBottomHeader } from '~/custom_modules/dashboard/widgets/headers';
+import { QuoteWidget } from '~/custom_modules/dashboard/widgets/quoteWidget';
 import { DailyTaskSelector } from '~/custom_modules/task/widgets/dailyTaskSelector';
 import { SearchCrmBoxIA } from '~/custom_modules/crm/widgets/searchCrmIABox';
 import { TransunionRentsApplications } from '~/custom_modules/tools/sections/transunion_rent_applications';
@@ -44,7 +44,7 @@ export const moduleScreens: Record<
 > = {
   Dashboard: {
     body: Dashboard,
-    bottomHeader: DashboardBottomHeader,
+    bottomHeader: QuoteWidget,
   },
   Tasks: {
     body: TasksScreen,

@@ -129,8 +129,6 @@ export const formatFollowUpDate = (followUpdate: string) => {
 };
 
 export const handleCallContact = (phone: string) => {
-  console.log(':::phone', phone);
-
   if (!phone) {
     Alert.alert('Error', 'No phone number available for this contact');
     return;
@@ -148,13 +146,42 @@ export const handleCallContact = (phone: string) => {
     .catch((err) => console.error('Error opening dialer', err));
 };
 
-export const handleSmsContact = (phone: string) => {
+export const handleEmailContact = (email: string, subject?: string, body?: string) => {
+  if (!email) {
+    Alert.alert('Error', 'No email address available for this contact');
+    return;
+  }
+
+  // Encode subject and body for URL
+  const encodedSubject = subject ? `?subject=${encodeURIComponent(subject)}` : '';
+  const encodedBody = body ? `${subject ? '&' : '?'}body=${encodeURIComponent(body)}` : '';
+
+  const url = `mailto:${email}${encodedSubject}${encodedBody}`;
+
+  Linking.canOpenURL(url)
+    .then((supported) => {
+      if (!supported) {
+        Alert.alert('Error', 'Email not supported on this device');
+      } else {
+        return Linking.openURL(url);
+      }
+    })
+    .catch((err) => console.error('Error opening email app', err));
+};
+
+/**
+ * Opens the native SMS app with optional pre-filled message
+ */
+export const handleSmsContact = (phone: string, message?: string) => {
   if (!phone) {
     Alert.alert('Error', 'No phone number available for this contact');
     return;
   }
 
-  const url = `sms:${phone}`;
+  // Some platforms use different URL schemes
+  const encodedMessage = message ? `?body=${encodeURIComponent(message)}` : '';
+  const url = `sms:${phone}${encodedMessage}`;
+
   Linking.canOpenURL(url)
     .then((supported) => {
       if (!supported) {
@@ -166,22 +193,29 @@ export const handleSmsContact = (phone: string) => {
     .catch((err) => console.error('Error opening SMS app', err));
 };
 
-export const handleEmailContact = (email: string) => {
-  if (!email) {
-    Alert.alert('Error', 'No email address available for this contact');
+export const handleWhatsAppContact = (phone: string, message?: string) => {
+  if (!phone) {
+    Alert.alert('Error', 'No phone number available for this contact');
     return;
   }
 
-  const url = `mailto:${email}`;
+  // Remove any formatting from phone number
+  const cleanPhone = phone.replace(/[^0-9]/g, '');
+  const encodedMessage = message ? `?text=${encodeURIComponent(message)}` : '';
+  const url = `whatsapp://send?phone=${cleanPhone}${encodedMessage}`;
+
   Linking.canOpenURL(url)
     .then((supported) => {
       if (!supported) {
-        Alert.alert('Error', 'Email not supported on this device');
+        Alert.alert('WhatsApp not installed', 'Would you like to send an SMS instead?', [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Send SMS', onPress: () => handleSmsContact(phone, message) },
+        ]);
       } else {
         return Linking.openURL(url);
       }
     })
-    .catch((err) => console.error('Error opening email app', err));
+    .catch((err) => console.error('Error opening WhatsApp', err));
 };
 
 export const formatPhoneNumber = (phone: string) => {

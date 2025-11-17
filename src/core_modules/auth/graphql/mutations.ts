@@ -62,6 +62,10 @@ export const addUserMutation = gql`
           comingSoon
         }
       }
+      balance {
+        amount
+        currency
+      }
     }
   }
 `;

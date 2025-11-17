@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode } from 'react';
 import { ConfirmResetPassword } from '~/codidge_components/auth/forms/confirm_reset_password';
 import { useAuthContext } from '~/codidge_components/auth/context';
 import { useReactiveVar } from '@apollo/client';
@@ -16,7 +16,7 @@ import { ResetPassword } from '~/codidge_components/auth/forms/reset_password';
 import { VerifyEmail } from '~/codidge_components/auth/forms/verify_email';
 import { SignInForm } from '~/codidge_components/auth/forms/sign_in';
 import { AuthFormWrapper } from './authLayout';
-import { Alert, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Text from '~/codidge_components/UI/text';
 import IconButton from '~/codidge_components/UI/button/IconButton';
 import {

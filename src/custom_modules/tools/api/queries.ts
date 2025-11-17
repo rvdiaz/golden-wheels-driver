@@ -167,3 +167,258 @@ export const getApplicantReportQuery = gql`
     }
   }
 `;
+
+export const getPropertyOwnerQuery = gql`
+  query fetchOwnerContact(
+    $first_name: String!
+    $last_name: String!
+    $state: String!
+    $zip: String!
+    $address: String!
+    $city: String!
+  ) {
+    fetchOwnerContact(
+      first_name: $first_name
+      last_name: $last_name
+      state: $state
+      zip: $zip
+      address: $address
+      city: $city
+    ) {
+      email {
+        email
+        emailType
+      }
+      phones {
+        phone
+        phoneDisplay
+      }
+      fullName
+      mailAddress {
+        address
+        label
+      }
+    }
+  }
+`;
+
+export const getMlsListingQuery = gql`
+  query getMlsListing($input: MlsListingParams!) {
+    getMlsListing(input: $input) {
+      indexCount
+      listings {
+        bathrooms
+        bedrooms
+        estimatedEquity
+        estimatedValue
+        id
+        mlsNumber
+        imageUrl
+        listingId
+        lotSquareFeet
+        mlsAgent {
+          email
+          fullName
+        }
+        mlsDaysOnMarket
+        mlsLastStatusDate
+        mlsListingPrice
+        propertyType
+        yearBuilt
+        address {
+          address
+          city
+          label
+          state
+          zip
+        }
+        absenteeOwner
+        foreclosure
+        preForeclosure
+        assumable
+        apn
+        customStatus
+      }
+    }
+  }
+`;
+
+export const getPropertyQuery = gql`
+  query getProperyDetail(
+    $propertyId: String!
+    $needOwnerContact: Boolean
+    $zipCode: String
+    $apn: ID
+  ) {
+    getPropertyData(
+      propertyId: $propertyId
+      needOwnerContact: $needOwnerContact
+      zipCode: $zipCode
+      apn: $apn
+    ) {
+      vacant
+      propertyType
+      propertyInfo {
+        address {
+          address
+          label
+          state
+          zip
+          city
+        }
+        bathrooms
+        bedrooms
+        lotSquareFeet
+        yearBuilt
+        propertyUse
+      }
+      foreclosureInfo {
+        foreclosureId
+      }
+      estimatedEquity
+      estimatedValue
+      mlsHistory {
+        agentEmail
+        agentName
+        agentOffice
+        agentPhone
+        baths
+        beds
+        daysOnMarket
+        price
+        propertyId
+        seqNo
+        status
+        type
+      }
+      mortgageHistory {
+        amount
+        documentNumber
+        granteeName
+        lenderName
+        lenderType
+        open
+        position
+        propertyType
+        term
+        termType
+      }
+      ownerInfo {
+        email {
+          email
+          emailType
+        }
+        phones {
+          phone
+          phoneDisplay
+        }
+        fullName
+        mailAddress {
+          address
+          label
+        }
+      }
+    }
+  }
+`;
+
+export const getPropertyEstimationQuery = gql`
+  query getPropertyEstimations(
+    $propertyId: String!
+    $propertyAddress: String!
+    $needClosestProperties: Boolean
+  ) {
+    getPropertyEstimations(
+      propertyId: $propertyId
+      propertyAddress: $propertyAddress
+      needClosestProperties: $needClosestProperties
+    ) {
+      avm {
+        address
+        apn
+        avm
+        avmMax
+        avmMin
+        confidence
+      }
+      comps {
+        id
+        address {
+          address
+          state
+          zip
+          city
+        }
+        yearBuilt
+        lotSquareFeet
+        bathrooms
+        bedrooms
+        landUse
+        estimatedValue
+      }
+      property {
+        vacant
+        propertyType
+        propertyInfo {
+          address {
+            address
+            label
+            state
+            zip
+          }
+          bathrooms
+          bedrooms
+          lotSquareFeet
+          yearBuilt
+          propertyUse
+        }
+        foreclosureInfo {
+          foreclosureId
+        }
+        estimatedEquity
+        estimatedValue
+        mlsHistory {
+          agentEmail
+          agentName
+          agentOffice
+          agentPhone
+          baths
+          beds
+          daysOnMarket
+          price
+          propertyId
+          seqNo
+          status
+          type
+        }
+        mortgageHistory {
+          amount
+          documentNumber
+          granteeName
+          lenderName
+          lenderType
+          open
+          position
+          propertyType
+          term
+          termType
+        }
+        ownerInfo {
+          email {
+            email
+            emailType
+          }
+          phones {
+            phone
+            phoneDisplay
+          }
+          fullName
+          mailAddress {
+            address
+            label
+          }
+        }
+      }
+    }
+  }
+`;

@@ -63,6 +63,10 @@ export const getUserQuery = gql`
           comingSoon
         }
       }
+      balance {
+        amount
+        currency
+      }
     }
   }
 `;

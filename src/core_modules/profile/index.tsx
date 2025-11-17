@@ -11,6 +11,7 @@ import { ProfileScreensWrapper } from '../profile_setup/widgets/wrapper';
 import { Header } from '~/codidge_components/UI/header';
 import { theme } from '~/theme/theme';
 import { ProfileNavigationSection } from '~/codidge_components/UI/navigationButtons';
+import { BalanceWidget } from './userBalance';
 
 export const ProfileScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -68,6 +69,17 @@ export const ProfileScreen: React.FC = () => {
               {user?.firstName} {user?.lastName}
             </Text>
           </View>
+          {/* Balance Widget */}
+          <BalanceWidget
+            balance={
+              user?.balance ?? {
+                amount: 0,
+                currency: 'USD',
+              }
+            }
+            onAddBalance={() => {}}
+          />
+
           <ProfileNavigationSection
             sections={[
               {

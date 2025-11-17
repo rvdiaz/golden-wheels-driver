@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
   Modal,
@@ -13,6 +12,7 @@ import * as Icons from 'lucide-react-native';
 import Constants from 'expo-constants';
 import { useReactiveVar, useMutation, gql, useApolloClient } from '@apollo/client';
 import { updateUser, userData } from '~/store/user';
+import Text from '~/codidge_components/UI/text';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 

@@ -6,7 +6,7 @@ export const theme = {
     primaryText: '#FFFFFF',
     secondary: '#F3F4F6',
     secondaryText: '#374151',
-    textColor: '#0A0A0A',
+    textColor: '#666',
     danger: '#DC2626',
     dangerText: '#FFFFFF',
     primaryGradient: ['#4F46E5', '#4F46E5'] as const,
@@ -22,6 +22,7 @@ export const theme = {
     borderNeutralColor: '#E5E7EB',
     info: '#3B82F6',
     baseGray: '#F5F5F5',
+    errorText: 'EF4444',
   },
   spacing: {
     xs: 4,

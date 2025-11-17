@@ -112,6 +112,10 @@ export interface IUser {
   financialGoals: IFinancialGoals;
   swotAnalysis: ISWOTAnalysis;
   visionMission: IVisionMission;
+  balance: {
+    amount: number;
+    currency: string;
+  };
 }
 
 export interface IFinancialGoals {

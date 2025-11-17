@@ -12,11 +12,11 @@ import {
   PropertyEstimatorAvm,
 } from '../owner_property_details/interfaces';
 import { useLazyQuery } from '@apollo/client';
-import { getPropertyEstimationQuery } from '../owner_property_details/graphql/queries';
 import * as Icons from 'lucide-react-native';
 import { ResultsWrapper } from './results';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
+import { getPropertyEstimationQuery } from '../../api/queries';
 
 interface PropertySearchData {
   propData: {

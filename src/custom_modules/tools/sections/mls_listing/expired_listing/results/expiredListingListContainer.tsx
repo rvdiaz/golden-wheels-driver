@@ -1,9 +1,16 @@
 import React, { useRef, useState } from 'react';
-import { Animated, Dimensions, FlatList, ActivityIndicator } from 'react-native';
+import {
+  Animated,
+  Dimensions,
+  FlatList,
+  ActivityIndicator,
+  Image,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { Header } from '~/codidge_components/UI/header';
 import PropertyDetailScreen from './expiredListingScreen';
 import ExpiredListingCard from './expiredListingCard';
-import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -81,6 +88,12 @@ const ExpiredListingContainer: React.FC<PropertyListScreenProps> = ({
           ],
         }}>
         <Header title="Listings" onBack={dispose} showBack={true} />
+        <View
+          style={{
+            paddingHorizontal: 16,
+          }}>
+          <Image source={require('assets/realty-logo.png')} style={styles.bannerImage} />
+        </View>
         <FlatList
           data={expListings}
           keyExtractor={(item) => item.listingId}
@@ -124,3 +137,11 @@ const ExpiredListingContainer: React.FC<PropertyListScreenProps> = ({
 };
 
 export default ExpiredListingContainer;
+
+const styles = StyleSheet.create({
+  bannerImage: {
+    width: 80,
+    height: 80,
+    objectFit: 'contain',
+  },
+});

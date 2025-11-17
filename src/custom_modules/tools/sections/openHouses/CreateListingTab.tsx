@@ -23,7 +23,6 @@ import {
   Image,
 } from 'react-native';
 import Text from '~/codidge_components/UI/text';
-import { getMlsListingQuery } from '../mls_listing/graphql/queries';
 import { userData } from '~/store/user';
 import { IMlsListingItemResponse } from '../mls_listing/interfaces';
 import { createOpenHouseListingMutation } from './graphql/mutations';
@@ -34,6 +33,7 @@ import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { Header } from '~/codidge_components/UI/header';
+import { getMlsListingQuery } from '../../api/queries';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -84,7 +84,7 @@ export const CreateListingTab = () => {
 
     setIsLoading(true);
     try {
-      const response = await createOpenHouseListing({
+      await createOpenHouseListing({
         variables: {
           tenant: { tenantId },
           input: {
@@ -163,6 +163,12 @@ export const CreateListingTab = () => {
               />
               <View style={styles.modalContainer}>
                 <ScrollView style={styles.propertyList}>
+                  <View
+                    style={{
+                      paddingHorizontal: 16,
+                    }}>
+                    <Image source={require('assets/realty-logo.png')} style={styles.bannerImage} />
+                  </View>
                   {!data?.getMlsListing?.listings.length && (
                     <Text style={styles.noResultsText}>No listings found</Text>
                   )}
@@ -559,5 +565,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6b7280',
     textAlign: 'center',
+  },
+  bannerImage: {
+    width: 80,
+    height: 80,
+    objectFit: 'contain',
   },
 });

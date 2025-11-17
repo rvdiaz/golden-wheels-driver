@@ -29,6 +29,7 @@ export interface IMlsListingItemResponse {
   preForeclosure: boolean;
   assumable: boolean;
   apn: string;
+  customStatus: string;
 }
 
 export enum ExpiredStatus {

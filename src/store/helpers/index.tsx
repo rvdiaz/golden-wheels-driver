@@ -41,6 +41,13 @@ export const localMainModules: IModule[] = [
         available: true,
         comingSoon: false,
       },
+      {
+        label: 'Account',
+        moduleKey: ModuleKeys.account,
+        metaData: {},
+        available: true,
+        comingSoon: false,
+      },
     ],
   },
 ];

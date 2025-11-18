@@ -131,6 +131,19 @@ export const ProfileScreen: React.FC = () => {
                   },
                 ],
               },
+              {
+                title: 'Account',
+                items: [
+                  {
+                    id: 'delete',
+                    label: 'Account Deletion',
+                    icon: <Icons.UserX />,
+                    onClick: () => {
+                      navigation.navigate(ModuleKeys.account as never);
+                    },
+                  },
+                ],
+              },
             ]}
           />
         </ScrollView>

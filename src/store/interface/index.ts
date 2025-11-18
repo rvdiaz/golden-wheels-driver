@@ -36,6 +36,7 @@ export enum ModuleKeys {
   goals = 'Goals',
   privacyPolicy = 'PrivacyPolicy',
   feedBack = 'FeedBack',
+  account = 'Account',
 }
 
 export interface IFeatureModule {

@@ -86,7 +86,6 @@ export const AccountDeletionModal = () => {
           <Icons.Trash2 size={20} color="#EF4444" />
         </View>
         <Text style={styles.menuText}>Delete Account</Text>
-        <Icons.ChevronRight size={20} color="#9CA3AF" />
       </TouchableOpacity>
 
       <Modal

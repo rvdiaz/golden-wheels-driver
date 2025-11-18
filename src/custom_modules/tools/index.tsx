@@ -65,7 +65,7 @@ export const ToolsScreen: React.FC = () => {
 
     const handleToolPress = () => {
       
-      if (isLocked) {
+      if (isLocked && !comingSoon) {
         // Show paywall for locked tools
         paywallVisibility(true);
       } else {

@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const getSubscriptionPlans = gql`
-  query GetSubscriptionPlans($tenant: TenantData!) {
-    getSubscriptionPlans(tenant: $tenant) {
+  query GetSubscriptionPlans($tenant: TenantData!, $active: Boolean) {
+    getSubscriptionPlans(tenant: $tenant, active: $active) {
       productId
       name
       description

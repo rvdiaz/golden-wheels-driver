@@ -91,6 +91,27 @@ export enum StatusUser {
   bloqueado,
 }
 
+export enum UserSubscriptionStatus {
+  INACTIVE = 'inactive',
+  ACTIVE = 'active',
+  TRIAL = 'trial',
+  CANCELED = 'canceled',
+  EXPIRED = 'expired',
+  BILLING_ISSUE = 'billing_issue',
+}
+
+export interface IUserSubscription {
+  status: UserSubscriptionStatus;
+  originalStartDate: Date;
+  startDate: Date;
+  endDate: Date;
+  productId: string;
+  platform: string;
+  isAutoRenewing?: boolean;
+  originalTransactionId?: string;
+  billingIssueDetectedDate?: Date;
+}
+
 export interface IUser {
   email: string;
   phone: string;
@@ -116,6 +137,7 @@ export interface IUser {
     amount: number;
     currency: string;
   };
+  subscription?: IUserSubscription;
 }
 
 export interface IFinancialGoals {

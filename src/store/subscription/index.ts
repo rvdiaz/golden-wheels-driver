@@ -1,14 +1,16 @@
 import { makeVar } from '@apollo/client';
 
 interface ISubscriptionStatus {
-  hasSubscription: boolean;
-  expiryDate?: string;
+  hasActiveSubscription: boolean;
+  expiryDate?: Date;
   planName?: string;
 }
 
-export const subscriptionStatusData = makeVar<ISubscriptionStatus>({ hasSubscription: false });
+export const subscriptionStatusData = makeVar<ISubscriptionStatus>({
+  hasActiveSubscription: false,
+});
 
-export const updateSubscriptionStatus = async (status?: ISubscriptionStatus) => {
+export const updateSubscriptionStatus = (status?: ISubscriptionStatus) => {
   subscriptionStatusData(status);
 };
 

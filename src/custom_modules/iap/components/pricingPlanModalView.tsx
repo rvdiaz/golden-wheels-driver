@@ -33,9 +33,7 @@ export const PricingPlanModalView = (args: IPricingPlanModalViewProps) => {
         (plan) =>
           ['', billingPeriod].includes(plan.billingPeriod ?? '') &&
           (plan.productId === 'free-lifetime' ||
-            //temporarily disabled to allow free plan selection
-            true)
-          //  subscriptions?.some((product) => product.id === plan.productId)
+            subscriptions?.some((product) => product.id === plan.productId))
       ),
     [allPlans, subscriptions, billingPeriod]
   );
@@ -61,6 +59,10 @@ export const PricingPlanModalView = (args: IPricingPlanModalViewProps) => {
         ''
     );
   }, [selectedPlan, billingPeriod, plans]);
+
+  const getSubscriptionForPlan = (planId: string) => {
+    return subscriptions.find((sub) => sub.id === planId);
+  };
 
   return (
     <Modal
@@ -123,6 +125,7 @@ export const PricingPlanModalView = (args: IPricingPlanModalViewProps) => {
                   <PricingPlanItem
                     key={plan.productId}
                     plan={plan}
+                    subscription={getSubscriptionForPlan(plan.productId)}
                     isSelected={isPlanSelected(plan.productId)}
                     setSelected={setSelectedPlan}
                   />

@@ -5,7 +5,7 @@ import { ButtonSize } from '~/codidge_components/UI/button/types';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 
 export const SubscriptionButton = () => {
-  const { hasSubscription } = useReactiveVar(subscriptionStatusData);
+  const { hasActiveSubscription: hasSubscription } = useReactiveVar(subscriptionStatusData);
 
   if (hasSubscription) {
     return null; // Don't show the button if the user is already subscribed

@@ -15,6 +15,7 @@ export const useSubscriptionPlanList = () => {
         tenant: {
           tenantId,
         },
+        active: true,
       },
       client: apiKeyClient,
     }

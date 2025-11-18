@@ -24,7 +24,9 @@ export const useUserNotificationsSubscription = () => {
     },
     skip: !userInfo?.id,
     onData({ data, client }) {
+      console.log('Notification subscription data received:', data);
       if (!data.data?.onNotificationPublished.userNotification) {
+        console.log('No new notification received.');
         return;
       }
 
@@ -37,7 +39,7 @@ export const useUserNotificationsSubscription = () => {
         },
         (prev) => {
           if (!prev) {
-            return prev;
+            return { getUserNotifications: { items: [newNotification] } };
           }
 
           return {

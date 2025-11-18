@@ -61,6 +61,7 @@ export const getUserQuery = gql`
             moduleKey
             available
             comingSoon
+            subscriptionRequired
           }
         }
         balance {
@@ -151,6 +152,7 @@ export const onUserUpdatedSubscription = gql`
             moduleKey
             available
             comingSoon
+            subscriptionRequired
           }
         }
         balance {

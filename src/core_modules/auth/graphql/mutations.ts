@@ -61,6 +61,7 @@ export const addUserMutation = gql`
             moduleKey
             available
             comingSoon
+            subscriptionRequired
           }
         }
         balance {
@@ -148,6 +149,7 @@ export const updateUserMutation = gql`
             moduleKey
             available
             comingSoon
+            subscriptionRequired
           }
         }
         balance {

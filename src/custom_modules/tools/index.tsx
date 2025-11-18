@@ -8,10 +8,12 @@ import { useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import Text from '~/codidge_components/UI/text';
 import { localToolModules } from '~/store/helpers';
+import { subscriptionStatusData, paywallVisibility } from '~/store/subscription';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export const ToolsScreen: React.FC = () => {
+  const { hasActiveSubscription: hasSubscription } = useReactiveVar(subscriptionStatusData);
   const navigation = useNavigation();
-
   const currentUserData = useReactiveVar(userData);
 
   const userToolsConfig = currentUserData?.modules.find(
@@ -55,30 +57,75 @@ export const ToolsScreen: React.FC = () => {
 
     const iconColor = tool?.color ?? '#000';
     const iconBackgroundColor = adjustColorOpacity(iconColor, 0.15);
-
     const comingSoon = tool.comingSoon;
+    
+    // Check if tool requires subscription and user doesn't have it
+    const requiresSubscription = tool.subscriptionRequired;
+    const isLocked = requiresSubscription && !hasSubscription;
+
+    const handleToolPress = () => {
+      
+      if (isLocked) {
+        // Show paywall for locked tools
+        paywallVisibility(true);
+      } else {
+        // Navigate normally for unlocked tools
+        navigation.navigate(tool.moduleKey as never);
+      }
+    };
 
     return (
       <TouchableOpacity
         key={tool.moduleKey}
-        style={[styles.toolCard, { backgroundColor: tool?.backgroundColor ?? '#FFF' }]}
-        onPress={() => {
-          if (!comingSoon) {
-            navigation.navigate(tool.moduleKey as never);
-          }
-        }}>
+        style={[
+          styles.toolCard,
+          { backgroundColor: tool?.backgroundColor ?? '#FFF' },
+          isLocked && !comingSoon && styles.lockedCard
+        ]}
+        onPress={handleToolPress}
+      >
+        {/* Premium badge overlay */}
+        {isLocked && !comingSoon && (
+          <View style={styles.premiumBadge}>
+            <LinearGradient
+              colors={[theme.colors.primary, theme.colors.info]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.premiumBadgeGradient}
+            >
+              <Icons.Crown size={12} color="#FFF" />
+              <Text style={styles.premiumBadgeText}>PRO</Text>
+            </LinearGradient>
+          </View>
+        )}
+
         <View
           style={[
             styles.toolIcon,
             { backgroundColor: iconBackgroundColor },
-            comingSoon && styles.toolCardDisabled,
-          ]}>
-          <IconComponent size={28} color={iconColor} />
+            (comingSoon || isLocked) && styles.toolCardDisabled,
+          ]}
+        >
+          {isLocked && !comingSoon && (
+            <View style={styles.lockOverlay}>
+              <Icons.Lock size={18} color={theme.colors.primary} />
+            </View>
+          )}
+          <IconComponent 
+            size={28} 
+            color={iconColor} 
+            style={isLocked && !comingSoon  && { opacity: 0.5 }}
+          />
         </View>
+
         <View style={styles.titleContainer}>
-          <Text style={[styles.toolTitle, comingSoon && styles.toolCardDisabled]}>
+          <Text style={[
+            styles.toolTitle,
+            (comingSoon || isLocked) && styles.toolCardDisabled
+          ]}>
             {tool?.label ?? ''}
           </Text>
+          
           {comingSoon && (
             <View style={styles.comingSoonBadge}>
               <Text style={styles.comingSoonText}>Coming Soon</Text>
@@ -86,7 +133,29 @@ export const ToolsScreen: React.FC = () => {
             </View>
           )}
         </View>
-        <Text style={[styles.toolDescription]}>{tool?.description ?? ''}</Text>
+
+        <Text style={[
+          styles.toolDescription,
+          isLocked && !comingSoon  && styles.lockedDescription
+        ]}>
+          {tool?.description ?? ''}
+        </Text>
+
+        {/* Upgrade button for locked tools */}
+        {isLocked && !comingSoon &&  (
+          <View style={styles.upgradeButtonContainer}>
+            <LinearGradient
+              colors={[theme.colors.primary, theme.colors.info]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.upgradeButton}
+            >
+              <Icons.Sparkles size={14} color="#FFF" />
+              <Text style={styles.upgradeButtonText}>Upgrade to Unlock</Text>
+              <Icons.ChevronRight size={14} color="#FFF" />
+            </LinearGradient>
+          </View>
+        )}
       </TouchableOpacity>
     );
   };
@@ -176,6 +245,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
+    position: 'relative',
+    overflow: 'visible',
+  },
+  lockedCard: {
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '30',
   },
   toolIcon: {
     width: 56,
@@ -184,6 +259,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
+    position: 'relative',
+  },
+  lockOverlay: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: '#FFF',
+    borderRadius: 8,
+    padding: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   toolTitle: {
     fontSize: 16,
@@ -195,6 +284,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#6B7280',
     lineHeight: 18,
+    marginBottom: 12,
+  },
+  lockedDescription: {
+    opacity: 0.7,
   },
   toolCardDisabled: {
     opacity: 0.6,
@@ -219,5 +312,49 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: 'white',
     textTransform: 'uppercase',
+  },
+  premiumBadge: {
+    position: 'absolute',
+    top: -6,
+    right: 12,
+    zIndex: 10,
+    shadowColor: theme.colors.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  premiumBadgeGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 4,
+  },
+  premiumBadgeText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#FFF',
+    letterSpacing: 0.5,
+  },
+  upgradeButtonContainer: {
+    marginTop: 8,
+  },
+  upgradeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    gap: 6,
+  },
+  upgradeButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#FFF',
+    flex: 1,
+    textAlign: 'center',
   },
 });

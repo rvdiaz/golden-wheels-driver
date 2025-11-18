@@ -4,10 +4,13 @@ import Constants from 'expo-constants';
 import { userData } from '~/store/user';
 import { ITask } from '../interfaces';
 import { daySelection } from './dailySelectionVar';
+import { subscriptionStatusData } from '~/store/subscription';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const useTasksByUser = (today?: string) => {
+  const { hasActiveSubscription } = useReactiveVar(subscriptionStatusData);
+
   const customer = useReactiveVar(userData);
   const selectedDay = useReactiveVar(daySelection);
 
@@ -20,7 +23,7 @@ export const useTasksByUser = (today?: string) => {
         },
         userId: customer?.id,
         date: today ?? selectedDay,
-        userActiveTemplateId: customer?.activeTemplateId,
+        userActiveTemplateId: hasActiveSubscription ?customer?.activeTemplateId: ""
       },
     }
   );

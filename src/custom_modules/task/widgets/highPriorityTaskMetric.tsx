@@ -6,25 +6,14 @@ import { getTaskByUserQuery } from '../graphql/queries';
 import { userData } from '~/store/user';
 import Constants from 'expo-constants';
 import { TaskMetricsCard } from '~/custom_modules/dashboard/widgets/metricCards';
+import { useTasksByUser } from '../hooks/listTask';
 
-const tenantId = Constants.expoConfig?.extra?.TENANTID;
-const today = new Date().toISOString().split('T')[0];
 
 export const HighPriorityTaskMetric = () => {
-  const customer = useReactiveVar(userData);
 
-  const { data, loading: isLoading } = useQuery<{ getTasksByUser: ITask[] }>(getTaskByUserQuery, {
-    variables: {
-      tenant: {
-        tenantId,
-      },
-      userId: customer?.id,
-      date: today,
-      userActiveTemplateId: customer?.activeTemplateId,
-    },
-  });
+  const { tasks, isLoading, refetch } = useTasksByUser();
 
-  const tasks = data?.getTasksByUser ?? [];
+
   const highPriorityTask = tasks.filter((tsk) => tsk.priority === TaskPriority.high);
 
   const metric = {

@@ -49,6 +49,7 @@ export interface IFeatureModule {
   available?: boolean;
   comingSoon?: boolean;
   modules?: IFeatureModule[];
+  subscriptionRequired?: boolean
 }
 
 export interface ITenantTheme {

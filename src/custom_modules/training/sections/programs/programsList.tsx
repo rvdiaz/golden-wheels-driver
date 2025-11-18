@@ -5,19 +5,22 @@ import { useNavigation } from '@react-navigation/native';
 import { Card } from '~/codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
 import { theme } from '~/theme/theme';
-import { useQuery } from '@apollo/client';
+import { useQuery, useReactiveVar } from '@apollo/client';
 import { TrainingLevel, TrainingProgram } from '../../interfaces';
 import { GET_ALL_TRAINING_PROGRAMS } from '../../graphql/queries';
 import { ModuleKeys } from '~/store/interface';
 import Constants from 'expo-constants';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
+import { subscriptionStatusData } from '~/store/subscription';
+import { SubscriptionCardButton } from '~/custom_modules/iap/components/subscriptionCard';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 const categoryId = Constants.expoConfig?.extra?.TRAINING_CATEGORY_ID;
 
 export const TrainingProgramsScreen: React.FC = () => {
   const navigation = useNavigation();
+  const { hasActiveSubscription } = useReactiveVar(subscriptionStatusData);
 
   const { category, tenant } = {
     category: categoryId,
@@ -55,6 +58,10 @@ export const TrainingProgramsScreen: React.FC = () => {
       tenant,
     });
   };
+
+  if(!hasActiveSubscription){
+    return <SubscriptionCardButton/>
+  }
 
   if (loading) {
     return (

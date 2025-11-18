@@ -61,11 +61,6 @@ export const quotes: IQuote[] = [
     author: 'Will Rogers',
   },
   {
-    id: 12,
-    text: "You learn more from failure than from success. Don't let it stop you. Failure builds character",
-    author: 'Unknown',
-  },
-  {
     id: 13,
     text: "If you are working on something that you really care about, you don't have to be pushed. The vision pulls you",
     author: 'Steve Jobs',
@@ -131,33 +126,8 @@ export const quotes: IQuote[] = [
     author: 'Mahatma Gandhi',
   },
   {
-    id: 26,
-    text: "The harder you work for something, the greater you'll feel when you achieve it",
-    author: 'Unknown',
-  },
-  {
     id: 27,
     text: "Don't wait for opportunity. Create it",
     author: 'George Bernard Shaw',
-  },
-  {
-    id: 28,
-    text: 'Dream bigger. Do bigger',
-    author: 'Unknown',
-  },
-  {
-    id: 29,
-    text: "Success doesn't just find you. You have to go out and get it",
-    author: 'Unknown',
-  },
-  {
-    id: 30,
-    text: 'The key to success is to focus on goals, not obstacles',
-    author: 'Unknown',
-  },
-  {
-    id: 31,
-    text: 'Dream it. Believe it. Build it',
-    author: 'Unknown',
   },
 ];

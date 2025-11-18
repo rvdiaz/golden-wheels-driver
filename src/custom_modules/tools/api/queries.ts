@@ -199,6 +199,8 @@ export const getPropertyOwnerQuery = gql`
         address
         label
       }
+      owner1FirstName
+      owner1LastName
     }
   }
 `;

@@ -1,16 +1,15 @@
-import { useLazyQuery, useReactiveVar } from '@apollo/client';
+import { useApolloClient, useLazyQuery, useReactiveVar } from '@apollo/client';
 import { AlertCircle, DollarSign, Info, SquareUser } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { Modal, StyleSheet, View, Text, Alert } from 'react-native';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import { getPropertyOwnerQuery } from '~/custom_modules/tools/api/queries';
 import { IOwnerInfo } from '../../interfaces';
-import { OwnerDetailsConsolidated } from './ownerDetails';
 import { userData } from '~/store/user';
 import { useTakeUserBalance } from '~/core_modules/profile/userBalance/customHooks/useTakePayment';
 import { propertyOwnerPricing } from '../../data';
 import { theme } from '~/theme/theme';
-import { OwnerDetailsConsolidated2 } from './ownerDetails2';
+import { OwnerDetailsConsolidated } from './ownerDetails';
 
 export const RequestOwnerModal = ({
   first_name,
@@ -29,6 +28,7 @@ export const RequestOwnerModal = ({
   city: string;
   feature: 'expired' | 'propDetail';
 }) => {
+  const client = useApolloClient();
   const userInfo = useReactiveVar(userData);
   const { loading: loadingTakingBalance, takeBalance } = useTakeUserBalance();
   const [ownerModal, setOwnerModal] = useState(false);
@@ -40,11 +40,41 @@ export const RequestOwnerModal = ({
   }>(getPropertyOwnerQuery);
 
   const handleButtonPress = () => {
-    // Show confirmation modal instead of directly processing
-    setConfirmationModal(true);
+    const inCacheOwner = checkCachedOwnerInfo();
+    if (inCacheOwner) {
+      setOwnerModal(true);
+    } else {
+      setConfirmationModal(true);
+    }
+  };
+
+  const checkCachedOwnerInfo = () => {
+    try {
+      const cached = client.readQuery({
+        query: getPropertyOwnerQuery,
+        variables: {
+          first_name,
+          last_name,
+          state,
+          zip,
+          address,
+          city,
+        },
+      });
+      return cached?.fetchOwnerContact ?? null;
+    } catch (error) {
+      return null;
+    }
   };
 
   const handleConfirmPurchase = async () => {
+    const inCacheOwner = checkCachedOwnerInfo();
+
+    if (inCacheOwner) {
+      setOwnerModal(true);
+      return;
+    }
+
     setConfirmationModal(false);
 
     const currentBalance = userInfo?.balance?.amount ?? 0;
@@ -78,11 +108,14 @@ export const RequestOwnerModal = ({
     }
   };
 
+  const inCache = checkCachedOwnerInfo();
   // Format price for display
   const formattedPrice =
     propertyOwnerPricing < 1
       ? `${(propertyOwnerPricing * 100).toFixed(0)}¢`
       : `$${propertyOwnerPricing.toFixed(2)}`;
+
+  const ownerInfo = data?.fetchOwnerContact ?? inCache;
 
   return (
     <View style={styles.container}>
@@ -97,7 +130,7 @@ export const RequestOwnerModal = ({
           loading={loading || loadingTakingBalance}
           size={ButtonSize.LARGE}
           onPress={handleButtonPress}
-          title={`Purchase Owner Info • ${formattedPrice}`}
+          title={inCache ? 'Show Owner info' : `Purchase Owner Info • ${formattedPrice}`}
           rightWidget={<SquareUser size={18} color="#fff" />}
         />
         {inSuficientFunds && !loadingTakingBalance && (
@@ -161,18 +194,18 @@ export const RequestOwnerModal = ({
       </Modal>
 
       {/* Owner Details Modal */}
-      {data?.fetchOwnerContact && !loading && (
+      {ownerInfo && !loading && (
         <Modal
           animationType="slide"
           transparent={true}
           visible={ownerModal}
           onRequestClose={() => setOwnerModal(false)}>
-          <OwnerDetailsConsolidated2
+          <OwnerDetailsConsolidated
             onBack={() => {
               setOwnerModal(false);
             }}
             feature={feature}
-            ownerInfo={data?.fetchOwnerContact}
+            ownerInfo={ownerInfo}
           />
         </Modal>
       )}

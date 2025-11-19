@@ -58,13 +58,12 @@ export const ToolsScreen: React.FC = () => {
     const iconColor = tool?.color ?? '#000';
     const iconBackgroundColor = adjustColorOpacity(iconColor, 0.15);
     const comingSoon = tool.comingSoon;
-    
+
     // Check if tool requires subscription and user doesn't have it
     const requiresSubscription = tool.subscriptionRequired;
     const isLocked = requiresSubscription && !hasSubscription;
 
     const handleToolPress = () => {
-      
       if (isLocked && !comingSoon) {
         // Show paywall for locked tools
         paywallVisibility(true);
@@ -80,10 +79,9 @@ export const ToolsScreen: React.FC = () => {
         style={[
           styles.toolCard,
           { backgroundColor: tool?.backgroundColor ?? '#FFF' },
-          isLocked && !comingSoon && styles.lockedCard
+          isLocked && !comingSoon && styles.lockedCard,
         ]}
-        onPress={handleToolPress}
-      >
+        onPress={handleToolPress}>
         {/* Premium badge overlay */}
         {isLocked && !comingSoon && (
           <View style={styles.premiumBadge}>
@@ -91,10 +89,9 @@ export const ToolsScreen: React.FC = () => {
               colors={[theme.colors.primary, theme.colors.info]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              style={styles.premiumBadgeGradient}
-            >
+              style={styles.premiumBadgeGradient}>
               <Icons.Crown size={12} color="#FFF" />
-              <Text style={styles.premiumBadgeText}>PRO</Text>
+              <Text style={styles.premiumBadgeText}>Premium</Text>
             </LinearGradient>
           </View>
         )}
@@ -104,28 +101,24 @@ export const ToolsScreen: React.FC = () => {
             styles.toolIcon,
             { backgroundColor: iconBackgroundColor },
             (comingSoon || isLocked) && styles.toolCardDisabled,
-          ]}
-        >
+          ]}>
           {isLocked && !comingSoon && (
             <View style={styles.lockOverlay}>
               <Icons.Lock size={18} color={theme.colors.primary} />
             </View>
           )}
-          <IconComponent 
-            size={28} 
-            color={iconColor} 
-            style={isLocked && !comingSoon  && { opacity: 0.5 }}
+          <IconComponent
+            size={28}
+            color={iconColor}
+            style={isLocked && !comingSoon && { opacity: 0.5 }}
           />
         </View>
 
         <View style={styles.titleContainer}>
-          <Text style={[
-            styles.toolTitle,
-            (comingSoon || isLocked) && styles.toolCardDisabled
-          ]}>
+          <Text style={[styles.toolTitle, (comingSoon || isLocked) && styles.toolCardDisabled]}>
             {tool?.label ?? ''}
           </Text>
-          
+
           {comingSoon && (
             <View style={styles.comingSoonBadge}>
               <Text style={styles.comingSoonText}>Coming Soon</Text>
@@ -134,22 +127,18 @@ export const ToolsScreen: React.FC = () => {
           )}
         </View>
 
-        <Text style={[
-          styles.toolDescription,
-          isLocked && !comingSoon  && styles.lockedDescription
-        ]}>
+        <Text style={[styles.toolDescription, isLocked && !comingSoon && styles.lockedDescription]}>
           {tool?.description ?? ''}
         </Text>
 
         {/* Upgrade button for locked tools */}
-        {isLocked && !comingSoon &&  (
+        {isLocked && !comingSoon && (
           <View style={styles.upgradeButtonContainer}>
             <LinearGradient
               colors={[theme.colors.primary, theme.colors.info]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              style={styles.upgradeButton}
-            >
+              style={styles.upgradeButton}>
               <Icons.Sparkles size={14} color="#FFF" />
               <Text style={styles.upgradeButtonText}>Upgrade to Unlock</Text>
               <Icons.ChevronRight size={14} color="#FFF" />

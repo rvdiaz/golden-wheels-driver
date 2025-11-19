@@ -96,8 +96,6 @@ export const TransUnionPropertyList = ({ onBack }: { onBack: () => void }) => {
       </PageSafeContainer>
     );
 
-  console.log(':::modalVisible', modalVisible);
-
   return (
     <PageSafeContainer
       style={{
@@ -139,16 +137,6 @@ export const TransUnionPropertyList = ({ onBack }: { onBack: () => void }) => {
             refreshing={loading}
             ItemSeparatorComponent={() => <View style={{ height: 12 }} />} // <-- gap here
           />
-          <FloatingMenu
-            title="Add Property"
-            icon="Plus"
-            style={{
-              backgroundColor: theme.colors.primary,
-            }}
-            onPress={() => {
-              setModalVisible(true);
-            }}
-          />
         </View>
       )}
       <Modal
@@ -169,6 +157,14 @@ export const TransUnionPropertyList = ({ onBack }: { onBack: () => void }) => {
           />
         </View>
       </Modal>
+      <FloatingMenu
+        title="Add Property"
+        icon="Plus"
+        onPress={() => {
+          setModalVisible(true);
+        }}
+        style={{ bottom: 30, right: 30 }}
+      />
     </PageSafeContainer>
   );
 };

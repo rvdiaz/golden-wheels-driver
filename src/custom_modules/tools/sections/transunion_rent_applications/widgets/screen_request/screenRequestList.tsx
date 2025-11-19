@@ -17,6 +17,7 @@ import { TabHeader } from '~/codidge_components/UI/tabs';
 import { getRequestStatus } from '../../helpers';
 import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
+import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 
 export const ScreenRequestList = ({ onBack }: { onBack: () => void }) => {
   const user = useReactiveVar(userData);
@@ -187,6 +188,14 @@ export const ScreenRequestList = ({ onBack }: { onBack: () => void }) => {
           </Modal>
         </View>
       )}
+      <FloatingMenu
+        title="Screen Tenant"
+        icon="Plus"
+        onPress={() => {
+          setModalVisible(true);
+        }}
+        style={{ bottom: 30, right: 30 }}
+      />
     </PageSafeContainer>
   );
 };

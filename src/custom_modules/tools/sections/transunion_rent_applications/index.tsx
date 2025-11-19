@@ -5,41 +5,15 @@ import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { theme } from '~/theme/theme';
 import * as Icons from 'lucide-react-native';
 import Text from '~/codidge_components/UI/text';
-import { FloatingMenu } from '~/codidge_components/UI/button/FloatingMenu';
 import { useState } from 'react';
-import { ScreenRequestForm } from './widgets/screen_request/screenRequestForm';
 import { PageTransition } from '~/codidge_components/UI/pageTransition';
 import { TransUnionPropertyList } from './widgets/property/propertyList';
 import { ScreenRequestList } from './widgets/screen_request/screenRequestList';
 
 export const TransunionRentsApplications = () => {
   const navigation = useNavigation();
-  const [modalVisible, setModalVisible] = useState(false);
-
   const [seeProperties, setSeeProperties] = useState(false);
   const [seeScreens, setSeeScreens] = useState(false);
-
-  const [showConfirmation, setShowConfirmation] = useState(true);
-  const [fadeAnim] = useState(new Animated.Value(0));
-
-  const showConfirmationToast = () => {
-    setShowConfirmation(true);
-    Animated.sequence([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-      Animated.delay(2500),
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      setShowConfirmation(false);
-    });
-  };
 
   return (
     <PageSafeContainer style={styles.container}>
@@ -100,54 +74,6 @@ export const TransunionRentsApplications = () => {
           }}
         />
       </PageTransition>
-      {!seeProperties && !seeScreens && (
-        <FloatingMenu
-          title="Screen Tenant"
-          icon="Plus"
-          onPress={() => {
-            setModalVisible(true);
-          }}
-          style={{ bottom: 40, right: 30 }}
-        />
-      )}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(false);
-        }}>
-        <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <ScreenRequestForm
-            disposeModalHandler={() => {
-              setModalVisible(false);
-            }}
-            onAddScreenView={() => {
-              setModalVisible(false);
-              showConfirmationToast();
-            }}
-          />
-        </View>
-      </Modal>
-      {/* Confirmation Toast */}
-      {showConfirmation && (
-        <Animated.View
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: 20,
-            right: 20,
-            backgroundColor: '#4CAF50',
-            padding: 16,
-            borderRadius: 8,
-            opacity: fadeAnim,
-            zIndex: 1000,
-          }}>
-          <Text style={{ color: 'white', textAlign: 'center', fontWeight: 'bold' }}>
-            ✓ Application submitted successfully!
-          </Text>
-        </Animated.View>
-      )}
     </PageSafeContainer>
   );
 };

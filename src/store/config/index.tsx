@@ -33,7 +33,7 @@ import EstimatedClosingCostCalculator from '~/custom_modules/tools/sections/esti
 import { IncomeCalculatorPage } from '~/custom_modules/tools/sections/income_calculator';
 import { PrivacyPolicyScreen } from '~/core_modules/profile/privacyPolicy';
 import { FeedbacksScreen } from '~/core_modules/profile/feedbacks';
-import { UserDeletion } from '~/core_modules/profile/userDeletion';
+import { UserDeletionScreen } from '~/core_modules/profile/userDeletion';
 
 export const moduleScreens: Record<
   ModuleKeys,
@@ -146,6 +146,6 @@ export const moduleScreens: Record<
     body: FeedbacksScreen,
   },
   AccountDeletion: {
-    body: UserDeletion,
+    body: UserDeletionScreen,
   },
 };

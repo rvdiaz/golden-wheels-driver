@@ -43,7 +43,7 @@ export const localMainModules: IModule[] = [
       },
       {
         label: 'Account',
-        moduleKey: ModuleKeys.account,
+        moduleKey: ModuleKeys.accountDeletion,
         metaData: {},
         available: true,
         comingSoon: false,

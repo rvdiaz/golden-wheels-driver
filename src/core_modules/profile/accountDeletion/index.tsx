@@ -13,6 +13,7 @@ import Constants from 'expo-constants';
 import { useReactiveVar, useMutation, gql, useApolloClient } from '@apollo/client';
 import { updateUser, userData } from '~/store/user';
 import Text from '~/codidge_components/UI/text';
+import { theme } from '~/theme/theme';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -216,6 +217,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
+    backgroundColor: '#FFF',
+    borderRadius: theme.borderRadius.lg,
   },
   menuText: {
     flex: 1,

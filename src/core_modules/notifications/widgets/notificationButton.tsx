@@ -19,8 +19,6 @@ interface NotificationButtonProps {
   iconSize?: number;
 }
 
-const tenantId = Constants.expoConfig?.extra?.TENANTID;
-
 export const NotificationButton: React.FC<NotificationButtonProps> = ({
   navigation,
   showBadge = true,
@@ -62,7 +60,7 @@ export const NotificationButton: React.FC<NotificationButtonProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    padding: 4, // Add some padding for better touch area
+    padding: 10, // Add some padding for better touch area
   },
   iconContainer: {
     position: 'relative',

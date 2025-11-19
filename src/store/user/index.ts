@@ -16,10 +16,13 @@ const updateSubscriptionStatusFromUser = (user?: IUser | null) => {
   }
 
   const subscription = user.subscription;
+
   if (subscription) {
     const endDate = new Date(subscription.endDate);
-    const activeSubscriber = subscription.status === UserSubscriptionStatus.ACTIVE || endDate > new Date() || subscription.status === UserSubscriptionStatus.TRIAL
-
+    const activeSubscriber =
+      subscription.status === UserSubscriptionStatus.ACTIVE ||
+      endDate > new Date() ||
+      subscription.status === UserSubscriptionStatus.TRIAL;
 
     updateSubscriptionStatus({
       hasActiveSubscription: activeSubscriber,

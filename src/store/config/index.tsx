@@ -145,7 +145,7 @@ export const moduleScreens: Record<
   FeedBack: {
     body: FeedbacksScreen,
   },
-  Account: {
-    body: UserDeletion
-  }
+  AccountDeletion: {
+    body: UserDeletion,
+  },
 };

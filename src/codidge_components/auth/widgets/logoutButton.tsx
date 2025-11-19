@@ -6,6 +6,7 @@ import { signOut } from 'aws-amplify/auth/cognito';
 import { updateUser } from '~/store/user';
 import Text from '~/codidge_components/UI/text';
 import { apiKeyClient } from '~/store/config/apolloClient';
+import { theme } from '~/theme/theme';
 
 export const LogoutButton = () => {
   const [loadingLogout, setloadingLogout] = useState(false);
@@ -26,9 +27,8 @@ export const LogoutButton = () => {
 
   return (
     <TouchableOpacity style={[styles.menuItem, { borderBottomWidth: 0 }]} onPress={handleSignOut}>
-      <Icons.LogOut size={24} />
+      <Icons.LogOut color={theme.colors.danger} size={24} />
       <Text style={[styles.menuText]}>{loadingLogout ? 'Signing out' : 'Sign Out'}</Text>
-      <Icons.ChevronRight size={24} />
     </TouchableOpacity>
   );
 };
@@ -37,15 +37,16 @@ const styles = StyleSheet.create({
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 16,
     marginLeft: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
+    marginVertical: 10,
   },
   menuText: {
-    flex: 1,
     fontSize: 16,
-    color: '#374151',
+    color: theme.colors.danger,
     marginLeft: 12,
   },
 });

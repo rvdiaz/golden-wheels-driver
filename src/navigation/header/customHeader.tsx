@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    gap: 14,
+    gap: 5,
   },
   dateText: {
     fontSize: 12,
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   },
   profileButton: {
     borderRadius: 50,
-    padding: 0,
+    padding: 10,
     overflow: 'hidden',
     backgroundColor: 'transparent',
   },

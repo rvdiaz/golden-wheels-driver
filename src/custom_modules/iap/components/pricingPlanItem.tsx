@@ -1,21 +1,34 @@
-import { TouchableOpacity, View, StyleSheet } from 'react-native';
+import { TouchableOpacity, View, StyleSheet, Platform, Linking } from 'react-native';
 import Text from '~/codidge_components/UI/text';
 import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
 import { formatPrice } from '~/custom_modules/tools/sections/mls_listing/helpers';
 import { SubscriptionPlan } from '../interfaces';
 import { ProductSubscription, ProductSubscriptionAndroid, ProductSubscriptionIOS } from 'expo-iap';
+import { Badge } from '~/codidge_components/UI/badge';
+import TextButton from '~/codidge_components/UI/button/TextButton';
+import { theme } from '~/theme/theme';
+import { ButtonSize } from '~/codidge_components/UI/button/types';
 
 interface PricingPlanItemProps {
   plan: SubscriptionPlan;
   subscription?: ProductSubscription;
-  isSelected: boolean;
-  setSelected: (productId: string) => void;
+  isCurrentPlan?: boolean;
+  requestPurchase: (sku: string) => void;
 }
 
 export const PricingPlanItem = (props: PricingPlanItemProps) => {
-  const { plan, subscription, isSelected, setSelected } = props;
+  const { plan, subscription, isCurrentPlan, requestPurchase } = props;
+
   const [expanded, setExpanded] = useState(false);
+
+  const openSubscriptionManagement = () => {
+    if (Platform.OS === 'ios') {
+      Linking.openURL('itms-apps://apps.apple.com/account/subscriptions');
+    } else if (Platform.OS === 'android') {
+      Linking.openURL('https://play.google.com/store/account/subscriptions');
+    }
+  };
 
   const firstBillingDate = useMemo(() => {
     const date = new Date();
@@ -59,7 +72,14 @@ export const PricingPlanItem = (props: PricingPlanItemProps) => {
   }, [subscription, plan]);
 
   return (
-    <View key={plan.productId} style={[styles.planCard, isSelected && styles.planCardSelected]}>
+    <View
+      key={plan.productId}
+      style={[
+        styles.planCard,
+        {
+          borderColor: isCurrentPlan ? '#4F46E5' : theme.colors.primaryBodyBackground,
+        },
+      ]}>
       <View style={styles.planHeader}>
         <View style={styles.planHeaderLeft}>
           <View style={styles.planNameRow}>
@@ -72,7 +92,16 @@ export const PricingPlanItem = (props: PricingPlanItemProps) => {
           </View>
           <Text style={styles.planDescription}>{plan.description}</Text>
         </View>
-        {isSelected && <Ionicons name="checkmark-circle" size={24} color="#4F46E5" />}
+        {isCurrentPlan && (
+          <Badge
+            style={{
+              marginHorizontal: 'auto',
+            }}
+            type="success"
+            displayIcon={false}>
+            Current Plan
+          </Badge>
+        )}
       </View>
 
       {!!data.price && (
@@ -81,7 +110,10 @@ export const PricingPlanItem = (props: PricingPlanItemProps) => {
             <Text style={styles.price}>
               {plan.hasTrial ? formatPrice(0, 2) : formatPrice(data.price, 2)}
             </Text>
-            <View>
+            <View
+              style={{
+                marginBottom: 5,
+              }}>
               {plan.hasTrial && (
                 <Text style={styles.trialText}>then {formatPrice(data.price, 2)}</Text>
               )}
@@ -123,11 +155,24 @@ export const PricingPlanItem = (props: PricingPlanItemProps) => {
         </>
       )}
 
-      <TouchableOpacity
-        onPress={() => setSelected(plan.productId)}
-        style={styles.selectProductButton}>
-        <Text style={styles.purchaseButtonText}>Select {plan.name}</Text>
-      </TouchableOpacity>
+      {!isCurrentPlan ? (
+        <TouchableOpacity
+          onPress={() => requestPurchase(plan.productId)}
+          style={styles.continueButton}>
+          <Text style={styles.continueButtonText}>Subscribe Now</Text>
+        </TouchableOpacity>
+      ) : (
+        <TextButton
+          onPress={() => {
+            openSubscriptionManagement();
+          }}
+          title="Unsubscribe"
+          size={ButtonSize.LARGE}
+          textStyle={{
+            color: theme.colors.danger,
+          }}
+        />
+      )}
     </View>
   );
 };
@@ -140,9 +185,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderWidth: 2,
     borderColor: 'transparent',
-  },
-  planCardSelected: {
-    borderColor: '#4F46E5',
   },
   planHeader: {
     flexDirection: 'row',
@@ -240,20 +282,8 @@ const styles = StyleSheet.create({
     color: '#1F2937',
     flex: 1,
   },
-  selectProductButton: {
-    backgroundColor: '#F3F4F6',
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  purchaseButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1F2937',
-  },
   continueButton: {
     backgroundColor: '#4F46E5',
-    marginHorizontal: 24,
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
@@ -262,5 +292,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#FFFFFF',
+  },
+  purchaseButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1F2937',
   },
 });

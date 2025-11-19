@@ -34,6 +34,7 @@ import { OnboardingFlowStorage } from './helpers/onboardingStorage';
 import { PersonalInformation } from './personalnformationForm';
 import { IPersonalData } from '../on_boarding/interface';
 import { apiKeyClient } from '~/store/config/apolloClient';
+import { paywallVisibility } from '~/store/subscription';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -132,6 +133,7 @@ export const AuthWrapper = () => {
       }
 
       updateUser(userData.data?.updateUser);
+      paywallVisibility(true);
       await OnboardingFlowStorage.setAccountCreated();
     } catch (error) {
       await signOut();

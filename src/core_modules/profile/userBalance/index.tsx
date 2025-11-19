@@ -28,9 +28,9 @@ export const BalanceWidget: React.FC<BalanceWidgetProps> = ({ balance, onAddBala
             <Text style={styles.amount}>{formatCurrency(balance.amount, 2)}</Text>
           </View>
         </View>
-        <TouchableOpacity style={styles.addButton} onPress={onAddBalance} activeOpacity={0.7}>
+        {/*    <TouchableOpacity style={styles.addButton} onPress={onAddBalance} activeOpacity={0.7}>
           <Icons.Plus size={20} color="#2B7FFF" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
   );

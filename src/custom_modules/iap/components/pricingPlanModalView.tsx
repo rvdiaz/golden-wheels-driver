@@ -1,14 +1,20 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, Modal, TouchableOpacity, ScrollView, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Text from '~/codidge_components/UI/text';
-import { paywallVisibility, setPaywallVisibility } from '~/store/subscription';
+import {
+  paywallVisibility,
+  setPaywallVisibility,
+  subscriptionStatusData,
+} from '~/store/subscription';
 import { useReactiveVar } from '@apollo/client';
 import { theme } from '~/theme/theme';
 import { PricingPlanItem } from './pricingPlanItem';
 import { useSubscriptionPlanList } from '../hooks/useSubscriptionPlanList';
 import type { ProductSubscription } from 'expo-iap';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import TextButton from '~/codidge_components/UI/button/TextButton';
+import { ButtonSize } from '~/codidge_components/UI/button/types';
 
 export interface IPricingPlanModalViewProps {
   subscriptions: ProductSubscription[];
@@ -17,6 +23,7 @@ export interface IPricingPlanModalViewProps {
 
 export const PricingPlanModalView = (args: IPricingPlanModalViewProps) => {
   const { subscriptions, requestPurchase } = args;
+  const { planName, hasActiveSubscription } = useReactiveVar(subscriptionStatusData);
 
   const insets = useSafeAreaInsets();
 
@@ -38,27 +45,9 @@ export const PricingPlanModalView = (args: IPricingPlanModalViewProps) => {
     [allPlans, subscriptions, billingPeriod]
   );
 
-  const [selectedPlan, setSelectedPlan] = useState<string>(
-    plans.find((plan) => 'monthly' === plan.billingPeriod)?.productId || plans[0]?.productId || ''
-  );
-
   const changeBillingPeriod = (period: 'monthly' | 'annually') => {
     setBillingPeriod(period);
-    setSelectedPlan(
-      plans.find((plan) => period === plan.billingPeriod)?.productId || plans[0]?.productId || ''
-    );
   };
-
-  const isPlanSelected = (planId: string) => selectedPlan === planId;
-
-  useEffect(() => {
-    if (selectedPlan) return;
-    setSelectedPlan(
-      plans.find((plan) => plan.billingPeriod === billingPeriod)?.productId ||
-        plans[0]?.productId ||
-        ''
-    );
-  }, [selectedPlan, billingPeriod, plans]);
 
   const getSubscriptionForPlan = (planId: string) => {
     return subscriptions.find((sub) => sub.id === planId);
@@ -126,21 +115,34 @@ export const PricingPlanModalView = (args: IPricingPlanModalViewProps) => {
                     key={plan.productId}
                     plan={plan}
                     subscription={getSubscriptionForPlan(plan.productId)}
-                    isSelected={isPlanSelected(plan.productId)}
-                    setSelected={setSelectedPlan}
+                    isCurrentPlan={planName === plan.productId}
+                    requestPurchase={requestPurchase}
                   />
                 ))}
               </TouchableOpacity>
             </ScrollView>
-            <TouchableOpacity
-              style={[
-                styles.continueButton,
-                (!selectedPlan || selectedPlan.startsWith('free-')) && { opacity: 0.6 },
-              ]}
-              disabled={!selectedPlan || selectedPlan.startsWith('free-')}
-              onPress={() => requestPurchase(selectedPlan)}>
-              <Text style={styles.continueButtonText}>Continue and pay</Text>
-            </TouchableOpacity>
+            {!hasActiveSubscription && (
+              <View style={styles.freeOptionContainer}>
+                <TextButton
+                  onPress={() => {
+                    onClose();
+                  }}
+                  style={{
+                    backgroundColor: '#F3F4F6',
+                    marginHorizontal: 16,
+                    borderWidth: 1,
+                    borderColor: '#E5E7EB',
+                  }}
+                  textStyle={{
+                    fontWeight: '600',
+                    color: '#6B7280',
+                  }}
+                  size={ButtonSize.LARGE}
+                  title="Continue for Free"
+                />
+                <Text style={styles.noCardText}>No credit card required</Text>
+              </View>
+            )}
           </View>
         </View>
       </View>
@@ -216,16 +218,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     marginBottom: 20,
   },
-  continueButton: {
-    backgroundColor: '#4F46E5',
-    marginHorizontal: 24,
-    paddingVertical: 16,
-    borderRadius: 12,
+  freeOptionContainer: {
     alignItems: 'center',
+    paddingBottom: 8,
   },
-  continueButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFFFFF',
+  noCardText: {
+    fontSize: 13,
+    color: '#9CA3AF',
+    marginTop: 8,
+    fontWeight: '400',
   },
 });

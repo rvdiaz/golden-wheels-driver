@@ -6,6 +6,7 @@ import { useEffect, useRef } from 'react';
 import { useSubscriptionPlanList } from '../../hooks/useSubscriptionPlanList';
 import { validatePurchaseOnServer } from '../../helper';
 import { Alert } from 'react-native';
+import { paywallVisibility } from '~/store/subscription';
 
 export const PricingPlanModal = () => {
   const user = useReactiveVar(userData);
@@ -38,6 +39,7 @@ export const PricingPlanModal = () => {
 
         if (success) {
           console.log('Purchase Successful', 'Thank you for your purchase!');
+          paywallVisibility(false);
         } else {
           Alert.alert(
             'Purchase Failed',

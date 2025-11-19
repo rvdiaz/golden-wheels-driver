@@ -12,6 +12,7 @@ import { Header } from '~/codidge_components/UI/header';
 import { theme } from '~/theme/theme';
 import { ProfileNavigationSection } from '~/codidge_components/UI/navigationButtons';
 import { BalanceWidget } from './userBalance';
+import { paywallVisibility } from '~/store/subscription';
 
 export const ProfileScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -112,6 +113,27 @@ export const ProfileScreen: React.FC = () => {
                 ],
               },
               {
+                title: 'Account',
+                items: [
+                  {
+                    id: 'subscriptions',
+                    label: 'Subscriptions Plans',
+                    icon: <Icons.BadgeDollarSign />,
+                    onClick: () => {
+                      paywallVisibility(true);
+                    },
+                  },
+                  {
+                    id: 'delete',
+                    label: 'Account Deletion',
+                    icon: <Icons.UserX />,
+                    onClick: () => {
+                      navigation.navigate(ModuleKeys.accountDeletion as never);
+                    },
+                  },
+                ],
+              },
+              {
                 title: 'App',
                 items: [
                   {
@@ -128,19 +150,6 @@ export const ProfileScreen: React.FC = () => {
                     replacementWidget: <LogoutButton />,
                     icon: <Icons.HandCoins />,
                     onClick: () => {},
-                  },
-                ],
-              },
-              {
-                title: 'Account',
-                items: [
-                  {
-                    id: 'delete',
-                    label: 'Account Deletion',
-                    icon: <Icons.UserX />,
-                    onClick: () => {
-                      navigation.navigate(ModuleKeys.account as never);
-                    },
                   },
                 ],
               },

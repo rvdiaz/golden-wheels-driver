@@ -36,7 +36,7 @@ export enum ModuleKeys {
   goals = 'Goals',
   privacyPolicy = 'PrivacyPolicy',
   feedBack = 'FeedBack',
-  account = 'Account',
+  accountDeletion = 'AccountDeletion',
 }
 
 export interface IFeatureModule {
@@ -50,7 +50,7 @@ export interface IFeatureModule {
   available?: boolean;
   comingSoon?: boolean;
   modules?: IFeatureModule[];
-  subscriptionRequired?: boolean
+  subscriptionRequired?: boolean;
 }
 
 export interface ITenantTheme {

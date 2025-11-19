@@ -1,6 +1,5 @@
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
-import Text from '~/codidge_components/UI/text'
 import { AccountDeletionModal } from '../accountDeletion'
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer'
 import { theme } from '~/theme/theme'

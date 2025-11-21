@@ -3,7 +3,7 @@ import Text from '~/codidge_components/UI/text';
 import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
 import { formatPrice } from '~/custom_modules/tools/sections/mls_listing/helpers';
-import { SubscriptionPlan } from '../interfaces';
+import { BillingPeriod, SubscriptionPlan } from '../interfaces';
 import { ProductSubscription, ProductSubscriptionAndroid, ProductSubscriptionIOS } from 'expo-iap';
 import { Badge } from '~/codidge_components/UI/badge';
 import TextButton from '~/codidge_components/UI/button/TextButton';
@@ -15,10 +15,11 @@ interface PricingPlanItemProps {
   subscription?: ProductSubscription;
   isCurrentPlan?: boolean;
   requestPurchase: (sku: string) => void;
+  allPlans?: SubscriptionPlan[];
 }
 
 export const PricingPlanItem = (props: PricingPlanItemProps) => {
-  const { plan, subscription, isCurrentPlan, requestPurchase } = props;
+  const { plan, subscription, isCurrentPlan, allPlans, requestPurchase } = props;
 
   const [expanded, setExpanded] = useState(false);
 
@@ -39,6 +40,42 @@ export const PricingPlanItem = (props: PricingPlanItemProps) => {
       day: 'numeric',
     });
   }, [plan.trialPeriodDays, plan.hasTrial]);
+
+  const annualSavings = useMemo(() => {
+    if (!allPlans || plan.billingPeriod !== BillingPeriod.MONTHLY) {
+      return null;
+    }
+    // Find the annual plan with the same name (case-insensitive comparison)
+    const annualPlan = allPlans.find(
+      (p) =>
+        p.name.toLowerCase() === plan.name.toLowerCase() &&
+        p.billingPeriod === BillingPeriod.ANNUALLY &&
+        p.productId !== plan.productId
+    );
+
+    if (!annualPlan) {
+      return null;
+    }
+
+    // Calculate monthly cost if paying annually
+    const annualMonthlyEquivalent = annualPlan.price / 12;
+
+    // Calculate savings per month
+    const savingsPerMonth = plan.price - annualMonthlyEquivalent;
+
+    // Calculate yearly savings
+    const savingsPerYear = plan.price * 12 - annualPlan.price;
+
+    // Calculate percentage saved
+    const percentageSaved = ((savingsPerYear / (plan.price * 12)) * 100).toFixed(0);
+
+    return {
+      savingsPerMonth,
+      savingsPerYear,
+      percentageSaved,
+      annualMonthlyEquivalent,
+    };
+  }, [allPlans, plan]);
 
   const data = useMemo(() => {
     if (subscription?.platform === 'ios') {
@@ -130,6 +167,17 @@ export const PricingPlanItem = (props: PricingPlanItemProps) => {
               <Text style={styles.discountText}>{data.discount}</Text>
             </View>
           )}
+        </View>
+      )}
+
+      {/* Annual Savings Banner */}
+      {annualSavings && (
+        <View style={styles.savingsBanner}>
+          <Ionicons name="information-circle" size={16} color="#059669" />
+          <Text style={styles.savingsText}>
+            Save {formatPrice(annualSavings.savingsPerYear, 2)} ({annualSavings.percentageSaved}%)
+            with annual billing — only {formatPrice(annualSavings.annualMonthlyEquivalent, 2)}/month
+          </Text>
         </View>
       )}
 
@@ -297,5 +345,24 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#1F2937',
+  },
+  savingsBanner: {
+    backgroundColor: '#ECFDF5',
+    borderLeftWidth: 3,
+    borderLeftColor: '#059669',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  savingsText: {
+    fontSize: 13,
+    color: '#047857',
+    fontWeight: '500',
+    flex: 1,
+    lineHeight: 18,
   },
 });

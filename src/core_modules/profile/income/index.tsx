@@ -11,7 +11,6 @@ import { useQuery, useReactiveVar } from '@apollo/client';
 import * as Icons from 'lucide-react-native';
 import Constants from 'expo-constants';
 import { userData } from '~/store/user';
-import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import { Header } from '~/codidge_components/UI/header';
 import { useNavigation } from '@react-navigation/native';
 import IncomeForm from './widgets/incomeForm';
@@ -21,6 +20,7 @@ import { IIncome, IncomeStatus } from './interfaces';
 import { IncomeCard } from './widgets/incomeCard';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
+import { LoadingSpinner } from '~/codidge_components/UI/loading/loadingSpinner';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -50,7 +50,22 @@ export const UserIncomes = () => {
   const incomes: IIncome[] = data?.getUserIncomes || [];
 
   if (loading && !refreshing) {
-    return <PageLoading headerTitle="Income" />;
+    return (
+      <PageSafeContainer style={styles.container}>
+        <Header
+          showBack={true}
+          title=""
+          onBack={() => navigation.goBack()}
+          rightText="Add Income"
+          rightAction={() => {
+            setmodal(true);
+          }}
+        />
+        <View style={styles.centerContent}>
+          <LoadingSpinner color="gray" />
+        </View>
+      </PageSafeContainer>
+    );
   }
 
   if (error) {
@@ -75,7 +90,6 @@ export const UserIncomes = () => {
         showBack={true}
         title=""
         onBack={() => navigation.goBack()}
-        leftText="Incomes"
         rightText="Add Income"
         rightAction={() => {
           setmodal(true);

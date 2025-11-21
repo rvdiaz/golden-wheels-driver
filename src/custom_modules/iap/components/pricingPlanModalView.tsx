@@ -1,5 +1,14 @@
 import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, Modal, TouchableOpacity, ScrollView, StatusBar } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Modal,
+  TouchableOpacity,
+  ScrollView,
+  StatusBar,
+  Platform,
+  Linking,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Text from '~/codidge_components/UI/text';
 import {
@@ -15,14 +24,19 @@ import type { ProductSubscription } from 'expo-iap';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
+import { useSystemSettings } from '~/system_setting/customHook';
 
 export interface IPricingPlanModalViewProps {
   subscriptions: ProductSubscription[];
   requestPurchase: (sku: string) => void;
+  termsOfUseUrl?: string;
+  privacyPolicyUrl?: string;
 }
 
 export const PricingPlanModalView = (args: IPricingPlanModalViewProps) => {
-  const { subscriptions, requestPurchase } = args;
+  const legal = useSystemSettings().legal;
+
+  const { subscriptions, requestPurchase, termsOfUseUrl, privacyPolicyUrl } = args;
   const { planName, hasActiveSubscription } = useReactiveVar(subscriptionStatusData);
 
   const insets = useSafeAreaInsets();
@@ -53,6 +67,10 @@ export const PricingPlanModalView = (args: IPricingPlanModalViewProps) => {
     return subscriptions.find((sub) => sub.id === planId);
   };
 
+  const openURL = (url: string) => {
+    Linking.openURL(url);
+  };
+
   return (
     <Modal
       animationType="slide"
@@ -66,7 +84,7 @@ export const PricingPlanModalView = (args: IPricingPlanModalViewProps) => {
           styles.modalContainer,
           {
             paddingTop: insets.top,
-            marginBottom: insets.bottom,
+            marginBottom: insets.bottom - 40,
           },
         ]}>
         <View style={styles.header}>
@@ -117,32 +135,67 @@ export const PricingPlanModalView = (args: IPricingPlanModalViewProps) => {
                     subscription={getSubscriptionForPlan(plan.productId)}
                     isCurrentPlan={planName === plan.productId}
                     requestPurchase={requestPurchase}
+                    allPlans={allPlans}
                   />
                 ))}
               </TouchableOpacity>
-            </ScrollView>
-            {!hasActiveSubscription && (
-              <View style={styles.freeOptionContainer}>
-                <TextButton
-                  onPress={() => {
-                    onClose();
-                  }}
-                  style={{
-                    backgroundColor: '#F3F4F6',
-                    marginHorizontal: 16,
-                    borderWidth: 1,
-                    borderColor: '#E5E7EB',
-                  }}
-                  textStyle={{
-                    fontWeight: '600',
-                    color: '#6B7280',
-                  }}
-                  size={ButtonSize.LARGE}
-                  title="Continue for Free"
-                />
-                <Text style={styles.noCardText}>No credit card required</Text>
+              {!hasActiveSubscription && (
+                <View style={styles.freeOptionContainer}>
+                  <TextButton
+                    onPress={() => {
+                      onClose();
+                    }}
+                    style={{
+                      backgroundColor: '#F3F4F6',
+                      marginHorizontal: 16,
+                      borderWidth: 1,
+                      borderColor: '#E5E7EB',
+                    }}
+                    textStyle={{
+                      fontWeight: '600',
+                      color: '#6B7280',
+                    }}
+                    size={ButtonSize.LARGE}
+                    title="Continue for Free"
+                  />
+                  <Text style={styles.noCardText}>No credit card required</Text>
+                </View>
+              )}
+              {/* Apple Required Legal Text */}
+              <View style={styles.legalContainer}>
+                <Text style={styles.legalText}>
+                  Payment will be charged to your{' '}
+                  {Platform.OS === 'ios' ? 'Apple ID' : 'Google Play'} account. Subscription
+                  automatically renews unless canceled at least 24 hours before the end of the
+                  billing period. You can manage or cancel your subscription in your{' '}
+                  {Platform.OS === 'ios' ? 'App Store' : 'Google Play'} account settings.
+                </Text>
+
+                <View style={styles.legalLinks}>
+                  <TouchableOpacity
+                    onPress={() =>
+                      openURL(
+                        termsOfUseUrl ??
+                          legal.mvbTemrsOfUse ??
+                          'https://myvirtualboss.com/privacy-policy/'
+                      )
+                    }>
+                    <Text style={styles.legalLinkText}>Terms of Use</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.legalSeparator}> • </Text>
+                  <TouchableOpacity
+                    onPress={() =>
+                      openURL(
+                        privacyPolicyUrl ??
+                          legal.mvbPolicy ??
+                          'https://myvirtualboss.com/privacy-policy/'
+                      )
+                    }>
+                    <Text style={styles.legalLinkText}>Privacy Policy</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            )}
+            </ScrollView>
           </View>
         </View>
       </View>
@@ -174,7 +227,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 24,
     paddingVertical: 20,
-    marginBottom: 20,
+    marginBottom: 0,
   },
   headerTitle: {
     fontSize: 24,
@@ -227,5 +280,32 @@ const styles = StyleSheet.create({
     color: '#9CA3AF',
     marginTop: 8,
     fontWeight: '400',
+  },
+  legalContainer: {
+    marginTop: 8,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB',
+  },
+  legalText: {
+    fontSize: 11,
+    color: '#6B7280',
+    lineHeight: 16,
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  legalLinks: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  legalLinkText: {
+    fontSize: 11,
+    color: '#4F46E5',
+    textDecorationLine: 'underline',
+  },
+  legalSeparator: {
+    fontSize: 11,
+    color: '#6B7280',
   },
 });

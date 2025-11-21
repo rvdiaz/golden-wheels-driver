@@ -17,6 +17,8 @@ interface UseProfileSetupConfigResult {
   tasksConfiguration: ITaskSchemaItem[];
   legal: {
     mvbTemrs: string;
+    mvbTemrsOfUse: string;
+    mvbPolicy: string;
     tuTerms: string;
   };
 }

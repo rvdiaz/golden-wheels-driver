@@ -1,108 +1,166 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import Text from '~/codidge_components/UI/text';
-import { useNavigation, useRoute } from '@react-navigation/native';
 import { Card } from '~/codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
-import { theme } from '~/theme/theme';
-import { ContentType, TrainingCourse } from '../../interfaces';
+import { ContentItem, ContentType, TenantData, TrainingCourse } from '../../interfaces';
+import { VideoContentItem } from './videoContent';
+import { DocumentContentItem } from './documentContent';
+import { QuizContentItem } from './quizContent';
+import { AudioContentItem } from './audioContent';
+import { InteractiveContentItem } from './interactiveContent';
+import { TextContentItem } from './textContent';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { Header } from '~/codidge_components/UI/header';
+import { theme } from '~/theme/theme';
 import HtmlViewer from '~/codidge_components/UI/htmlViewer';
 
+interface ContentItemProps {
+  item: any;
+  index: number;
+  isExpanded: boolean;
+  onToggle: (index: number) => void;
+}
+
 export const TrainingCourseDetailScreen: React.FC = () => {
-  const route = useRoute();
   const navigation = useNavigation();
+  const route = useRoute();
+  const [activeContentIndex, setActiveContentIndex] = useState<number>(0);
 
-  const { course } = route.params as { course: TrainingCourse; module: any };
-
-  const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set());
-
-  const toggleItem = (index: number) => {
-    const newExpanded = new Set(expandedItems);
-    if (newExpanded.has(index)) {
-      newExpanded.delete(index);
-    } else {
-      newExpanded.add(index);
-    }
-    setExpandedItems(newExpanded);
+  const { course, module, program, tenant } = route.params as {
+    course: TrainingCourse;
+    module: any;
+    program: any;
+    tenant: TenantData;
   };
 
-  const getContentTypeIcon = (type: ContentType) => {
+  const renderContentDetails = (courseContentItem: ContentItem, index: number) => {
+    const isActive = activeContentIndex === index;
+
+    return (
+      <View key={courseContentItem.order || index} style={styles.contentItemWrapper}>
+        {/* Content Item Header/Tab */}
+        <TouchableOpacity
+          style={[styles.contentTab, isActive && styles.contentTabActive]}
+          onPress={() => setActiveContentIndex(index)}
+          activeOpacity={0.7}>
+          <View style={styles.tabLeft}>
+            <View style={[styles.tabIcon, isActive && styles.tabIconActive]}>
+              {getContentIcon(courseContentItem.type, isActive)}
+            </View>
+            <View style={styles.tabInfo}>
+              <Text style={[styles.tabTitle, isActive && styles.tabTitleActive]}>
+                {courseContentItem.title || `Content ${index + 1}`}
+              </Text>
+              {courseContentItem.estimatedDuration && (
+                <Text style={styles.tabDuration}>{courseContentItem.estimatedDuration}</Text>
+              )}
+            </View>
+          </View>
+          <View style={styles.tabNumber}>
+            <Text style={[styles.tabNumberText, isActive && styles.tabNumberTextActive]}>
+              {index + 1}
+            </Text>
+          </View>
+        </TouchableOpacity>
+
+        {/* Active Content Display */}
+        {isActive && (
+          <View style={styles.activeContentContainer}>
+            {renderContentComponent(courseContentItem)}
+          </View>
+        )}
+      </View>
+    );
+  };
+
+  const renderContentComponent = (courseContentItem: ContentItem) => {
+    switch (courseContentItem.type) {
+      case 'VIDEO':
+        return <VideoContentItem item={courseContentItem} />;
+      case 'DOCUMENT':
+        return <DocumentContentItem item={courseContentItem} />;
+      case 'QUIZ':
+        return <QuizContentItem item={courseContentItem} />;
+      case 'AUDIO':
+        return <AudioContentItem item={courseContentItem} />;
+      case 'INTERACTIVE':
+        return <InteractiveContentItem item={courseContentItem} />;
+      case 'TEXT':
+        return <TextContentItem item={courseContentItem} />;
+      default:
+        return <Text>Content type not supported</Text>;
+    }
+  };
+
+  const getContentIcon = (type: string, isActive: boolean) => {
+    const color = isActive ? theme.colors.primary : '#6B7280';
+    const size = 20;
+
     switch (type) {
       case 'VIDEO':
-        return { icon: Icons.Video, color: '#EF4444', label: 'Video' };
+        return <Icons.Video size={size} color={color} />;
       case 'DOCUMENT':
-        return { icon: Icons.FileText, color: '#3B82F6', label: 'Document' };
+        return <Icons.FileText size={size} color={color} />;
       case 'QUIZ':
-        return { icon: Icons.CheckCircle, color: '#10B981', label: 'Quiz' };
+        return <Icons.ClipboardCheck size={size} color={color} />;
       case 'AUDIO':
-        return { icon: Icons.Music, color: '#8B5CF6', label: 'Audio' };
+        return <Icons.Headphones size={size} color={color} />;
       case 'INTERACTIVE':
-        return { icon: Icons.Gamepad2, color: '#F59E0B', label: 'Interactive' };
+        return <Icons.MousePointerClick size={size} color={color} />;
       case 'TEXT':
-        return { icon: Icons.AlignLeft, color: '#6B7280', label: 'Text' };
+        return <Icons.FileType size={size} color={color} />;
       default:
-        return { icon: Icons.File, color: '#6B7280', label: 'File' };
+        return <Icons.File size={size} color={color} />;
     }
   };
-
-  const formatDuration = (minutes?: number) => {
-    if (!minutes) return null;
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    if (hours > 0) {
-      return `${hours}h ${mins}m`;
-    }
-    return `${mins}m`;
-  };
-
-  const formatFileSize = (bytes?: number) => {
-    if (!bytes) return null;
-    const mb = bytes / (1024 * 1024);
-    if (mb < 1) {
-      const kb = bytes / 1024;
-      return `${kb.toFixed(1)} KB`;
-    }
-    return `${mb.toFixed(1)} MB`;
-  };
-
-  const sortedContentItems = [...course.contentItems].sort((a, b) => a.order - b.order);
 
   return (
-    <PageSafeContainer style={styles.container}>
+    <PageSafeContainer>
       <Header
         title={course.title}
+        showBack={true}
         onBack={() => {
           navigation.goBack();
         }}
-        showBack={true}
       />
-      <ScrollView
-        style={styles.content}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}>
-        {/* Course Header */}
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        {/* Course Header Card */}
         <Card style={styles.headerCard}>
-          <View style={styles.headerContent}>
+          <View style={styles.courseHeader}>
             <Text style={styles.courseTitle}>{course.title}</Text>
-            <HtmlViewer htmlDescription={course.htmlDescription} />
-            <View style={styles.statsRow}>
-              {/*  <View style={styles.statChip}>
-                <Icons.Clock size={16} color={theme.colors.primary} />
-                  <Text style={styles.statText}>{formatDuration(course.estimatedDuration)}</Text>
-              </View> */}
-              <View style={styles.statChip}>
-                <Icons.Layers size={16} color={theme.colors.primary} />
-                <Text style={styles.statText}>{course.contentItems.length} items</Text>
-              </View>
+
+            {/* Course Meta Information */}
+            <View style={styles.courseMeta}>
+              {course.contentItems && course.contentItems.length > 0 && (
+                <View style={styles.metaItem}>
+                  <Icons.Layers size={16} color="#6B7280" />
+                  <Text style={styles.metaText}>
+                    {course.contentItems.length}{' '}
+                    {course.contentItems.length === 1 ? 'item' : 'items'}
+                  </Text>
+                </View>
+              )}
             </View>
+
+            {/* Short Description */}
+            {course.description && (
+              <Text style={styles.courseDescription}>{course.description}</Text>
+            )}
+
+            {/* HTML Description */}
+            {course.htmlDescription && (
+              <View style={styles.htmlDescriptionContainer}>
+                <HtmlViewer htmlDescription={course.htmlDescription} />
+              </View>
+            )}
 
             {/* Tags */}
             {course.tags && course.tags.length > 0 && (
               <View style={styles.tagsContainer}>
-                {course.tags.map((tag, idx) => (
-                  <View key={idx} style={styles.tag}>
+                {course.tags.map((tag, index) => (
+                  <View key={index} style={styles.tag}>
                     <Text style={styles.tagText}>{tag}</Text>
                   </View>
                 ))}
@@ -112,346 +170,187 @@ export const TrainingCourseDetailScreen: React.FC = () => {
         </Card>
 
         {/* Content Items */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Course Content</Text>
-          <Text style={styles.sectionSubtitle}>{sortedContentItems.length} learning items</Text>
-        </View>
-
-        {sortedContentItems.map((item, index) => {
-          const { icon: IconComponent, color, label } = getContentTypeIcon(item.type);
-          const isExpanded = expandedItems.has(index);
-
-          return (
-            <Card key={index} style={styles.contentCard}>
-              <TouchableOpacity
-                onPress={() => toggleItem(index)}
-                style={styles.contentHeader}
-                activeOpacity={0.7}>
-                <View style={styles.contentLeft}>
-                  <View style={[styles.contentIcon, { backgroundColor: color + '20' }]}>
-                    <IconComponent size={20} color={color} />
-                  </View>
-
-                  <View style={styles.contentInfo}>
-                    <Text style={styles.contentTitle}>{item.title}</Text>
-                    <View style={styles.contentMeta}>
-                      <Text style={styles.contentType}>{label}</Text>
-                      {item.estimatedDuration && (
-                        <>
-                          <Text style={styles.metaSeparator}>•</Text>
-                          {/* <Text style={styles.contentDuration}>
-                            {formatDuration(item.estimatedDuration)}
-                          </Text> */}
-                        </>
-                      )}
-                    </View>
-                  </View>
-                </View>
-
-                <Icons.ChevronDown
-                  size={20}
-                  color="#9CA3AF"
-                  style={[styles.expandIcon, isExpanded && styles.expandIconRotated]}
-                />
-              </TouchableOpacity>
-
-              {isExpanded && (
-                <View style={styles.contentDetails}>
-                  <Text style={styles.contentDescription}>{item.description}</Text>
-
-                  {(item.url || item.fileSize || item.mimeType) && (
-                    <View style={styles.detailsContainer}>
-                      {item.url && (
-                        <View style={styles.detailRow}>
-                          <Icons.Link size={14} color="#6B7280" />
-                          <Text style={styles.detailText} numberOfLines={1}>
-                            {item.url}
-                          </Text>
-                        </View>
-                      )}
-                      {item.fileSize && (
-                        <View style={styles.detailRow}>
-                          <Icons.HardDrive size={14} color="#6B7280" />
-                          <Text style={styles.detailText}>{formatFileSize(item.fileSize)}</Text>
-                        </View>
-                      )}
-                      {item.mimeType && (
-                        <View style={styles.detailRow}>
-                          <Icons.FileType size={14} color="#6B7280" />
-                          <Text style={styles.detailText}>{item.mimeType}</Text>
-                        </View>
-                      )}
-                    </View>
-                  )}
-
-                  {item.type === 'QUIZ' && item.quizData && (
-                    <View style={styles.quizInfo}>
-                      <View style={styles.quizHeader}>
-                        <Icons.HelpCircle size={16} color="#10B981" />
-                        <Text style={styles.quizTitle}>Quiz Information</Text>
-                      </View>
-                      <Text style={styles.quizDetail}>
-                        Questions: {item.quizData.questions?.length || 0}
-                      </Text>
-                      <Text style={styles.quizDetail}>
-                        Passing Score: {item.quizData.passingScore}%
-                      </Text>
-                      {item.quizData.timeLimit && (
-                        <Text style={styles.quizDetail}>
-                          Time Limit: {item.quizData.timeLimit} minutes
-                        </Text>
-                      )}
-                    </View>
-                  )}
-
-                  <TouchableOpacity style={styles.startButton}>
-                    <Text style={styles.startButtonText}>Start Learning</Text>
-                    <Icons.Play size={16} color="#FFFFFF" />
-                  </TouchableOpacity>
-                </View>
-              )}
-            </Card>
-          );
-        })}
-
-        {/* Action Card */}
-        {/*   <Card style={styles.actionCard}>
-          <View style={styles.actionContent}>
-            <Icons.Bookmark size={24} color={theme.colors.primary} />
-            <View style={styles.actionText}>
-              <Text style={styles.actionTitle}>Save Your Progress</Text>
-              <Text style={styles.actionDescription}>
-                Your learning progress will be tracked automatically
+        {course.contentItems && course.contentItems.length > 0 ? (
+          <Card style={styles.contentCard}>
+            <View style={styles.contentHeader}>
+              <Text style={styles.contentHeaderTitle}>Course Content</Text>
+              <Text style={styles.contentHeaderSubtitle}>
+                {activeContentIndex + 1} of {course.contentItems.length}
               </Text>
             </View>
-          </View>
-        </Card> */}
+            <View style={styles.contentList}>
+              {course.contentItems.map((contentItem, index) =>
+                renderContentDetails(contentItem, index)
+              )}
+            </View>
+          </Card>
+        ) : (
+          <View></View>
+        )}
+
+        {/* Bottom Padding */}
+        <View style={styles.bottomPadding} />
       </ScrollView>
     </PageSafeContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  scrollView: {
     flex: 1,
-    backgroundColor: theme.colors.bodyBackground,
-  },
-  content: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 16,
   },
   headerCard: {
-    marginBottom: 24,
+    margin: 16,
   },
-  headerContent: {
+  courseHeader: {
     padding: 20,
   },
   courseTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#1F2937',
-    marginBottom: 8,
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#111827',
   },
-  courseDescription: {
-    fontSize: 14,
-    color: '#6B7280',
-    lineHeight: 20,
+  courseMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
     marginBottom: 16,
   },
-  statsRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  statChip: {
+  metaItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: theme.colors.primary + '15',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
   },
-  statText: {
-    fontSize: 13,
-    color: '#1F2937',
-    fontWeight: '600',
+  metaText: {
+    fontSize: 14,
+    color: '#6B7280',
+    fontWeight: '500',
+  },
+  courseDescription: {
+    fontSize: 15,
+    color: '#4B5563',
+    lineHeight: 22,
+    marginBottom: 16,
+  },
+  htmlDescriptionContainer: {
+    marginBottom: 16,
   },
   tagsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 6,
+    gap: 8,
   },
   tag: {
-    backgroundColor: '#EFF6FF',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
+    backgroundColor: '#EEF2FF',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
   },
   tagText: {
-    fontSize: 11,
-    color: '#2563EB',
-    fontWeight: '500',
-  },
-  sectionHeader: {
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 18,
+    fontSize: 12,
+    color: '#4F46E5',
     fontWeight: '600',
-    color: '#1F2937',
-    marginBottom: 4,
-  },
-  sectionSubtitle: {
-    fontSize: 13,
-    color: '#6B7280',
   },
   contentCard: {
-    marginBottom: 12,
+    margin: 16,
   },
   contentHeader: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  contentHeaderTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  contentHeaderSubtitle: {
+    fontSize: 14,
+    color: '#6B7280',
+    fontWeight: '500',
+  },
+  contentList: {
+    padding: 16,
+  },
+  contentItemWrapper: {
+    marginBottom: 8,
+  },
+  contentTab: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
+    backgroundColor: '#F9FAFB',
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: 'transparent',
   },
-  contentLeft: {
+  contentTabActive: {
+    backgroundColor: '#EEF2FF',
+    borderColor: theme.colors.primary,
+  },
+  tabLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
   },
-  contentIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
+  tabIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
-  contentInfo: {
+  tabIconActive: {
+    backgroundColor: '#DBEAFE',
+  },
+  tabInfo: {
     flex: 1,
   },
-  contentTitle: {
+  tabTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#1F2937',
-    marginBottom: 4,
+    color: '#374151',
+    marginBottom: 2,
   },
-  contentMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  tabTitleActive: {
+    color: theme.colors.primary,
   },
-  contentType: {
-    fontSize: 12,
-    color: '#6B7280',
-    fontWeight: '500',
-  },
-  metaSeparator: {
-    fontSize: 12,
-    color: '#D1D5DB',
-    marginHorizontal: 6,
-  },
-  contentDuration: {
+  tabDuration: {
     fontSize: 12,
     color: '#6B7280',
   },
-  expandIcon: {
-    marginLeft: 8,
-  },
-  expandIconRotated: {
-    transform: [{ rotate: '180deg' }],
-  },
-  contentDetails: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-  },
-  contentDescription: {
-    fontSize: 14,
-    color: '#4B5563',
-    lineHeight: 20,
-    marginTop: 12,
-    marginBottom: 12,
-  },
-  detailsContainer: {
-    backgroundColor: '#F9FAFB',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 12,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 6,
-  },
-  detailText: {
-    fontSize: 12,
-    color: '#6B7280',
-    flex: 1,
-  },
-  quizInfo: {
-    backgroundColor: '#ECFDF5',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 12,
-  },
-  quizHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 8,
-  },
-  quizTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#065F46',
-  },
-  quizDetail: {
-    fontSize: 12,
-    color: '#047857',
-    marginBottom: 4,
-  },
-  startButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  tabNumber: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#E5E7EB',
     justifyContent: 'center',
-    gap: 8,
-    backgroundColor: theme.colors.primary,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  startButtonText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  actionCard: {
-    backgroundColor: '#F0F9FF',
-    borderWidth: 1,
-    borderColor: '#BFDBFE',
-    marginTop: 8,
-  },
-  actionContent: {
-    flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
   },
-  actionText: {
-    flex: 1,
-    marginLeft: 16,
-  },
-  actionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1E40AF',
-    marginBottom: 4,
-  },
-  actionDescription: {
+  tabNumberText: {
     fontSize: 13,
-    color: '#3B82F6',
-    lineHeight: 18,
+    fontWeight: '600',
+    color: '#6B7280',
+  },
+  tabNumberTextActive: {
+    color: theme.colors.primary,
+  },
+  activeContentContainer: {
+    marginTop: 12,
+    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+
+  bottomPadding: {
+    height: 32,
   },
 });

@@ -7,52 +7,45 @@ import * as Icons from 'lucide-react-native';
 import { theme } from '~/theme/theme';
 import { useQuery } from '@apollo/client';
 import { GET_ALL_TRAINING_MODULES } from '../../graphql/queries';
-import { TenantData, TrainingModule } from '../../interfaces';
+import { TrainingModule } from '../../interfaces';
 import { ModuleKeys } from '~/store/interface';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { Header } from '~/codidge_components/UI/header';
+import Constants from 'expo-constants';
+
+const tenantId = Constants.expoConfig?.extra?.TENANTID;
+const trainingId = 'e8901fca-1b45-417b-8272-3a8efd5a8291';
 
 export const TrainingModulesScreen: React.FC = () => {
   const navigation = useNavigation();
-  const route = useRoute();
-  const { program, tenant } = route.params as { program: any; tenant: TenantData };
 
   const { data, loading, error } = useQuery(GET_ALL_TRAINING_MODULES, {
-    variables: { tenant, trainingProgramId: program.trainingId },
+    variables: {
+      tenant: {
+        tenantId: `TENANT#${tenantId}`,
+      },
+      trainingProgramId: trainingId,
+    },
   });
 
   const modules: TrainingModule[] = data?.getAllTrainingModules || [];
   const sortedModules = [...modules].sort((a, b) => a.order - b.order);
 
-  const totalDuration = sortedModules.reduce((sum, mod) => sum + mod.estimatedDuration, 0);
-
   const handleModulePress = (module: TrainingModule) => {
     navigation.navigate(ModuleKeys.trainingCourses, {
       module,
-      program,
-      tenant,
+      program: {
+        trainingId,
+      },
+      tenant: {
+        tenantId: `TENANT#${tenantId}`,
+      },
     });
-  };
-
-  const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    if (hours > 0) {
-      return `${hours}h ${mins}m`;
-    }
-    return `${mins}m`;
   };
 
   if (loading) {
     return (
       <PageSafeContainer style={styles.container}>
-        <Header
-          title={program.title}
-          onBack={() => {
-            navigation.goBack();
-          }}
-          showBack={true}
-        />
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
           <Text style={styles.loadingText}>Loading modules...</Text>
@@ -65,7 +58,7 @@ export const TrainingModulesScreen: React.FC = () => {
     return (
       <PageSafeContainer style={styles.container}>
         <Header
-          title={program.title}
+          title={'Training'}
           onBack={() => {
             navigation.goBack();
           }}
@@ -82,13 +75,6 @@ export const TrainingModulesScreen: React.FC = () => {
   if (sortedModules.length === 0) {
     return (
       <PageSafeContainer style={styles.container}>
-        <Header
-          title={program.title}
-          onBack={() => {
-            navigation.goBack();
-          }}
-          showBack={true}
-        />
         <View style={styles.centerContainer}>
           <Icons.BookOpen size={48} color="#9CA3AF" />
           <Text style={styles.emptyText}>No modules available</Text>
@@ -98,39 +84,13 @@ export const TrainingModulesScreen: React.FC = () => {
   }
 
   return (
-    <PageSafeContainer style={styles.container}>
-      <Header
-        title={program.title}
-        onBack={() => {
-          navigation.goBack();
-        }}
-        showBack={true}
-      />
+    <View style={styles.container}>
       <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}>
-        {/* Program Info Header */}
-        <Card style={styles.headerCard}>
-          <View style={styles.headerContent}>
-            <Text style={styles.programTitle}>{program.title}</Text>
-            <Text style={styles.programDescription}>{program.description}</Text>
-
-            <View style={styles.statsRow}>
-              <View style={styles.statItem}>
-                <Icons.Layers size={16} color={theme.colors.primary} />
-                <Text style={styles.statText}>{sortedModules.length} Modules</Text>
-              </View>
-              {/*  <View style={styles.statItem}>
-                <Icons.Clock size={16} color={theme.colors.primary} />
-                <Text style={styles.statText}>{formatDuration(totalDuration)}</Text>
-              </View> */}
-            </View>
-          </View>
-        </Card>
-
         {/* Modules List */}
-        <Text style={styles.sectionTitle}>Course Modules</Text>
+        <Text style={styles.sectionTitle}>Modules</Text>
 
         {sortedModules.map((module, index) => (
           <Card key={module.moduleId} style={styles.moduleCard}>
@@ -186,7 +146,7 @@ export const TrainingModulesScreen: React.FC = () => {
           </View>
         </Card> */}
       </ScrollView>
-    </PageSafeContainer>
+    </View>
   );
 };
 

@@ -59,8 +59,8 @@ export const TrainingProgramsScreen: React.FC = () => {
     });
   };
 
-  if(!hasActiveSubscription){
-    return <SubscriptionCardButton/>
+  if (!hasActiveSubscription) {
+    return <SubscriptionCardButton />;
   }
 
   if (loading) {

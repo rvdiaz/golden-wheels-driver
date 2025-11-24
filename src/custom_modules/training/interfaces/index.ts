@@ -62,6 +62,7 @@ export interface ContentItem {
   order: number;
   type: ContentType;
   title: string;
+  thumbnailUrl?: string;
   description: string;
   url?: string;
   fileSize?: number;

@@ -60,15 +60,6 @@ export const TrainingCoursesScreen: React.FC = () => {
     });
   };
 
-  const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    if (hours > 0) {
-      return `${hours}h ${mins}m`;
-    }
-    return `${mins}m`;
-  };
-
   if (loading) {
     return (
       <PageSafeContainer style={styles.container}>
@@ -137,26 +128,19 @@ export const TrainingCoursesScreen: React.FC = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}>
         {/* Module Info Header */}
-        <Card style={styles.headerCard}>
-          <View style={styles.headerContent}>
-            <Text style={styles.moduleTitle}>{module.title}</Text>
-            <Text style={styles.moduleDescription}>{module.description}</Text>
-
-            <View style={styles.statsRow}>
-              <View style={styles.statItem}>
-                <Icons.BookOpen size={16} color={theme.colors.primary} />
-                <Text style={styles.statText}>{sortedCourses.length} Courses</Text>
-              </View>
-              {/*  <View style={styles.statItem}>
-                <Icons.Clock size={16} color={theme.colors.primary} />
-                <Text style={styles.statText}>{formatDuration(module.estimatedDuration)}</Text>
-              </View> */}
+        {(module.title || module.title) && (
+          <Card style={styles.headerCard}>
+            <View style={styles.headerContent}>
+              {module.title && <Text style={styles.moduleTitle}>{module.title}</Text>}
+              {module.description && (
+                <Text style={styles.moduleDescription}>{module.description}</Text>
+              )}
             </View>
-          </View>
-        </Card>
+          </Card>
+        )}
 
         {/* Courses List */}
-        <Text style={styles.sectionTitle}>Course Content</Text>
+        <Text style={styles.sectionTitle}>Content</Text>
 
         {sortedCourses.map((course, index) => (
           <Card key={course.courseId} style={styles.courseCard}>
@@ -174,22 +158,6 @@ export const TrainingCoursesScreen: React.FC = () => {
                   <Text style={styles.courseDescription} numberOfLines={2}>
                     {course.description}
                   </Text>
-
-                  <View style={styles.courseMetaRow}>
-                    {/* <View style={styles.durationContainer}>
-                      <Icons.Clock size={14} color="#6B7280" />
-                      <Text style={styles.durationText}>
-                        {formatDuration(course.estimatedDuration)}
-                      </Text>
-                    </View> */}
-
-                    <View style={styles.contentCountContainer}>
-                      <Icons.Layers size={14} color="#6B7280" />
-                      <Text style={styles.contentCountText}>
-                        {course.contentItems.length} items
-                      </Text>
-                    </View>
-                  </View>
 
                   {/* Content Type Icons */}
                   <View style={styles.contentTypesContainer}>
@@ -285,20 +253,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     marginBottom: 16,
   },
-  statsRow: {
-    flexDirection: 'row',
-    gap: 24,
-  },
-  statItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  statText: {
-    fontSize: 13,
-    color: '#4B5563',
-    fontWeight: '500',
-  },
+
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
@@ -344,32 +299,6 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     lineHeight: 18,
     marginBottom: 8,
-  },
-  courseMetaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-    marginBottom: 8,
-  },
-  durationContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  durationText: {
-    fontSize: 12,
-    color: '#6B7280',
-    fontWeight: '500',
-  },
-  contentCountContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  contentCountText: {
-    fontSize: 12,
-    color: '#6B7280',
-    fontWeight: '500',
   },
   contentTypesContainer: {
     flexDirection: 'row',

@@ -28,12 +28,12 @@ import { TrainingProgramsScreen } from '~/custom_modules/training/sections/progr
 import { TrainingCategoriesScreen } from '~/custom_modules/training/sections/categories/categoriesList';
 import { TrainingModulesScreen } from '~/custom_modules/training/sections/modules/modulesList';
 import { TrainingCoursesScreen } from '~/custom_modules/training/sections/courses/coursesList';
-import { TrainingCourseDetailScreen } from '~/custom_modules/training/sections/courses/courseDetailScreen';
 import EstimatedClosingCostCalculator from '~/custom_modules/tools/sections/estimatedClosingCost';
 import { IncomeCalculatorPage } from '~/custom_modules/tools/sections/income_calculator';
 import { PrivacyPolicyScreen } from '~/core_modules/profile/privacyPolicy';
 import { FeedbacksScreen } from '~/core_modules/profile/feedbacks';
 import { UserDeletionScreen } from '~/core_modules/profile/userDeletion';
+import { TrainingCourseDetailScreen } from '~/custom_modules/training/sections/courses/courseDetailScreen';
 
 export const moduleScreens: Record<
   ModuleKeys,
@@ -57,7 +57,7 @@ export const moduleScreens: Record<
   },
   //Training
   Training: {
-    body: TrainingProgramsScreen,
+    body: TrainingModulesScreen,
   },
   TrainingDetailPage: {
     body: CourseDetailsScreen,

@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql } from '@apollo/client';
 
 export const GET_TRAINING_CATEGORY = gql`
   query GetTrainingCategory($categoryId: String!) {
@@ -78,14 +78,8 @@ export const GET_TRAINING_MODULE = gql`
 `;
 
 export const GET_ALL_TRAINING_MODULES = gql`
-  query GetAllTrainingModules(
-    $tenant: TenantData!
-    $trainingProgramId: String!
-  ) {
-    getAllTrainingModules(
-      tenant: $tenant
-      trainingProgramId: $trainingProgramId
-    ) {
+  query GetAllTrainingModules($tenant: TenantData!, $trainingProgramId: String!) {
+    getAllTrainingModules(tenant: $tenant, trainingProgramId: $trainingProgramId) {
       tenantId
       trainingProgramId
       moduleId
@@ -123,6 +117,7 @@ export const GET_TRAINING_COURSE = gql`
         mimeType
         estimatedDuration
         quizData
+        thumbnailUrl
       }
       createdAt
       updatedAt
@@ -161,6 +156,7 @@ export const GET_ALL_TRAINING_COURSES = gql`
         mimeType
         estimatedDuration
         quizData
+        thumbnailUrl
       }
       createdAt
       updatedAt

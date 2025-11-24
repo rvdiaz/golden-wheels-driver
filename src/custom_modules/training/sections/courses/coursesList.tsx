@@ -51,6 +51,38 @@ export const TrainingCoursesScreen: React.FC = () => {
     }
   };
 
+  const getPrimaryCourseType = (course: TrainingCourse) => {
+    // Check if course has video content
+    const hasVideo = course.contentItems.some((item) => item.type === 'VIDEO');
+    if (hasVideo) {
+      return { icon: Icons.Video, color: theme.colors.success, label: 'Video' };
+    }
+
+    // Check for other content types in priority order
+    const hasQuiz = course.contentItems.some((item) => item.type === 'QUIZ');
+    if (hasQuiz) {
+      return { icon: Icons.CheckCircle, color: '#10B981', label: 'Quiz' };
+    }
+
+    const hasDocument = course.contentItems.some((item) => item.type === 'DOCUMENT');
+    if (hasDocument) {
+      return { icon: Icons.FileText, color: '#3B82F6', label: 'Document' };
+    }
+
+    const hasAudio = course.contentItems.some((item) => item.type === 'AUDIO');
+    if (hasAudio) {
+      return { icon: Icons.Music, color: '#8B5CF6', label: 'Audio' };
+    }
+
+    const hasInteractive = course.contentItems.some((item) => item.type === 'INTERACTIVE');
+    if (hasInteractive) {
+      return { icon: Icons.Gamepad2, color: '#F59E0B', label: 'Interactive' };
+    }
+
+    // Default to info icon for text or other content
+    return { icon: Icons.FileText, color: theme.colors.info, label: 'Info' };
+  };
+
   const handleCoursePress = (course: TrainingCourse) => {
     navigation.navigate(ModuleKeys.trainingDetailCourses, {
       course,
@@ -142,59 +174,52 @@ export const TrainingCoursesScreen: React.FC = () => {
         {/* Courses List */}
         <Text style={styles.sectionTitle}>Content</Text>
 
-        {sortedCourses.map((course, index) => (
-          <Card key={course.courseId} style={styles.courseCard}>
-            <TouchableOpacity
-              onPress={() => handleCoursePress(course)}
-              style={styles.courseContent}
-              activeOpacity={0.7}>
-              <View style={styles.courseHeader}>
-                <View style={styles.courseOrderBadge}>
-                  <Text style={styles.courseOrderText}>{index + 1}</Text>
-                </View>
+        {sortedCourses.map((course, index) => {
+          const primaryType = getPrimaryCourseType(course);
+          const IconComponent = primaryType.icon;
 
-                <View style={styles.courseInfo}>
-                  <Text style={styles.courseTitle}>{course.title}</Text>
-                  <Text style={styles.courseDescription} numberOfLines={2}>
-                    {course.description}
-                  </Text>
-
-                  {/* Content Type Icons */}
-                  <View style={styles.contentTypesContainer}>
-                    {Array.from(new Set(course.contentItems.map((item) => item.type)))
-                      .slice(0, 4)
-                      .map((type, idx) => {
-                        const { icon: IconComponent, color } = getContentTypeIcon(type);
-                        return (
-                          <View
-                            key={idx}
-                            style={[styles.contentTypeIcon, { backgroundColor: color + '20' }]}>
-                            <IconComponent size={14} color={color} />
-                          </View>
-                        );
-                      })}
+          return (
+            <Card key={course.courseId} style={styles.courseCard}>
+              <TouchableOpacity
+                onPress={() => handleCoursePress(course)}
+                style={styles.courseContent}
+                activeOpacity={0.7}>
+                <View style={styles.courseHeader}>
+                  <View
+                    style={[
+                      styles.courseOrderBadge,
+                      { backgroundColor: primaryType.color + '20' },
+                    ]}>
+                    <IconComponent size={20} color={primaryType.color} />
                   </View>
 
-                  {/* Tags */}
-                  {course.tags && course.tags.length > 0 && (
-                    <View style={styles.tagsContainer}>
-                      {course.tags.slice(0, 3).map((tag, idx) => (
-                        <View key={idx} style={styles.tag}>
-                          <Text style={styles.tagText}>{tag}</Text>
-                        </View>
-                      ))}
-                      {course.tags.length > 3 && (
-                        <Text style={styles.moreTagsText}>+{course.tags.length - 3}</Text>
-                      )}
-                    </View>
-                  )}
-                </View>
+                  <View style={styles.courseInfo}>
+                    <Text style={styles.courseTitle}>{course.title}</Text>
+                    <Text style={styles.courseDescription} numberOfLines={2}>
+                      {course.description}
+                    </Text>
 
-                <Icons.ChevronRight size={20} color="#9CA3AF" />
-              </View>
-            </TouchableOpacity>
-          </Card>
-        ))}
+                    {/* Tags */}
+                    {course.tags && course.tags.length > 0 && (
+                      <View style={styles.tagsContainer}>
+                        {course.tags.slice(0, 3).map((tag, idx) => (
+                          <View key={idx} style={styles.tag}>
+                            <Text style={styles.tagText}>{tag}</Text>
+                          </View>
+                        ))}
+                        {course.tags.length > 3 && (
+                          <Text style={styles.moreTagsText}>+{course.tags.length - 3}</Text>
+                        )}
+                      </View>
+                    )}
+                  </View>
+
+                  <Icons.ChevronRight size={20} color="#9CA3AF" />
+                </View>
+              </TouchableOpacity>
+            </Card>
+          );
+        })}
       </ScrollView>
     </PageSafeContainer>
   );
@@ -268,13 +293,12 @@ const styles = StyleSheet.create({
   },
   courseHeader: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
   },
   courseOrderBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: theme.colors.primary + '20',
+    width: 48,
+    height: 48,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -283,6 +307,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     color: theme.colors.primary,
+  },
+  courseOrderTextSmall: {
+    fontSize: 10,
+    fontWeight: '600',
+    marginTop: 2,
   },
   courseInfo: {
     flex: 1,

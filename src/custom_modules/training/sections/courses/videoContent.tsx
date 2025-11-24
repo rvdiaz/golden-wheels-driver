@@ -102,20 +102,11 @@ export const VideoContentItem: React.FC<VideoContentItemProps> = ({ item }) => {
               style={styles.inlineVideo}
               player={player}
               contentFit="contain"
-              nativeControls={false}
+              nativeControls={true}
             />
 
             {/* Inline Video Controls Overlay */}
             <View style={styles.inlineControlsOverlay}>
-              {/* Play/Pause Button */}
-              <TouchableOpacity style={styles.inlinePlayPauseButton} onPress={togglePlayPause}>
-                {isPlaying ? (
-                  <Icons.Pause size={24} color="#FFFFFF" fill="#FFFFFF" />
-                ) : (
-                  <Icons.Play size={24} color="#FFFFFF" fill="#FFFFFF" />
-                )}
-              </TouchableOpacity>
-
               {/* Fullscreen Button */}
               <TouchableOpacity style={styles.fullscreenButton} onPress={handleOpenFullscreen}>
                 <Icons.Maximize size={20} color="#FFFFFF" />
@@ -133,24 +124,6 @@ export const VideoContentItem: React.FC<VideoContentItemProps> = ({ item }) => {
         )}
       </View>
 
-      {/* Video Metadata */}
-      {/* {(item.fileSize || item.mimeType) && (
-        <View style={styles.metadataContainer}>
-          {item.fileSize && (
-            <View style={styles.metadataRow}>
-              <Icons.HardDrive size={14} color="#6B7280" />
-              <Text style={styles.metadataText}>{formatFileSize(item.fileSize)}</Text>
-            </View>
-          )}
-          {item.mimeType && (
-            <View style={styles.metadataRow}>
-              <Icons.FileType size={14} color="#6B7280" />
-              <Text style={styles.metadataText}>{item.mimeType}</Text>
-            </View>
-          )}
-        </View>
-      )} */}
-
       {/* Fullscreen Video Modal */}
       <Modal
         visible={showFullscreen}
@@ -161,7 +134,10 @@ export const VideoContentItem: React.FC<VideoContentItemProps> = ({ item }) => {
           <VideoView
             style={styles.fullscreenVideo}
             player={player}
-            allowsFullscreen
+            fullscreenOptions={{
+              enable: true,
+              orientation: 'landscape',
+            }}
             allowsPictureInPicture
             contentFit="contain"
           />
@@ -172,17 +148,6 @@ export const VideoContentItem: React.FC<VideoContentItemProps> = ({ item }) => {
             <TouchableOpacity style={styles.closeButton} onPress={handleCloseFullscreen}>
               <Icons.X size={24} color="#FFFFFF" />
             </TouchableOpacity>
-
-            {/* Center Play/Pause for Fullscreen */}
-            {!showFullscreen && (
-              <TouchableOpacity style={styles.centerPlayPauseButton} onPress={togglePlayPause}>
-                {isPlaying ? (
-                  <Icons.Pause size={40} color="#FFFFFF" fill="#FFFFFF" />
-                ) : (
-                  <Icons.Play size={40} color="#FFFFFF" fill="#FFFFFF" />
-                )}
-              </TouchableOpacity>
-            )}
           </View>
         </View>
       </Modal>

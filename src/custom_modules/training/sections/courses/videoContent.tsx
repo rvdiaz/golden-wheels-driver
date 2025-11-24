@@ -134,7 +134,7 @@ export const VideoContentItem: React.FC<VideoContentItemProps> = ({ item }) => {
       </View>
 
       {/* Video Metadata */}
-      {(item.fileSize || item.mimeType) && (
+      {/* {(item.fileSize || item.mimeType) && (
         <View style={styles.metadataContainer}>
           {item.fileSize && (
             <View style={styles.metadataRow}>
@@ -149,7 +149,7 @@ export const VideoContentItem: React.FC<VideoContentItemProps> = ({ item }) => {
             </View>
           )}
         </View>
-      )}
+      )} */}
 
       {/* Fullscreen Video Modal */}
       <Modal

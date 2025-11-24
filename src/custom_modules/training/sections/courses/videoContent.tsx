@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -20,6 +20,7 @@ interface VideoContentItemProps {
 export const VideoContentItem: React.FC<VideoContentItemProps> = ({ item }) => {
   const [showFullscreen, setShowFullscreen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showThumbnail, setShowThumbnail] = useState(true);
 
   // Create video player
   const player = useVideoPlayer(item.url ?? '', (player) => {
@@ -27,17 +28,22 @@ export const VideoContentItem: React.FC<VideoContentItemProps> = ({ item }) => {
     player.muted = false;
   });
 
-  const handlePlayVideo = () => {
-    setShowFullscreen(true);
+  const handlePlayInline = () => {
+    setShowThumbnail(false);
     setIsPlaying(true);
     player.play();
   };
 
-  const handleCloseVideo = () => {
-    player.pause();
-    player.currentTime = 0;
+  const handleOpenFullscreen = () => {
+    setShowFullscreen(true);
+    if (!isPlaying) {
+      player.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const handleCloseFullscreen = () => {
     setShowFullscreen(false);
-    setIsPlaying(false);
   };
 
   const togglePlayPause = () => {
@@ -62,27 +68,70 @@ export const VideoContentItem: React.FC<VideoContentItemProps> = ({ item }) => {
 
   return (
     <View style={styles.container}>
-      {item.description && <Text style={styles.description}>{item.description}</Text>}
-
-      {/* Video Preview */}
-      <TouchableOpacity style={styles.videoPreview} onPress={handlePlayVideo} activeOpacity={0.9}>
-        <ImageBackground
-          source={{ uri: item.thumbnailUrl || item.url }}
-          style={styles.videoBackground}
-          imageStyle={styles.videoImage}>
-          <View style={styles.overlay}>
-            <View style={styles.playButton}>
-              <Icons.Play size={32} color="#FFFFFF" fill="#FFFFFF" />
-            </View>
-            {item.estimatedDuration && (
-              <View style={styles.durationBadge}>
-                <Icons.Clock size={12} color="#FFFFFF" />
-                <Text style={styles.durationText}>{item.estimatedDuration}</Text>
+      {/* Video Preview/Player */}
+      <View style={styles.videoPreview}>
+        {showThumbnail ? (
+          // Show thumbnail with play button
+          <TouchableOpacity
+            style={styles.thumbnailContainer}
+            onPress={handlePlayInline}
+            activeOpacity={0.9}>
+            <ImageBackground
+              source={{
+                uri: item.thumbnailUrl || item.url,
+              }}
+              style={styles.videoBackground}
+              imageStyle={styles.videoImage}>
+              <View style={styles.overlay}>
+                <View style={styles.playButton}>
+                  <Icons.Play size={32} color="#FFFFFF" fill="#FFFFFF" />
+                </View>
+                {item.estimatedDuration && (
+                  <View style={styles.durationBadge}>
+                    <Icons.Clock size={12} color="#FFFFFF" />
+                    <Text style={styles.durationText}>{item.estimatedDuration}</Text>
+                  </View>
+                )}
               </View>
-            )}
+            </ImageBackground>
+          </TouchableOpacity>
+        ) : (
+          // Show inline video player
+          <View style={styles.inlineVideoContainer}>
+            <VideoView
+              style={styles.inlineVideo}
+              player={player}
+              contentFit="contain"
+              nativeControls={false}
+            />
+
+            {/* Inline Video Controls Overlay */}
+            <View style={styles.inlineControlsOverlay}>
+              {/* Play/Pause Button */}
+              <TouchableOpacity style={styles.inlinePlayPauseButton} onPress={togglePlayPause}>
+                {isPlaying ? (
+                  <Icons.Pause size={24} color="#FFFFFF" fill="#FFFFFF" />
+                ) : (
+                  <Icons.Play size={24} color="#FFFFFF" fill="#FFFFFF" />
+                )}
+              </TouchableOpacity>
+
+              {/* Fullscreen Button */}
+              <TouchableOpacity style={styles.fullscreenButton} onPress={handleOpenFullscreen}>
+                <Icons.Maximize size={20} color="#FFFFFF" />
+              </TouchableOpacity>
+
+              {/* Duration Badge */}
+              {item.estimatedDuration && (
+                <View style={styles.durationBadge}>
+                  <Icons.Clock size={12} color="#FFFFFF" />
+                  <Text style={styles.durationText}>{item.estimatedDuration}</Text>
+                </View>
+              )}
+            </View>
           </View>
-        </ImageBackground>
-      </TouchableOpacity>
+        )}
+      </View>
 
       {/* Video Metadata */}
       {(item.fileSize || item.mimeType) && (
@@ -106,34 +155,34 @@ export const VideoContentItem: React.FC<VideoContentItemProps> = ({ item }) => {
       <Modal
         visible={showFullscreen}
         animationType="fade"
-        onRequestClose={handleCloseVideo}
+        onRequestClose={handleCloseFullscreen}
         supportedOrientations={['portrait', 'landscape']}>
         <View style={styles.fullscreenContainer}>
           <VideoView
             style={styles.fullscreenVideo}
             player={player}
-            fullscreenOptions={{
-              enable: true,
-            }}
+            allowsFullscreen
             allowsPictureInPicture
             contentFit="contain"
           />
 
-          {/* Custom Controls Overlay */}
+          {/* Fullscreen Controls Overlay */}
           <View style={styles.controlsOverlay}>
             {/* Close Button */}
-            <TouchableOpacity style={styles.closeButton} onPress={handleCloseVideo}>
+            <TouchableOpacity style={styles.closeButton} onPress={handleCloseFullscreen}>
               <Icons.X size={24} color="#FFFFFF" />
             </TouchableOpacity>
 
-            {/* Play/Pause Button */}
-            <TouchableOpacity style={styles.playPauseButton} onPress={togglePlayPause}>
-              {isPlaying ? (
-                <Icons.Pause size={40} color="#FFFFFF" fill="#FFFFFF" />
-              ) : (
-                <Icons.Play size={40} color="#FFFFFF" fill="#FFFFFF" />
-              )}
-            </TouchableOpacity>
+            {/* Center Play/Pause for Fullscreen */}
+            {!showFullscreen && (
+              <TouchableOpacity style={styles.centerPlayPauseButton} onPress={togglePlayPause}>
+                {isPlaying ? (
+                  <Icons.Pause size={40} color="#FFFFFF" fill="#FFFFFF" />
+                ) : (
+                  <Icons.Play size={40} color="#FFFFFF" fill="#FFFFFF" />
+                )}
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </Modal>
@@ -145,18 +194,17 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 12,
   },
-  description: {
-    fontSize: 14,
-    color: '#4B5563',
-    lineHeight: 20,
-    marginBottom: 12,
-  },
   videoPreview: {
     width: '100%',
     height: 200,
     borderRadius: 12,
     overflow: 'hidden',
     marginBottom: 12,
+    backgroundColor: '#000',
+  },
+  thumbnailContainer: {
+    width: '100%',
+    height: '100%',
   },
   videoBackground: {
     width: '100%',
@@ -186,6 +234,39 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
+  },
+  inlineVideoContainer: {
+    width: '100%',
+    height: '100%',
+    position: 'relative',
+  },
+  inlineVideo: {
+    width: '100%',
+    height: '100%',
+  },
+  inlineControlsOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  inlinePlayPauseButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fullscreenButton: {
+    position: 'absolute',
+    bottom: 12,
+    left: 12,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   durationBadge: {
     position: 'absolute',
@@ -247,7 +328,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 10,
   },
-  playPauseButton: {
+  centerPlayPauseButton: {
     width: 80,
     height: 80,
     borderRadius: 40,

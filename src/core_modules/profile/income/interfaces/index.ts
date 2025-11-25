@@ -4,15 +4,8 @@ export enum IncomeStatus {
 }
 
 export enum IncomeSource {
-  Salary = 'salary',
+  Sale = 'sale',
   Rental = 'rental',
-  Freelance = 'freelance',
-  Business = 'business',
-  Investment = 'investment',
-  Commission = 'commission',
-  Bonus = 'bonus',
-  Pension = 'pension',
-  Other = 'other',
 }
 
 export interface IIncome {
@@ -21,6 +14,7 @@ export interface IIncome {
   source: IncomeSource;
   amount: number;
   description?: string;
+  customerName: string;
   propertyAddress?: string;
   status: IncomeStatus;
   createdAt: string;
@@ -30,8 +24,8 @@ export interface IIncome {
 
 export interface IFormData {
   sourceDropDown: string;
-  source: IncomeSource | string;
   amount: number;
+  customerName: string;
   description?: string;
   propertyAddress?: string;
   status: IncomeStatus;

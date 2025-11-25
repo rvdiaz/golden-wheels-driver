@@ -7,6 +7,7 @@ export const getUserIncomes = gql`
       amount
       createdAt
       description
+      customerName
       expectedDate
       propertyAddress
       source

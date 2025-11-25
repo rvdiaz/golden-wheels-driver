@@ -6,6 +6,7 @@ export const addUserIncome = gql`
       amount
       createdAt
       description
+      customerName
       expectedDate
       id
       propertyAddress
@@ -31,6 +32,7 @@ export const updateUserIncome = gql`
       amount
       createdAt
       description
+      customerName
       expectedDate
       id
       propertyAddress

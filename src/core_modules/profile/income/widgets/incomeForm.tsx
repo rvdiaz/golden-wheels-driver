@@ -11,13 +11,28 @@ import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/Primar
 import { Header } from '~/codidge_components/UI/header';
 import Constants from 'expo-constants';
 import { userData } from '~/store/user';
-import DropdownComponent from '~/codidge_components/UI/dropdown';
 import { DateInputField } from '~/codidge_components/UI/form/inputs/datePicker';
-import { INCOME_SOURCE } from '../helpers';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
+import { GridTabs } from '~/codidge_components/UI/tabs';
+import { theme } from '~/theme/theme';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
+
+const tabs = [
+  {
+    key: 'rental',
+    label: 'Rental',
+    Icon: Icons.Wallet,
+    indexNumber: 0,
+  },
+  {
+    key: 'home',
+    label: 'Home',
+    Icon: Icons.Home,
+    indexNumber: 0,
+  },
+];
 
 export default function IncomeForm({ dispose, income }: { dispose: () => void; income?: IIncome }) {
   const customer = useReactiveVar(userData);
@@ -30,12 +45,12 @@ export default function IncomeForm({ dispose, income }: { dispose: () => void; i
     reset,
   } = useForm<IFormData>({
     defaultValues: {
-      source: income?.source ?? undefined,
       amount: income?.amount ?? 0,
+      customerName: income?.customerName ?? '',
       description: income?.description ?? '',
       propertyAddress: income?.propertyAddress ?? '',
       expectedDate: income?.expectedDate ?? '',
-      sourceDropDown: income?.source ?? '',
+      sourceDropDown: income?.source ?? tabs[0].key,
       status: income?.status ?? IncomeStatus.completed,
     },
   });
@@ -97,20 +112,17 @@ export default function IncomeForm({ dispose, income }: { dispose: () => void; i
   });
 
   const isCompleted = watch('status') === IncomeStatus.completed;
-  const watchSource = watch('sourceDropDown');
+  //const watchSource = watch('sourceDropDown');
 
   const onSubmit = async (data: IFormData) => {
     try {
       let source = data.sourceDropDown;
 
-      if (data.sourceDropDown === IncomeSource.Other) {
-        source = data.source;
-      }
-
       const incomeData: Record<string, any> = {
         source,
         amount: data.amount,
         description: data.description || null,
+        customerName: data.customerName || null,
         propertyAddress: data.propertyAddress || null,
         status: data.status ?? IncomeStatus.pending,
         ...(data.status && { expectedDate: data.expectedDate }),
@@ -130,7 +142,6 @@ export default function IncomeForm({ dispose, income }: { dispose: () => void; i
         const updatedIncome = res.data?.updateUserIncome;
         if (updatedIncome) {
           reset({
-            source: updatedIncome.source,
             amount: updatedIncome.amount,
             description: updatedIncome.description,
             propertyAddress: updatedIncome.propertyAddress,
@@ -150,7 +161,6 @@ export default function IncomeForm({ dispose, income }: { dispose: () => void; i
           },
         });
         reset({
-          source: undefined,
           amount: 0,
           description: '',
           propertyAddress: '',
@@ -182,26 +192,29 @@ export default function IncomeForm({ dispose, income }: { dispose: () => void; i
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.formContent}>
         <View style={styles.fieldContainer}>
+          <Text style={styles.label}>Income Type</Text>
           <Controller
             control={control}
             name="sourceDropDown"
             rules={{
               required: 'Income type is required',
             }}
-            render={({ field: { onChange, value }, fieldState: { error } }) => (
-              <DropdownComponent
-                label="Income Type"
-                data={INCOME_SOURCE}
-                placeholder="Select income source"
-                value={value}
-                onChange={onChange}
-                error={!!error}
-                errorMessage={error?.message}
+            render={({ field: { onChange, value } }) => (
+              <GridTabs
+                activeTabBackground={theme.colors.primary}
+                activeTabColor="#FFF"
+                tabs={tabs}
+                initialTabKey={value || IncomeSource.Rental}
+                onTabChange={(tab) => {
+                  onChange(tab);
+                }}
+                containerStyle={{
+                  paddingHorizontal: 0,
+                }}
               />
             )}
           />
-
-          {watchSource === 'other' && (
+          {/*  {watchSource === 'other' && (
             <Controller
               control={control}
               name="source"
@@ -221,7 +234,7 @@ export default function IncomeForm({ dispose, income }: { dispose: () => void; i
                 />
               )}
             />
-          )}
+          )} */}
 
           <Controller
             control={control}
@@ -247,15 +260,29 @@ export default function IncomeForm({ dispose, income }: { dispose: () => void; i
               />
             )}
           />
+          <Controller
+            control={control}
+            name="customerName"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <InputField
+                leftIcon={<Icons.User size={16} color="#6B7280" />}
+                label="Customer Name"
+                placeholder="Jhon Doe"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+              />
+            )}
+          />
 
           <Controller
             control={control}
             name="propertyAddress"
             render={({ field: { onChange, onBlur, value } }) => (
               <InputField
-                leftIcon={<Icons.Home size={16} color="#6B7280" />}
+                leftIcon={<Icons.HousePlus size={16} color="#6B7280" />}
                 label="Property Address (Optional)"
-                placeholder="For rental income"
+                placeholder="123 Main Street"
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -351,7 +378,7 @@ const styles = StyleSheet.create({
   fieldContainer: {
     marginBottom: 10,
     flexDirection: 'column',
-    gap: 15,
+    gap: 8,
   },
   textArea: {
     minHeight: 80,
@@ -391,5 +418,11 @@ const styles = StyleSheet.create({
   },
   footerButton: {
     flex: 1,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#374151',
+    marginBottom: 5,
   },
 });

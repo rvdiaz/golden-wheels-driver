@@ -160,6 +160,13 @@ export const IncomeCard = ({ income }: { income: IIncome }) => {
         </View>
       )}
 
+      {income.customerName && (
+        <View style={styles.propertyRow}>
+          <Icons.User size={14} color="#6B7280" />
+          <Text style={styles.propertyAddress}>{income.customerName}</Text>
+        </View>
+      )}
+
       <View style={styles.incomeFooter}>
         <View style={styles.statusContainer}>
           <View style={[styles.statusBadge, { backgroundColor: getStatusColor(income.status) }]}>

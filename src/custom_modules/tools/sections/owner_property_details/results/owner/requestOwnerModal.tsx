@@ -81,12 +81,7 @@ export const RequestOwnerModal = ({
 
     try {
       if (currentBalance - propertyOwnerPricing > 0) {
-        await takeBalance({
-          amount: propertyOwnerPricing,
-          userId: userInfo?.id ?? '',
-        });
-
-        await getOwnerInfo({
+        const ownerInfo = await getOwnerInfo({
           variables: {
             first_name,
             last_name,
@@ -96,7 +91,19 @@ export const RequestOwnerModal = ({
             city,
           },
         });
-        setOwnerModal(true);
+
+        if (ownerInfo?.data?.fetchOwnerContact && ownerInfo?.data?.fetchOwnerContact.length > 0) {
+          await takeBalance({
+            amount: propertyOwnerPricing,
+            userId: userInfo?.id ?? '',
+          });
+          setOwnerModal(true);
+        } else {
+          Alert.alert(
+            'No Owner Info Found',
+            'We could not find any owner information. You have not been charged.'
+          );
+        }
       } else {
         setInsuficientFunds(true);
       }
@@ -117,6 +124,18 @@ export const RequestOwnerModal = ({
 
   const ownerInfo = data?.fetchOwnerContact ?? inCache;
 
+  let buttonTitle = `Purchase Owner Info • ${formattedPrice}`;
+  let buttonDisabled = false;
+
+  if (inCache) {
+    buttonTitle = 'Show Owner info';
+  }
+
+  if (inCache && inCache.length === 0) {
+    buttonDisabled = true;
+    buttonTitle = 'No Owner Info Available';
+  }
+
   return (
     <View style={styles.container}>
       {/* Subtle disclaimer text above button */}
@@ -130,7 +149,8 @@ export const RequestOwnerModal = ({
           loading={loading || loadingTakingBalance}
           size={ButtonSize.LARGE}
           onPress={handleButtonPress}
-          title={inCache ? 'Show Owner info' : `Purchase Owner Info • ${formattedPrice}`}
+          title={buttonTitle}
+          disabled={buttonDisabled}
           rightWidget={<SquareUser size={18} color="#fff" />}
         />
         {inSuficientFunds && !loadingTakingBalance && (
@@ -194,7 +214,7 @@ export const RequestOwnerModal = ({
       </Modal>
 
       {/* Owner Details Modal */}
-      {ownerInfo && !loading && (
+      {ownerInfo && ownerInfo.length > 0 && !loading && (
         <Modal
           animationType="slide"
           transparent={true}

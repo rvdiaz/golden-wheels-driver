@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -16,6 +16,7 @@ import Text from '~/codidge_components/UI/text';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
 import TextButton from '~/codidge_components/UI/button/TextButton';
+import { Checkbox } from '~/codidge_components/UI/form/checkbox';
 
 // Validation rules
 const validationRules = {
@@ -31,13 +32,6 @@ const validationRules = {
     minLength: {
       value: 2,
       message: 'Last name must be at least 2 characters',
-    },
-  },
-  mlsNumber: {
-    required: 'License Number is required',
-    minLength: {
-      value: 2,
-      message: 'License Number must be at least 2 characters',
     },
   },
   zipCode: {
@@ -72,6 +66,8 @@ export const PersonalInformation = ({
   openSignIn: () => void;
   onNext: (personalData: IPersonalData) => void;
 }) => {
+  const [notAgentCheckbox, setnotAgentCheckbox] = useState(false);
+
   const {
     control,
     handleSubmit,
@@ -146,19 +142,26 @@ export const PersonalInformation = ({
                 <Controller
                   name="mlsNumber"
                   control={control}
-                  rules={validationRules.mlsNumber}
                   render={({ field: { onChange, value, onBlur } }) => (
                     <InputField
-                      label="License Number"
-                      required={true}
+                      label={!notAgentCheckbox ? 'License Number' : 'License Number (Optional)'}
+                      required={!notAgentCheckbox}
                       value={value || ''}
                       onChangeText={onChange}
                       onBlur={onBlur}
                       placeholder="Enter your mls number"
-                      errorMessage={errors.mlsNumber?.message}
-                      error={!!errors.mlsNumber}
+                      errorMessage={!notAgentCheckbox ? errors.mlsNumber?.message : ''}
+                      error={!notAgentCheckbox ? !!errors.mlsNumber : false}
                     />
                   )}
+                />
+                <Checkbox
+                  containerStyle={{
+                    marginBottom: 10,
+                  }}
+                  onToggle={(newValue) => setnotAgentCheckbox(newValue)}
+                  checked={notAgentCheckbox}
+                  label="I'm not an agent"
                 />
               </View>
               <View style={styles.usaNotice}>

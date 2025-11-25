@@ -7,13 +7,14 @@ import * as Icons from 'lucide-react-native';
 import { theme } from '~/theme/theme';
 import { useQuery } from '@apollo/client';
 import { ModuleKeys } from '~/store/interface';
-import { ContentType, TenantData, TrainingCourse } from '../../interfaces';
+import { TenantData, TrainingCourse } from '../../interfaces';
 import { GET_ALL_TRAINING_COURSES } from '../../graphql/queries';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { Header } from '~/codidge_components/UI/header';
 
 export const TrainingCoursesScreen: React.FC = () => {
   const navigation = useNavigation();
+
   const route = useRoute();
   const { module, program, tenant } = route.params as {
     module: any;
@@ -31,25 +32,6 @@ export const TrainingCoursesScreen: React.FC = () => {
 
   const courses: TrainingCourse[] = data?.getAllTrainingCourses || [];
   const sortedCourses = [...courses].sort((a, b) => a.order - b.order);
-
-  const getContentTypeIcon = (type: ContentType) => {
-    switch (type) {
-      case 'VIDEO':
-        return { icon: Icons.Video, color: '#EF4444' };
-      case 'DOCUMENT':
-        return { icon: Icons.FileText, color: '#3B82F6' };
-      case 'QUIZ':
-        return { icon: Icons.CheckCircle, color: '#10B981' };
-      case 'AUDIO':
-        return { icon: Icons.Music, color: '#8B5CF6' };
-      case 'INTERACTIVE':
-        return { icon: Icons.Gamepad2, color: '#F59E0B' };
-      case 'TEXT':
-        return { icon: Icons.AlignLeft, color: '#6B7280' };
-      default:
-        return { icon: Icons.File, color: '#6B7280' };
-    }
-  };
 
   const getPrimaryCourseType = (course: TrainingCourse) => {
     // Check if course has video content

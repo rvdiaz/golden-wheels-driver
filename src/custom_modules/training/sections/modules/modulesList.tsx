@@ -1,23 +1,26 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Text from '~/codidge_components/UI/text';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { Card } from '~/codidge_components/UI/card';
 import * as Icons from 'lucide-react-native';
 import { theme } from '~/theme/theme';
-import { useQuery } from '@apollo/client';
+import { useQuery, useReactiveVar } from '@apollo/client';
 import { GET_ALL_TRAINING_MODULES } from '../../graphql/queries';
 import { TrainingModule } from '../../interfaces';
 import { ModuleKeys } from '~/store/interface';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { Header } from '~/codidge_components/UI/header';
 import Constants from 'expo-constants';
+import { subscriptionStatusData } from '~/store/subscription';
+import { SubscriptionCardButton } from '~/custom_modules/iap/components/subscriptionCard';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 const trainingId = 'e8901fca-1b45-417b-8272-3a8efd5a8291';
 
 export const TrainingModulesScreen: React.FC = () => {
   const navigation = useNavigation();
+  const { hasActiveSubscription } = useReactiveVar(subscriptionStatusData);
 
   const { data, loading, error } = useQuery(GET_ALL_TRAINING_MODULES, {
     variables: {
@@ -42,6 +45,10 @@ export const TrainingModulesScreen: React.FC = () => {
       },
     });
   };
+
+  if (!hasActiveSubscription) {
+    return <SubscriptionCardButton />;
+  }
 
   if (loading) {
     return (

@@ -142,6 +142,17 @@ export const PersonalInformation = ({
                 <Controller
                   name="mlsNumber"
                   control={control}
+                  rules={
+                    !notAgentCheckbox
+                      ? {
+                          required: 'License Number is required',
+                          minLength: {
+                            value: 2,
+                            message: 'License Number must be at least 2 characters',
+                          },
+                        }
+                      : {} // No validation rules when checkbox is checked
+                  }
                   render={({ field: { onChange, value, onBlur } }) => (
                     <InputField
                       label={!notAgentCheckbox ? 'License Number' : 'License Number (Optional)'}

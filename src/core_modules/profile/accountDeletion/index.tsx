@@ -14,14 +14,9 @@ import { useReactiveVar, useMutation, gql, useApolloClient } from '@apollo/clien
 import { updateUser, userData } from '~/store/user';
 import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
+import { deleteUserMutation } from '~/core_modules/auth/graphql/mutations';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
-
-const DELETE_USER_MUTATION = gql`
-  mutation deleteUser($tenant: TenantData!, $userId: ID!) {
-    deleteUser(tenant: $tenant, userId: $userId)
-  }
-`;
 
 export const AccountDeletionModal = () => {
   const user = useReactiveVar(userData);
@@ -31,7 +26,7 @@ export const AccountDeletionModal = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const client = useApolloClient();
 
-  const [deleteUser] = useMutation(DELETE_USER_MUTATION);
+  const [deleteUser] = useMutation(deleteUserMutation);
 
   const handleDeleteAccount = async () => {
     if (confirmationText !== 'DELETE') {

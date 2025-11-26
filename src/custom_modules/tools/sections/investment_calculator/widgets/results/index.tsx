@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { useFormatters } from '../../custom_hooks';
 import { CalculationResults } from '../../interfaces';
-import { Building, DollarSign, Target, TrendingUp } from 'lucide-react-native';
+import { Building, DollarSign, Share, Target, TrendingUp } from 'lucide-react-native';
 import { Card } from '~/codidge_components/UI/card';
 import { TargetAnalysis } from './targetAnalysis';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
@@ -10,6 +10,9 @@ import { Header } from '~/codidge_components/UI/header';
 import Text from '~/codidge_components/UI/text';
 import { UnitsCarousel } from './unitResults';
 import { FutureProjections } from './futureProjections';
+import { ShareResults } from '../sharing/sharingButton';
+import IconButton from '~/codidge_components/UI/button/IconButton';
+import { theme } from '~/theme/theme';
 
 interface ResultsDisplayProps {
   results: CalculationResults;
@@ -18,6 +21,7 @@ interface ResultsDisplayProps {
 
 export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ results, onDispose }) => {
   const { formatCurrency, formatPercentage } = useFormatters();
+  const [shareModalVisible, setShareModalVisible] = useState(false);
 
   const units = results.units;
 
@@ -29,6 +33,15 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ results, onDispo
         onBack={() => {
           onDispose();
         }}
+        rightWidget={
+          <IconButton
+            style={{
+              backgroundColor: '#FFF',
+            }}
+            icon={<Share size={20} color={theme.colors.primary} />}
+            onPress={() => setShareModalVisible(true)}
+          />
+        }
       />
       <ScrollView style={styles.container}>
         {/* Header */}
@@ -178,6 +191,12 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ results, onDispo
         {/* Target Analisyts */}
         <TargetAnalysis results={results} />
       </ScrollView>
+      {/* Share Modal */}
+      <ShareResults
+        results={results}
+        visible={shareModalVisible}
+        onClose={() => setShareModalVisible(false)}
+      />
     </PageSafeContainer>
   );
 };

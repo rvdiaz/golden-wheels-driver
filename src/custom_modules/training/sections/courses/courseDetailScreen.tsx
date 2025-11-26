@@ -25,11 +25,12 @@ export const TrainingCourseDetailScreen: React.FC = () => {
   return (
     <PageSafeContainer>
       <Header
-        title={course.title}
+        title=""
         showBack={true}
         onBack={() => {
           navigation.goBack();
         }}
+        leftText="Back"
       />
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Course Header Card */}

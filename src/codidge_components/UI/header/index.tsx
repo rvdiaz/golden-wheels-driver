@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   backButton: {
-    padding: 4,
+    padding: 6,
     paddingLeft: 5,
   },
   title: {

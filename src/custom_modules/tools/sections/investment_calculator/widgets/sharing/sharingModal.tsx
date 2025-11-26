@@ -89,9 +89,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                   </View>
                   <View style={styles.optionTextContainer}>
                     <Text style={styles.optionTitle}>Email Report</Text>
-                    <Text style={styles.optionDescription}>
-                      Send detailed HTML report via email
-                    </Text>
+                    <Text style={styles.optionDescription}>Send detailed report via email</Text>
                   </View>
                 </TouchableOpacity>
 

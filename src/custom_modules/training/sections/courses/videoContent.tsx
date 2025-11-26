@@ -86,11 +86,13 @@ export const VideoContentItem: React.FC<VideoContentItemProps> = ({ item }) => {
                 <View style={styles.playButton}>
                   <Icons.Play size={32} color="#FFFFFF" fill="#FFFFFF" />
                 </View>
-                {item.estimatedDuration && (
+                {item.estimatedDuration ? (
                   <View style={styles.durationBadge}>
                     <Icons.Clock size={12} color="#FFFFFF" />
                     <Text style={styles.durationText}>{item.estimatedDuration}</Text>
                   </View>
+                ) : (
+                  <View></View>
                 )}
               </View>
             </ImageBackground>
@@ -113,11 +115,13 @@ export const VideoContentItem: React.FC<VideoContentItemProps> = ({ item }) => {
               </TouchableOpacity>
 
               {/* Duration Badge */}
-              {item.estimatedDuration && (
+              {item.estimatedDuration ? (
                 <View style={styles.durationBadge}>
                   <Icons.Clock size={12} color="#FFFFFF" />
                   <Text style={styles.durationText}>{item.estimatedDuration}</Text>
                 </View>
+              ) : (
+                <View></View>
               )}
             </View>
           </View>

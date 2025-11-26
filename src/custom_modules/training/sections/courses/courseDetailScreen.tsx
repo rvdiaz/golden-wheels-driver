@@ -38,8 +38,10 @@ export const TrainingCourseDetailScreen: React.FC = () => {
             <Text style={styles.courseTitle}>{course.title}</Text>
 
             {/* Short Description */}
-            {course.description && (
+            {course.description ? (
               <Text style={styles.courseDescription}>{course.description}</Text>
+            ) : (
+              <View></View>
             )}
 
             {/* Content Items */}
@@ -52,14 +54,16 @@ export const TrainingCourseDetailScreen: React.FC = () => {
             )}
 
             {/* HTML Description */}
-            {course.htmlDescription && (
+            {course.htmlDescription ? (
               <View style={styles.htmlDescriptionContainer}>
                 <HtmlViewer htmlDescription={course.htmlDescription} />
               </View>
+            ) : (
+              <View></View>
             )}
 
             {/* Tags */}
-            {course.tags && course.tags.length > 0 && (
+            {course.tags && course.tags.length > 0 ? (
               <View style={styles.tagsContainer}>
                 {course.tags.map((tag, index) => (
                   <View key={index} style={styles.tag}>
@@ -67,6 +71,8 @@ export const TrainingCourseDetailScreen: React.FC = () => {
                   </View>
                 ))}
               </View>
+            ) : (
+              <View></View>
             )}
           </View>
         </Card>

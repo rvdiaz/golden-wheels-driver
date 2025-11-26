@@ -140,6 +140,7 @@ export interface IUser {
     currency: string;
   };
   subscription?: IUserSubscription;
+  vipMember: boolean;
 }
 
 export interface IFinancialGoals {

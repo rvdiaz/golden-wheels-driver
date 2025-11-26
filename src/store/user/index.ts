@@ -25,7 +25,7 @@ const updateSubscriptionStatusFromUser = (user?: IUser | null) => {
       subscription.status === UserSubscriptionStatus.TRIAL;
 
     updateSubscriptionStatus({
-      hasActiveSubscription: activeSubscriber,
+      hasActiveSubscription: activeSubscriber || user?.vipMember,
       expiryDate: endDate,
       planName: subscription.productId,
     });

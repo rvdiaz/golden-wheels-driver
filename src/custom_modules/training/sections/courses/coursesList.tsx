@@ -1,5 +1,12 @@
-import React from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+  RefreshControl,
+} from 'react-native';
 import Text from '~/codidge_components/UI/text';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Card } from '~/codidge_components/UI/card';
@@ -22,7 +29,7 @@ export const TrainingCoursesScreen: React.FC = () => {
     tenant: TenantData;
   };
 
-  const { data, loading, error } = useQuery(GET_ALL_TRAINING_COURSES, {
+  const { data, loading, error, refetch } = useQuery(GET_ALL_TRAINING_COURSES, {
     variables: {
       tenant,
       trainingProgramId: program.trainingId,
@@ -139,6 +146,14 @@ export const TrainingCoursesScreen: React.FC = () => {
       />
       <ScrollView
         style={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={async () => {
+              await refetch();
+            }}
+          />
+        }
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}>
         {/* Module Info Header */}

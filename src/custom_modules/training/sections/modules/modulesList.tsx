@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+  RefreshControl,
+} from 'react-native';
 import Text from '~/codidge_components/UI/text';
 import { useNavigation } from '@react-navigation/native';
 import { Card } from '~/codidge_components/UI/card';
@@ -22,7 +29,7 @@ export const TrainingModulesScreen: React.FC = () => {
   const navigation = useNavigation();
   const { hasActiveSubscription } = useReactiveVar(subscriptionStatusData);
 
-  const { data, loading, error } = useQuery(GET_ALL_TRAINING_MODULES, {
+  const { data, loading, error, refetch } = useQuery(GET_ALL_TRAINING_MODULES, {
     variables: {
       tenant: {
         tenantId: `TENANT#${tenantId}`,
@@ -93,6 +100,14 @@ export const TrainingModulesScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={async () => {
+              await refetch();
+            }}
+          />
+        }
         style={styles.content}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}>

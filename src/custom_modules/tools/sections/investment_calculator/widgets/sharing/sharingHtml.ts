@@ -19,7 +19,7 @@ export const generateInvestmentHTML = (
 
   // For mailto, we need a more compact version
   if (summarize) {
-    return generateSummaryHTML(results, formatCurrency, formatPercentage);
+    return generatePlainTextSummary(results, formatCurrency, formatPercentage);
   }
 
   // Full detailed HTML for backend/web
@@ -445,42 +445,137 @@ export const generateInvestmentHTML = (
  * Generates a compact summary HTML for mailto links
  * Optimized to stay under 2000 character limit
  */
-const generateSummaryHTML = (
+export const generatePlainTextSummary = (
   results: CalculationResults,
   formatCurrency: (value: number) => string,
   formatPercentage: (value: number) => string
 ): string => {
-  return `
-<html>
-<body style="font-family:Arial,sans-serif;line-height:1.6;color:#333;">
-<h2 style="color:#1f2937;border-bottom:2px solid #3b82f6;padding-bottom:8px;">Investment Analysis Summary</h2>
+  const divider = '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━';
 
-<div style="background:#dbeafe;border:2px solid #3b82f6;border-radius:8px;padding:16px;margin:16px 0;">
-<h3 style="color:#1e40af;margin:0 0 12px 0;">Key Metrics</h3>
-<table style="width:100%;border-collapse:collapse;">
-<tr><td style="padding:4px 0;"><b>Total Cash Invested:</b></td><td style="text-align:right;">${formatCurrency(results.totalCashInvested)}</td></tr>
-<tr><td style="padding:4px 0;"><b>Total Repair Costs:</b></td><td style="text-align:right;">${formatCurrency(results.totalRepairCosts)}</td></tr>
-<tr><td style="padding:4px 0;"><b>Annual Income Increase:</b></td><td style="text-align:right;">${formatCurrency(results.totalIncomeIncrease)}</td></tr>
-<tr><td style="padding:4px 0;"><b>Estimated Value Gain:</b></td><td style="text-align:right;">${formatCurrency(results.valueGain)}</td></tr>
-</table>
-</div>
+  // First try with full details
+  const fullVersion = `
+  INVESTMENT ANALYSIS REPORT
+  ${divider}
+  
+  INVESTMENT SUMMARY
+  ${divider}
+  Total Cash Invested:        ${formatCurrency(results.totalCashInvested)}
+  Total Repair Costs:         ${formatCurrency(results.totalRepairCosts)}
+  Annual Income Increase:     ${formatCurrency(results.totalIncomeIncrease)}
+  Estimated Value Gain:       ${formatCurrency(results.valueGain)}
+  
+  PERFORMANCE METRICS
+  ${divider}
+  Current Cap Rate:           ${formatPercentage(results.currentCapRate)}
+  Improved Cap Rate:          ${formatPercentage(results.improvedCapRate)} ↑
+  Cash-on-Cash Return:        ${formatPercentage(results.cashOnCashReturn)}
+  Net Operating Income:       ${formatCurrency(results.netOperatingIncome)}
+  
+  CASH FLOW ANALYSIS
+  ${divider}
+  Annual Cash Flow:           ${formatCurrency(results.annualCashFlow)}
+  Monthly Cash Flow:          ${formatCurrency(results.annualCashFlow / 12)}
+  Total Annual Income:        ${formatCurrency(results.totalIncome)}
+  Total Annual Expenses:      ${formatCurrency(results.totalExpenses)}
+  
+  DEBT & COVERAGE
+  ${divider}
+  Debt Service Coverage:      ${results.debtServiceCoverageRatio.toFixed(2)}x
+  Coverage Status:            ${
+    results.debtServiceCoverageRatio >= 1.25
+      ? 'Strong Coverage ✓'
+      : results.debtServiceCoverageRatio >= 1.0
+        ? 'Adequate Coverage'
+        : 'Insufficient Coverage ✗'
+  }
+  
+  ${
+    results.units.length > 0 && results.units.length <= 3
+      ? `UNIT BREAKDOWN (${results.units.length} Units)
+  ${divider}
+  ${results.units
+    .map(
+      (unit, idx) =>
+        `Unit ${idx + 1}:
+    Current Rent:    ${formatCurrency(unit.currentRent * 12)}/year
+    Potential Rent:  ${formatCurrency(unit.potentialRent * 12)}/year
+    Repair Cost:     ${formatCurrency(unit.repairCosts)}
+    Income Gain:     ${formatCurrency((unit.potentialRent - unit.currentRent) * 12)}/year`
+    )
+    .join('\n\n')}
+  
+  `
+      : results.units.length > 3
+        ? `UNIT BREAKDOWN (${results.units.length} Units)
+  ${divider}
+  Total Units:                ${results.units.length}
+  Avg Current Rent:           ${formatCurrency((results.units.reduce((sum, u) => sum + u.currentRent, 0) / results.units.length) * 12)}/year
+  Avg Potential Rent:         ${formatCurrency((results.units.reduce((sum, u) => sum + u.potentialRent, 0) / results.units.length) * 12)}/year
+  Total Repair Costs:         ${formatCurrency(results.units.reduce((sum, u) => sum + u.repairCosts, 0))}
+  
+  `
+        : ''
+  }FUTURE PROJECTIONS
+  ${divider}
+  3-Year Outlook:
+    Property Value:            ${formatCurrency(results.projections.year3.propertyValue)}
+    Annual Rent:               ${formatCurrency(results.projections.year3.rent)}
+    Annual Cash Flow:          ${formatCurrency(results.projections.year3.cashFlow)}
+    Equity Position:           ${formatCurrency(results.projections.year3.equity)}
+    Cap Rate:                  ${formatPercentage(results.projections.year3.capRate)}
+  
+  5-Year Outlook:
+    Property Value:            ${formatCurrency(results.projections.year5.propertyValue)}
+    Annual Rent:               ${formatCurrency(results.projections.year5.rent)}
+    Annual Cash Flow:          ${formatCurrency(results.projections.year5.cashFlow)}
+    Equity Position:           ${formatCurrency(results.projections.year5.equity)}
+    Cap Rate:                  ${formatPercentage(results.projections.year5.capRate)}
+  
+  ${divider}
+  Generated: ${new Date().toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })}
+  
+  This analysis is for informational purposes only.
+    `.trim();
 
-<div style="background:#f3f4f6;border-radius:8px;padding:16px;margin:16px 0;">
-<h3 style="color:#374151;margin:0 0 12px 0;">Performance</h3>
-<table style="width:100%;border-collapse:collapse;">
-<tr><td style="padding:4px 0;"><b>Current Cap Rate:</b></td><td style="text-align:right;">${formatPercentage(results.currentCapRate)}</td></tr>
-<tr><td style="padding:4px 0;"><b>Improved Cap Rate:</b></td><td style="text-align:right;color:#059669;font-weight:bold;">${formatPercentage(results.improvedCapRate)}</td></tr>
-<tr><td style="padding:4px 0;"><b>Cash-on-Cash Return:</b></td><td style="text-align:right;font-weight:bold;">${formatPercentage(results.cashOnCashReturn)}</td></tr>
-<tr><td style="padding:4px 0;"><b>Annual Cash Flow:</b></td><td style="text-align:right;">${formatCurrency(results.annualCashFlow)}</td></tr>
-<tr><td style="padding:4px 0;"><b>Monthly Cash Flow:</b></td><td style="text-align:right;">${formatCurrency(results.annualCashFlow / 12)}</td></tr>
-<tr><td style="padding:4px 0;"><b>DSCR:</b></td><td style="text-align:right;">${results.debtServiceCoverageRatio.toFixed(2)}x</td></tr>
-</table>
-</div>
+  // If full version is too long, return condensed version
+  if (fullVersion.length > 1800) {
+    return `
+  INVESTMENT ANALYSIS REPORT
+  ${divider}
+  
+  INVESTMENT SUMMARY
+  Total Cash Invested:        ${formatCurrency(results.totalCashInvested)}
+  Total Repair Costs:         ${formatCurrency(results.totalRepairCosts)}
+  Annual Income Increase:     ${formatCurrency(results.totalIncomeIncrease)}
+  Estimated Value Gain:       ${formatCurrency(results.valueGain)}
+  
+  PERFORMANCE METRICS
+  Current Cap Rate:           ${formatPercentage(results.currentCapRate)}
+  Improved Cap Rate:          ${formatPercentage(results.improvedCapRate)} ↑
+  Cash-on-Cash Return:        ${formatPercentage(results.cashOnCashReturn)}
+  Net Operating Income:       ${formatCurrency(results.netOperatingIncome)}
+  
+  CASH FLOW
+  Annual Cash Flow:           ${formatCurrency(results.annualCashFlow)}
+  Monthly Cash Flow:          ${formatCurrency(results.annualCashFlow / 12)}
+  DSCR:                       ${results.debtServiceCoverageRatio.toFixed(2)}x
+  
+  UNITS: ${results.units.length} total
+  Avg Repair Cost/Unit:       ${formatCurrency(results.totalRepairCosts / results.units.length)}
+  
+  PROJECTIONS
+  Year 3 Value:               ${formatCurrency(results.projections.year3.propertyValue)}
+  Year 5 Value:               ${formatCurrency(results.projections.year5.propertyValue)}
+  
+  Generated: ${new Date().toLocaleDateString()}
+      `.trim();
+  }
 
-<p style="font-size:12px;color:#6b7280;margin-top:16px;">Generated ${new Date().toLocaleDateString()}</p>
-</body>
-</html>
-  `.trim();
+  return fullVersion;
 };
 
 /**

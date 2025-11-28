@@ -102,69 +102,91 @@ export const ExpiredListingPage = () => {
   return (
     <PageSafeContainer style={styles.container}>
       <Header title="Expired Listings" showBack onBack={() => navigation.goBack()} />
-      <Card style={styles.cardContainer}>
-        <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.heroSection}>
+          <View style={styles.iconBadge}>
+            <Icons.Home size={24} color="#3B82F6" />
+          </View>
+          <Text style={styles.heroTitle}>Find Expired Listings</Text>
+          <Text style={styles.heroSubtitle}>
+            Discover expired property listings in your target area and connect with potential
+            clients
+          </Text>
+        </View>
+
+        <Card style={styles.cardContainer}>
           <View style={styles.formContainer}>
-            <Controller
-              control={control}
-              name="zipCode"
-              rules={{ required: 'Home price is required' }}
-              render={({ field: { value, onChange } }) => (
-                <InputField
-                  leftIcon={<MapPin size={iconsSize} />}
-                  label="Zip Code"
-                  placeholder="Zip Code"
-                  keyboardType="number-pad"
-                  value={value?.toString()}
-                  onChangeText={onChange}
-                  error={!!errors.zipCode}
-                  errorMessage={errors.zipCode?.message}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="daysOld"
-              rules={{ required: 'Days are required' }}
-              render={({ field: { value, onChange } }) => (
-                <InputField
-                  leftIcon={<MapPin size={iconsSize} />}
-                  label="Days Back"
-                  placeholder="30"
-                  keyboardType="number-pad"
-                  value={value?.toString()}
-                  onChangeText={onChange}
-                  error={!!errors.daysOld}
-                  errorMessage={errors.daysOld?.message}
-                />
-              )}
-            />
+            <View style={styles.inputGroup}>
+              <Text style={styles.sectionLabel}>Search Parameters</Text>
+              <Controller
+                control={control}
+                name="zipCode"
+                rules={{ required: 'ZIP code is required' }}
+                render={({ field: { value, onChange } }) => (
+                  <InputField
+                    leftIcon={<MapPin size={iconsSize} color="#3B82F6" />}
+                    label="ZIP Code"
+                    placeholder="Enter ZIP code"
+                    keyboardType="number-pad"
+                    value={value?.toString()}
+                    onChangeText={onChange}
+                    error={!!errors.zipCode}
+                    errorMessage={errors.zipCode?.message}
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name="daysOld"
+                rules={{ required: 'Days back is required' }}
+                render={({ field: { value, onChange } }) => (
+                  <InputField
+                    leftIcon={<Icons.Calendar size={iconsSize} color="#3B82F6" />}
+                    label="Days Back"
+                    placeholder="e.g., 30"
+                    keyboardType="number-pad"
+                    value={value?.toString()}
+                    onChangeText={onChange}
+                    error={!!errors.daysOld}
+                    errorMessage={errors.daysOld?.message}
+                  />
+                )}
+              />
+            </View>
+
+            <View style={styles.infoBox}>
+              <Icons.Info size={16} color="#3B82F6" />
+              <Text style={styles.infoText}>
+                Search for properties that expired within the specified timeframe
+              </Text>
+            </View>
+
             <PrimaryButton
               size={ButtonSize.LARGE}
               loading={loading}
-              title="Show Results"
+              title="Search Listings"
               onPress={handleSubmit(onSubmit)}
-              rightWidget={<Icons.ChevronRight color="#FFF" />}
+              rightWidget={<Icons.Search color="#FFF" size={18} />}
             />
           </View>
-          {ceroResults && (
-            <View
-              style={[
-                styles.container,
-                {
-                  padding: 16,
-                  alignItems: 'center',
-                },
-              ]}>
-              <Text style={styles.title}>No Listings Found</Text>
-              <Text style={styles.description}>
-                We couldn’t find any expired listings for that ZIP code. Try adjusting your search
+        </Card>
+
+        {ceroResults && (
+          <Card style={styles.emptyStateCard}>
+            <View style={styles.emptyStateContainer}>
+              <View style={styles.emptyStateIcon}>
+                <Icons.SearchX size={40} color="#94A3B8" />
+              </View>
+              <Text style={styles.emptyStateTitle}>No Listings Found</Text>
+              <Text style={styles.emptyStateDescription}>
+                We couldn't find any expired listings for that ZIP code. Try adjusting your search
                 criteria or using a different area.
               </Text>
             </View>
-          )}
-        </ScrollView>
-      </Card>
+          </Card>
+        )}
+      </ScrollView>
+
       <Modal
         animationType="slide"
         transparent={true}
@@ -172,7 +194,7 @@ export const ExpiredListingPage = () => {
         onRequestClose={() => {
           setShowResults(false);
         }}>
-         {results&& (
+        {results && (
           <PropertyListScreen
             loadMore={async () => {
               await fetchMoreResults();
@@ -192,27 +214,110 @@ export const ExpiredListingPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#F8FAFC',
+  },
+  heroSection: {
+    paddingHorizontal: 20,
+    paddingTop: 24,
+    paddingBottom: 16,
+    alignItems: 'center',
+  },
+  iconBadge: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#EFF6FF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  heroTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#0F172A',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  heroSubtitle: {
+    fontSize: 15,
+    color: '#64748B',
+    textAlign: 'center',
+    lineHeight: 22,
+    paddingHorizontal: 16,
   },
   cardContainer: {
-    margin: 16,
+    marginHorizontal: 16,
+    marginTop: 8,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
   },
   formContainer: {
-    gap: 16,
-    padding: 24,
-    flex: 1,
+    padding: 20,
   },
-  title: {
-    fontSize: 18,
+  inputGroup: {
+    gap: 16,
+    marginBottom: 16,
+  },
+  sectionLabel: {
+    fontSize: 16,
     fontWeight: '600',
     color: '#1E293B',
-    marginTop: 16,
+    marginBottom: 4,
   },
-  description: {
-    textAlign: 'center',
-    color: '#64748B',
+  infoBox: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: '#EFF6FF',
+    padding: 12,
+    borderRadius: 8,
+    gap: 10,
+    marginBottom: 20,
+    borderLeftWidth: 3,
+    borderLeftColor: '#3B82F6',
+  },
+  infoText: {
+    flex: 1,
+    fontSize: 13,
+    color: '#1E40AF',
+    lineHeight: 18,
+  },
+  emptyStateCard: {
+    marginHorizontal: 16,
     marginTop: 8,
-    fontSize: 14,
-    lineHeight: 20,
+    marginBottom: 24,
+    padding: 32,
+  },
+  emptyStateContainer: {
+    alignItems: 'center',
+  },
+  emptyStateIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#F1F5F9',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  emptyStateTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#1E293B',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  emptyStateDescription: {
+    fontSize: 15,
+    color: '#64748B',
+    textAlign: 'center',
+    lineHeight: 22,
+    paddingHorizontal: 16,
   },
 });

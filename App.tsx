@@ -6,7 +6,7 @@ import { loadErrorMessages, loadDevMessages } from '@apollo/client/dev';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AUTH_TYPE, AuthOptions, createAuthLink } from 'aws-appsync-auth-link';
 import { createSubscriptionHandshakeLink } from 'aws-appsync-subscription-link';
-import { PricingPlanModal } from '~/custom_modules/iap/components/pricingPlanModal';
+import { SubscriptionPricingPlanModal } from '~/custom_modules/iap/components/pricingPlanModal/subscriptions';
 import { Navigation } from '~/navigation';
 import { UserRefresherWrapper } from '~/navigation/userRefresherWrapper';
 
@@ -91,7 +91,7 @@ export default function App() {
         <UserRefresherWrapper>
           <Navigation />
         </UserRefresherWrapper>
-        <PricingPlanModal />
+        <SubscriptionPricingPlanModal />
       </SafeAreaProvider>
     </ApolloProvider>
   );

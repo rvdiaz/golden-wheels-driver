@@ -1,10 +1,10 @@
 import { initConnection, useIAP } from 'expo-iap';
-import { PricingPlanModalView } from '../pricingPlanModalView';
+import { PricingPlanModalView } from '../../pricingPlanModalView';
 import { userData } from '~/store/user';
 import { useApolloClient, useReactiveVar } from '@apollo/client';
 import { useEffect, useRef } from 'react';
-import { useSubscriptionPlanList } from '../../hooks/useSubscriptionPlanList';
-import { validatePurchaseOnServer } from '../../helper';
+import { useSubscriptionPlanList } from '../../../hooks/useSubscriptionPlanList';
+import { validatePurchaseOnServer } from '../../../helper';
 import { Alert } from 'react-native';
 import { paywallVisibility } from '~/store/subscription';
 

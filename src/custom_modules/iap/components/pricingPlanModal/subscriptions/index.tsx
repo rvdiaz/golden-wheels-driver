@@ -2,13 +2,17 @@ import Constants from 'expo-constants';
 import { lazy } from 'react';
 
 const LazyPricingPlanModal = lazy(() =>
-  import('./pricingPlanModalReal').then((module) => ({ default: module.PricingPlanModal }))
+  import('./pricingPlanModalReal').then((module) => ({
+    default: module.PricingPlanModal,
+  }))
 );
 const LazyPricingPlanModalStub = lazy(() =>
-  import('./pricingPlanModalStub').then((module) => ({ default: module.PricingPlanModalStub }))
+  import('./pricingPlanModalStub').then((module) => ({
+    default: module.PricingPlanModalStub,
+  }))
 );
 
-export const PricingPlanModal = () => {
+export const SubscriptionPricingPlanModal = () => {
   const isRunningOnExpo = Constants.appOwnership === 'expo';
 
   if (isRunningOnExpo) {

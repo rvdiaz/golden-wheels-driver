@@ -46,26 +46,6 @@ export const VideoContentItem: React.FC<VideoContentItemProps> = ({ item }) => {
     setShowFullscreen(false);
   };
 
-  const togglePlayPause = () => {
-    if (isPlaying) {
-      player.pause();
-      setIsPlaying(false);
-    } else {
-      player.play();
-      setIsPlaying(true);
-    }
-  };
-
-  const formatFileSize = (bytes?: number) => {
-    if (!bytes) return null;
-    const mb = bytes / (1024 * 1024);
-    if (mb < 1) {
-      const kb = bytes / 1024;
-      return `${kb.toFixed(1)} KB`;
-    }
-    return `${mb.toFixed(1)} MB`;
-  };
-
   return (
     <View style={styles.container}>
       {/* Video Preview/Player */}

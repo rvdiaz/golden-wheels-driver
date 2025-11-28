@@ -127,6 +127,65 @@ const IncomeCalculator = () => {
 
   return (
     <View style={styles.container}>
+      {/* Results Section */}
+      <View style={[styles.section, styles.resultsSection]}>
+        {/* Progress Bar */}
+        <View style={styles.progressContainer}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: 5,
+            }}>
+            <Text style={styles.progressLabel}>Progress to Goal</Text>
+            <Text style={[styles.progressPercentage, { color: getProgressColor(pctToGoal) }]}>
+              {pctToGoal.toFixed(0)}%
+            </Text>
+          </View>
+
+          <View style={styles.progressBar}>
+            <View
+              style={[
+                styles.progressFill,
+                {
+                  width: `${Math.min(pctToGoal, 100)}%`,
+                  backgroundColor: getProgressColor(pctToGoal),
+                },
+              ]}
+            />
+          </View>
+          <Text
+            style={{
+              fontSize: 14,
+              color: theme.colors.info,
+              marginLeft: 'auto',
+              marginTop: 4,
+            }}>
+            {formatCurrency(targetIncome)}
+          </Text>
+        </View>
+        <View>
+          <ResultCard
+            label="Target Closings"
+            value={neededClosings.toFixed(1)}
+            color="#3B82F6"
+            icon={Icons.Target}
+          />
+          <ResultCard
+            label="Forecast Closings"
+            value={forecastClosings.toFixed(1)}
+            color="#10B981"
+            icon={Icons.CheckCircle}
+          />
+          <ResultCard
+            label="Forecast Income"
+            value={formatCurrency(forecastIncome)}
+            color="#059669"
+            icon={Icons.DollarSign}
+          />
+        </View>
+      </View>
       <ScrollView showsVerticalScrollIndicator={false} style={styles.content}>
         {/* Income Targets Section */}
         <View style={styles.section}>
@@ -282,65 +341,6 @@ const IncomeCalculator = () => {
           </View>
         </View>
       </ScrollView>
-      {/* Results Section */}
-      <View style={[styles.section, styles.resultsSection]}>
-        {/* Progress Bar */}
-        <View style={styles.progressContainer}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginBottom: 5,
-            }}>
-            <Text style={styles.progressLabel}>Progress to Goal</Text>
-            <Text style={[styles.progressPercentage, { color: getProgressColor(pctToGoal) }]}>
-              {pctToGoal.toFixed(0)}%
-            </Text>
-          </View>
-
-          <View style={styles.progressBar}>
-            <View
-              style={[
-                styles.progressFill,
-                {
-                  width: `${Math.min(pctToGoal, 100)}%`,
-                  backgroundColor: getProgressColor(pctToGoal),
-                },
-              ]}
-            />
-          </View>
-          <Text
-            style={{
-              fontSize: 14,
-              color: theme.colors.info,
-              marginLeft: 'auto',
-              marginTop: 4,
-            }}>
-            {formatCurrency(targetIncome)}
-          </Text>
-        </View>
-        <View>
-          <ResultCard
-            label="Target Closings"
-            value={neededClosings.toFixed(1)}
-            color="#3B82F6"
-            icon={Icons.Target}
-          />
-          <ResultCard
-            label="Forecast Closings"
-            value={forecastClosings.toFixed(1)}
-            color="#10B981"
-            icon={Icons.CheckCircle}
-          />
-          <ResultCard
-            label="Forecast Income"
-            value={formatCurrency(forecastIncome)}
-            color="#059669"
-            icon={Icons.DollarSign}
-          />
-        </View>
-      </View>
     </View>
   );
 };
@@ -348,7 +348,7 @@ const IncomeCalculator = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: theme.colors.surfaceSectionsBackgroundColor,
   },
   header: {
     flexDirection: 'row',
@@ -434,6 +434,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0FDF4',
     borderWidth: 1,
     borderColor: '#BBF7D0',
+    marginBottom: 10,
+    marginTop: 10,
   },
   progressContainer: {
     marginBottom: 10,

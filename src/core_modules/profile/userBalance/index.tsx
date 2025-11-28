@@ -1,18 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import * as Icons from 'lucide-react-native';
 import Text from '~/codidge_components/UI/text';
 import { formatCurrency } from '~/custom_modules/tools/sections/mortgage_calculator/helpers';
+import { BalancePurchasePricingPlanModal } from '~/custom_modules/iap/components/pricingPlanModal/balancePayments';
 
 interface BalanceWidgetProps {
   balance: {
     amount: number;
     currency: string;
   };
-  onAddBalance?: () => void;
 }
 
-export const BalanceWidget: React.FC<BalanceWidgetProps> = ({ balance, onAddBalance }) => {
+export const BalanceWidget: React.FC<BalanceWidgetProps> = ({ balance }) => {
+  const [balancePurchaseVisible, setBalancePurchaseVisible] = useState(false);
+
+  const handleAddBalance = () => {
+    setBalancePurchaseVisible(true);
+  };
+
+  const handleBalancePurchaseClose = () => {
+    setBalancePurchaseVisible(false);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.row}>
@@ -28,10 +38,15 @@ export const BalanceWidget: React.FC<BalanceWidgetProps> = ({ balance, onAddBala
             <Text style={styles.amount}>{formatCurrency(balance.amount, 2)}</Text>
           </View>
         </View>
-        {/*    <TouchableOpacity style={styles.addButton} onPress={onAddBalance} activeOpacity={0.7}>
+        <TouchableOpacity style={styles.addButton} onPress={handleAddBalance} activeOpacity={0.7}>
           <Icons.Plus size={20} color="#2B7FFF" />
-        </TouchableOpacity> */}
+        </TouchableOpacity>
       </View>
+      {/* Balance Purchase Modal - Handles the purchase flow */}
+      <BalancePurchasePricingPlanModal
+        visible={balancePurchaseVisible}
+        onClose={handleBalancePurchaseClose}
+      />
     </View>
   );
 };

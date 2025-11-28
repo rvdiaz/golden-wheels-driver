@@ -6,6 +6,9 @@ import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
 import { Calculator, Home, AlertCircle, MapPin } from 'lucide-react-native';
 import { BreakdownItem, detectStateFromZip, GEOGRAPHIC_COSTS, NetSheetResult } from './mocked';
+import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
+import { ButtonSize } from '~/codidge_components/UI/button/types';
+import InputField from '~/codidge_components/UI/form/inputs/inputField';
 
 export const SellerNetSheetPage = () => {
   const navigation = useNavigation();
@@ -415,7 +418,7 @@ export const SellerNetSheetPage = () => {
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Current Mortgage Balance</Text>
-              <TextInput
+              <InputField
                 style={styles.input}
                 placeholder="250000"
                 value={mortgageBalance}
@@ -428,8 +431,8 @@ export const SellerNetSheetPage = () => {
 
             {/* Input Form - Column 2 */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Real Estate Commission (%)</Text>
-              <TextInput
+              <InputField
+                label="Real Estate Commission (%)"
                 style={styles.input}
                 placeholder="6.0"
                 value={commissionRate}
@@ -442,7 +445,7 @@ export const SellerNetSheetPage = () => {
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Repairs/Concessions</Text>
-              <TextInput
+              <InputField
                 style={styles.input}
                 placeholder="2000"
                 value={repairs}
@@ -457,7 +460,7 @@ export const SellerNetSheetPage = () => {
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Home Warranty</Text>
-              <TextInput
+              <InputField
                 style={styles.input}
                 placeholder="500"
                 value={homeWarranty}
@@ -468,13 +471,12 @@ export const SellerNetSheetPage = () => {
               <Text style={styles.inputHint}>One-year home warranty for buyer (optional)</Text>
             </View>
 
-            {/* Calculate Button */}
-            <TouchableOpacity
-              style={[styles.button, styles.buttonPrimary, styles.mt24]}
-              onPress={calculateNetSheet}>
-              <Calculator color="#fff" size={20} />
-              <Text style={styles.buttonText}>Calculate Net Proceeds</Text>
-            </TouchableOpacity>
+            <PrimaryButton
+              leftWidget={<Calculator color="#fff" size={20} />}
+              onPress={calculateNetSheet}
+              size={ButtonSize.LARGE}
+              title="Calculate Net Proceeds"
+            />
 
             {/* Info Alert */}
             <View style={styles.alert}>

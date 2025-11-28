@@ -1,9 +1,9 @@
-import { PricingPlanModalView } from '../pricingPlanModalView';
 import { userData } from '~/store/user';
 import { useReactiveVar } from '@apollo/client';
-import { useSubscriptionPlanList } from '../../hooks/useSubscriptionPlanList';
 import { Platform } from 'react-native';
 import { ProductSubscription } from 'expo-iap';
+import { useSubscriptionPlanList } from '~/custom_modules/iap/hooks/useSubscriptionPlanList';
+import { PricingPlanModalView } from '../../pricingPlanModalView';
 
 export const PricingPlanModalStub = () => {
   const user = useReactiveVar(userData);

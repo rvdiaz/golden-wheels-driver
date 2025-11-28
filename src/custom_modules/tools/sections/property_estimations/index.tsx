@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Modal, StyleSheet, View } from 'react-native';
+import { Modal, StyleSheet, View, ScrollView } from 'react-native';
 import { Card } from '~/codidge_components/UI/card';
 import { Header } from '~/codidge_components/UI/header';
 import SearchAddressAutoComplete from '../../widgets/searchAutoComplete';
@@ -43,7 +43,7 @@ export const PropertyEstimationsPage = () => {
     },
   });
 
-  const selectedAddress = watch('propData'); // ✅ Watch address for button state
+  const selectedAddress = watch('propData');
 
   const [getPropertyDetailsFn, { data, loading }] = useLazyQuery<{
     getPropertyEstimations: {
@@ -52,7 +52,7 @@ export const PropertyEstimationsPage = () => {
       property: IProperty;
     };
   }>(getPropertyEstimationQuery, {
-    fetchPolicy: 'network-only', // ✅ Always fetch from backend
+    fetchPolicy: 'network-only',
   });
 
   const onSubmit = async (data: PropertySearchData) => {
@@ -73,38 +73,81 @@ export const PropertyEstimationsPage = () => {
   return (
     <PageSafeContainer style={styles.container}>
       <Header title="Quick CMA Tool" showBack onBack={() => navigation.goBack()} />
-      <View style={styles.content}>
-        <Card style={styles.searchCard}>
-          <Text style={styles.cardTitle}>Property Lookup</Text>
-          <Text style={styles.cardSubtitle}>
-            Enter the property address to get owner and property information
-          </Text>
 
-          {/* ✅ React Hook Form Controlled AutoComplete */}
-          <Controller
-            control={control}
-            name="propData"
-            render={({ field: { onChange } }) => (
-              <SearchAddressAutoComplete
-                onSelection={(propData) => {
-                  onChange(propData); // ✅ Update form value
-                }}
-              />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.heroSection}>
+          <View style={styles.iconBadge}>
+            <Icons.TrendingUp size={24} color="#3B82F6" />
+          </View>
+          <Text style={styles.heroTitle}>Comparative Market Analysis</Text>
+          <Text style={styles.heroSubtitle}>
+            Get instant property valuations with comparable sales data and market insights
+          </Text>
+        </View>
+
+        <Card style={styles.searchCard}>
+          <View style={styles.cardContent}>
+            <View style={styles.labelContainer}>
+              <Icons.Home size={18} color="#3B82F6" />
+              <Text style={styles.sectionLabel}>Property Address</Text>
+            </View>
+
+            <Controller
+              control={control}
+              name="propData"
+              render={({ field: { onChange } }) => (
+                <SearchAddressAutoComplete
+                  onSelection={(propData) => {
+                    onChange(propData);
+                  }}
+                />
+              )}
+            />
+
+            <PrimaryButton
+              loading={loading}
+              leftWidget={<Icons.Calculator size={20} color="white" />}
+              title="Generate CMA Report"
+              size={ButtonSize.LARGE}
+              onPress={handleSubmit(onSubmit)}
+              disabled={!selectedAddress}
+            />
+
+            {!selectedAddress && (
+              <View style={styles.hintBox}>
+                <Icons.Info size={14} color="#64748B" />
+                <Text style={styles.hintText}>Enter a property address to generate analysis</Text>
+              </View>
             )}
-          />
-          <PrimaryButton
-            loading={loading}
-            style={{
-              marginTop: 10,
-            }}
-            leftWidget={<Icons.Search size={20} color="white" />}
-            title="Search Results"
-            size={ButtonSize.LARGE}
-            onPress={handleSubmit(onSubmit)}
-            disabled={!selectedAddress} // ✅ Disabled if no address
-          />
+          </View>
         </Card>
-      </View>
+
+        <Card style={styles.infoCard}>
+          <View style={styles.infoHeader}>
+            <Icons.Sparkles size={20} color="#F59E0B" />
+            <Text style={styles.infoHeaderText}>Why Use Quick CMA?</Text>
+          </View>
+          <View style={styles.infoBenefits}>
+            <View style={styles.benefitItem}>
+              <Icons.Check size={16} color="#10B981" />
+              <Text style={styles.benefitText}>Instant property valuations</Text>
+            </View>
+            <View style={styles.benefitItem}>
+              <Icons.Check size={16} color="#10B981" />
+              <Text style={styles.benefitText}>Compare with recent sales</Text>
+            </View>
+            <View style={styles.benefitItem}>
+              <Icons.Check size={16} color="#10B981" />
+              <Text style={styles.benefitText}>Professional presentation</Text>
+            </View>
+            <View style={styles.benefitItem}>
+              <Icons.Check size={16} color="#10B981" />
+              <Text style={styles.benefitText}>Save time on market research</Text>
+            </View>
+          </View>
+        </Card>
+      </ScrollView>
+
       <Modal
         animationType="slide"
         transparent={true}
@@ -126,27 +169,110 @@ export const PropertyEstimationsPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#F8FAFC',
   },
-  content: {
-    flex: 1,
-    padding: 16,
-    overflow: 'visible',
+  heroSection: {
+    paddingHorizontal: 20,
+    paddingTop: 24,
+    paddingBottom: 16,
+    alignItems: 'center',
+  },
+  iconBadge: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#EFF6FF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  heroTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#0F172A',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  heroSubtitle: {
+    fontSize: 15,
+    color: '#64748B',
+    textAlign: 'center',
+    lineHeight: 22,
+    paddingHorizontal: 16,
   },
   searchCard: {
-    padding: 20,
+    marginHorizontal: 16,
+    marginTop: 8,
     marginBottom: 16,
     overflow: 'visible',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
   },
-  cardTitle: {
-    fontSize: 18,
+  cardContent: {
+    padding: 20,
+  },
+  labelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  sectionLabel: {
+    fontSize: 16,
     fontWeight: '600',
-    color: '#1F2937',
-    marginBottom: 8,
+    color: '#1E293B',
   },
-  cardSubtitle: {
+  hintBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginTop: 12,
+    paddingVertical: 8,
+  },
+  hintText: {
+    fontSize: 13,
+    color: '#64748B',
+    fontStyle: 'italic',
+  },
+  infoCard: {
+    marginHorizontal: 16,
+    marginBottom: 24,
+    backgroundColor: '#FFFBEB',
+    borderLeftWidth: 3,
+    borderLeftColor: '#F59E0B',
+  },
+  infoHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    padding: 16,
+    paddingBottom: 12,
+  },
+  infoHeaderText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#92400E',
+  },
+  infoBenefits: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    gap: 10,
+  },
+  benefitItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  benefitText: {
     fontSize: 14,
-    color: '#6B7280',
-    marginBottom: 20,
+    color: '#78350F',
+    flex: 1,
   },
 });

@@ -21,6 +21,8 @@ import { Header } from '~/codidge_components/UI/header';
 import Constants from 'expo-constants';
 import { subscriptionStatusData } from '~/store/subscription';
 import { SubscriptionCardButton } from '~/custom_modules/iap/components/subscriptionCard';
+import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
+import { ButtonSize } from '~/codidge_components/UI/button/types';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 const trainingId = 'e8901fca-1b45-417b-8272-3a8efd5a8291';
@@ -70,19 +72,20 @@ export const TrainingModulesScreen: React.FC = () => {
 
   if (error) {
     return (
-      <PageSafeContainer style={styles.container}>
-        <Header
-          title={'Training'}
-          onBack={() => {
-            navigation.goBack();
-          }}
-          showBack={true}
-        />
+      <View style={styles.container}>
         <View style={styles.centerContainer}>
           <Icons.AlertCircle size={48} color="#EF4444" />
           <Text style={styles.errorText}>Error loading modules</Text>
+          <PrimaryButton
+            title="Retry"
+            size={ButtonSize.LARGE}
+            onPress={async () => {
+              await refetch();
+            }}
+            loading={loading}
+          />
         </View>
-      </PageSafeContainer>
+      </View>
     );
   }
 
@@ -199,7 +202,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#EF4444',
-    marginTop: 16,
+    marginVertical: 16,
   },
   emptyText: {
     fontSize: 18,

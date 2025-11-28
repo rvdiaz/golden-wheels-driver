@@ -78,7 +78,6 @@ export const ProfileScreen: React.FC = () => {
                 currency: 'USD',
               }
             }
-            onAddBalance={() => {}}
           />
 
           <ProfileNavigationSection

@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Modal, TouchableOpacity, ScrollView, Platform } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Modal,
+  TouchableOpacity,
+  ScrollView,
+  Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import { theme } from '~/theme/theme';
 import InputField from '../form/inputs/inputField';
 import PrimaryButton from '../button/PrimaryButton';
@@ -85,58 +94,65 @@ export const TaskFieldsModal: React.FC<TaskFieldsModalProps> = ({
   const handleClose = () => {
     setFieldValues({});
     setErrors({});
+    Keyboard.dismiss();
     onClose();
+  };
+
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
   };
 
   return (
     <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={handleClose}>
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>{taskTitle}</Text>
-            <Text style={styles.modalSubtitle}>Please fill in the required information</Text>
-          </View>
-          <KeyboardAwareScrollView
-            showsVerticalScrollIndicator={false}
-            enableOnAndroid={true}
-            keyboardShouldPersistTaps="handled">
-            <ScrollView
-              style={styles.modalContent}
-              showsVerticalScrollIndicator={false}
-              keyboardShouldPersistTaps="handled"
-              bounces={false}>
-              {fields.map((field) => (
-                <View key={field.goalKey} style={styles.fieldContainer}>
-                  <Text style={styles.fieldLabel}>{field.label}</Text>
-                  <InputField
-                    value={fieldValues[field.goalKey] || ''}
-                    onChangeText={(value) => handleFieldChange(field.goalKey, value)}
-                    placeholder={field.label ? `Enter ${field.label.toLowerCase()}` : ''}
-                    keyboardType="numeric"
-                    error={!!errors[field.goalKey]}
-                    errorMessage={errors[field.goalKey]}
-                  />
-                </View>
-              ))}
-            </ScrollView>
-          </KeyboardAwareScrollView>
+      <TouchableWithoutFeedback onPress={dismissKeyboard}>
+        <View style={styles.modalOverlay}>
+          <TouchableWithoutFeedback onPress={() => {}}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>{taskTitle}</Text>
+                <Text style={styles.modalSubtitle}>Please fill in the required information</Text>
+              </View>
+              <KeyboardAwareScrollView
+                style={styles.modalContent}
+                showsVerticalScrollIndicator={false}
+                enableOnAndroid={true}
+                extraScrollHeight={20}
+                enableAutomaticScroll={true}
+                keyboardShouldPersistTaps="handled"
+                contentContainerStyle={styles.scrollContent}>
+                {fields.map((field) => (
+                  <View key={field.goalKey} style={styles.fieldContainer}>
+                    <Text style={styles.fieldLabel}>{field.label}</Text>
+                    <InputField
+                      value={fieldValues[field.goalKey] || ''}
+                      onChangeText={(value) => handleFieldChange(field.goalKey, value)}
+                      placeholder={field.label ? `Enter ${field.label.toLowerCase()}` : ''}
+                      keyboardType="numeric"
+                      error={!!errors[field.goalKey]}
+                      errorMessage={errors[field.goalKey]}
+                    />
+                  </View>
+                ))}
+              </KeyboardAwareScrollView>
 
-          <View style={styles.modalActions}>
-            <PrimaryButton
-              size={ButtonSize.LARGE}
-              style={{ flex: 1, backgroundColor: '#ccc' }}
-              title="Cancel"
-              onPress={handleClose}
-            />
-            <PrimaryButton
-              size={ButtonSize.LARGE}
-              style={{ flex: 1 }}
-              title="Complete Task"
-              onPress={handleSubmit}
-            />
-          </View>
+              <View style={styles.modalActions}>
+                <PrimaryButton
+                  size={ButtonSize.LARGE}
+                  style={{ flex: 1, backgroundColor: '#ccc' }}
+                  title="Cancel"
+                  onPress={handleClose}
+                />
+                <PrimaryButton
+                  size={ButtonSize.LARGE}
+                  style={{ flex: 1 }}
+                  title="Complete Task"
+                  onPress={handleSubmit}
+                />
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 };
@@ -195,5 +211,8 @@ const styles = StyleSheet.create({
     gap: 12,
     borderTopWidth: 1,
     borderTopColor: '#F3F4F6',
+  },
+  scrollContent: {
+    paddingBottom: 20,
   },
 });

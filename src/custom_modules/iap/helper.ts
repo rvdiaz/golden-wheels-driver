@@ -3,6 +3,7 @@ import type { Purchase } from 'expo-iap';
 import { validatePurchaseMutation } from './graphql';
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
+import { IAppPaymentProducts, IAppProductType } from './interfaces';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 const appAppleId = Constants.expoConfig?.extra?.APPLE_APP_ID;
@@ -37,4 +38,8 @@ export const validatePurchaseOnServer = async (
     return false;
   }
   return true;
+};
+
+export const isSubscription = (prod: IAppPaymentProducts) => {
+  return prod.type === IAppProductType.subscription;
 };

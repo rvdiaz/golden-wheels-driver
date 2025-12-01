@@ -13,18 +13,12 @@ const BalancePurchaseModalReal = lazy(() =>
   }))
 );
 
-export const BalancePurchasePricingPlanModal = ({
-  visible,
-  onClose,
-}: {
-  visible: boolean;
-  onClose: () => void;
-}) => {
+export const BalancePurchasePricingPlanModal = () => {
   const isRunningOnExpo = Constants.appOwnership === 'expo';
 
   if (isRunningOnExpo) {
-    return <LazyBalancePurchaseModalStub onClose={onClose} visible={visible} />;
+    return <LazyBalancePurchaseModalStub />;
   }
 
-  return <BalancePurchaseModalReal visible={visible} onClose={onClose} />;
+  return <BalancePurchaseModalReal />;
 };

@@ -13,16 +13,6 @@ interface BalanceWidgetProps {
 }
 
 export const BalanceWidget: React.FC<BalanceWidgetProps> = ({ balance }) => {
-  const [balancePurchaseVisible, setBalancePurchaseVisible] = useState(false);
-
-  const handleAddBalance = () => {
-    setBalancePurchaseVisible(true);
-  };
-
-  const handleBalancePurchaseClose = () => {
-    setBalancePurchaseVisible(false);
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.row}>
@@ -38,15 +28,12 @@ export const BalanceWidget: React.FC<BalanceWidgetProps> = ({ balance }) => {
             <Text style={styles.amount}>{formatCurrency(balance.amount, 2)}</Text>
           </View>
         </View>
-        <TouchableOpacity style={styles.addButton} onPress={handleAddBalance} activeOpacity={0.7}>
+        <BalancePurchasePricingPlanModal />
+        {/*  <TouchableOpacity style={styles.addButton} onPress={handleAddBalance} activeOpacity={0.7}>
           <Icons.Plus size={20} color="#2B7FFF" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       {/* Balance Purchase Modal - Handles the purchase flow */}
-      <BalancePurchasePricingPlanModal
-        visible={balancePurchaseVisible}
-        onClose={handleBalancePurchaseClose}
-      />
     </View>
   );
 };

@@ -29,6 +29,35 @@ export const getSubscriptionPlans = gql`
   }
 `;
 
+export const getAppPaymentProductsQuery = gql`
+  query getAppPaymentProductsPlans($tenant: TenantData!, $active: Boolean) {
+    getAppPaymentProductsPlans(tenant: $tenant, active: $active) {
+      productId
+      name
+      description
+      price
+      hasTrial
+      trialPeriodDays
+      features {
+        id
+        label
+        description
+        meta
+      }
+      subscriptionId
+      tenantId
+      active
+      platforms
+      billingPeriod
+      badge
+      discount
+      order
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 export const validatePurchaseMutation = gql`
   mutation validatePurchase(
     $tenant: TenantData!

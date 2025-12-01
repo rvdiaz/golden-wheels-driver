@@ -9,6 +9,11 @@ export enum Platform {
   WEB = 'web',
 }
 
+export enum IAppProductType {
+  subscription = 'subscription',
+  inapp = 'in-app',
+}
+
 export interface SubscriptionPlanFeature {
   id: string;
   label: string;
@@ -16,7 +21,7 @@ export interface SubscriptionPlanFeature {
   meta?: unknown;
 }
 
-export interface SubscriptionPlan {
+export interface IAppPaymentProducts {
   productId: string;
   name: string;
   description: string;
@@ -34,4 +39,7 @@ export interface SubscriptionPlan {
   order: number;
   createdAt: Date;
   updatedAt: Date;
+  type: IAppProductType;
+  bonusPercentage: number;
+  isPopular: boolean;
 }

@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
 import { formatPrice } from '~/custom_modules/tools/sections/mls_listing/helpers';
 import { theme } from '~/theme/theme';
+import { IAppPaymentProducts } from '~/custom_modules/iap/interfaces';
 
 interface BalancePurchaseOption {
   productId: string;
@@ -18,7 +19,7 @@ interface BalancePurchaseOption {
 }
 
 interface BalancePurchaseItemProps {
-  option: BalancePurchaseOption;
+  option: IAppPaymentProducts;
   product?: any;
   requestPurchase: (sku: string) => void;
 }
@@ -33,11 +34,9 @@ export const BalancePurchaseItem = (props: BalancePurchaseItemProps) => {
   }, [product, option.price]);
 
   const totalBalance = useMemo(() => {
-    const bonus = option.bonusPercentage
-      ? option.balanceAmount * (option.bonusPercentage / 100)
-      : 0;
-    return option.balanceAmount + bonus;
-  }, [option.balanceAmount, option.bonusPercentage]);
+    const bonus = option.bonusPercentage ? option.price * (option.bonusPercentage / 100) : 0;
+    return option.price + bonus;
+  }, [option.price, option.bonusPercentage]);
 
   return (
     <View
@@ -104,8 +103,8 @@ export const BalancePurchaseItem = (props: BalancePurchaseItemProps) => {
         <View style={styles.valueBanner}>
           <Ionicons name="information-circle" size={16} color="#7C3AED" />
           <Text style={styles.valueText}>
-            Best value! Get an extra $
-            {(option.balanceAmount * (option.bonusPercentage / 100)).toFixed(2)} free
+            Best value! Get an extra ${(option.price * (option.bonusPercentage / 100)).toFixed(2)}{' '}
+            free
           </Text>
         </View>
       )}
@@ -125,7 +124,7 @@ export const BalancePurchaseItem = (props: BalancePurchaseItemProps) => {
               {option.features.map((feature, index) => (
                 <View key={index} style={styles.featureRow}>
                   <Ionicons name="checkmark-circle" size={20} color="#10B981" />
-                  <Text style={styles.featureText}>{feature}</Text>
+                  <Text style={styles.featureText}>{feature.label}</Text>
                 </View>
               ))}
             </View>

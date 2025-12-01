@@ -3,7 +3,7 @@ import Text from '~/codidge_components/UI/text';
 import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
 import { formatPrice } from '~/custom_modules/tools/sections/mls_listing/helpers';
-import { BillingPeriod, SubscriptionPlan } from '../interfaces';
+import { BillingPeriod, IAppPaymentProducts } from '../interfaces';
 import { ProductSubscription, ProductSubscriptionAndroid, ProductSubscriptionIOS } from 'expo-iap';
 import { Badge } from '~/codidge_components/UI/badge';
 import TextButton from '~/codidge_components/UI/button/TextButton';
@@ -11,11 +11,11 @@ import { theme } from '~/theme/theme';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
 
 interface PricingPlanItemProps {
-  plan: SubscriptionPlan;
+  plan: IAppPaymentProducts;
   subscription?: ProductSubscription;
   isCurrentPlan?: boolean;
   requestPurchase: (sku: string) => void;
-  allPlans?: SubscriptionPlan[];
+  allPlans?: IAppPaymentProducts[];
 }
 
 export const PricingPlanItem = (props: PricingPlanItemProps) => {

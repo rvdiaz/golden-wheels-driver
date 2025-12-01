@@ -15,6 +15,7 @@ import { theme } from '~/theme/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSystemSettings } from '~/system_setting/customHook';
 import { BalancePurchaseItem } from './balacePurchaseItem';
+import { IAppPaymentProducts } from '~/custom_modules/iap/interfaces';
 
 export interface BalancePurchaseOption {
   productId: string;
@@ -32,7 +33,7 @@ export interface IBalancePurchaseModalViewProps {
   visible: boolean;
   onClose: () => void;
   products: any[];
-  balanceOptions: BalancePurchaseOption[];
+  balanceOptions: IAppPaymentProducts[];
   currentBalance: number;
   requestPurchase: (sku: string) => void;
   termsOfUseUrl?: string;

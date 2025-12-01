@@ -1,8 +1,18 @@
 import { gql } from '@apollo/client';
 
 export const addUserIncome = gql`
-  mutation addUserIncome($tenant: TenantData!, $userId: ID!, $incomeData: UserInputIncome!) {
-    addUserIncome(tenant: $tenant, userId: $userId, incomeData: $incomeData) {
+  mutation addUserIncome(
+    $tenant: TenantData!
+    $userId: ID!
+    $incomeData: UserInputIncome!
+    $templateId: ID
+  ) {
+    addUserIncome(
+      tenant: $tenant
+      userId: $userId
+      incomeData: $incomeData
+      templateId: $templateId
+    ) {
       amount
       createdAt
       description
@@ -22,12 +32,14 @@ export const updateUserIncome = gql`
     $userId: ID!
     $incomeId: ID!
     $incomeData: UserInputIncome!
+    $templateId: ID
   ) {
     updateUserIncome(
       tenant: $tenant
       userId: $userId
       incomeId: $incomeId
       incomeData: $incomeData
+      templateId: $templateId
     ) {
       amount
       createdAt

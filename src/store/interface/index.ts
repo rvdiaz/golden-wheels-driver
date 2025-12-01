@@ -123,6 +123,7 @@ export interface IUser {
   metaData: any;
   modules: IModule[];
   activeTemplateId: string;
+  activeGoalsTemplateId: string;
   address: IUserAddress;
   mlsNumber: string;
   profileSteps: {

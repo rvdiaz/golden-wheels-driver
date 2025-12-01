@@ -35,7 +35,7 @@ const tabs = [
 ];
 
 export default function IncomeForm({ dispose, income }: { dispose: () => void; income?: IIncome }) {
-  const customer = useReactiveVar(userData);
+  const user = useReactiveVar(userData);
 
   const {
     control,
@@ -91,7 +91,7 @@ export default function IncomeForm({ dispose, income }: { dispose: () => void; i
         query: getUserIncomes,
         variables: {
           tenant: { tenantId },
-          userId: customer?.id,
+          userId: user?.id,
         },
       });
 
@@ -101,7 +101,7 @@ export default function IncomeForm({ dispose, income }: { dispose: () => void; i
           query: getUserIncomes,
           variables: {
             tenant: { tenantId },
-            userId: customer?.id,
+            userId: user?.id,
           },
           data: {
             getUserIncomes: [...existingData.getUserIncomes, newIncome],
@@ -135,8 +135,9 @@ export default function IncomeForm({ dispose, income }: { dispose: () => void; i
               tenantId,
             },
             incomeId: income?.id,
-            userId: customer?.id,
+            userId: user?.id,
             incomeData,
+            templateId: user?.activeGoalsTemplateId,
           },
         });
         const updatedIncome = res.data?.updateUserIncome;
@@ -156,8 +157,9 @@ export default function IncomeForm({ dispose, income }: { dispose: () => void; i
             tenant: {
               tenantId,
             },
-            userId: customer?.id,
+            userId: user?.id,
             incomeData,
+            templateId: user?.activeGoalsTemplateId,
           },
         });
         reset({

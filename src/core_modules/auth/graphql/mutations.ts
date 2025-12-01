@@ -6,6 +6,7 @@ export const addUserMutation = gql`
       email
       id
       activeTemplateId
+      activeGoalsTemplateId
       firstName
       lastName
       phone
@@ -95,6 +96,7 @@ export const updateUserMutation = gql`
       email
       id
       activeTemplateId
+      activeGoalsTemplateId
       firstName
       lastName
       phone

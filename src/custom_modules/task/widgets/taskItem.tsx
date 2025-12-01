@@ -70,6 +70,7 @@ export const TaskItem = ({ task }: { task: ITask }) => {
           tenant: { tenantId },
           userId: user?.id,
           completionParam: completionParam,
+          templateId: user?.activeGoalsTemplateId,
           goalTypes, // Add the goalTypes to the mutation variables
         },
         optimisticResponse: {

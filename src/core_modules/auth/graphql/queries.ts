@@ -6,6 +6,7 @@ export const getUserQuery = gql`
       email
       id
       activeTemplateId
+      activeGoalsTemplateId
       firstName
       lastName
       phone
@@ -98,6 +99,7 @@ export const onUserUpdatedSubscription = gql`
         email
         id
         activeTemplateId
+        activeGoalsTemplateId
         firstName
         lastName
         phone

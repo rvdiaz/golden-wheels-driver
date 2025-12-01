@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  Modal,
-  TouchableOpacity,
-  ScrollView,
-  Platform,
-  Keyboard,
-  TouchableWithoutFeedback,
-} from 'react-native';
+import { View, StyleSheet, Modal, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { theme } from '~/theme/theme';
 import InputField from '../form/inputs/inputField';
 import PrimaryButton from '../button/PrimaryButton';

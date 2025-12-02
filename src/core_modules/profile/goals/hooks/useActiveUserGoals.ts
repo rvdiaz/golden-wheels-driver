@@ -17,7 +17,7 @@ export const useActiveUserGoals = () => {
           tenantId,
         },
         userId: user?.id,
-        userActiveTemplateId: user?.activeTemplateId,
+        templateId: user?.activeGoalsTemplateId,
       },
       fetchPolicy: 'network-only',
     }

@@ -3,11 +3,11 @@ import { StyleSheet, ScrollView, View } from 'react-native';
 import { Header } from '~/codidge_components/UI/header';
 import { useNavigation } from '@react-navigation/native';
 import { useActiveUserGoals } from './hooks/useActiveUserGoals';
-import { GoalList } from './components/GoalList';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { subscriptionStatusData } from '~/store/subscription';
 import { useReactiveVar } from '@apollo/client';
 import { SubscriptionCardButton } from '~/custom_modules/iap/components/subscriptionCard';
+import { GroupedGoalsList } from './components/GoalList';
 
 export const GoalsScreen = () => {
   const navigation = useNavigation();
@@ -15,19 +15,21 @@ export const GoalsScreen = () => {
 
   const { goals, isLoading } = useActiveUserGoals();
 
-
   return (
     <PageSafeContainer style={styles.container}>
       <Header title="Goals" showBack onBack={() => navigation.goBack()} />
-{ hasActiveSubscription ? <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.contentContainer}
-        showsVerticalScrollIndicator={false}>
-        <View style={styles.listContainer}>
-          <GoalList goals={goals || []} displayList={goals || []} isLoading={isLoading} />
-        </View>
-      </ScrollView>:<SubscriptionCardButton/>}
-      
+      {hasActiveSubscription ? (
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.contentContainer}
+          showsVerticalScrollIndicator={false}>
+          <View style={styles.listContainer}>
+            <GroupedGoalsList goals={goals || []} isLoading={isLoading} />
+          </View>
+        </ScrollView>
+      ) : (
+        <SubscriptionCardButton />
+      )}
     </PageSafeContainer>
   );
 };

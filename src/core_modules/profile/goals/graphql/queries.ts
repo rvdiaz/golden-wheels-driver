@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const getActiveUserGoals = gql`
-  query getActiveUserGoals($tenant: TenantData!, $userId: String!) {
-    getActiveUserGoals(tenant: $tenant, userId: $userId) {
+  query getActiveUserGoals($tenant: TenantData!, $userId: String!, $templateId: ID!) {
+    getActiveUserGoals(tenant: $tenant, userId: $userId, templateId: $templateId) {
       progressId
       userId
       goalId
@@ -18,6 +18,7 @@ export const getActiveUserGoals = gql`
       updatedAt
       completed
       active
+      group
     }
   }
 `;

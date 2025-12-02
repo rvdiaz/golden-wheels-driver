@@ -1,273 +1,171 @@
-import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Animated } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { IGoalProgress } from '../interfaces';
-import { GoalItem } from './GoalItem';
-import { theme } from '~/theme/theme';
-import { Slider } from '~/codidge_components/UI/slider';
-import Text from '~/codidge_components/UI/text';
+import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 
-// Main GoalList component with loading state
-export const GoalList = ({
-  goals,
-  displayList,
-  isLoading = false,
-}: {
-  goals: IGoalProgress[];
-  displayList: IGoalProgress[];
-  isLoading?: boolean;
-}) => {
-  // Show loading skeleton when isLoading is true
-  if (isLoading) {
-    return <GoalListSkeleton />;
-  }
+interface GoalItemProps {
+  goal: IGoalProgress;
+}
 
-  // Filter only active goals for calculations
-  const activeGoals = goals.filter((goal) => goal.active);
-  const completedGoals = activeGoals.filter((goal) => goal.completed);
-  const totalGoals = activeGoals.length;
-  const completedCount = completedGoals.length;
-
-  // Calculate overall progress as average of all active goals
-  const overallProgress =
-    totalGoals > 0
-      ? activeGoals.reduce((sum, goal) => {
-          const goalProgress = Math.min((goal.value / goal.targetValue) * 100, 100);
-          return sum + goalProgress;
-        }, 0) / totalGoals
-      : 0;
+const GoalItem: React.FC<GoalItemProps> = ({ goal }) => {
+  const progressPercentage = Math.min((goal.value / goal.targetValue) * 100, 100);
 
   return (
-    <View style={styles.goalsCard}>
-      <View style={styles.goalsHeader}>
-        <Text style={styles.goalsTitle}>Active Goals</Text>
-        <Text style={styles.goalsDate}>
-          {completedCount}/{totalGoals} Complete
+    <View style={styles.goalItem}>
+      <View style={styles.goalHeader}>
+        <Text style={styles.goalName}>{goal.goalName}</Text>
+        <Text style={styles.goalValue}>
+          {goal.value} / {goal.targetValue} {goal.unit}
         </Text>
       </View>
-      <Slider
-        progressPercentage={overallProgress}
-        primaryColor={theme.colors.primary}
-        progressBottomData="overall"
-      />
-      <View
-        style={{
-          marginTop: 12,
-        }}>
-        {displayList.map((goal) => (
-          <GoalItem key={goal.progressId} goal={goal} />
-        ))}
+
+      <View style={styles.progressBarBackground}>
+        <View style={[styles.progressBarFill, { width: `${progressPercentage}%` }]} />
       </View>
     </View>
   );
 };
 
-// Shimmer loading component
-const ShimmerPlaceholder = ({
-  width,
-  height,
-  borderRadius = 4,
-}: {
-  width: number | `${number}%`;
-  height: number;
-  borderRadius?: number;
-}) => {
-  const shimmerAnimation = useRef(new Animated.Value(0)).current;
+interface GroupedGoalsProps {
+  goals: IGoalProgress[];
+  isLoading: boolean;
+}
 
-  useEffect(() => {
-    const shimmer = () => {
-      Animated.sequence([
-        Animated.timing(shimmerAnimation, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(shimmerAnimation, {
-          toValue: 0,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-      ]).start(() => shimmer());
-    };
+export const GroupedGoalsList: React.FC<GroupedGoalsProps> = ({ goals, isLoading }) => {
+  if (isLoading) {
+    return <PageLoading />;
+  }
 
-    shimmer();
-  }, [shimmerAnimation]);
+  if (!goals || goals.length === 0) {
+    return (
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyTitle}>No Active Goals</Text>
+        <Text style={styles.emptyText}>Start tracking your progress!</Text>
+      </View>
+    );
+  }
 
-  const translateX = shimmerAnimation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [-100, 100],
-  });
-
-  return (
-    <View
-      style={[
-        styles.shimmerContainer,
-        {
-          width,
-          height,
-          borderRadius,
-          backgroundColor: '#E5E7EB',
-        },
-      ]}>
-      <Animated.View
-        style={[
-          styles.shimmerOverlay,
-          {
-            transform: [{ translateX }],
-          },
-        ]}
-      />
-    </View>
+  // Group goals by their group property
+  const groupedGoals = goals.reduce(
+    (acc, goal) => {
+      const groupName = goal.group || 'Other';
+      if (!acc[groupName]) {
+        acc[groupName] = [];
+      }
+      acc[groupName].push(goal);
+      return acc;
+    },
+    {} as Record<string, IGoalProgress[]>
   );
-};
 
-// Skeleton GoalItem component
-const GoalItemSkeleton = () => {
   return (
-    <View style={styles.goalItemSkeleton}>
-      <View style={styles.goalContentSkeleton}>
-        <View style={styles.goalHeaderSkeleton}>
-          <View style={styles.goalInfoSkeleton}>
-            {/* Goal title skeleton */}
-            <ShimmerPlaceholder width="75%" height={16} borderRadius={4} />
-            {/* Goal description skeleton */}
-            <View style={{ marginTop: 8 }}>
-              <ShimmerPlaceholder width="90%" height={12} borderRadius={3} />
-              <View style={{ marginTop: 4 }}>
-                <ShimmerPlaceholder width="65%" height={12} borderRadius={3} />
+    <View style={styles.container}>
+      {Object.entries(groupedGoals).map(([groupName, groupGoals]) => (
+        <View key={groupName} style={styles.groupCard}>
+          <Text style={styles.groupTitle}>{groupName}</Text>
+
+          <View style={styles.goalsContainer}>
+            {groupGoals.map((goal, index) => (
+              <View key={goal.progressId}>
+                <GoalItem goal={goal} />
+                {index < groupGoals.length - 1 && <View style={styles.divider} />}
               </View>
-            </View>
+            ))}
           </View>
         </View>
-
-        {/* Progress bar skeleton */}
-        <View style={styles.progressBarSkeleton}>
-          <ShimmerPlaceholder width="100%" height={8} borderRadius={4} />
-        </View>
-
-        <View style={styles.goalMetaSkeleton}>
-          {/* Frequency badge skeleton */}
-          <ShimmerPlaceholder width={70} height={24} borderRadius={14} />
-          <View style={styles.rightFooterSkeleton}>
-            {/* Progress text skeleton */}
-            <ShimmerPlaceholder width={60} height={12} borderRadius={3} />
-            {/* Period skeleton */}
-            <ShimmerPlaceholder width={80} height={12} borderRadius={3} />
-          </View>
-        </View>
-      </View>
-    </View>
-  );
-};
-
-// Skeleton GoalList component
-const GoalListSkeleton = () => {
-  return (
-    <View style={styles.goalsCard}>
-      <View style={styles.goalsHeader}>
-        <ShimmerPlaceholder width={100} height={18} borderRadius={4} />
-        <ShimmerPlaceholder width={80} height={14} borderRadius={4} />
-      </View>
-
-      {/* Progress bar skeleton */}
-      <View style={styles.progressBarMainSkeleton}>
-        <ShimmerPlaceholder width="100%" height={8} borderRadius={4} />
-        <View style={styles.progressInfoSkeleton}>
-          <ShimmerPlaceholder width={90} height={12} borderRadius={3} />
-          <ShimmerPlaceholder width={70} height={12} borderRadius={3} />
-        </View>
-      </View>
-
-      <View>
-        {/* Render 3-4 skeleton goal items */}
-        {Array.from({ length: 3 }).map((_, index) => (
-          <GoalItemSkeleton key={index} />
-        ))}
-      </View>
+      ))}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  goalsCard: {
-    flex: 2,
-    backgroundColor: '#F8FAFC',
-    borderRadius: theme.borderRadius.lg,
-    padding: 12,
-    paddingVertical: 16,
+  container: {
+    flex: 1,
   },
-  goalsHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
+    padding: 32,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#6B7280',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 32,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 8,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#6B7280',
+    textAlign: 'center',
+  },
+  groupCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  groupTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#111827',
     marginBottom: 16,
   },
-  goalsTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: theme.colors.textColor,
+  goalsContainer: {
+    gap: 0,
   },
-  goalsDate: {
-    fontSize: 12,
-    color: theme.colors.textColor,
-    fontWeight: '400',
+  goalItem: {
+    paddingVertical: 12,
   },
-  // Shimmer styles
-  shimmerContainer: {
-    overflow: 'hidden',
-  },
-  shimmerOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.4)',
-    width: '30%',
-  },
-  // Skeleton styles
-  progressBarMainSkeleton: {
-    marginBottom: 20,
-  },
-  progressInfoSkeleton: {
+  goalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 8,
+    marginBottom: 10,
   },
-  progressBarSkeleton: {
-    marginBottom: 12,
-    marginTop: 8,
-  },
-  goalItemSkeleton: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    padding: 12,
-    marginBottom: 8,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: '#F3F4F6',
-    backgroundColor: 'white',
-  },
-  goalContentSkeleton: {
+  goalName: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#374151',
     flex: 1,
+    marginRight: 12,
   },
-  goalHeaderSkeleton: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+  goalValue: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#6366F1',
   },
-  goalInfoSkeleton: {
-    flex: 1,
-    marginRight: 8,
+  progressBarBackground: {
+    height: 6,
+    backgroundColor: '#E5E7EB',
+    borderRadius: 3,
+    overflow: 'hidden',
   },
-  goalMetaSkeleton: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-    marginTop: 8,
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: '#6366F1',
+    borderRadius: 3,
   },
-  rightFooterSkeleton: {
-    alignItems: 'flex-end',
-    gap: 2,
+  divider: {
+    height: 1,
+    backgroundColor: '#F3F4F6',
+    marginVertical: 4,
   },
 });

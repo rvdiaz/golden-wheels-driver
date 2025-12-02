@@ -16,4 +16,5 @@ export interface IGoalProgress {
   createdAt: Date;
   updatedAt: Date;
   completed: boolean;
+  group: string;
 }

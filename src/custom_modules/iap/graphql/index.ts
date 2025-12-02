@@ -25,6 +25,7 @@ export const getSubscriptionPlans = gql`
       order
       createdAt
       updatedAt
+      type
     }
   }
 `;
@@ -54,6 +55,7 @@ export const getAppPaymentProductsQuery = gql`
       order
       createdAt
       updatedAt
+      type
     }
   }
 `;

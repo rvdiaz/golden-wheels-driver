@@ -64,12 +64,14 @@ export const ToolsScreen: React.FC = () => {
     const isLocked = requiresSubscription && !hasSubscription;
 
     const handleToolPress = () => {
-      if (isLocked && !comingSoon) {
-        // Show paywall for locked tools
-        paywallVisibility(true);
-      } else {
-        // Navigate normally for unlocked tools
-        navigation.navigate(tool.moduleKey as never);
+      if (!comingSoon) {
+        if (isLocked) {
+          // Show paywall for locked tools
+          paywallVisibility(true);
+        } else {
+          // Navigate normally for unlocked tools
+          navigation.navigate(tool.moduleKey as never);
+        }
       }
     };
 

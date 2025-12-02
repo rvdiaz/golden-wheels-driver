@@ -36,9 +36,9 @@ const validationRules = {
   },
   zipCode: {
     required: 'Zip Code is required',
-    minLength: {
-      value: 2,
-      message: 'Zip Code must be at least 2 characters',
+    pattern: {
+      value: /^[0-9]{5}$/,
+      message: 'Zip Code must be 5 digits (US only)',
     },
   },
   brokerage: {

@@ -13,6 +13,7 @@ export const addUserMutation = gql`
       mlsNumber
       vipMember
       brokerage
+      durationMs
       financialGoals {
         avgCommissionByRents
         avgCommissionBySales
@@ -103,6 +104,7 @@ export const updateUserMutation = gql`
       mlsNumber
       vipMember
       brokerage
+      durationMs
       financialGoals {
         avgCommissionByRents
         avgCommissionBySales

@@ -13,6 +13,7 @@ export const getUserQuery = gql`
       mlsNumber
       vipMember
       brokerage
+      durationMs
       financialGoals {
         avgCommissionByRents
         avgCommissionBySales
@@ -106,6 +107,7 @@ export const onUserUpdatedSubscription = gql`
         mlsNumber
         vipMember
         brokerage
+        durationMs
         financialGoals {
           avgCommissionByRents
           avgCommissionBySales

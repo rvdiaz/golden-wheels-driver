@@ -20,6 +20,7 @@ import { LoadingFirstScreen } from './header/loadingFirstScreen';
 import { StartPointScreen } from '~/core_modules/auth';
 import { IAuthModuleKeys } from '~/codidge_components/auth/interfaces';
 import { useGlobalSubscriptions } from '~/hooks/useGlobalSubscriptions';
+import { useUserSessionTimeTracking } from '~/hooks/useUserSessionTimeTracking';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -101,6 +102,8 @@ export const Navigation = () => {
 
   useGlobalSubscriptions();
   usePushNotificationTokenSetup();
+
+  useUserSessionTimeTracking({ user: userInfo });
 
   const tenantModules = getTenantRoutes(userInfo);
   const nestedNav = createNestedNavigationScreens(tenantModules, Stack);

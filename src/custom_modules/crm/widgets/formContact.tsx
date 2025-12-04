@@ -24,6 +24,8 @@ import { ContactSelector } from './contactsPhone/contactSelector';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
 import * as Contacts from 'expo-contacts';
+import PhoneInput from '~/codidge_components/UI/form/inputs/phoneNumberInput';
+import { parsePhoneNumber, validatePhoneNumber } from '~/codidge_components/helpers';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -310,32 +312,23 @@ export default function ContactForm({
                 rules={{
                   required: 'Phone number is required',
                   validate: (value) => {
-                    const digits = value.replace(/\D/g, ''); // remove formatting
-                    if (digits.length < 10) return 'Please enter a valid phone number';
-                    return true;
+                    const parsed = parsePhoneNumber(value);
+                    const validation = validatePhoneNumber(parsed.number, parsed.country);
+                    return validation.isValid || validation.message || 'Invalid phone number';
                   },
                 }}
-                render={({ field: { onChange, onBlur, value } }) => {
-                  const handleChange = (text: string) => {
-                    const formatted = formatPhoneNumberInput(text);
-                    onChange(formatted);
-                  };
-
-                  return (
-                    <InputField
-                      leftIcon={<Icons.Phone size={16} color="#6B7280" />}
-                      label="Phone"
-                      required={true}
-                      placeholder="(555) 123-4567"
-                      placeholderTextColor="#9ca3af"
-                      value={value}
-                      onChangeText={handleChange}
-                      keyboardType="phone-pad"
-                      error={!!errors.phone}
-                      errorMessage={errors.phone?.message}
-                    />
-                  );
-                }}
+                render={({ field: { onChange, value } }) => (
+                  <PhoneInput
+                    value={value}
+                    onChangeValue={onChange}
+                    label="Phone Number"
+                    placeholder="Enter your phone number"
+                    required={true}
+                    error={!!errors.phone}
+                    errorMessage={errors.phone?.message}
+                    defaultCountry="US"
+                  />
+                )}
               />
             </View>
           </View>

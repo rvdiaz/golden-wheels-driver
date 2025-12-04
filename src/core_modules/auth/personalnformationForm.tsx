@@ -74,7 +74,18 @@ export const PersonalInformation = ({
     formState: { errors },
   } = useFormContext<IPersonalData>();
 
-  const hasErrors = Object.keys(errors).length > 0;
+  const errorKeys = Object.keys(errors);
+
+  const finalErrorKeys = errorKeys.filter((erroKey) => {
+    if (erroKey !== 'mlsNumber') {
+      return erroKey;
+    }
+    if (erroKey === 'mlsNumber' && !notAgentCheckbox) {
+      return erroKey;
+    }
+  });
+
+  const hasErrors = finalErrorKeys.length > 0;
 
   const onSubmit = (data: IPersonalData) => {
     onNext(data);

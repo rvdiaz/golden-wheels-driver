@@ -10,7 +10,7 @@ export const userData = makeVar<(IUser & { loadedFromStorage?: boolean }) | null
 const updateSubscriptionStatusFromUser = (user?: IUser | null) => {
   if (!user || !user.subscription) {
     updateSubscriptionStatus({
-      hasActiveSubscription: false,
+      hasActiveSubscription: user?.vipMember ?? false,
     });
     return;
   }

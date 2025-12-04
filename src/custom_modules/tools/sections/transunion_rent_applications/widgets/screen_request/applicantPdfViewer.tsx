@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Modal, TouchableOpacity, StyleSheet, Linking, Alert, Share } from 'react-native';
+import { View, Modal, TouchableOpacity, StyleSheet, Alert, Share } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { IExtendedRenterInput } from '../../interfaces';
 import Text from '~/codidge_components/UI/text';
@@ -22,7 +22,7 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({ visible, onClose
     try {
       await Share.share({
         url: pdfUrl, // works on iOS and Android (PDF link)
-        message: `View the report: ${pdfUrl}`,
+        message: `View the report`,
       });
     } catch (error) {
       console.error('Share failed:', error);
@@ -45,8 +45,8 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({ visible, onClose
         {/* Download Button */}
         <View style={styles.actionsContainer}>
           <TouchableOpacity onPress={handleDownload} style={styles.downloadButton}>
-            <Text style={styles.downloadIcon}>⬇️</Text>
-            <Text style={styles.downloadButtonText}>Download PDF</Text>
+            <Text style={styles.downloadIcon}>🔗</Text>
+            <Text style={styles.downloadButtonText}>Share Report</Text>
           </TouchableOpacity>
         </View>
 

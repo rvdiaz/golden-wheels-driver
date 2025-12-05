@@ -9,6 +9,8 @@ import { BreakdownItem, detectStateFromZip, GEOGRAPHIC_COSTS, NetSheetResult } f
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
+import { ToolDisclaimer } from '../../components/toolsDispolaimer';
+import { toolsDisclaimers } from '../../data';
 
 export const SellerNetSheetPage = () => {
   const navigation = useNavigation();
@@ -346,6 +348,7 @@ export const SellerNetSheetPage = () => {
               </View>
             </View>
           </View>
+          <ToolDisclaimer value={toolsDisclaimers.sellerNetSheet} />
         </ScrollView>
       </PageSafeContainer>
     );
@@ -470,31 +473,27 @@ export const SellerNetSheetPage = () => {
               />
               <Text style={styles.inputHint}>One-year home warranty for buyer (optional)</Text>
             </View>
-
-            <PrimaryButton
-              leftWidget={<Calculator color="#fff" size={20} />}
-              onPress={calculateNetSheet}
-              size={ButtonSize.LARGE}
-              title="Calculate Net Proceeds"
-            />
-
-            {/* Info Alert */}
-            <View style={styles.alert}>
-              <AlertCircle color="#3b82f6" size={16} />
-              <View style={styles.alertContent}>
-                <Text style={styles.alertText}>
-                  <Text style={styles.alertBold}>DISCLAIMER:</Text> This is an estimate only for a
-                  single family residential home purchase. Additional third party fees such as real
-                  estate broker fees, county, municipal, state taxes, federal taxes, liens,
-                  judgments, surveys, appraisals, special assessments or surcharges may apply. My
-                  Virtual Boss, Inc. cannot be held responsible for errors or miscalculations due to
-                  website error or user error.
-                </Text>
-              </View>
-            </View>
           </View>
         </View>
       </ScrollView>
+      <View
+        style={{
+          paddingHorizontal: 16,
+          paddingVertical: 10,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          gap: 10,
+        }}>
+        <PrimaryButton
+          leftWidget={<Calculator color="#fff" size={20} />}
+          onPress={calculateNetSheet}
+          size={ButtonSize.LARGE}
+          title="Calculate Net Proceeds"
+          style={{
+            flex: 1,
+          }}
+        />
+      </View>
     </PageSafeContainer>
   );
 };
@@ -609,27 +608,7 @@ const styles = StyleSheet.create({
   mt24: {
     marginTop: 24,
   },
-  alert: {
-    flexDirection: 'row',
-    gap: 12,
-    padding: 16,
-    backgroundColor: '#eff6ff',
-    borderWidth: 1,
-    borderColor: '#bfdbfe',
-    borderRadius: 8,
-    marginTop: 24,
-  },
-  alertContent: {
-    flex: 1,
-  },
-  alertText: {
-    fontSize: 14,
-    color: '#1e40af',
-    lineHeight: 20,
-  },
-  alertBold: {
-    fontWeight: '700',
-  },
+
   headerSection: {
     flexDirection: 'row',
     justifyContent: 'space-between',

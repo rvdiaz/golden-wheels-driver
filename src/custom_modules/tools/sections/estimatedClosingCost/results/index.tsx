@@ -3,6 +3,8 @@ import { View, Text, TextInput, ScrollView, TouchableOpacity, StyleSheet } from 
 import * as Icons from 'lucide-react-native';
 import { ClosingCostResult, CostBreakdownItem } from '..';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import { ToolDisclaimer } from '~/custom_modules/tools/components/toolsDispolaimer';
+import { toolsDisclaimers } from '~/custom_modules/tools/data';
 
 export const EstimatedClosingCostResults = ({
   result,
@@ -139,18 +141,12 @@ export const EstimatedClosingCostResults = ({
           </View>
           <Icons.DollarSign size={36} color="#10B981" />
         </View>
-
-        {/* Next Steps Info */}
-        <View style={styles.nextStepsAlert}>
-          <Icons.CheckCircle size={20} color="#10B981" />
-          <Text style={styles.nextStepsText}>
-            <Text style={styles.nextStepsBold}>Next Steps: </Text>
-            Use this estimate to prepare your finances. Request a Loan Estimate from your lender
-            within 3 days of applying for specific, itemized costs. Shop around with multiple
-            lenders to compare fees and rates. All costs above can be edited to match your actual
-            quotes.
-          </Text>
-        </View>
+        <ToolDisclaimer
+          containerStyles={{
+            marginHorizontal: 16,
+          }}
+          value={toolsDisclaimers.closingCostCalculator}
+        />
       </ScrollView>
     </PageSafeContainer>
   );
@@ -345,24 +341,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#111827',
-  },
-  nextStepsAlert: {
-    flexDirection: 'row',
-    backgroundColor: '#D1FAE5',
-    borderWidth: 1,
-    borderColor: '#6EE7B7',
-    borderRadius: 8,
-    padding: 12,
-    margin: 16,
-  },
-  nextStepsText: {
-    flex: 1,
-    fontSize: 12,
-    color: '#047857',
-    marginLeft: 8,
-    lineHeight: 18,
-  },
-  nextStepsBold: {
-    fontWeight: '600',
   },
 });

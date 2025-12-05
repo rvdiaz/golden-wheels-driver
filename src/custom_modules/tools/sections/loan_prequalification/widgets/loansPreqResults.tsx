@@ -17,6 +17,8 @@ import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
 import { GridTabs } from '~/codidge_components/UI/tabs';
 import { theme } from '~/theme/theme';
+import { ToolDisclaimer } from '~/custom_modules/tools/components/toolsDispolaimer';
+import { toolsDisclaimers } from '~/custom_modules/tools/data';
 
 interface LoanProgram {
   name: string;
@@ -402,19 +404,14 @@ export const LoansPreqResults: React.FC<LoansPreqResultsProps> = ({ results, onD
                 </View>
               )}
             </Card>
-
-            {/* General Disclaimer */}
-            <View style={styles.disclaimerBox}>
-              <Info size={16} color="#6B7280" />
-              <Text style={styles.disclaimerText}>
-                <Text style={{ fontWeight: '600' }}>Note:</Text> This is an estimate based on
-                debt-to-income ratios only. Final loan approval depends on credit score, employment
-                history, assets, and other factors. Recommend clients get pre-approved with a
-                qualified lender.
-              </Text>
-            </View>
           </View>
         </View>
+        <ToolDisclaimer
+          containerStyles={{
+            marginHorizontal: 16,
+          }}
+          value={toolsDisclaimers.preQualificationCalculator}
+        />
       </ScrollView>
     </PageSafeContainer>
   );
@@ -424,7 +421,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 16,
-    paddingBottom: 32,
   },
   content: {
     paddingHorizontal: 16,
@@ -759,20 +755,5 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#E5E7EB',
     marginVertical: 8,
-  },
-  disclaimerBox: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    backgroundColor: '#F9FAFB',
-    padding: 16,
-    borderRadius: 12,
-    gap: 12,
-    marginTop: 8,
-  },
-  disclaimerText: {
-    fontSize: 13,
-    color: '#6B7280',
-    flex: 1,
-    lineHeight: 20,
   },
 });

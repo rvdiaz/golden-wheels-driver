@@ -37,6 +37,8 @@ import {
   generateMockOwnerData,
   OwnerData,
 } from './mocked';
+import { ToolDisclaimer } from '../../components/toolsDispolaimer';
+import { toolsDisclaimers } from '../../data';
 
 export const ForeClosuresPage = () => {
   const navigation = useNavigation();
@@ -772,15 +774,7 @@ export const ForeClosuresPage = () => {
           </View>
         )}
 
-        {/* Info Alert */}
-        <View style={styles.alert}>
-          <Info color="#3b82f6" size={16} />
-          <Text style={styles.alertText}>
-            This tool helps you find foreclosure properties with complete owner information and
-            comparable sales data. Use the "Get Details" button to access skip trace data, contact
-            information, and market analysis for each property.
-          </Text>
-        </View>
+        <ToolDisclaimer value={toolsDisclaimers.foreclosureCalculator} />
       </ScrollView>
 
       {renderStageModal()}

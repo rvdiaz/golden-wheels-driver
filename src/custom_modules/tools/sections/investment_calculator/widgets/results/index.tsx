@@ -13,6 +13,8 @@ import { FutureProjections } from './futureProjections';
 import { ShareResults } from '../sharing/sharingButton';
 import IconButton from '~/codidge_components/UI/button/IconButton';
 import { theme } from '~/theme/theme';
+import { ToolDisclaimer } from '~/custom_modules/tools/components/toolsDispolaimer';
+import { toolsDisclaimers } from '~/custom_modules/tools/data';
 
 interface ResultsDisplayProps {
   results: CalculationResults;
@@ -190,7 +192,14 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ results, onDispo
         />
         {/* Target Analisyts */}
         <TargetAnalysis results={results} />
+        <ToolDisclaimer
+          containerStyles={{
+            marginVertical: 16,
+          }}
+          value={toolsDisclaimers.investmentCalculator}
+        />
       </ScrollView>
+
       {/* Share Modal */}
       <ShareResults
         results={results}

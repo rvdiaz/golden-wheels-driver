@@ -3,6 +3,7 @@ import { Alert, Linking, Share } from 'react-native';
 import { CalculationResults } from '../../interfaces';
 import { generateMailtoLink } from './sharingHtml';
 import { ShareModal } from './sharingModal';
+import { briefDisclaimers } from '~/custom_modules/tools/data';
 
 interface ShareResultsProps {
   results: CalculationResults;
@@ -66,6 +67,7 @@ Investment Analysis Summary
 💰 Annual Cash Flow: $${results.annualCashFlow.toLocaleString()}
 📅 Monthly Cash Flow: $${(results.annualCashFlow / 12).toLocaleString()}
 🏦 DSCR: ${results.debtServiceCoverageRatio.toFixed(2)}x
+⚠️ Disclaimer: ${briefDisclaimers.investmentCalculator}
       `.trim();
 
       const result = await Share.share({

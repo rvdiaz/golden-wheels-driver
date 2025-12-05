@@ -603,17 +603,6 @@ export default function EstimatedClosingCostCalculator() {
         <TouchableOpacity style={styles.calculateButton} onPress={calculateClosingCosts}>
           <Text style={styles.calculateButtonText}>Calculate Closing Costs</Text>
         </TouchableOpacity>
-
-        {/* Info Alert */}
-        <View style={styles.infoAlert}>
-          <Icons.Info size={20} color="#6B7280" />
-          <Text style={styles.infoText}>
-            <Text style={styles.infoTextBold}>Estimate Only: </Text>
-            These are estimated costs based on typical fees. Actual closing costs vary by location,
-            lender, and specific circumstances. Always request a Loan Estimate from your lender for
-            precise figures.
-          </Text>
-        </View>
       </ScrollView>
     </PageSafeContainer>
   );
@@ -756,25 +745,6 @@ const styles = StyleSheet.create({
   calculateButtonText: {
     color: 'white',
     fontSize: 16,
-    fontWeight: '600',
-  },
-  infoAlert: {
-    flexDirection: 'row',
-    backgroundColor: '#F3F4F6',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
-    padding: 12,
-    margin: 16,
-  },
-  infoText: {
-    flex: 1,
-    fontSize: 12,
-    color: '#6B7280',
-    marginLeft: 8,
-    lineHeight: 18,
-  },
-  infoTextBold: {
     fontWeight: '600',
   },
 });

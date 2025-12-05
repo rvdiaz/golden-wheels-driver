@@ -1,3 +1,4 @@
+import { toolsDisclaimers } from '~/custom_modules/tools/data';
 import { formatCurrency, formatPercentage } from '../../helpers';
 import { CalculationResults } from '../../interfaces';
 
@@ -571,6 +572,11 @@ export const generatePlainTextSummary = (
   Year 3 Value:               ${formatCurrency(results.projections.year3.propertyValue)}
   Year 5 Value:               ${formatCurrency(results.projections.year5.propertyValue)}
   
+  ${divider}
+  DISCLAIMER
+  ${divider}
+  ${toolsDisclaimers.investmentCalculator}
+
   Generated: ${new Date().toLocaleDateString()}
       `.trim();
   }

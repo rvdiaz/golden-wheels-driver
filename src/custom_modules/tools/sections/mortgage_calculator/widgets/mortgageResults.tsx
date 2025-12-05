@@ -8,6 +8,8 @@ import { Header } from '~/codidge_components/UI/header';
 import { Card } from '~/codidge_components/UI/card';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
+import { ToolDisclaimer } from '~/custom_modules/tools/components/toolsDispolaimer';
+import { toolsDisclaimers } from '~/custom_modules/tools/data';
 
 interface MortgageCalculatorResultsProps {
   calculation: MortgageCalculation;
@@ -193,6 +195,7 @@ export const MortgageCalculatorResults: React.FC<MortgageCalculatorResultsProps>
             </Card>
           </View>
         </View>
+        <ToolDisclaimer value={toolsDisclaimers.mortgageCalculator} />
       </ScrollView>
     </PageSafeContainer>
   );

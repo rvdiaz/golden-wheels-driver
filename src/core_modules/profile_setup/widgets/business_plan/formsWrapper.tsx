@@ -1,14 +1,13 @@
-import { Keyboard, KeyboardAvoidingView, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, StyleSheet, View } from 'react-native';
 import { FadeTransition } from '~/codidge_components/UI/transitions/fadeIn';
 import { StepIcon } from '../../../on_boarding/widgets/stepIcon';
 import { Slider } from '~/codidge_components/UI/slider';
 import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
-import { ArrowLeft, ArrowRight } from 'lucide-react-native';
+import { ArrowLeft, ArrowRight, Home } from 'lucide-react-native';
 import { theme } from '~/theme/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import Text from '~/codidge_components/UI/text';
-import { useEffect, useState } from 'react';
 import IconButton from '~/codidge_components/UI/button/IconButton';
 
 export interface HeaderConfig {
@@ -99,6 +98,16 @@ export const FormWrapper = ({
       </View>
       {/* Header Section */}
       <View style={[styles.headerContainer]}>
+        {header?.onBack && (
+          <IconButton
+            onPress={header?.onBack}
+            style={{
+              backgroundColor: 'transparent',
+              alignSelf: 'flex-start',
+            }}
+            icon={<Home color="#FFF" size={20} />}
+          />
+        )}
         <View style={styles.headerContent}>
           <StepProgress
             currentStep={currentStep ?? 0}

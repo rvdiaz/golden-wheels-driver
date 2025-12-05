@@ -13,6 +13,8 @@ import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/Primar
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { ToolDisclaimer } from '../../components/toolsDispolaimer';
+import { toolsDisclaimers } from '../../data';
 
 export const MortgageCalculatorScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -115,17 +117,29 @@ export const MortgageCalculatorScreen: React.FC = () => {
                 isDownPaymentPercent={isDownPaymentPercent}
                 setIsDownPaymentPercent={setIsDownPaymentPercent}
               />
-              <PrimaryButton
-                size={ButtonSize.LARGE}
-                title="Show Results"
-                onPress={() => {
-                  setshowResults(true);
-                }}
-                rightWidget={<Icons.ChevronRight color="#FFF" />}
-              />
             </Card>
           </ScrollView>
         </KeyboardAwareScrollView>
+        <View
+          style={{
+            paddingHorizontal: 16,
+            paddingVertical: 10,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            gap: 10,
+          }}>
+          <PrimaryButton
+            size={ButtonSize.LARGE}
+            title="Show Results"
+            onPress={() => {
+              setshowResults(true);
+            }}
+            style={{
+              flex: 1,
+            }}
+            rightWidget={<Icons.ChevronRight color="#FFF" />}
+          />
+        </View>
         <Modal
           animationType="slide"
           transparent={true}

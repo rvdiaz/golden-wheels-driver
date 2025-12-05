@@ -204,6 +204,9 @@ export const BusinessPlanFlow = ({
     // Step 2: Vision and Mission
     {
       header: {
+        onBack: () => {
+          dispose();
+        },
         icon: Eye,
         title: 'Vision and Mission',
         subtitle: 'Define your vision and mission for success',
@@ -226,6 +229,9 @@ export const BusinessPlanFlow = ({
     // Step 3: SWOT - Strengths
     {
       header: {
+        onBack: () => {
+          dispose();
+        },
         icon: Star,
         title: 'SWOT Analysis - Strengths',
         subtitle: 'What are your key strengths as a real estate professional?',
@@ -248,6 +254,9 @@ export const BusinessPlanFlow = ({
     // Step 4: SWOT - Weaknesses
     {
       header: {
+        onBack: () => {
+          dispose();
+        },
         icon: AlertTriangle,
         title: 'SWOT Analysis - Weaknesses',
         subtitle: 'What areas would you like to improve or develop?',
@@ -270,6 +279,9 @@ export const BusinessPlanFlow = ({
     // Step 5: SWOT - Opportunities
     {
       header: {
+        onBack: () => {
+          dispose();
+        },
         icon: TrendingUp,
         title: 'SWOT Analysis - Opportunities',
         subtitle: 'What opportunities do you see in your market?',
@@ -292,6 +304,9 @@ export const BusinessPlanFlow = ({
     // Step 6: SWOT - Threats
     {
       header: {
+        onBack: () => {
+          dispose();
+        },
         icon: Target,
         title: 'SWOT Analysis - Threats',
         subtitle: 'What challenges or threats do you need to consider?',
@@ -314,6 +329,9 @@ export const BusinessPlanFlow = ({
     // Step 7: Financial Goals
     {
       header: {
+        onBack: () => {
+          dispose();
+        },
         icon: CheckCircle,
         title: 'Financial Goals',
         subtitle: 'Set your financial objectives and targets',

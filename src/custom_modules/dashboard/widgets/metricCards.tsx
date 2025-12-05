@@ -1,5 +1,5 @@
-import React, { ReactNode, useEffect, useRef } from 'react';
-import { View, Dimensions, StyleSheet, Animated } from 'react-native';
+import React, { ReactNode } from 'react';
+import { View, Dimensions, StyleSheet } from 'react-native';
 import { ShimmerPlaceholder } from '~/codidge_components/UI/skeleton/shimmerPlaceholder';
 import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';

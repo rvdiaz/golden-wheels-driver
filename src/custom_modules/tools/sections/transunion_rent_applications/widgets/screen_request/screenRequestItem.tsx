@@ -16,6 +16,13 @@ import OutlineButton, { ButtonSize } from '~/codidge_components/UI/button/Outlin
 import { capitalize } from '~/custom_modules/crm/helpers';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 
+const EXPECTED_REPORTS = [
+  { type: 'credit', name: 'Credit Report' },
+  { type: 'criminal', name: 'Criminal Background' },
+  { type: 'eviction', name: 'Eviction History' },
+  { type: 'verichekd', name: 'Verichekd' },
+];
+
 export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedApplicant, setSelectedApplicant] = useState<IExtendedRenterInput | null>(null);
@@ -88,9 +95,12 @@ export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) =>
                 marginTop: 16,
               }}>
               {rentApp.applicants.map((applicant) => {
+                const reportsAvailables = applicant.renterReportItems.map((repItem) =>
+                  repItem.providerName.toLowerCase()
+                );
+
                 const applicantStatus = getApplicantStatus(applicant.renterStatus);
-                const canViewReport = !!applicant.reportPdfUrl;
-                const IconComponent = applicantStatus.icon;
+                const canViewReport = !!applicant.reportPdfUrl && reportsAvailables.length === 4;
 
                 if (canViewReport) {
                   return (
@@ -142,6 +152,15 @@ export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) =>
                   );
                 }
 
+                // Reports status - check which reports are missing
+                const reportStatuses = EXPECTED_REPORTS.map((expectedReport) => {
+                  const isAvailable = reportsAvailables.includes(expectedReport.type.toLowerCase());
+                  return {
+                    ...expectedReport,
+                    isAvailable,
+                  };
+                });
+
                 return (
                   <TouchableOpacity
                     onPress={(event) => {
@@ -188,6 +207,32 @@ export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) =>
                         </View>
                       </View>
                     </View>
+                    {/* Report Status */}
+                    <View style={{ marginTop: 8, gap: 4 }}>
+                      {reportStatuses.map((report, index) => (
+                        <View
+                          key={index}
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            gap: 6,
+                          }}>
+                          {report.isAvailable ? (
+                            <Icons.CheckCircle size={14} color="#10B981" />
+                          ) : (
+                            <Icons.Clock size={14} color="#F59E0B" />
+                          )}
+                          <Text
+                            style={{
+                              fontSize: 12,
+                              color: report.isAvailable ? '#10B981' : '#F59E0B',
+                            }}>
+                            {report.name} {report.isAvailable ? '' : '- Not Ready'}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+
                     <View
                       style={[
                         styles.footer,

@@ -4881,6 +4881,11 @@ expo-device@^8.0.7:
   dependencies:
     ua-parser-js "^0.7.33"
 
+expo-file-system@^19.0.20:
+  version "19.0.20"
+  resolved "https://registry.yarnpkg.com/expo-file-system/-/expo-file-system-19.0.20.tgz#57850ecbca885c50e27eed59917fbb2742fd36c0"
+  integrity sha512-Jr/nNvJmUlptS3cHLKVBNyTyGMHNyxYBKRph1KRe0Nb3RzZza1gZLZXMG5Ky//sO2azTn+OaT0dv/lAyL0vJNA==
+
 expo-file-system@~19.0.14:
   version "19.0.14"
   resolved "https://registry.npmjs.org/expo-file-system/-/expo-file-system-19.0.14.tgz"
@@ -4964,6 +4969,11 @@ expo-notifications@^0.32.11:
     badgin "^1.1.5"
     expo-application "~7.0.7"
     expo-constants "~18.0.8"
+
+expo-sharing@^14.0.8:
+  version "14.0.8"
+  resolved "https://registry.yarnpkg.com/expo-sharing/-/expo-sharing-14.0.8.tgz#cfd5fcf77ab5f64cf3d192a40a925abb316d3545"
+  integrity sha512-A1pPr2iBrxypFDCWVAESk532HK+db7MFXbvO2sCV9ienaFXAk7lIBm6bkqgE6vzRd9O3RGdEGzYx80cYlc089Q==
 
 expo-status-bar@~3.0.8:
   version "3.0.8"

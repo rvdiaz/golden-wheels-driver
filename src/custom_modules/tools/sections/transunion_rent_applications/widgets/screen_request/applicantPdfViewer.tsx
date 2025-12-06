@@ -1,8 +1,12 @@
-import React from 'react';
-import { View, Modal, TouchableOpacity, StyleSheet, Alert, Share } from 'react-native';
+import React, { useState } from 'react';
+import { View, Modal, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { WebView } from 'react-native-webview';
+import { Directory, File, Paths } from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import { IExtendedRenterInput } from '../../interfaces';
 import Text from '~/codidge_components/UI/text';
+import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
+import { ButtonSize } from '~/codidge_components/UI/button/types';
 
 interface PdfReportModalProps {
   visible: boolean;
@@ -11,6 +15,7 @@ interface PdfReportModalProps {
 }
 
 export const PdfReportModal: React.FC<PdfReportModalProps> = ({ visible, onClose, applicant }) => {
+  const [isDownloading, setIsDownloading] = useState(false);
   const pdfUrl = applicant?.reportPdfUrl;
 
   const handleDownload = async () => {
@@ -19,13 +24,56 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({ visible, onClose
       return;
     }
 
+    setIsDownloading(true);
+    const isSharingAvailable = await Sharing.isAvailableAsync();
     try {
-      await Share.share({
-        url: pdfUrl, // works on iOS and Android (PDF link)
-        message: `View the report`,
-      });
-    } catch (error) {
-      console.error('Share failed:', error);
+      // Create a directory for PDFs
+      const pdfDirectory = new Directory(Paths.cache, 'reports-tu');
+      if (!pdfDirectory.exists) {
+        await pdfDirectory.create();
+      }
+
+      // Download the PDF
+      const output = await File.downloadFileAsync(pdfUrl, pdfDirectory);
+
+      if (output.exists) {
+        // Check if sharing is available
+
+        if (isSharingAvailable) {
+          await Sharing.shareAsync(output.uri, {
+            mimeType: 'application/pdf',
+            dialogTitle: 'Share PDF Report',
+            UTI: 'com.adobe.pdf',
+          });
+        } else {
+          Alert.alert('Success', 'PDF downloaded successfully', [{ text: 'OK' }]);
+        }
+      } else {
+        throw new Error('Download failed - file does not exist');
+      }
+    } catch (error: any) {
+      console.error('Download failed:', error);
+      if (error?.message?.includes('Destination already exists')) {
+        console.log('File already exists. Opening file picker...');
+        const file: any = await File.pickFileAsync();
+        if (isSharingAvailable) {
+          await Sharing.shareAsync(file.uri, {
+            mimeType: 'application/pdf',
+            dialogTitle: 'Share PDF Report',
+            UTI: 'com.adobe.pdf',
+          });
+        }
+
+        return; // Prevent falling into the generic error message
+      }
+      setIsDownloading(false);
+
+      // Generic error
+      Alert.alert('Download Failed', 'Unable to download the PDF. Please try again.', [
+        { text: 'OK' },
+      ]);
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -42,12 +90,18 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({ visible, onClose
 
     return (
       <View style={styles.content}>
-        {/* Download Button */}
+        {/* Action Buttons */}
         <View style={styles.actionsContainer}>
-          <TouchableOpacity onPress={handleDownload} style={styles.downloadButton}>
-            <Text style={styles.downloadIcon}>🔗</Text>
-            <Text style={styles.downloadButtonText}>Share Report</Text>
-          </TouchableOpacity>
+          <PrimaryButton
+            style={{
+              backgroundColor: '#0066CC',
+              flex: 1,
+            }}
+            onPress={handleDownload}
+            loading={isDownloading}
+            size={ButtonSize.LARGE}
+            title="⬇️ Download PDF"
+          />
         </View>
 
         {/* PDF Viewer */}
@@ -61,7 +115,7 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({ visible, onClose
             showsHorizontalScrollIndicator={false}
             javaScriptEnabled={true}
             domStorageEnabled={false}
-            allowsInlineMediaPlaybook={false}
+            allowsInlineMediaPlayback={false}
             mediaPlaybackRequiresUserAction={true}
             scrollEnabled={true}
             bounces={true}
@@ -75,10 +129,15 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({ visible, onClose
             renderError={() => (
               <View style={styles.errorContainer}>
                 <Text style={styles.errorIcon}>⚠️</Text>
-                <Text style={styles.errorText}>Unable to load PDF</Text>
-                <Text style={styles.errorSubtext}>Try downloading instead</Text>
-                <TouchableOpacity onPress={handleDownload} style={styles.errorDownloadButton}>
-                  <Text style={styles.errorDownloadButtonText}>Download PDF</Text>
+                <Text style={styles.errorText}>Unable to load PDF preview</Text>
+                <Text style={styles.errorSubtext}>You can still download the report</Text>
+                <TouchableOpacity
+                  onPress={handleDownload}
+                  style={styles.errorDownloadButton}
+                  disabled={isDownloading}>
+                  <Text style={styles.errorDownloadButtonText}>
+                    {isDownloading ? 'Downloading...' : 'Download PDF'}
+                  </Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -178,37 +237,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   actionsContainer: {
+    flexDirection: 'row',
     paddingHorizontal: 20,
     paddingVertical: 16,
     backgroundColor: '#F8F9FA',
     borderBottomWidth: 1,
     borderBottomColor: '#E5E5E5',
-  },
-  downloadButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#0066CC',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-    shadowColor: '#0066CC',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  downloadIcon: {
-    fontSize: 16,
-    marginRight: 8,
-  },
-  downloadButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
+    gap: 12,
   },
   pdfContainer: {
     flex: 1,

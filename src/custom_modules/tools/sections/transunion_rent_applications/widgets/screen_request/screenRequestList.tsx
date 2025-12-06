@@ -34,6 +34,7 @@ export const ScreenRequestList = ({ onBack }: { onBack: () => void }) => {
     variables: {
       userId: user?.id,
     },
+    fetchPolicy: 'network-only',
   });
 
   if (error) {

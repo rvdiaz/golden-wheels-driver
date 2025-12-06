@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Modal, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Modal, TouchableOpacity, StyleSheet, Share } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { IExtendedRenterInput } from '../../interfaces';
 import Text from '~/codidge_components/UI/text';
@@ -11,7 +11,6 @@ interface PdfReportModalProps {
   onClose: () => void;
   applicant: IExtendedRenterInput | null;
   isDownloading: boolean;
-  handleDownload: () => void;
 }
 
 export const PdfReportModal: React.FC<PdfReportModalProps> = ({
@@ -19,7 +18,6 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
   onClose,
   applicant,
   isDownloading,
-  handleDownload,
 }) => {
   const pdfUrl = applicant?.reportPdfUrl;
 
@@ -43,7 +41,16 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
               backgroundColor: '#0066CC',
               flex: 1,
             }}
-            onPress={handleDownload}
+            onPress={async () => {
+              try {
+                await Share.share({
+                  url: pdfUrl, // works on iOS and Android (PDF link)
+                  message: `Verichekd report for ${applicant.firstName} ${applicant.lastName}`,
+                });
+              } catch (error) {
+                console.error('Share failed:', error);
+              }
+            }}
             loading={isDownloading}
             size={ButtonSize.LARGE}
             title="⬇️ Download PDF"
@@ -52,53 +59,34 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
 
         {/* PDF Viewer */}
         <View style={styles.pdfContainer}>
-          {Platform.OS === 'ios' ? (
-            <WebView
-              source={{ uri: pdfUrl }}
-              style={styles.webview}
-              startInLoadingState={true}
-              scalesPageToFit={true}
-              showsVerticalScrollIndicator={true}
-              showsHorizontalScrollIndicator={false}
-              javaScriptEnabled={true}
-              domStorageEnabled={false}
-              allowsInlineMediaPlayback={false}
-              mediaPlaybackRequiresUserAction={true}
-              scrollEnabled={true}
-              bounces={true}
-              contentInsetAdjustmentBehavior="automatic"
-              renderLoading={() => (
-                <View style={styles.webviewLoading}>
-                  <Text style={styles.loadingIcon}>📄</Text>
-                  <Text style={styles.webviewLoadingText}>Loading PDF...</Text>
-                </View>
-              )}
-              renderError={() => (
-                <View style={styles.errorContainer}>
-                  <Text style={styles.errorIcon}>⚠️</Text>
-                  <Text style={styles.errorText}>Unable to load PDF preview</Text>
-                  <Text style={styles.errorSubtext}>You can still download the report</Text>
-                </View>
-              )}
-            />
-          ) : (
-            <View>
-              <Text style={styles.errorIcon}>📄</Text>
-              <Text style={styles.errorText}>Preview unavailable on Android</Text>
-              <Text style={styles.errorSubtext}>
-                Your device cannot preview PDFs. Please download instead.
-              </Text>
-
-              <TouchableOpacity
-                onPress={handleDownload}
-                style={styles.errorDownloadButton}
-                disabled={isDownloading}>
-                <Text style={styles.errorDownloadButtonText}>
-                  {isDownloading ? 'Downloading...' : 'Download PDF'}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          )}
+          <WebView
+            source={{ uri: pdfUrl }}
+            style={styles.webview}
+            startInLoadingState={true}
+            scalesPageToFit={true}
+            showsVerticalScrollIndicator={true}
+            showsHorizontalScrollIndicator={false}
+            javaScriptEnabled={true}
+            domStorageEnabled={false}
+            allowsInlineMediaPlayback={false}
+            mediaPlaybackRequiresUserAction={true}
+            scrollEnabled={true}
+            bounces={true}
+            contentInsetAdjustmentBehavior="automatic"
+            renderLoading={() => (
+              <View style={styles.webviewLoading}>
+                <Text style={styles.loadingIcon}>📄</Text>
+                <Text style={styles.webviewLoadingText}>Loading PDF...</Text>
+              </View>
+            )}
+            renderError={() => (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorIcon}>⚠️</Text>
+                <Text style={styles.errorText}>Unable to load PDF preview</Text>
+                <Text style={styles.errorSubtext}>You can still download the report</Text>
+              </View>
+            )}
+          />
         </View>
       </View>
     );

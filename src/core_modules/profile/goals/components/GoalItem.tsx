@@ -168,9 +168,9 @@ export const GoalItem = ({ goal }: { goal: IGoalProgress }) => {
 
           <View style={styles.rightFooter}>
             {/* Progress Text */}
-            {/*    <Text style={styles.progressText}>
+            <Text style={styles.progressText}>
               {goal.value}/{goal.targetValue} {goal.unit}
-            </Text> */}
+            </Text>
             {/* Period */}
             <Text style={styles.periodText}>{formatPeriod(goal.period, goal.frequency)}</Text>
           </View>

@@ -15,7 +15,7 @@ const GoalItem: React.FC<GoalItemProps> = ({ goal }) => {
       <View style={styles.goalHeader}>
         <Text style={styles.goalName}>{goal.goalName}</Text>
         <Text style={styles.goalValue}>
-          {goal.value} / {goal.targetValue} {goal.unit}
+          {goal.value} / {goal.targetValue}
         </Text>
       </View>
 

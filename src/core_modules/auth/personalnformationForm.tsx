@@ -38,7 +38,7 @@ const validationRules = {
       message: 'Last name must be at least 2 characters',
     },
   },
-  zipCode: {
+  postalCode: {
     required: 'Zip Code is required',
     pattern: {
       value: /^[0-9]{5}$/,
@@ -71,27 +71,16 @@ export const PersonalInformation = ({
   onNext: (personalData: IPersonalData) => void;
 }) => {
   const [notAgentCheckbox, setnotAgentCheckbox] = useState(false);
+  const [mlsError, setMlsError] = useState<string>('');
 
   const {
     control,
     handleSubmit,
-    setError,
     getValues,
+    trigger,
+    watch,
     formState: { errors },
   } = useFormContext<IPersonalData>();
-
-  const errorKeys = Object.keys(errors);
-
-  const finalErrorKeys = errorKeys.filter((erroKey) => {
-    if (erroKey !== 'mlsNumber') {
-      return erroKey;
-    }
-    if (erroKey === 'mlsNumber' && !notAgentCheckbox) {
-      return erroKey;
-    }
-  });
-
-  const hasErrors = finalErrorKeys.length > 0;
 
   const onSubmit = (data: IPersonalData) => {
     onNext({
@@ -101,29 +90,37 @@ export const PersonalInformation = ({
   };
 
   const handleCheckBoxChange = (newValue: boolean) => {
-    setError('mlsNumber', {
-      message: '',
-    });
+    setMlsError('');
     setnotAgentCheckbox(newValue);
   };
 
-  const handleNextPress = () => {
+  const handleNextPress = async () => {
+    let mlsValid = true;
+    // Manual MLS validation when agent checkbox is NOT checked
     if (!notAgentCheckbox) {
-      if (!getValues('mlsNumber')) {
-        setError('mlsNumber', {
-          message: 'License Number is required',
-        });
-        return;
-      }
-      if (getValues('mlsNumber').length < 2) {
-        setError('mlsNumber', {
-          message: 'License Number must be at least 2 characters',
-        });
-        return;
+      const mls = getValues('mlsNumber');
+
+      if (!mls) {
+        mlsValid = false;
+        setMlsError('License Number is required');
+      } else if (mls.length < 2) {
+        mlsValid = false;
+        setMlsError('License Number must be at least 2 characters');
       }
     }
-    handleSubmit(onSubmit)();
+
+    if (mlsValid && errorKeys.length > 0) {
+      await trigger();
+    }
+
+    // If BOTH MLS and other fields are valid → submit
+    if (mlsValid) {
+      handleSubmit(onSubmit)();
+    }
   };
+
+  const mlsValue = watch('mlsNumber');
+  const errorKeys = Object.keys(errors);
 
   return (
     <View style={{ flex: 1 }}>
@@ -191,11 +188,16 @@ export const PersonalInformation = ({
                     <InputField
                       label={!notAgentCheckbox ? 'License Number' : 'License Number (Optional)'}
                       value={value || ''}
-                      onChangeText={onChange}
+                      onChangeText={(text) => {
+                        if (text && text.length < 2) {
+                          setMlsError('');
+                        }
+                        onChange(text);
+                      }}
                       onBlur={onBlur}
                       placeholder="Enter your mls number"
-                      errorMessage={!notAgentCheckbox ? errors.mlsNumber?.message : ''}
-                      error={!notAgentCheckbox ? !!errors.mlsNumber : false}
+                      errorMessage={mlsError}
+                      error={!!mlsError}
                     />
                   )}
                 />
@@ -287,7 +289,7 @@ export const PersonalInformation = ({
                   <Controller
                     name="postalCode"
                     control={control}
-                    rules={validationRules.zipCode}
+                    rules={validationRules.postalCode}
                     render={({ field: { onChange, value, onBlur } }) => (
                       <InputField
                         label="Zip Code"
@@ -335,7 +337,7 @@ export const PersonalInformation = ({
           onPress={handleNextPress}
           size={ButtonSize.LARGE}
           title="Next"
-          disabled={hasErrors}
+          disabled={errorKeys.length > 0 || (!notAgentCheckbox && !mlsValue)}
         />
         <View style={styles.footer}>
           <Text style={styles.footerText}>Already have an account? </Text>

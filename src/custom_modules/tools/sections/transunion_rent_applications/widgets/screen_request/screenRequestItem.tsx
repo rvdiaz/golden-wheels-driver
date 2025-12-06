@@ -343,7 +343,6 @@ export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) =>
         onClose={handleCloseModal}
         applicant={selectedApplicant}
         isDownloading={isDownloading}
-        handleDownload={handleDownload}
       />
     </>
   );

@@ -79,6 +79,7 @@ export const PersonalInformation = ({
     getValues,
     trigger,
     watch,
+    setValue,
     formState: { errors },
   } = useFormContext<IPersonalData>();
 
@@ -91,6 +92,7 @@ export const PersonalInformation = ({
 
   const handleCheckBoxChange = (newValue: boolean) => {
     setMlsError('');
+    setValue('userType', UserType.investor);
     setnotAgentCheckbox(newValue);
   };
 

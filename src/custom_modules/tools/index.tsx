@@ -77,7 +77,7 @@ export const ToolsScreen: React.FC = () => {
       } else if (isLocked) {
         // Show paywall for locked tools
         paywallVisibility(true);
-      } else {
+      } else if (!comingSoon) {
         // Navigate normally for unlocked tools
         navigation.navigate(tool.moduleKey as never);
       }

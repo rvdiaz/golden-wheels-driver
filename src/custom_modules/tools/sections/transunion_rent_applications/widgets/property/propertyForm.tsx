@@ -1,5 +1,5 @@
 import { useMutation, useReactiveVar } from '@apollo/client';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Alert, View } from 'react-native';
 import { Header } from '~/codidge_components/UI/header';
@@ -10,10 +10,6 @@ import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { AttestationModal } from './attestationsPopup';
 import SearchAddressAutoComplete from '~/custom_modules/tools/components/searchAutoComplete';
-import TextButton from '~/codidge_components/UI/button/TextButton';
-import { ButtonSize } from '~/codidge_components/UI/button/types';
-import { theme } from '~/theme/theme';
-import * as Icons from 'lucide-react-native';
 
 export const PropertyForm = ({
   disposeModalHandler,
@@ -28,7 +24,7 @@ export const PropertyForm = ({
   const [pendingPropertyData, setPendingPropertyData] = useState<ITransUnionProperty | null>(null);
   const [attestationGroup, setAttestationGroup] = useState<IAttestationGroup | null>(null);
 
-  const [isManualEntry, setIsManualEntry] = useState(false);
+  const [isManualEntry, setIsManualEntry] = useState(true);
 
   const [addPropertyMutationFn, { loading }] = useMutation<{
     createTransUnionProperty: {
@@ -178,7 +174,7 @@ export const PropertyForm = ({
                 style={{
                   marginLeft: 'auto',
                 }}>
-                <TextButton
+                {/*   <TextButton
                   size={ButtonSize.LARGE}
                   textStyle={{
                     color: theme.colors.primary,
@@ -196,7 +192,7 @@ export const PropertyForm = ({
                   onPress={() => {
                     setIsManualEntry((prev) => !prev);
                   }}
-                />
+                /> */}
               </View>
             </View>
 

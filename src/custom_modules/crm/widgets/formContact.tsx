@@ -212,7 +212,7 @@ export default function ContactForm({
   return (
     <PageSafeContainer style={styles.container}>
       <Header
-        title={contact?.id ? 'Edit Contact' : 'New Contact'}
+        title={''}
         showBack={true}
         onBack={() => {
           if (contact?.id) {

@@ -9,6 +9,7 @@ import { createSubscriptionHandshakeLink } from 'aws-appsync-subscription-link';
 import { SubscriptionPricingPlanModal } from '~/custom_modules/iap/components/pricingPlanModal/subscriptions';
 import { Navigation } from '~/navigation';
 import { UserRefresherWrapper } from '~/navigation/userRefresherWrapper';
+import { WelcomeScreenModal } from '~/store/user/welcomeScreenModal';
 
 if (Constants.expoConfig?.extra?.EAS_BUILD_PROFILE === 'development') {
   // Adds messages only in a dev environment
@@ -92,6 +93,7 @@ export default function App() {
           <Navigation />
         </UserRefresherWrapper>
         <SubscriptionPricingPlanModal />
+        <WelcomeScreenModal />
       </SafeAreaProvider>
     </ApolloProvider>
   );

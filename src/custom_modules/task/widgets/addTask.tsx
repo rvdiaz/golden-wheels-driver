@@ -191,7 +191,7 @@ export const AddTaskScreen = ({
   return (
     <PageSafeContainer style={styles.container}>
       <Header
-        title={task ? 'Edit Task' : 'Add Task'}
+        title={''}
         showBack={true}
         onBack={disposeModalHandler}
         rightAction={handleSubmit(onSubmit)}

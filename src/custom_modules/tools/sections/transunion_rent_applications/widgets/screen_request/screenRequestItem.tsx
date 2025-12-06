@@ -107,10 +107,10 @@ export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) =>
       }
       setIsDownloading(false);
 
+      const smsString = error?.message.map((mess: string) => mess);
+
       // Generic error
-      Alert.alert('Download Failed', 'Unable to download the PDF. Please try again.', [
-        { text: 'OK' },
-      ]);
+      Alert.alert('Download Failed', smsString, [{ text: 'OK' }]);
     } finally {
       setIsDownloading(false);
     }

@@ -49,6 +49,8 @@ export interface IFeatureModule {
   backgroundColor?: string;
   available?: boolean;
   comingSoon?: boolean;
+  comingSoonLabel?: string;
+  comingSoonScreenShoots?: string[];
   modules?: IFeatureModule[];
   subscriptionRequired?: boolean;
 }

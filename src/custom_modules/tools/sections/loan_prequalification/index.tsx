@@ -11,7 +11,7 @@ import { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
-import LocationAutocomplete from '../../widgets/locationPropertyTax';
+import LocationAutocomplete from '../../components/locationPropertyTax';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 interface PrequalifiedFormData {
@@ -101,7 +101,7 @@ export const PrequalifiedLoanScreen: React.FC = () => {
       downPaymentAmount: 50000,
       interestRate: 7.0,
       propertyTaxRate: 1.28,
-      insuranceRate: 0.35,
+      insuranceRate: 1,
       hoaFees: 0,
       closingCostPercentage: 3.0,
     },
@@ -311,10 +311,11 @@ export const PrequalifiedLoanScreen: React.FC = () => {
                 rules={{ required: 'Monthly income is required', min: 1 }}
                 render={({ field: { onChange, value } }) => (
                   <InputField
+                    allowCommas={true}
                     style={styles.input}
                     placeholder="5,000"
                     value={value?.toString() || ''}
-                    onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                    onChangeText={onChange}
                     keyboardType="numeric"
                     hint="Total monthly income before taxes"
                     error={!!errors.monthlyIncome}
@@ -333,8 +334,9 @@ export const PrequalifiedLoanScreen: React.FC = () => {
                   <InputField
                     style={styles.input}
                     placeholder="500"
+                    allowCommas={true}
                     value={value?.toString() || ''}
-                    onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                    onChangeText={onChange}
                     keyboardType="numeric"
                     hint="Car payments, credit cards, student loans, etc."
                   />
@@ -353,7 +355,8 @@ export const PrequalifiedLoanScreen: React.FC = () => {
                     style={styles.input}
                     placeholder="50,000"
                     value={value?.toString() || ''}
-                    onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                    onChangeText={onChange}
+                    allowCommas={true}
                     keyboardType="numeric"
                     hint="Total cash for down payment and closing costs"
                     error={!!errors.downPaymentAmount}
@@ -373,7 +376,9 @@ export const PrequalifiedLoanScreen: React.FC = () => {
                     style={styles.input}
                     placeholder="7.0"
                     value={value?.toString() || ''}
-                    onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                    onChangeText={(text) => {
+                      onChange(text);
+                    }}
                     keyboardType="numeric"
                     hint="Current market rate for 30-year fixed"
                   />
@@ -408,6 +413,9 @@ export const PrequalifiedLoanScreen: React.FC = () => {
               onSelection={(propTax) => {
                 setValue('propertyTaxRate', propTax);
               }}
+              style={{
+                marginBottom: 20,
+              }}
             />
 
             <View style={styles.inputGroup}>
@@ -420,7 +428,7 @@ export const PrequalifiedLoanScreen: React.FC = () => {
                     style={styles.input}
                     placeholder="1.28"
                     value={value?.toString() || ''}
-                    onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                    onChangeText={onChange}
                     keyboardType="numeric"
                     hint="Typical: 0.5% - 2.5%"
                   />
@@ -438,7 +446,7 @@ export const PrequalifiedLoanScreen: React.FC = () => {
                     style={styles.input}
                     placeholder="0.35"
                     value={value?.toString() || ''}
-                    onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                    onChangeText={onChange}
                     keyboardType="numeric"
                     hint="Typical: 0.25% - 0.75%"
                   />
@@ -453,10 +461,11 @@ export const PrequalifiedLoanScreen: React.FC = () => {
                 name="hoaFees"
                 render={({ field: { onChange, value } }) => (
                   <InputField
+                    allowCommas={true}
                     style={styles.input}
                     placeholder="0"
                     value={value?.toString() || ''}
-                    onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                    onChangeText={onChange}
                     keyboardType="numeric"
                     hint="Optional"
                   />
@@ -474,7 +483,7 @@ export const PrequalifiedLoanScreen: React.FC = () => {
                     style={styles.input}
                     placeholder="3.0"
                     value={value?.toString() || ''}
-                    onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                    onChangeText={onChange}
                     keyboardType="numeric"
                     hint="Typical: 2-4%"
                   />

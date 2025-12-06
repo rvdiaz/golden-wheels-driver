@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { Building, DollarSign, Percent, PercentCircle, TrendingUp } from 'lucide-react-native';
 import { TabHeader } from '~/codidge_components/UI/tabs';
-import LocationAutocomplete from '~/custom_modules/tools/widgets/locationPropertyTax';
+import LocationAutocomplete from '~/custom_modules/tools/components/locationPropertyTax';
 import { AdditionalFields } from './additionalFields';
 
 export const MortgageCalculatorForm = ({
@@ -35,6 +35,7 @@ export const MortgageCalculatorForm = ({
         rules={{ required: 'Home price is required' }}
         render={({ field: { value, onChange } }) => (
           <InputField
+            allowCommas={true}
             leftIcon={<Building size={iconsSize} />}
             label="Home Price"
             placeholder="450000"
@@ -61,7 +62,7 @@ export const MortgageCalculatorForm = ({
                 <InputField
                   leftIcon={<Percent size={iconsSize} />}
                   label="Down Payment"
-                  placeholder="45000"
+                  placeholder="20"
                   keyboardType="decimal-pad"
                   value={value?.toString()}
                   onChangeText={onChange}
@@ -80,6 +81,7 @@ export const MortgageCalculatorForm = ({
                   leftIcon={<DollarSign size={iconsSize} />}
                   label="Down Payment"
                   placeholder="45000"
+                  allowCommas={true}
                   keyboardType="decimal-pad"
                   value={value?.toString()}
                   onChangeText={onChange}

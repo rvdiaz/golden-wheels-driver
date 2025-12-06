@@ -1,4 +1,4 @@
-import React, { forwardRef, ReactNode } from 'react';
+import React, { forwardRef, ReactNode, useState } from 'react';
 import {
   View,
   TextInput,
@@ -26,6 +26,7 @@ interface InputProps extends TextInputProps {
   labelStyle?: TextStyle;
   required?: boolean;
   containerStyle?: ViewStyle;
+  allowCommas?: boolean; // New prop
 }
 
 const InputField = forwardRef<TextInput, InputProps>(
@@ -47,10 +48,35 @@ const InputField = forwardRef<TextInput, InputProps>(
       required,
       containerStyle,
       allowFontScaling = false,
+      allowCommas = false, // Default to false
       ...rest
     },
     ref
   ) => {
+    const [isFocused, setIsFocused] = useState(false);
+
+    // Format number with commas
+    const formatWithCommas = (text: string): string => {
+      // Remove all non-digit characters except decimal point
+      const cleanNumber = text.replace(/[^0-9.]/g, '');
+
+      if (cleanNumber === '') return '';
+
+      // Split by decimal point to handle decimal numbers
+      const parts = cleanNumber.split('.');
+
+      // Format the integer part with commas
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+      // Join back with decimal if it exists
+      return parts.join('.');
+    };
+
+    // Remove commas for editing
+    const removeCommas = (text: string): string => {
+      return text.replace(/,/g, '');
+    };
+
     const showClearButton = clearable && value !== undefined && value.toString().length > 0;
 
     const handleClear = () => {
@@ -58,6 +84,39 @@ const InputField = forwardRef<TextInput, InputProps>(
         onChangeText('');
       }
     };
+
+    const handleFocus = (e: any) => {
+      setIsFocused(true);
+      if (rest.onFocus) {
+        rest.onFocus(e);
+      }
+    };
+
+    const handleBlur = (e: any) => {
+      setIsFocused(false);
+      if (rest.onBlur) {
+        rest.onBlur(e);
+      }
+    };
+
+    const handleChangeText = (text: string) => {
+      if (allowCommas) {
+        // Remove commas to get the clean number
+        const cleanText = removeCommas(text);
+
+        // Pass the clean number to parent
+        if (onChangeText) {
+          onChangeText(cleanText);
+        }
+      } else {
+        if (onChangeText) {
+          onChangeText(text);
+        }
+      }
+    };
+
+    // Display formatted value with commas
+    const displayValue = allowCommas && value ? formatWithCommas(value.toString()) : (value ?? '');
 
     const inputBorderColor = error
       ? '#EF4444' // red
@@ -81,8 +140,10 @@ const InputField = forwardRef<TextInput, InputProps>(
           <TextInput
             allowFontScaling={allowFontScaling}
             ref={ref}
-            value={value ?? ''}
-            onChangeText={onChangeText}
+            value={displayValue}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            onChangeText={handleChangeText}
             style={[
               styles.input,
               {

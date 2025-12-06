@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import * as Icons from 'lucide-react-native';
-import { ClosingCostResult, CostBreakdownItem } from '..';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
-import { ToolDisclaimer } from '~/custom_modules/tools/components/toolsDispolaimer';
+import { ToolDisclaimer } from '~/custom_modules/tools/components/toolsDisclaimer';
 import { toolsDisclaimers } from '~/custom_modules/tools/data';
+import { ClosingCostResult } from '../interfaces';
+import InputField from '~/codidge_components/UI/form/inputs/inputField';
+import { Header } from '~/codidge_components/UI/header';
 
 export const EstimatedClosingCostResults = ({
   result,
-  resetCalculator,
-  editableBreakdown,
-  updateBreakdownItem,
+  onBack,
 }: {
   result: ClosingCostResult;
-  resetCalculator: () => void;
-  editableBreakdown: CostBreakdownItem[];
-  updateBreakdownItem: (index: number, newAmount: string) => void;
+  onBack: () => void;
 }) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
@@ -30,15 +28,8 @@ export const EstimatedClosingCostResults = ({
 
   return (
     <PageSafeContainer>
+      <Header onBack={onBack} showBack={true} title="Results" />
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header with Back Button */}
-        <View style={styles.resultsHeader}>
-          <Text style={styles.resultsTitle}>Estimated Closing Costs</Text>
-          <TouchableOpacity style={styles.newCalculationButton} onPress={resetCalculator}>
-            <Text style={styles.newCalculationText}>New Calculation</Text>
-          </TouchableOpacity>
-        </View>
-
         {/* Summary Cards */}
         <View style={styles.summaryCardsContainer}>
           <View style={[styles.summaryCard, styles.purchasePriceCard]}>
@@ -99,7 +90,7 @@ export const EstimatedClosingCostResults = ({
             </View>
           </View>
 
-          {editableBreakdown.map((item, index) => (
+          {result.breakdown.map((item, index) => (
             <View key={index} style={styles.breakdownItem}>
               <View style={styles.breakdownItemInfo}>
                 <Text style={styles.breakdownCategory}>{item.category}</Text>
@@ -112,10 +103,13 @@ export const EstimatedClosingCostResults = ({
                   </View>
                 )}
                 {editingIndex === index ? (
-                  <TextInput
-                    style={styles.editingInput}
+                  <InputField
+                    containerStyle={{
+                      backgroundColor: '#FFF',
+                      marginBottom: 0,
+                    }}
                     value={String(item.amount)}
-                    onChangeText={(text) => updateBreakdownItem(index, text)}
+                    onChangeText={(text) => {}}
                     onBlur={() => setEditingIndex(null)}
                     keyboardType="decimal-pad"
                     autoFocus
@@ -153,31 +147,6 @@ export const EstimatedClosingCostResults = ({
 };
 
 const styles = StyleSheet.create({
-  resultsHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: 'white',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-  },
-  resultsTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#111827',
-  },
-  newCalculationButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 6,
-  },
-  newCalculationText: {
-    fontSize: 14,
-    color: '#374151',
-  },
   summaryCardsContainer: {
     padding: 16,
   },

@@ -25,13 +25,12 @@ import Text from '~/codidge_components/UI/text';
 import { TermsAndConditions } from './terms_and_conditions';
 import { useSystemSettings } from '~/system_setting/customHook';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
+import { parsePhoneNumber, validatePhoneNumber } from '~/codidge_components/helpers';
+import PhoneInput from '~/codidge_components/UI/form/inputs/phoneNumberInput';
 
 const schema = yup.object({
   email: yup.string().email('Please enter a valid email').required('Email is required'),
-  phone: yup
-    .string()
-    .required('Phone number is required')
-    .matches(/^[2-9]\d{2}[2-9]\d{6}$/, 'Enter a valid 10-digit US phone number'),
+  phone: yup.string().required('Phone number is required'),
   password: yup
     .string()
     .min(8, 'Password must be at least 8 characters')
@@ -102,7 +101,7 @@ export const SignUpForm = ({
         options: {
           userAttributes: {
             email: data.email,
-            phone_number: `+1${data.phone}`,
+            phone_number: data.phone,
             'custom:user_type': 'customer',
             'custom:role': 'admin',
             'custom:tenantId': tenantId,
@@ -180,6 +179,31 @@ export const SignUpForm = ({
                 <Controller
                   control={control}
                   name="phone"
+                  rules={{
+                    required: 'Phone number is required',
+                    validate: (value) => {
+                      const parsed = parsePhoneNumber(value);
+                      const validation = validatePhoneNumber(parsed.number, parsed.country);
+                      return validation.isValid || validation.message || 'Invalid phone number';
+                    },
+                  }}
+                  render={({ field: { onChange, value } }) => (
+                    <PhoneInput
+                      value={value}
+                      onChangeValue={onChange}
+                      label="Phone Number"
+                      placeholder="Enter your phone number"
+                      required={true}
+                      error={!!errors.phone}
+                      errorMessage={errors.phone?.message}
+                      defaultCountry="US"
+                    />
+                  )}
+                />
+
+                {/*  <Controller
+                  control={control}
+                  name="phone"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <InputField
                       leftIcon={<Icons.Phone size={16} color="#6B7280" />}
@@ -194,7 +218,7 @@ export const SignUpForm = ({
                       errorMessage={errors.phone?.message}
                     />
                   )}
-                />
+                /> */}
 
                 <Controller
                   control={control}

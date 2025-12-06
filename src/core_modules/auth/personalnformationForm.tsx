@@ -10,13 +10,17 @@ import {
 import { useFormContext, Controller } from 'react-hook-form';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { IPersonalData } from '../on_boarding/interface';
-import { Flag } from 'lucide-react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Text from '~/codidge_components/UI/text';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import { Checkbox } from '~/codidge_components/UI/form/checkbox';
+import { InfoBanner } from './components/infoBanner';
+import DropdownComponent from '~/codidge_components/UI/dropdown';
+import { UserType } from './interfaces';
+import { USER_TYPE_OPTIONS } from './helpers/onboardingStorage';
+import * as Icons from 'lucide-react-native';
 
 // Validation rules
 const validationRules = {
@@ -71,6 +75,8 @@ export const PersonalInformation = ({
   const {
     control,
     handleSubmit,
+    setError,
+    getValues,
     formState: { errors },
   } = useFormContext<IPersonalData>();
 
@@ -88,10 +94,34 @@ export const PersonalInformation = ({
   const hasErrors = finalErrorKeys.length > 0;
 
   const onSubmit = (data: IPersonalData) => {
-    onNext(data);
+    onNext({
+      ...data,
+      userType: data.userType ?? 'Agent',
+    });
+  };
+
+  const handleCheckBoxChange = (newValue: boolean) => {
+    setError('mlsNumber', {
+      message: '',
+    });
+    setnotAgentCheckbox(newValue);
   };
 
   const handleNextPress = () => {
+    if (!notAgentCheckbox) {
+      if (!getValues('mlsNumber')) {
+        setError('mlsNumber', {
+          message: 'License Number is required',
+        });
+        return;
+      }
+      if (getValues('mlsNumber').length < 2) {
+        setError('mlsNumber', {
+          message: 'License Number must be at least 2 characters',
+        });
+        return;
+      }
+    }
     handleSubmit(onSubmit)();
   };
 
@@ -104,10 +134,14 @@ export const PersonalInformation = ({
             enableOnAndroid={true}
             extraScrollHeight={Platform.OS === 'ios' ? 0 : 80}
             keyboardShouldPersistTaps="handled">
+            <InfoBanner
+              containerStyles={{
+                marginTop: 30,
+              }}
+            />
             <ScrollView
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{
-                paddingTop: 30,
                 flexGrow: 1,
               }}>
               <View style={styles.inputContainer}>
@@ -153,21 +187,9 @@ export const PersonalInformation = ({
                 <Controller
                   name="mlsNumber"
                   control={control}
-                  rules={
-                    !notAgentCheckbox
-                      ? {
-                          required: 'License Number is required',
-                          minLength: {
-                            value: 2,
-                            message: 'License Number must be at least 2 characters',
-                          },
-                        }
-                      : {} // No validation rules when checkbox is checked
-                  }
                   render={({ field: { onChange, value, onBlur } }) => (
                     <InputField
                       label={!notAgentCheckbox ? 'License Number' : 'License Number (Optional)'}
-                      required={!notAgentCheckbox}
                       value={value || ''}
                       onChangeText={onChange}
                       onBlur={onBlur}
@@ -181,15 +203,35 @@ export const PersonalInformation = ({
                   containerStyle={{
                     marginBottom: 10,
                   }}
-                  onToggle={(newValue) => setnotAgentCheckbox(newValue)}
+                  onToggle={handleCheckBoxChange}
                   checked={notAgentCheckbox}
                   label="I'm not an agent"
                 />
               </View>
-              <View style={styles.usaNotice}>
-                <Flag size={16} color="#1F2937" />
-                <Text style={styles.usaNoticeText}>This service is available for US only</Text>
+
+              <View
+                style={[
+                  styles.inputContainer,
+                  !notAgentCheckbox && {
+                    display: 'none',
+                  },
+                ]}>
+                <Controller
+                  control={control}
+                  name="userType"
+                  render={({ field: { onChange, value }, fieldState: { error } }) => (
+                    <DropdownComponent
+                      label="Type"
+                      data={USER_TYPE_OPTIONS}
+                      placeholder="Select user type"
+                      value={value ?? UserType.investor}
+                      onChange={onChange}
+                      icon={<Icons.UserCircle size={16} color="gray" />}
+                    />
+                  )}
+                />
               </View>
+
               <View style={styles.inputContainer}>
                 <Controller
                   name="addressLine1"
@@ -321,20 +363,6 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginBottom: 8,
-  },
-  usaNotice: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F3F4F6',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  usaNoticeText: {
-    marginLeft: 8,
-    fontSize: 14,
-    color: '#1F2937',
-    fontWeight: '500',
   },
   footerContainer: {
     paddingHorizontal: 16,

@@ -64,6 +64,8 @@ export const addUserMutation = gql`
           moduleKey
           available
           comingSoon
+          comingSoonLabel
+          comingSoonScreenShoots
           subscriptionRequired
         }
       }
@@ -155,6 +157,8 @@ export const updateUserMutation = gql`
           moduleKey
           available
           comingSoon
+          comingSoonLabel
+          comingSoonScreenShoots
           subscriptionRequired
         }
       }

@@ -89,6 +89,8 @@ interface TabHeaderProps {
   initialTabKey?: string;
   onTabChange?: (key: string) => void;
   containerStyle?: ViewStyle;
+  activeTabTextColor?: string;
+  activeTabInactiveColor?: string;
 }
 
 // SOLUTION 1: Vertical Stack with Cards (Recommended for small screens)
@@ -201,6 +203,8 @@ export const GridTabs: React.FC<TabHeaderProps> = ({
   containerStyle,
   activeTabBackground = '#FFF',
   activeTabColor = theme.colors.primary,
+  activeTabTextColor = '#FFF',
+  activeTabInactiveColor = '#FFF',
 }) => {
   const [activeTab, setActiveTab] = useState(initialTabKey || tabs[0].key);
 
@@ -239,7 +243,7 @@ export const GridTabs: React.FC<TabHeaderProps> = ({
                     style={[
                       styles.compactBadgeText,
                       {
-                        color: activeTab === tab.key ? activeTabColor : '#6B7280',
+                        color: activeTab === tab.key ? activeTabTextColor : activeTabInactiveColor,
                       },
                     ]}>
                     {tab.indexNumber}

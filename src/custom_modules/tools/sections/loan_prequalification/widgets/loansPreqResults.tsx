@@ -17,7 +17,7 @@ import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
 import { GridTabs } from '~/codidge_components/UI/tabs';
 import { theme } from '~/theme/theme';
-import { ToolDisclaimer } from '~/custom_modules/tools/components/toolsDispolaimer';
+import { ToolDisclaimer } from '~/custom_modules/tools/components/toolsDisclaimer';
 import { toolsDisclaimers } from '~/custom_modules/tools/data';
 
 interface LoanProgram {

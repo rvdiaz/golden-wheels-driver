@@ -8,7 +8,7 @@ import { Header } from '~/codidge_components/UI/header';
 import { Card } from '~/codidge_components/UI/card';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
-import { ToolDisclaimer } from '~/custom_modules/tools/components/toolsDispolaimer';
+import { ToolDisclaimer } from '~/custom_modules/tools/components/toolsDisclaimer';
 import { toolsDisclaimers } from '~/custom_modules/tools/data';
 
 interface MortgageCalculatorResultsProps {

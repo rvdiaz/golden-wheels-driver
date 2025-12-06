@@ -1,5 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { IPersonalData } from '~/core_modules/on_boarding/interface';
+import { UserType } from '../interfaces';
+import { capitalize } from '~/custom_modules/crm/helpers';
 
 export const ONBOARDING_STORAGE_KEYS = {
   FIRST_SCREEN_PASSED: '@onboarding_first_screen_passed',
@@ -99,3 +101,8 @@ export class OnboardingFlowStorage {
     }
   }
 }
+
+export const USER_TYPE_OPTIONS = Object.values(UserType).map((value) => ({
+  label: capitalize(value),
+  value,
+}));

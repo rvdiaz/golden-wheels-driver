@@ -9,7 +9,7 @@ import { IAttestationGroup, ITransUnionProperty } from '../../interfaces';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { AttestationModal } from './attestationsPopup';
-import SearchAddressAutoComplete from '~/custom_modules/tools/widgets/searchAutoComplete';
+import SearchAddressAutoComplete from '~/custom_modules/tools/components/searchAutoComplete';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
 import { theme } from '~/theme/theme';

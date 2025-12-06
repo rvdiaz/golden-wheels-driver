@@ -1,15 +1,15 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { Header } from '~/codidge_components/UI/header';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
-import { Calculator, Home, AlertCircle, MapPin } from 'lucide-react-native';
+import { Calculator } from 'lucide-react-native';
 import { BreakdownItem, detectStateFromZip, GEOGRAPHIC_COSTS, NetSheetResult } from './mocked';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
-import { ToolDisclaimer } from '../../components/toolsDispolaimer';
+import { ToolDisclaimer } from '../../components/toolsDisclaimer';
 import { toolsDisclaimers } from '../../data';
 
 export const SellerNetSheetPage = () => {
@@ -73,6 +73,7 @@ export const SellerNetSheetPage = () => {
 
     // Real estate commission
     const commissionAmount = grossPrice * (commission / 100);
+
     breakdownItems.push({
       category: 'Real Estate Commission',
       description: `${commission}% total commission`,
@@ -193,13 +194,6 @@ export const SellerNetSheetPage = () => {
       <PageSafeContainer>
         <Header title="Seller's Net Sheet" showBack={true} onBack={resetCalculator} />
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-          <View style={styles.headerSection}>
-            <Text style={styles.sectionTitle}>Seller's Net Sheet</Text>
-            <TouchableOpacity style={styles.newCalcButton} onPress={resetCalculator}>
-              <Text style={styles.newCalcButtonText}>New Calculation</Text>
-            </TouchableOpacity>
-          </View>
-
           {/* Summary Cards */}
           <View style={styles.summaryGrid}>
             <View style={[styles.summaryCard, styles.summaryCardBlue]}>
@@ -265,11 +259,14 @@ export const SellerNetSheetPage = () => {
               </Text>
             </View>
             <View style={styles.cardContent}>
-              <View style={styles.editGrid}>
-                <View style={styles.editItem}>
-                  <Text style={styles.editLabel}>Sale Price</Text>
-                  <TextInput
-                    style={styles.input}
+              <View
+                style={{
+                  gap: 8,
+                }}>
+                <View>
+                  <InputField
+                    allowCommas={true}
+                    label="Sale Price"
                     value={salePrice}
                     onChangeText={setSalePrice}
                     keyboardType="numeric"
@@ -277,10 +274,9 @@ export const SellerNetSheetPage = () => {
                   />
                 </View>
 
-                <View style={styles.editItem}>
-                  <Text style={styles.editLabel}>Zip Code</Text>
-                  <TextInput
-                    style={styles.input}
+                <View>
+                  <InputField
+                    label="Zip Code"
                     value={zipCode}
                     onChangeText={setZipCode}
                     keyboardType="numeric"
@@ -289,10 +285,10 @@ export const SellerNetSheetPage = () => {
                   />
                 </View>
 
-                <View style={styles.editItem}>
-                  <Text style={styles.editLabel}>Mortgage Balance</Text>
-                  <TextInput
-                    style={styles.input}
+                <View>
+                  <InputField
+                    allowCommas={true}
+                    label="Mortgage Balance"
                     value={mortgageBalance}
                     onChangeText={setMortgageBalance}
                     keyboardType="numeric"
@@ -300,10 +296,9 @@ export const SellerNetSheetPage = () => {
                   />
                 </View>
 
-                <View style={styles.editItem}>
-                  <Text style={styles.editLabel}>Commission (%)</Text>
-                  <TextInput
-                    style={styles.input}
+                <View>
+                  <InputField
+                    label="Commission (%)"
                     value={commissionRate}
                     onChangeText={setCommissionRate}
                     keyboardType="decimal-pad"
@@ -311,10 +306,10 @@ export const SellerNetSheetPage = () => {
                   />
                 </View>
 
-                <View style={styles.editItem}>
-                  <Text style={styles.editLabel}>Repairs/Concessions</Text>
-                  <TextInput
-                    style={styles.input}
+                <View>
+                  <InputField
+                    allowCommas={true}
+                    label="Repairs/Concessions"
                     value={repairs}
                     onChangeText={setRepairs}
                     keyboardType="numeric"
@@ -322,10 +317,10 @@ export const SellerNetSheetPage = () => {
                   />
                 </View>
 
-                <View style={styles.editItem}>
-                  <Text style={styles.editLabel}>Home Warranty</Text>
-                  <TextInput
-                    style={styles.input}
+                <View>
+                  <InputField
+                    allowCommas={true}
+                    label="Home Warranty"
                     value={homeWarranty}
                     onChangeText={setHomeWarranty}
                     keyboardType="numeric"
@@ -377,29 +372,22 @@ export const SellerNetSheetPage = () => {
 
           <View style={styles.cardContent}>
             {/* Input Form - Column 1 */}
-            <View style={styles.inputGroup}>
-              <View style={styles.labelRow}>
-                <Home color="#374151" size={16} />
-                <Text style={styles.label}>Sale Price</Text>
-              </View>
-              <TextInput
-                style={styles.input}
+            <View>
+              <InputField
+                allowCommas={true}
+                label="Sale Price"
                 placeholder="500000"
                 value={salePrice}
                 onChangeText={setSalePrice}
                 keyboardType="numeric"
                 placeholderTextColor="#9ca3af"
+                hint="Expected or agreed sale price"
               />
-              <Text style={styles.inputHint}>Expected or agreed sale price</Text>
             </View>
 
-            <View style={styles.inputGroup}>
-              <View style={styles.labelRow}>
-                <MapPin color="#374151" size={16} />
-                <Text style={styles.label}>Property Zip Code</Text>
-              </View>
-              <TextInput
-                style={styles.input}
+            <View>
+              <InputField
+                label="Property Zip Code"
                 placeholder="12345"
                 value={zipCode}
                 onChangeText={setZipCode}
@@ -419,59 +407,56 @@ export const SellerNetSheetPage = () => {
               )}
             </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Current Mortgage Balance</Text>
+            <View>
               <InputField
-                style={styles.input}
+                allowCommas={true}
+                label="Loan Amount"
                 placeholder="250000"
                 value={mortgageBalance}
                 onChangeText={setMortgageBalance}
                 keyboardType="numeric"
                 placeholderTextColor="#9ca3af"
+                hint="Outstanding loan balance (optional)"
               />
-              <Text style={styles.inputHint}>Outstanding loan balance (optional)</Text>
             </View>
 
             {/* Input Form - Column 2 */}
-            <View style={styles.inputGroup}>
+            <View>
               <InputField
                 label="Real Estate Commission (%)"
-                style={styles.input}
                 placeholder="6.0"
                 value={commissionRate}
                 onChangeText={setCommissionRate}
                 keyboardType="decimal-pad"
                 placeholderTextColor="#9ca3af"
+                hint="Total commission for both agents (typical: 5-6%)"
               />
-              <Text style={styles.inputHint}>Total commission for both agents (typical: 5-6%)</Text>
             </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Repairs/Concessions</Text>
+            <View>
               <InputField
-                style={styles.input}
+                allowCommas={true}
+                label="Repairs/Concessions"
                 placeholder="2000"
                 value={repairs}
                 onChangeText={setRepairs}
                 keyboardType="numeric"
                 placeholderTextColor="#9ca3af"
+                hint="Negotiated repairs or buyer concessions (optional)"
               />
-              <Text style={styles.inputHint}>
-                Negotiated repairs or buyer concessions (optional)
-              </Text>
             </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Home Warranty</Text>
+            <View>
               <InputField
-                style={styles.input}
+                allowCommas={true}
+                label="Home Warranty"
                 placeholder="500"
                 value={homeWarranty}
                 onChangeText={setHomeWarranty}
                 keyboardType="numeric"
                 placeholderTextColor="#9ca3af"
+                hint="One-year home warranty for buyer (optional)"
               />
-              <Text style={styles.inputHint}>One-year home warranty for buyer (optional)</Text>
             </View>
           </View>
         </View>
@@ -528,47 +513,10 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     padding: 16,
+    gap: 8,
   },
   flex1: {
     flex: 1,
-  },
-  inputGroup: {
-    marginBottom: 20,
-  },
-  labelRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 8,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#374151',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 14,
-    color: '#111827',
-  },
-  inputHint: {
-    fontSize: 12,
-    color: '#6b7280',
-    marginTop: 4,
-  },
-  inputHintSuccess: {
-    fontSize: 12,
-    color: '#16a34a',
-    marginTop: 4,
-  },
-  inputHintWarning: {
-    fontSize: 12,
-    color: '#ea580c',
-    marginTop: 4,
   },
   button: {
     flexDirection: 'row',
@@ -607,30 +555,6 @@ const styles = StyleSheet.create({
   },
   mt24: {
     marginTop: 24,
-  },
-
-  headerSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#111827',
-  },
-  newCalcButton: {
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 6,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-  },
-  newCalcButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#374151',
   },
   summaryGrid: {
     gap: 12,
@@ -723,15 +647,20 @@ const styles = StyleSheet.create({
   editCardSubtitle: {
     color: '#3b82f6',
   },
-  editGrid: {
-    gap: 16,
-  },
-  editItem: {
-    gap: 8,
-  },
+
   editLabel: {
     fontSize: 14,
     fontWeight: '500',
     color: '#374151',
+  },
+  inputHintSuccess: {
+    fontSize: 12,
+    color: '#16a34a',
+    marginTop: 4,
+  },
+  inputHintWarning: {
+    fontSize: 12,
+    color: '#ea580c',
+    marginTop: 4,
   },
 });

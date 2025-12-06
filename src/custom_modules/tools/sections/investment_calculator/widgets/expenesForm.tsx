@@ -27,13 +27,6 @@ const toDisplayValue = (value: any): string => {
   return value.toString();
 };
 
-// Helper function to parse input value
-const parseNumericInput = (text: string): number | string => {
-  if (text === '') return '';
-  const num = parseFloat(text);
-  return isNaN(num) ? '' : num;
-};
-
 export const ExpensesForm: React.FC<ExpensesFormProps> = ({
   form,
   renovationFieldArray,
@@ -67,10 +60,11 @@ export const ExpensesForm: React.FC<ExpensesFormProps> = ({
           name={fieldName}
           render={({ field: { onChange, value } }) => (
             <InputField
+              allowCommas={true}
               label={label}
               placeholder={placeholder}
               value={toDisplayValue(value)}
-              onChangeText={(text) => onChange(parseNumericInput(text))}
+              onChangeText={onChange}
               keyboardType="numeric"
             />
           )}

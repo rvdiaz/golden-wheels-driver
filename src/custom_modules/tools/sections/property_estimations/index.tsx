@@ -4,7 +4,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { Modal, StyleSheet, View, ScrollView } from 'react-native';
 import { Card } from '~/codidge_components/UI/card';
 import { Header } from '~/codidge_components/UI/header';
-import SearchAddressAutoComplete from '../../widgets/searchAutoComplete';
+import SearchAddressAutoComplete from '../../components/searchAutoComplete';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import {
   IProperty,

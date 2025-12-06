@@ -62,6 +62,7 @@ export interface PhoneInputProps {
   disabled?: boolean;
   style?: any;
   inputStyle?: any;
+  disabledSelection?: boolean;
 }
 
 export const PhoneInput: React.FC<PhoneInputProps> = ({
@@ -76,6 +77,7 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
   disabled = false,
   style,
   inputStyle,
+  disabledSelection = false,
 }) => {
   const [selectedCountry, setSelectedCountry] = useState<CountryData>(
     COUNTRIES.find((c) => c.code === defaultCountry) || COUNTRIES[0]
@@ -155,11 +157,11 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
         {/* Country Selector */}
         <TouchableOpacity
           style={styles.countrySelector}
-          onPress={() => !disabled && setShowCountryPicker(true)}
+          onPress={() => !disabled && !disabledSelection && setShowCountryPicker(true)}
           disabled={disabled}>
           <Text style={styles.flag}>{selectedCountry.flag}</Text>
           <Text style={styles.dialCode}>{selectedCountry.dialCode}</Text>
-          <Text style={styles.arrow}>▼</Text>
+          {!disabledSelection && <Text style={styles.arrow}>▼</Text>}
         </TouchableOpacity>
 
         <View style={styles.divider} />

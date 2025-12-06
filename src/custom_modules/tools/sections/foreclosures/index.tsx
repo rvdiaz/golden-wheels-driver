@@ -37,7 +37,7 @@ import {
   generateMockOwnerData,
   OwnerData,
 } from './mocked';
-import { ToolDisclaimer } from '../../components/toolsDispolaimer';
+import { ToolDisclaimer } from '../../components/toolsDisclaimer';
 import { toolsDisclaimers } from '../../data';
 
 export const ForeClosuresPage = () => {

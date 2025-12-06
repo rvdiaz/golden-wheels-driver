@@ -108,6 +108,7 @@ const InvestmentCalculatorScreen: React.FC = () => {
           <GridTabs
             activeTabBackground={theme.colors.primary}
             activeTabColor="#FFF"
+            activeTabTextColor="#FFF"
             tabs={tabs}
             initialTabKey={activeTab}
             onTabChange={setActiveTab}

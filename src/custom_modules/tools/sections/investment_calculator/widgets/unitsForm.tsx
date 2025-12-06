@@ -122,6 +122,7 @@ const UnitCard: React.FC<{
             name={`units.${index}.currentRent`}
             render={({ field: { onChange, value } }) => (
               <InputField
+                allowCommas={true}
                 placeholder="0"
                 value={toDisplayValue(value)}
                 onChangeText={(text) => onChange(parseNumericInput(text))}
@@ -142,6 +143,7 @@ const UnitCard: React.FC<{
             name={`units.${index}.repairCosts`}
             render={({ field: { onChange, value } }) => (
               <InputField
+                allowCommas={true}
                 placeholder="0"
                 value={toDisplayValue(value)}
                 onChangeText={(text) => onChange(parseNumericInput(text))}
@@ -162,6 +164,7 @@ const UnitCard: React.FC<{
             name={`units.${index}.potentialRent`}
             render={({ field: { onChange, value } }) => (
               <InputField
+                allowCommas={true}
                 placeholder="0"
                 value={toDisplayValue(value)}
                 onChangeText={(text) => onChange(parseNumericInput(text))}
@@ -290,6 +293,7 @@ export const MobileUnitsForm: React.FC<MobileUnitsFormProps> = ({
               name="otherIncome"
               render={({ field: { onChange, value } }) => (
                 <InputField
+                  allowCommas={true}
                   placeholder="0"
                   value={toDisplayValue(value)}
                   onChangeText={(text) => onChange(parseNumericInput(text))}

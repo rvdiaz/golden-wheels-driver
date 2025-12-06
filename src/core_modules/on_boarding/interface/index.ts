@@ -32,4 +32,5 @@ export interface IPersonalData {
   region: string;
   country: string;
   postalCode: string;
+  userType: string;
 }

@@ -13,7 +13,7 @@ import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/Primar
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { ToolDisclaimer } from '../../components/toolsDispolaimer';
+import { ToolDisclaimer } from '../../components/toolsDisclaimer';
 import { toolsDisclaimers } from '../../data';
 
 export const MortgageCalculatorScreen: React.FC = () => {

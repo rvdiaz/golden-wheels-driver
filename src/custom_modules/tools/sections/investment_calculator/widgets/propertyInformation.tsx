@@ -6,7 +6,7 @@ import { Card } from '~/codidge_components/UI/card';
 import { Home, Percent } from 'lucide-react-native';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import Text from '~/codidge_components/UI/text';
-import LocationAutocomplete from '~/custom_modules/tools/widgets/locationPropertyTax';
+import LocationAutocomplete from '~/custom_modules/tools/components/locationPropertyTax';
 
 interface PropertyFormProps {
   form: UseFormReturn<any>;
@@ -99,6 +99,7 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({ form }) => {
                 name="propertyValue"
                 render={({ field: { value } }) => (
                   <InputField
+                    allowCommas={true}
                     label="Asking Price"
                     placeholder="500000"
                     value={value?.toString() || ''}
@@ -116,6 +117,7 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({ form }) => {
                 name="downPayment"
                 render={({ field: { value } }) => (
                   <InputField
+                    allowCommas={true}
                     label="Down Payment"
                     placeholder="100000"
                     value={value?.toString() || ''}
@@ -133,6 +135,7 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({ form }) => {
                 name="closingCosts"
                 render={({ field: { onChange, value } }) => (
                   <InputField
+                    allowCommas={true}
                     label="Closing Costs"
                     placeholder="15000"
                     value={value?.toString() || ''}
@@ -159,23 +162,23 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({ form }) => {
           <View style={styles.grid}>
             {/* Loan Amount */}
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Loan Amount</Text>
               <Controller
                 control={control}
                 name="loanAmount"
                 render={({ field: { onChange, value } }) => (
                   <InputField
+                    label="Loan Amount"
+                    allowCommas={true}
                     style={[styles.input /* errors.loanAmount &&   styles.inputError*/]}
                     placeholder="400000"
                     value={value?.toString() || ''}
                     onChangeText={(text) => onChange(parseFloat(text) || 0)}
                     keyboardType="numeric"
+                    hint="Auto-calculated from property value - down payment"
                   />
                 )}
               />
-              <Text style={styles.helperText}>
-                Auto-calculated from property value - down payment
-              </Text>
+
               {/*    {errors.loanAmount && (
                 <Text style={styles.errorText}>{errors.loanAmount.message}</Text>
               )} */}
@@ -183,12 +186,12 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({ form }) => {
 
             {/* Interest Rate */}
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Interest Rate (%)</Text>
               <Controller
                 control={control}
                 name="interestRate"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
+                    label="Interest Rate (%)"
                     style={[styles.input /* errors.interestRate &&   styles.inputError*/]}
                     placeholder="7.5"
                     value={typeof value === 'number' && value !== 0 ? String(value) : value || ''}
@@ -206,12 +209,12 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({ form }) => {
 
             {/* Loan Term */}
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Loan Term (years)</Text>
               <Controller
                 control={control}
                 name="loanTerm"
                 render={({ field: { onChange, value } }) => (
                   <InputField
+                    label="Loan Term (years)"
                     style={[styles.input /* errors.loanTerm &&   styles.inputError*/]}
                     placeholder="30"
                     value={value?.toString() || ''}
@@ -303,11 +306,7 @@ const styles = StyleSheet.create({
     width: 30,
     minWidth: 30,
   },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginBottom: 4,
-  },
+
   input: {
     borderWidth: 1,
     borderColor: '#d1d5db',

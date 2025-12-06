@@ -6,7 +6,7 @@ import { Controller, useForm } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
 import { Header } from '~/codidge_components/UI/header';
 import { Card } from '~/codidge_components/UI/card';
-import SearchAddressAutoComplete from '../../widgets/searchAutoComplete';
+import SearchAddressAutoComplete from '../../components/searchAutoComplete';
 import { PropertyOwnerResults } from './results';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import { useLazyQuery } from '@apollo/client';

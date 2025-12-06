@@ -64,6 +64,8 @@ export const getUserQuery = gql`
           moduleKey
           available
           comingSoon
+          comingSoonLabel
+          comingSoonScreenShoots
           subscriptionRequired
         }
       }
@@ -158,6 +160,8 @@ export const onUserUpdatedSubscription = gql`
             moduleKey
             available
             comingSoon
+            comingSoonLabel
+            comingSoonScreenShoots
             subscriptionRequired
           }
         }

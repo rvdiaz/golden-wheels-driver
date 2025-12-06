@@ -44,10 +44,11 @@ const RenovationItemVertical = ({ field, index, control, onRemoveRenovationItem 
         name={`renovationItems.${index}.cost`}
         render={({ field: { onChange, value } }) => (
           <InputField
+            allowCommas={true}
             label="Estimated Cost"
             placeholder="Enter amount"
             value={value?.toString() || ''}
-            onChangeText={(text) => onChange(parseFloat(text) || 0)}
+            onChangeText={onChange}
             keyboardType="numeric"
             leftIcon={<DollarSign size={16} color="#6b7280" />}
           />

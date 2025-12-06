@@ -92,6 +92,7 @@ export const AuthWrapper = () => {
             brokerage: personalInfo?.brokerage,
             email: formData.email,
             phone: formData.phone,
+            userType: personalInfo.userType,
             address: {
               addressLine1: personalInfo.addressLine1,
               postalCode: personalInfo.postalCode,

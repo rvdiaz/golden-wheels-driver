@@ -70,6 +70,7 @@ export const AdditionalFields = () => {
                     leftIcon={<Shield size={iconsSize} />}
                     label="Home Insurance ($)"
                     placeholder="150"
+                    allowCommas={true}
                     keyboardType="decimal-pad"
                     value={value?.toString()}
                     onChangeText={onChange}
@@ -107,6 +108,7 @@ export const AdditionalFields = () => {
             rules={{ required: 'HOA Fees is required' }}
             render={({ field: { value, onChange } }) => (
               <InputField
+                allowCommas={true}
                 label="HOA Fees (Monthly $)"
                 placeholder="0"
                 keyboardType="decimal-pad"

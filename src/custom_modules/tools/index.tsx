@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as Icons from 'lucide-react-native';
@@ -10,11 +10,16 @@ import Text from '~/codidge_components/UI/text';
 import { localToolModules } from '~/store/helpers';
 import { subscriptionStatusData, paywallVisibility } from '~/store/subscription';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ComingSoonModal } from './components/comingSoonModal';
 
 export const ToolsScreen: React.FC = () => {
   const { hasActiveSubscription: hasSubscription } = useReactiveVar(subscriptionStatusData);
   const navigation = useNavigation();
   const currentUserData = useReactiveVar(userData);
+
+  // State for coming soon modal
+  const [comingSoonModalVisible, setComingSoonModalVisible] = useState(false);
+  const [selectedTool, setSelectedTool] = useState<IFeatureModule | null>(null);
 
   const userToolsConfig = currentUserData?.modules.find(
     (mod) => mod.moduleKey === ModuleKeys.tools
@@ -58,20 +63,23 @@ export const ToolsScreen: React.FC = () => {
     const iconColor = tool?.color ?? '#000';
     const iconBackgroundColor = adjustColorOpacity(iconColor, 0.15);
     const comingSoon = tool.comingSoon;
-
+    const comingSoonLabel = tool.comingSoonLabel ?? 'Coming Soon';
+    const comingSoonScreenShoots = tool.comingSoonScreenShoots ?? [];
     // Check if tool requires subscription and user doesn't have it
     const requiresSubscription = tool.subscriptionRequired;
     const isLocked = requiresSubscription && !hasSubscription;
 
     const handleToolPress = () => {
-      if (!comingSoon) {
-        if (isLocked) {
-          // Show paywall for locked tools
-          paywallVisibility(true);
-        } else {
-          // Navigate normally for unlocked tools
-          navigation.navigate(tool.moduleKey as never);
-        }
+      if (comingSoon && comingSoonScreenShoots.length > 0) {
+        // Show coming soon modal with screenshots
+        setSelectedTool(tool);
+        setComingSoonModalVisible(true);
+      } else if (isLocked) {
+        // Show paywall for locked tools
+        paywallVisibility(true);
+      } else {
+        // Navigate normally for unlocked tools
+        navigation.navigate(tool.moduleKey as never);
       }
     };
 
@@ -94,6 +102,17 @@ export const ToolsScreen: React.FC = () => {
               style={styles.premiumBadgeGradient}>
               <Icons.Crown size={12} color="#FFF" />
               <Text style={styles.premiumBadgeText}>Premium</Text>
+            </LinearGradient>
+          </View>
+        )}
+        {comingSoon && comingSoonScreenShoots.length > 0 && (
+          <View style={styles.premiumBadge}>
+            <LinearGradient
+              colors={[theme.colors.primary, theme.colors.info]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.premiumBadgeGradient}>
+              <Text style={styles.premiumBadgeText}>Tap To See</Text>
             </LinearGradient>
           </View>
         )}
@@ -123,7 +142,7 @@ export const ToolsScreen: React.FC = () => {
 
           {comingSoon && (
             <View style={styles.comingSoonBadge}>
-              <Text style={styles.comingSoonText}>Coming Soon</Text>
+              <Text style={styles.comingSoonText}>{comingSoonLabel}</Text>
               <Icons.Clock size={16} color="#FFF" />
             </View>
           )}
@@ -191,6 +210,20 @@ export const ToolsScreen: React.FC = () => {
           // ✅ Fallback: Single column layout
           <View>{availableTools.map((tool) => renderTool(tool))}</View>
         )}
+        {/* Coming Soon Modal */}
+        <ComingSoonModal
+          visible={comingSoonModalVisible}
+          onClose={() => {
+            setComingSoonModalVisible(false);
+            setSelectedTool(null);
+          }}
+          toolName={selectedTool?.label ?? ''}
+          toolDescription={selectedTool?.description ?? ''}
+          toolIcon={selectedTool?.icon}
+          toolColor={selectedTool?.color}
+          screenshots={selectedTool?.comingSoonScreenShoots ?? []}
+          comingSoonLabel={selectedTool?.comingSoonLabel}
+        />
       </ScrollView>
     </View>
   );

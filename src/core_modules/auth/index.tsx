@@ -66,9 +66,9 @@ export const StartPointScreen = () => {
             <View style={styles.centerContent}>
               <StepIcon icon={Rocket} />
               <Text style={styles.mainTitle}>Your journey starts here</Text>
-              <Text style={styles.subtitle}>
+              {/* <Text style={styles.subtitle}>
                 Share your goals and vision so we can build the perfect plan for you.
-              </Text>
+              </Text> */}
               <PrimaryButton
                 onPress={handleGetStarted}
                 size={ButtonSize.LARGE}

@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Platform, Alert } from 'react-native';
 import Text from '~/codidge_components/UI/text';
 import React, { useState } from 'react';
 import * as Icons from 'lucide-react-native';
@@ -15,6 +15,8 @@ import { Badge } from '~/codidge_components/UI/badge';
 import OutlineButton, { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
 import { capitalize } from '~/custom_modules/crm/helpers';
 import TextButton from '~/codidge_components/UI/button/TextButton';
+import { Directory, File, Paths } from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
 const EXPECTED_REPORTS = [
   { type: 'credit', name: 'Credit Report' },
@@ -26,6 +28,7 @@ const EXPECTED_REPORTS = [
 export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedApplicant, setSelectedApplicant] = useState<IExtendedRenterInput | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const [showApplicants, setShowApplicants] = useState(false);
 
@@ -52,6 +55,65 @@ export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) =>
   const handleCloseModal = () => {
     setModalVisible(false);
     setSelectedApplicant(null);
+  };
+
+  const handleDownload = async (pdfUrl?: string) => {
+    if (!pdfUrl) {
+      Alert.alert('Error', 'No PDF URL available');
+      return;
+    }
+
+    setIsDownloading(true);
+    const isSharingAvailable = await Sharing.isAvailableAsync();
+    try {
+      // Create a directory for PDFs
+      const pdfDirectory = new Directory(Paths.cache, 'reports-tu');
+      if (!pdfDirectory.exists) {
+        await pdfDirectory.create();
+      }
+
+      // Download the PDF
+      const output = await File.downloadFileAsync(pdfUrl, pdfDirectory);
+
+      if (output.exists) {
+        // Check if sharing is available
+
+        if (isSharingAvailable) {
+          await Sharing.shareAsync(output.uri, {
+            mimeType: 'application/pdf',
+            dialogTitle: 'Share PDF Report',
+            UTI: 'com.adobe.pdf',
+          });
+        } else {
+          Alert.alert('Success', 'PDF downloaded successfully', [{ text: 'OK' }]);
+        }
+      } else {
+        throw new Error('Download failed - file does not exist');
+      }
+    } catch (error: any) {
+      console.error('Download failed:', error);
+      if (error?.message?.includes('Destination already exists')) {
+        console.log('File already exists. Opening file picker...');
+        const file: any = await File.pickFileAsync();
+        if (isSharingAvailable) {
+          await Sharing.shareAsync(file.uri, {
+            mimeType: 'application/pdf',
+            dialogTitle: 'Share PDF Report',
+            UTI: 'com.adobe.pdf',
+          });
+        }
+
+        return; // Prevent falling into the generic error message
+      }
+      setIsDownloading(false);
+
+      // Generic error
+      Alert.alert('Download Failed', 'Unable to download the PDF. Please try again.', [
+        { text: 'OK' },
+      ]);
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   return (
@@ -138,15 +200,20 @@ export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) =>
                           ].includes(applicant.renterStatus);
 
                           if (canViewReport) {
-                            setSelectedApplicant(applicant);
-                            setModalVisible(true);
+                            if (Platform.OS === 'ios') {
+                              setSelectedApplicant(applicant);
+                              setModalVisible(true);
+                            } else {
+                              handleDownload(applicant.reportPdfUrl);
+                            }
                           }
                         }}
                         textStyle={{
                           color: theme.colors.info,
                         }}
                         size={ButtonSize.LARGE}
-                        title="View"
+                        title={Platform.OS === 'ios' ? 'View' : 'Download'}
+                        loading={isDownloading}
                       />
                     </TouchableOpacity>
                   );
@@ -275,6 +342,8 @@ export const ScreenRequestItem = ({ rentApp }: { rentApp: IRentApplication }) =>
         visible={modalVisible}
         onClose={handleCloseModal}
         applicant={selectedApplicant}
+        isDownloading={isDownloading}
+        handleDownload={handleDownload}
       />
     </>
   );

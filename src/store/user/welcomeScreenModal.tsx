@@ -21,7 +21,7 @@ export const WelcomeScreenModal = () => {
           backgroundColor: '#7C3AED', // Purple background
         }}>
         <View style={styles.container}>
-          <FadeTransition isVisible={true} style={{ flex: 1 }}>
+          <FadeTransition isVisible={true} duration={600} style={{ flex: 1 }}>
             <View style={styles.centerContent}>
               <Text style={styles.greeting}>Welcome, {user?.firstName}!</Text>
 

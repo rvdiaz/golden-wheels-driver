@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+  Platform,
+} from 'react-native';
 import * as Icons from 'lucide-react-native';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { ToolDisclaimer } from '~/custom_modules/tools/components/toolsDisclaimer';
@@ -7,6 +15,7 @@ import { toolsDisclaimers } from '~/custom_modules/tools/data';
 import { ClosingCostResult } from '../interfaces';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { Header } from '~/codidge_components/UI/header';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export const EstimatedClosingCostResults = ({
   result,
@@ -29,119 +38,125 @@ export const EstimatedClosingCostResults = ({
   return (
     <PageSafeContainer>
       <Header onBack={onBack} showBack={true} title="Results" />
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Summary Cards */}
-        <View style={styles.summaryCardsContainer}>
-          <View style={[styles.summaryCard, styles.purchasePriceCard]}>
-            <View style={styles.summaryCardContent}>
-              <Text style={styles.summaryLabel}>Purchase Price</Text>
-              <Text style={styles.summaryAmount}>{formatCurrency(result.purchasePrice)}</Text>
-            </View>
-            <Icons.Home size={28} color="#2563EB" />
-          </View>
-
-          <View style={[styles.summaryCard, styles.downPaymentCard]}>
-            <View style={styles.summaryCardContent}>
-              <Text style={styles.summaryLabel}>Down Payment</Text>
-              <Text style={styles.summaryAmount}>{formatCurrency(result.downPaymentAmount)}</Text>
-              <Text style={styles.summarySubtext}>
-                {((result.downPaymentAmount / result.purchasePrice) * 100).toFixed(1)}% of price
-              </Text>
-            </View>
-            <Icons.DollarSign size={28} color="#10B981" />
-          </View>
-
-          <View style={[styles.summaryCard, styles.loanAmountCard]}>
-            <View style={styles.summaryCardContent}>
-              <Text style={styles.summaryLabel}>Loan Amount</Text>
-              <Text style={styles.summaryAmount}>{formatCurrency(result.loanAmount)}</Text>
-            </View>
-            <Icons.Calculator size={28} color="#F97316" />
-          </View>
-
-          <View style={[styles.summaryCard, styles.closingCostsCard]}>
-            <View style={styles.summaryCardContent}>
-              <Text style={styles.summaryLabel}>Total Closing Costs</Text>
-              <Text style={styles.summaryAmount}>{formatCurrency(result.totalClosingCosts)}</Text>
-              <Text style={styles.summarySubtext}>
-                {((result.totalClosingCosts / result.purchasePrice) * 100).toFixed(1)}% of price
-              </Text>
-            </View>
-            <Icons.CheckCircle size={28} color="#8B5CF6" />
-          </View>
-        </View>
-
-        {/* Total Cash Needed */}
-        <View style={styles.totalCashCard}>
-          <View style={styles.totalCashContent}>
-            <Text style={styles.totalCashLabel}>Total Cash Needed to Close</Text>
-            <Text style={styles.totalCashAmount}>{formatCurrency(result.totalCashNeeded)}</Text>
-            <Text style={styles.totalCashSubtext}>Down payment + closing costs</Text>
-          </View>
-          <Icons.DollarSignIcon size={36} color="#10B981" />
-        </View>
-
-        {/* Cost Breakdown */}
-        <View style={styles.breakdownSection}>
-          <View style={styles.breakdownHeader}>
-            <Text style={styles.breakdownTitle}>Cost Breakdown</Text>
-            <View style={styles.editBadge}>
-              <Text style={styles.editBadgeText}>Tap amounts to edit</Text>
-            </View>
-          </View>
-
-          {result.breakdown.map((item, index) => (
-            <View key={index} style={styles.breakdownItem}>
-              <View style={styles.breakdownItemInfo}>
-                <Text style={styles.breakdownCategory}>{item.category}</Text>
-                <Text style={styles.breakdownDescription}>{item.description}</Text>
+      <KeyboardAwareScrollView
+        showsVerticalScrollIndicator={false}
+        enableOnAndroid={true}
+        extraScrollHeight={Platform.OS === 'ios' ? 0 : 80}
+        keyboardShouldPersistTaps="handled">
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {/* Summary Cards */}
+          <View style={styles.summaryCardsContainer}>
+            <View style={[styles.summaryCard, styles.purchasePriceCard]}>
+              <View style={styles.summaryCardContent}>
+                <Text style={styles.summaryLabel}>Purchase Price</Text>
+                <Text style={styles.summaryAmount}>{formatCurrency(result.purchasePrice)}</Text>
               </View>
-              <View style={styles.breakdownItemRight}>
-                {item.percentage !== undefined && (
-                  <View style={styles.percentageBadge}>
-                    <Text style={styles.percentageBadgeText}>{item.percentage}%</Text>
-                  </View>
-                )}
-                {editingIndex === index ? (
-                  <InputField
-                    containerStyle={{
-                      backgroundColor: '#FFF',
-                      marginBottom: 0,
-                    }}
-                    value={String(item.amount)}
-                    onChangeText={(text) => {}}
-                    onBlur={() => setEditingIndex(null)}
-                    keyboardType="decimal-pad"
-                    autoFocus
-                  />
-                ) : (
-                  <TouchableOpacity
-                    style={styles.breakdownAmount}
-                    onPress={() => setEditingIndex(index)}>
-                    <Text style={styles.breakdownAmountText}>{formatCurrency(item.amount)}</Text>
-                  </TouchableOpacity>
-                )}
+              <Icons.Home size={28} color="#2563EB" />
+            </View>
+
+            <View style={[styles.summaryCard, styles.downPaymentCard]}>
+              <View style={styles.summaryCardContent}>
+                <Text style={styles.summaryLabel}>Down Payment</Text>
+                <Text style={styles.summaryAmount}>{formatCurrency(result.downPaymentAmount)}</Text>
+                <Text style={styles.summarySubtext}>
+                  {((result.downPaymentAmount / result.purchasePrice) * 100).toFixed(1)}% of price
+                </Text>
+              </View>
+              <Icons.DollarSign size={28} color="#10B981" />
+            </View>
+
+            <View style={[styles.summaryCard, styles.loanAmountCard]}>
+              <View style={styles.summaryCardContent}>
+                <Text style={styles.summaryLabel}>Loan Amount</Text>
+                <Text style={styles.summaryAmount}>{formatCurrency(result.loanAmount)}</Text>
+              </View>
+              <Icons.Calculator size={28} color="#F97316" />
+            </View>
+
+            <View style={[styles.summaryCard, styles.closingCostsCard]}>
+              <View style={styles.summaryCardContent}>
+                <Text style={styles.summaryLabel}>Total Closing Costs</Text>
+                <Text style={styles.summaryAmount}>{formatCurrency(result.totalClosingCosts)}</Text>
+                <Text style={styles.summarySubtext}>
+                  {((result.totalClosingCosts / result.purchasePrice) * 100).toFixed(1)}% of price
+                </Text>
+              </View>
+              <Icons.CheckCircle size={28} color="#8B5CF6" />
+            </View>
+          </View>
+
+          {/* Total Cash Needed */}
+          <View style={styles.totalCashCard}>
+            <View style={styles.totalCashContent}>
+              <Text style={styles.totalCashLabel}>Total Cash Needed to Close</Text>
+              <Text style={styles.totalCashAmount}>{formatCurrency(result.totalCashNeeded)}</Text>
+              <Text style={styles.totalCashSubtext}>Down payment + closing costs</Text>
+            </View>
+            <Icons.DollarSignIcon size={36} color="#10B981" />
+          </View>
+
+          {/* Cost Breakdown */}
+          <View style={styles.breakdownSection}>
+            <View style={styles.breakdownHeader}>
+              <Text style={styles.breakdownTitle}>Cost Breakdown</Text>
+              <View style={styles.editBadge}>
+                <Text style={styles.editBadgeText}>Tap amounts to edit</Text>
               </View>
             </View>
-          ))}
-        </View>
 
-        {/* Bottom Total Cash Needed */}
-        <View style={styles.totalCashCard}>
-          <View style={styles.totalCashContent}>
-            <Text style={styles.totalCashLabel}>Total Cash Needed to Close</Text>
-            <Text style={styles.totalCashAmount}>{formatCurrency(result.totalCashNeeded)}</Text>
-            <Text style={styles.totalCashSubtext}>Down payment + closing costs</Text>
+            {result.breakdown.map((item, index) => (
+              <View key={index} style={styles.breakdownItem}>
+                <View style={styles.breakdownItemInfo}>
+                  <Text style={styles.breakdownCategory}>{item.category}</Text>
+                  <Text style={styles.breakdownDescription}>{item.description}</Text>
+                </View>
+                <View style={styles.breakdownItemRight}>
+                  {item.percentage !== undefined && (
+                    <View style={styles.percentageBadge}>
+                      <Text style={styles.percentageBadgeText}>{item.percentage}%</Text>
+                    </View>
+                  )}
+                  {editingIndex === index ? (
+                    <InputField
+                      containerStyle={{
+                        backgroundColor: '#FFF',
+                        marginBottom: 0,
+                      }}
+                      value={String(item.amount)}
+                      onChangeText={(text) => {}}
+                      onBlur={() => setEditingIndex(null)}
+                      keyboardType="decimal-pad"
+                      autoFocus
+                    />
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.breakdownAmount}
+                      onPress={() => setEditingIndex(index)}>
+                      <Text style={styles.breakdownAmountText}>{formatCurrency(item.amount)}</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
+            ))}
           </View>
-          <Icons.DollarSign size={36} color="#10B981" />
-        </View>
-        <ToolDisclaimer
-          containerStyles={{
-            marginHorizontal: 16,
-          }}
-          value={toolsDisclaimers.closingCostCalculator}
-        />
-      </ScrollView>
+
+          {/* Bottom Total Cash Needed */}
+          <View style={styles.totalCashCard}>
+            <View style={styles.totalCashContent}>
+              <Text style={styles.totalCashLabel}>Total Cash Needed to Close</Text>
+              <Text style={styles.totalCashAmount}>{formatCurrency(result.totalCashNeeded)}</Text>
+              <Text style={styles.totalCashSubtext}>Down payment + closing costs</Text>
+            </View>
+            <Icons.DollarSign size={36} color="#10B981" />
+          </View>
+          <ToolDisclaimer
+            containerStyles={{
+              marginHorizontal: 16,
+            }}
+            value={toolsDisclaimers.closingCostCalculator}
+          />
+        </ScrollView>
+      </KeyboardAwareScrollView>
     </PageSafeContainer>
   );
 };

@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, ScrollView, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { Header } from '~/codidge_components/UI/header';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
@@ -11,6 +11,7 @@ import { ButtonSize } from '~/codidge_components/UI/button/types';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { ToolDisclaimer } from '../../components/toolsDisclaimer';
 import { toolsDisclaimers } from '../../data';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export const SellerNetSheetPage = () => {
   const navigation = useNavigation();
@@ -192,159 +193,171 @@ export const SellerNetSheetPage = () => {
   if (showResults && result) {
     return (
       <PageSafeContainer>
-        <Header title="Seller's Net Sheet" showBack={true} onBack={resetCalculator} />
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-          {/* Summary Cards */}
-          <View style={styles.summaryGrid}>
-            <View style={[styles.summaryCard, styles.summaryCardBlue]}>
-              <Text style={styles.summaryLabel}>Gross Sale Price</Text>
-              <Text style={styles.summaryValue}>{formatCurrency(result.grossSalePrice)}</Text>
-            </View>
+        <Header
+          title="Seller's Net Sheet"
+          showBack={true}
+          onBack={() => {
+            setShowResults(false);
+          }}
+        />
+        <KeyboardAwareScrollView
+          showsVerticalScrollIndicator={false}
+          enableOnAndroid={true}
+          extraScrollHeight={Platform.OS === 'ios' ? 0 : 80}
+          keyboardShouldPersistTaps="handled">
+          <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+            {/* Summary Cards */}
+            <View style={styles.summaryGrid}>
+              <View style={[styles.summaryCard, styles.summaryCardBlue]}>
+                <Text style={styles.summaryLabel}>Gross Sale Price</Text>
+                <Text style={styles.summaryValue}>{formatCurrency(result.grossSalePrice)}</Text>
+              </View>
 
-            <View style={[styles.summaryCard, styles.summaryCardRed]}>
-              <Text style={styles.summaryLabel}>Total Deductions</Text>
-              <Text style={styles.summaryValue}>{formatCurrency(result.totalDeductions)}</Text>
-              <Text style={styles.summarySubtext}>
-                {formatPercentage((result.totalDeductions / result.grossSalePrice) * 100)} of sale
-                price
-              </Text>
-            </View>
+              <View style={[styles.summaryCard, styles.summaryCardRed]}>
+                <Text style={styles.summaryLabel}>Total Deductions</Text>
+                <Text style={styles.summaryValue}>{formatCurrency(result.totalDeductions)}</Text>
+                <Text style={styles.summarySubtext}>
+                  {formatPercentage((result.totalDeductions / result.grossSalePrice) * 100)} of sale
+                  price
+                </Text>
+              </View>
 
-            <View
-              style={[
-                styles.summaryCard,
-                result.netProceeds > 0 ? styles.summaryCardGreen : styles.summaryCardRedAlert,
-              ]}>
-              <Text style={styles.summaryLabel}>Net Proceeds</Text>
-              <Text style={styles.summaryValue}>{formatCurrency(result.netProceeds)}</Text>
-              {result.netProceeds <= 0 && (
-                <Text style={styles.summaryWarning}>⚠️ Costs exceed sale price</Text>
-              )}
-            </View>
-          </View>
-
-          {/* Detailed Breakdown */}
-          <View style={styles.card}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Cost Breakdown</Text>
-              <Text style={styles.cardSubtitle}>
-                Based on {GEOGRAPHIC_COSTS[detectedState]?.stateName || 'national average'} closing
-                costs
-              </Text>
-            </View>
-            <View style={styles.cardContent}>
-              {result.breakdownItems.map((item: any, index: number) => (
-                <View key={index} style={styles.breakdownItem}>
-                  <View style={styles.breakdownLeft}>
-                    <Text style={styles.breakdownCategory}>{item.category}</Text>
-                    <Text style={styles.breakdownDescription}>{item.description}</Text>
-                  </View>
-                  <View style={styles.breakdownRight}>
-                    <Text style={styles.breakdownAmount}>{formatCurrency(item.amount)}</Text>
-                    <Text style={styles.breakdownPercentage}>
-                      {formatPercentage(item.percentage)}
-                    </Text>
-                  </View>
-                </View>
-              ))}
-            </View>
-          </View>
-
-          {/* Editable Parameters */}
-          <View style={[styles.card, styles.editCard]}>
-            <View style={styles.cardHeader}>
-              <Text style={[styles.cardTitle, styles.editCardTitle]}>Adjust Parameters</Text>
-              <Text style={[styles.cardSubtitle, styles.editCardSubtitle]}>
-                Modify any value below and recalculate to see updated results
-              </Text>
-            </View>
-            <View style={styles.cardContent}>
               <View
-                style={{
-                  gap: 8,
-                }}>
-                <View>
-                  <InputField
-                    allowCommas={true}
-                    label="Sale Price"
-                    value={salePrice}
-                    onChangeText={setSalePrice}
-                    keyboardType="numeric"
-                    placeholderTextColor="#9ca3af"
-                  />
-                </View>
-
-                <View>
-                  <InputField
-                    label="Zip Code"
-                    value={zipCode}
-                    onChangeText={setZipCode}
-                    keyboardType="numeric"
-                    maxLength={5}
-                    placeholderTextColor="#9ca3af"
-                  />
-                </View>
-
-                <View>
-                  <InputField
-                    allowCommas={true}
-                    label="Mortgage Balance"
-                    value={mortgageBalance}
-                    onChangeText={setMortgageBalance}
-                    keyboardType="numeric"
-                    placeholderTextColor="#9ca3af"
-                  />
-                </View>
-
-                <View>
-                  <InputField
-                    label="Commission (%)"
-                    value={commissionRate}
-                    onChangeText={setCommissionRate}
-                    keyboardType="decimal-pad"
-                    placeholderTextColor="#9ca3af"
-                  />
-                </View>
-
-                <View>
-                  <InputField
-                    allowCommas={true}
-                    label="Repairs/Concessions"
-                    value={repairs}
-                    onChangeText={setRepairs}
-                    keyboardType="numeric"
-                    placeholderTextColor="#9ca3af"
-                  />
-                </View>
-
-                <View>
-                  <InputField
-                    allowCommas={true}
-                    label="Home Warranty"
-                    value={homeWarranty}
-                    onChangeText={setHomeWarranty}
-                    keyboardType="numeric"
-                    placeholderTextColor="#9ca3af"
-                  />
-                </View>
-              </View>
-
-              <View style={styles.buttonRow}>
-                <TouchableOpacity
-                  style={[styles.button, styles.buttonPrimary, styles.buttonFlex]}
-                  onPress={calculateNetSheet}>
-                  <Text style={styles.buttonText}>Recalculate</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.button, styles.buttonOutline, styles.buttonFlex]}
-                  onPress={resetCalculator}>
-                  <Text style={styles.buttonOutlineText}>Start Over</Text>
-                </TouchableOpacity>
+                style={[
+                  styles.summaryCard,
+                  result.netProceeds > 0 ? styles.summaryCardGreen : styles.summaryCardRedAlert,
+                ]}>
+                <Text style={styles.summaryLabel}>Net Proceeds</Text>
+                <Text style={styles.summaryValue}>{formatCurrency(result.netProceeds)}</Text>
+                {result.netProceeds <= 0 && (
+                  <Text style={styles.summaryWarning}>⚠️ Costs exceed sale price</Text>
+                )}
               </View>
             </View>
-          </View>
-          <ToolDisclaimer value={toolsDisclaimers.sellerNetSheet} />
-        </ScrollView>
+
+            {/* Detailed Breakdown */}
+            <View style={styles.card}>
+              <View style={styles.cardHeader}>
+                <Text style={styles.cardTitle}>Cost Breakdown</Text>
+                <Text style={styles.cardSubtitle}>
+                  Based on {GEOGRAPHIC_COSTS[detectedState]?.stateName || 'national average'}{' '}
+                  closing costs
+                </Text>
+              </View>
+              <View style={styles.cardContent}>
+                {result.breakdownItems.map((item: any, index: number) => (
+                  <View key={index} style={styles.breakdownItem}>
+                    <View style={styles.breakdownLeft}>
+                      <Text style={styles.breakdownCategory}>{item.category}</Text>
+                      <Text style={styles.breakdownDescription}>{item.description}</Text>
+                    </View>
+                    <View style={styles.breakdownRight}>
+                      <Text style={styles.breakdownAmount}>{formatCurrency(item.amount)}</Text>
+                      <Text style={styles.breakdownPercentage}>
+                        {formatPercentage(item.percentage)}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            {/* Editable Parameters */}
+            <View style={[styles.card, styles.editCard]}>
+              <View style={styles.cardHeader}>
+                <Text style={[styles.cardTitle, styles.editCardTitle]}>Adjust Parameters</Text>
+                <Text style={[styles.cardSubtitle, styles.editCardSubtitle]}>
+                  Modify any value below and recalculate to see updated results
+                </Text>
+              </View>
+              <View style={styles.cardContent}>
+                <View
+                  style={{
+                    gap: 8,
+                  }}>
+                  <View>
+                    <InputField
+                      allowCommas={true}
+                      label="Sale Price"
+                      value={salePrice}
+                      onChangeText={setSalePrice}
+                      keyboardType="numeric"
+                      placeholderTextColor="#9ca3af"
+                    />
+                  </View>
+
+                  <View>
+                    <InputField
+                      label="Zip Code"
+                      value={zipCode}
+                      onChangeText={setZipCode}
+                      keyboardType="numeric"
+                      maxLength={5}
+                      placeholderTextColor="#9ca3af"
+                    />
+                  </View>
+
+                  <View>
+                    <InputField
+                      allowCommas={true}
+                      label="Mortgage Balance"
+                      value={mortgageBalance}
+                      onChangeText={setMortgageBalance}
+                      keyboardType="numeric"
+                      placeholderTextColor="#9ca3af"
+                    />
+                  </View>
+
+                  <View>
+                    <InputField
+                      label="Commission (%)"
+                      value={commissionRate}
+                      onChangeText={setCommissionRate}
+                      keyboardType="decimal-pad"
+                      placeholderTextColor="#9ca3af"
+                    />
+                  </View>
+
+                  <View>
+                    <InputField
+                      allowCommas={true}
+                      label="Repairs/Concessions"
+                      value={repairs}
+                      onChangeText={setRepairs}
+                      keyboardType="numeric"
+                      placeholderTextColor="#9ca3af"
+                    />
+                  </View>
+
+                  <View>
+                    <InputField
+                      allowCommas={true}
+                      label="Home Warranty"
+                      value={homeWarranty}
+                      onChangeText={setHomeWarranty}
+                      keyboardType="numeric"
+                      placeholderTextColor="#9ca3af"
+                    />
+                  </View>
+                </View>
+
+                <View style={styles.buttonRow}>
+                  <TouchableOpacity
+                    style={[styles.button, styles.buttonPrimary, styles.buttonFlex]}
+                    onPress={calculateNetSheet}>
+                    <Text style={styles.buttonText}>Recalculate</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.button, styles.buttonOutline, styles.buttonFlex]}
+                    onPress={resetCalculator}>
+                    <Text style={styles.buttonOutlineText}>Start Over</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+            <ToolDisclaimer value={toolsDisclaimers.sellerNetSheet} />
+          </ScrollView>
+        </KeyboardAwareScrollView>
       </PageSafeContainer>
     );
   }

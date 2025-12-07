@@ -2,7 +2,7 @@
   "expo": {
     "name": "My Virtual Boss",
     "slug": "my-own-boss",
-    "version": "1.1.10",
+    "version": "1.1.11",
     "web": {
       "favicon": "assets/logo.png"
     },
@@ -43,7 +43,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.myvirtualboss.realestate",
-      "buildNumber": "25",
+      "buildNumber": "26",
       "infoPlist": {
         "NSContactsUsageDescription": "We use your contacts to help you import or export CRM records more easily. Contacts are only uploaded to your account if you give explicit consent."
       },
@@ -51,7 +51,7 @@
     },
     "android": {
       "package": "com.myvirtualboss.realestate",
-      "versionCode": 25,
+      "versionCode": 26,
       "edgeToEdgeEnabled": true
     },
     "extra": {

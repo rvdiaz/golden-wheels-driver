@@ -191,3 +191,4 @@ export const deleteUserMutation = gql`
     deleteUser(tenant: $tenant, userId: $userId)
   }
 `;
+

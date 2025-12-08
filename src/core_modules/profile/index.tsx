@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Modal } from 'react-native';
 import * as Icons from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ModuleKeys } from '~/store/interface';
@@ -11,12 +11,15 @@ import { ProfileScreensWrapper } from '../profile_setup/widgets/wrapper';
 import { Header } from '~/codidge_components/UI/header';
 import { theme } from '~/theme/theme';
 import { ProfileNavigationSection } from '~/codidge_components/UI/navigationButtons';
-import { BalanceWidget } from './userBalance';
 import { paywallVisibility } from '~/store/subscription';
+import TextButton from '~/codidge_components/UI/button/TextButton';
+import { BalanceWidget } from './widgets/userBalance';
+import { ProfileEditionForm } from './widgets/profileEditionForm';
 
 export const ProfileScreen: React.FC = () => {
   const navigation = useNavigation();
   const user = useReactiveVar(userData);
+  const [showEditionForm, setshowEditionForm] = useState(false);
 
   return (
     <ProfileScreensWrapper
@@ -56,19 +59,28 @@ export const ProfileScreen: React.FC = () => {
                   position: 'absolute',
                   bottom: -3,
                   right: -3,
-                  backgroundColor: theme.colors.success, // green background
-                  borderRadius: '50%', // make it circular (half of size)
-                  padding: 2, // some space around icon
+                  backgroundColor: theme.colors.success,
+                  borderRadius: '50%',
+                  padding: 2,
                 }}>
-                <Icons.BadgeCheck
-                  size={18}
-                  color="#fff" // white icon for contrast
-                />
+                <Icons.BadgeCheck size={18} color="#fff" />
               </View>
             </View>
             <Text style={styles.profileName}>
               {user?.firstName} {user?.lastName}
             </Text>
+            <TextButton
+              leftWidget={
+                <Icons.Edit size={16} style={{ marginRight: 8 }} color={theme.colors.primary} />
+              }
+              textStyle={{
+                color: theme.colors.primary,
+              }}
+              onPress={() => {
+                setshowEditionForm(true);
+              }}
+              title="Edit Profile"
+            />
           </View>
           {/* Balance Widget */}
           <BalanceWidget
@@ -155,6 +167,20 @@ export const ProfileScreen: React.FC = () => {
             ]}
           />
         </ScrollView>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showEditionForm}
+          onRequestClose={() => {
+            setshowEditionForm(false);
+          }}>
+          <ProfileEditionForm
+            onClose={() => {
+              setshowEditionForm(false);
+            }}
+            user={user!}
+          />
+        </Modal>
       </View>
     </ProfileScreensWrapper>
   );

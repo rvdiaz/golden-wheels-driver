@@ -9,14 +9,12 @@ import { ContactDetailsScreen } from '~/custom_modules/crm/widgets/contactDetail
 import { CourseDetailsScreen } from '~/custom_modules/training/sections/CourseDetailsScreen';
 import { ProfileScreen } from '~/core_modules/profile';
 import { PropertyInfoScreen } from '~/custom_modules/tools/sections/owner_property_details';
-import { UserIncomes } from '~/core_modules/profile/income';
 import { ExpiredListingPage } from '~/custom_modules/tools/sections/mls_listing/expired_listing';
 import { QuoteWidget } from '~/custom_modules/dashboard/widgets/quoteWidget';
 import { DailyTaskSelector } from '~/custom_modules/task/widgets/dailyTaskSelector';
 import { SearchCrmBoxIA } from '~/custom_modules/crm/widgets/searchCrmIABox';
 import { TransunionRentsApplications } from '~/custom_modules/tools/sections/transunion_rent_applications';
 import { PropertyEstimationsPage } from '~/custom_modules/tools/sections/property_estimations';
-import { GoalsScreen } from '~/core_modules/profile/goals';
 import { PrequalifiedLoanScreen } from '~/custom_modules/tools/sections/loan_prequalification';
 import InvestmentCalculatorScreen from '~/custom_modules/tools/sections/investment_calculator';
 import { CmaComparativesPage } from '~/custom_modules/tools/sections/cma_tools';
@@ -30,10 +28,12 @@ import { TrainingModulesScreen } from '~/custom_modules/training/sections/module
 import { TrainingCoursesScreen } from '~/custom_modules/training/sections/courses/coursesList';
 import EstimatedClosingCostCalculator from '~/custom_modules/tools/sections/estimatedClosingCost';
 import { IncomeCalculatorPage } from '~/custom_modules/tools/sections/income_calculator';
-import { PrivacyPolicyScreen } from '~/core_modules/profile/privacyPolicy';
-import { FeedbacksScreen } from '~/core_modules/profile/feedbacks';
-import { UserDeletionScreen } from '~/core_modules/profile/userDeletion';
 import { TrainingCourseDetailScreen } from '~/custom_modules/training/sections/courses/courseDetailScreen';
+import { UserIncomes } from '~/core_modules/profile/widgets/income';
+import { GoalsScreen } from '~/core_modules/profile/widgets/goals';
+import { PrivacyPolicyScreen } from '~/core_modules/profile/widgets/privacyPolicy';
+import { FeedbacksScreen } from '~/core_modules/profile/widgets/feedbacks';
+import { UserDeletionScreen } from '~/core_modules/profile/widgets/userDeletion';
 
 export const moduleScreens: Record<
   ModuleKeys,

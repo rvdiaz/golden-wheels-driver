@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
 import * as Icons from 'lucide-react-native';
 import Text from '~/codidge_components/UI/text';
 import { formatCurrency } from '~/custom_modules/tools/sections/mortgage_calculator/helpers';

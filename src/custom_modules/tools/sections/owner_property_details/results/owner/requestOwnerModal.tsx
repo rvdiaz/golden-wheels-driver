@@ -6,10 +6,10 @@ import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/Primar
 import { getPropertyOwnerQuery } from '~/custom_modules/tools/api/queries';
 import { IOwnerInfo } from '../../interfaces';
 import { userData } from '~/store/user';
-import { useTakeUserBalance } from '~/core_modules/profile/userBalance/customHooks/useTakePayment';
 import { propertyOwnerPricing } from '../../data';
 import { theme } from '~/theme/theme';
 import { OwnerDetailsConsolidated } from './ownerDetails';
+import { useTakeUserBalance } from '~/core_modules/profile/widgets/userBalance/customHooks/useTakePayment';
 
 export const RequestOwnerModal = ({
   first_name,

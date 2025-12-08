@@ -1,19 +1,30 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import { theme } from '~/theme/theme';
 
 interface IProfileWrapper {
   header?: React.ReactNode;
   children: React.ReactNode;
+  parentHeaderContainer?: ViewStyle;
+  parentFormContainer?: ViewStyle;
 }
 
-export const ProfileScreensWrapper = ({ header, children }: IProfileWrapper) => {
+export const ProfileScreensWrapper = ({
+  header,
+  children,
+  parentHeaderContainer,
+  parentFormContainer,
+}: IProfileWrapper) => {
   return (
     <View style={styles.container}>
       {/* Header Section */}
-      <View style={styles.headerContainer}>{header}</View>
+      <View style={[styles.headerContainer, parentHeaderContainer && parentHeaderContainer]}>
+        {header}
+      </View>
       {/* Form Container */}
-      <View style={styles.formContainer}>{children}</View>
+      <View style={[styles.formContainer, parentFormContainer && parentFormContainer]}>
+        {children}
+      </View>
     </View>
   );
 };

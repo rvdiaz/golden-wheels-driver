@@ -69,6 +69,7 @@ export interface IOwnerInfo {
   email?: IEmail[];
   owner1FirstName?: string;
   owner1LastName?: string;
+  owner2FirstName: string;
   mailAddress: IAddress;
 }
 

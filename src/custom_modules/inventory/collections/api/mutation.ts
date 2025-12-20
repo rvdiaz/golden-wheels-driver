@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-export const createCollection = gql`
+export const createCollectionMutation = gql`
   mutation createCategory($input: CategoryInput!, $tenantID: ID!) {
     createCategory(input: $input, tenantID: $tenantID) {
       categoryID
@@ -34,7 +34,7 @@ export const createCollection = gql`
   }
 `;
 
-export const updateCollections = gql`
+export const updateCollectionsMutation = gql`
   mutation updateCategory(
     $categoryID: ID!
     $tenantID: ID!

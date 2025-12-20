@@ -1,8 +1,6 @@
 import { ExpoConfig } from '@expo/config-types';
 import { ConfigContext } from 'expo/config';
 
-const isDevelopment = process.env.EAS_BUILD_PROFILE === 'development';
-
 // Replace these with your EAS project ID and project slug.
 // You can find them at https://expo.dev/accounts/[account]/projects/[project].
 const EAS_PROJECT_ID = '9150c5ea-e5db-487b-9a9b-d9d9ff5428da';
@@ -20,6 +18,7 @@ import { version } from './package.json';
 
 export default (arg: ConfigContext): ExpoConfig => {
   const { config } = arg;
+  const isDevelopment = process.env.APP_ENV === 'development';
 
   console.log('⚙️ Building app for environment:', process.env.APP_ENV);
   const { name, bundleIdentifier, icon, adaptiveIcon, packageName, scheme } = getDynamicAppConfig(
@@ -77,7 +76,8 @@ export default (arg: ConfigContext): ExpoConfig => {
       AWS_REGION: process.env.AWS_REGION,
       COGNITO_CLIENT_ID: process.env.COGNITO_CLIENT_ID,
       COGNITO_USERPOOL_ID: process.env.COGNITO_USERPOOL_ID,
-      GRAPHQL_ENDPOINT: process.env.GRAPHQL_ENDPOINT,
+      //GRAPHQL_ENDPOINT: process.env.GRAPHQL_ENDPOINT,
+      GRAPHQL_ENDPOINT: 'http://localhost:4001/graphql',
       eas: {
         projectId: EAS_PROJECT_ID,
       },

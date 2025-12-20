@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-export const createProduct = gql`
+export const createProductMutation = gql`
   mutation createProduct($tenantID: ID!, $input: ProductInput!) {
     createProduct(tenantID: $tenantID, input: $input) {
       productID
@@ -63,13 +63,13 @@ export const createProduct = gql`
   }
 `;
 
-export const deleteProduct = gql`
+export const deleteProductMutation = gql`
   mutation deleteProduct($productID: ID!, $tenantID: ID!) {
     deleteProduct(productID: $productID, tenantID: $tenantID)
   }
 `;
 
-export const updateProducts = gql`
+export const updateProductsMutation = gql`
   mutation updateProduct(
     $productID: ID!
     $tenantID: ID!

@@ -1,49 +1,49 @@
 import React, { useState } from 'react';
 import {
   View,
-  Text,
   FlatList,
   TouchableOpacity,
   StyleSheet,
   RefreshControl,
   TextInput,
 } from 'react-native';
-import { useProducts } from './hook/useProducts';
-import { ModalContentProduct, ProductFormData } from './interfaces';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
-import { EmptyState } from '../sharedComponent/empty_state';
-import { ProductCard } from './components/products_card';
-import { ProductFormModal } from './components/product_form_modal';
-import { DeleteConfirmationModal } from '../modifiers/components/delete_confirmation_modal';
+import { EmptyState } from '~/custom_modules/inventory/sharedComponent/empty_state';
+import { DeleteConfirmationModal } from '~/custom_modules/inventory/modifiers/components/delete_confirmation_modal';
+import { useCollections } from './hooks/useCollection';
 import { useTenant } from '~/store/tenant/useTenant';
+import { CollectionFormData, ModalContentCollection } from './interfaces';
+import Text from '~/codidge_components/UI/text';
+import { CollectionFormModal } from './sharedComponent';
+import { CollectionCard } from './components/collection_card';
 import { Header } from '~/codidge_components/UI/header';
 import { useNavigation } from '@react-navigation/native';
-import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { theme } from '~/theme/theme';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
-export const ProductsPage = () => {
+export const CollectionsPage = () => {
   const navigation = useNavigation();
 
   const { userInfo } = useTenant();
 
   const {
-    products,
+    collections,
     loading,
     creating,
     updating,
     deleting,
-    selectedProduct,
-    setSelectedProduct,
-    handleCreateProduct,
-    handleUpdateProduct,
-    handleDeleteProduct,
+    selectedCollection,
+    setSelectedCollection,
+    handleCreateCollection,
+    handleUpdateCollection,
+    handleDeleteCollection,
     handleToggleAvailability,
     refetch,
-  } = useProducts({ tenantID: userInfo?.activeTenantId! });
+  } = useCollections({ tenantID: userInfo?.activeTenantId!, includeProducts: true });
 
   const [formModalVisible, setFormModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-  const [modalMode, setModalMode] = useState<ModalContentProduct>(ModalContentProduct.ADD);
+  const [modalMode, setModalMode] = useState<ModalContentCollection>(ModalContentCollection.ADD);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -54,30 +54,30 @@ export const ProductsPage = () => {
   };
 
   const handleAddPress = () => {
-    setSelectedProduct(null);
-    setModalMode(ModalContentProduct.ADD);
+    setSelectedCollection(null);
+    setModalMode(ModalContentCollection.ADD);
     setFormModalVisible(true);
   };
 
-  const handleEditPress = (product: any) => {
-    setSelectedProduct(product);
-    setModalMode(ModalContentProduct.EDIT);
+  const handleEditPress = (collection: any) => {
+    setSelectedCollection(collection);
+    setModalMode(ModalContentCollection.EDIT);
     setFormModalVisible(true);
   };
 
-  const handleDeletePress = (product: any) => {
-    setSelectedProduct(product);
+  const handleDeletePress = (collection: any) => {
+    setSelectedCollection(collection);
     setDeleteModalVisible(true);
   };
 
-  const handleFormSubmit = async (formData: ProductFormData) => {
-    if (modalMode === ModalContentProduct.ADD) {
-      const success = await handleCreateProduct(formData);
+  const handleFormSubmit = async (formData: CollectionFormData) => {
+    if (modalMode === ModalContentCollection.ADD) {
+      const success = await handleCreateCollection(formData);
       if (success) {
         setFormModalVisible(false);
       }
-    } else if (selectedProduct) {
-      const success = await handleUpdateProduct(selectedProduct.productID, formData);
+    } else if (selectedCollection) {
+      const success = await handleUpdateCollection(selectedCollection.categoryID, formData);
       if (success) {
         setFormModalVisible(false);
       }
@@ -85,38 +85,41 @@ export const ProductsPage = () => {
   };
 
   const confirmDelete = async () => {
-    if (selectedProduct) {
-      const success = await handleDeleteProduct(selectedProduct.productID);
+    if (selectedCollection) {
+      const success = await handleDeleteCollection(selectedCollection.categoryID);
       if (success) {
         setDeleteModalVisible(false);
-        setSelectedProduct(null);
+        setSelectedCollection(null);
       }
     }
   };
 
-  const handleToggle = async (productID: string) => {
-    await handleToggleAvailability(productID);
+  const handleToggle = async (categoryID: string) => {
+    await handleToggleAvailability(categoryID);
   };
 
-  // Filter products based on search query
-  const filteredProducts = products.filter((product) => {
+  // Filter collections based on search query
+  const filteredCollections = collections.filter((collection) => {
     const query = searchQuery.toLowerCase();
     return (
-      product.name.toLowerCase().includes(query) ||
-      product.description?.toLowerCase().includes(query) ||
-      product.productID.toLowerCase().includes(query)
+      collection.name.toLowerCase().includes(query) ||
+      collection.description?.toLowerCase().includes(query) ||
+      collection.categoryID.toLowerCase().includes(query)
     );
   });
+
+  // Calculate total products across all collections
+  const totalProducts = collections.reduce(
+    (sum, collection) => sum + (collection.products?.length || collection.productIDs?.length || 0),
+    0
+  );
 
   if (loading && !refreshing) {
     return <PageLoading />;
   }
 
   return (
-    <PageSafeContainer
-      style={{
-        backgroundColor: theme.colors.surfaceSectionsBackgroundColor,
-      }}>
+    <PageSafeContainer style={styles.container}>
       <Header
         onBack={() => {
           navigation.goBack();
@@ -126,9 +129,15 @@ export const ProductsPage = () => {
       />
       <View style={styles.header}>
         <View style={styles.headerTop}>
-          <Text style={styles.title}>Products</Text>
+          <View>
+            <Text style={styles.title}>Collections</Text>
+            <Text style={styles.statsText}>
+              {collections.length} {collections.length === 1 ? 'collection' : 'collections'} •{' '}
+              {totalProducts} products
+            </Text>
+          </View>
           <TouchableOpacity style={styles.addButton} onPress={handleAddPress}>
-            <Text style={styles.addButtonText}>+ Add Product</Text>
+            <Text style={styles.addButtonText}>+ Add Collection</Text>
           </TouchableOpacity>
         </View>
 
@@ -139,7 +148,7 @@ export const ProductsPage = () => {
             style={styles.searchInput}
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Search products..."
+            placeholder="Search collections..."
             placeholderTextColor="#9CA3AF"
           />
           {searchQuery.length > 0 && (
@@ -150,37 +159,38 @@ export const ProductsPage = () => {
         </View>
       </View>
 
-      {/* Product Count */}
-      {filteredProducts.length > 0 && (
+      {/* Collection Count */}
+      {filteredCollections.length > 0 && (
         <View style={styles.countContainer}>
           <Text style={styles.countText}>
-            {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'}
+            {filteredCollections.length}{' '}
+            {filteredCollections.length === 1 ? 'collection' : 'collections'}
             {searchQuery && ' found'}
           </Text>
         </View>
       )}
 
-      {filteredProducts.length === 0 ? (
+      {filteredCollections.length === 0 ? (
         <EmptyState
-          title={searchQuery ? 'No Products Found' : 'No Products Yet'}
+          title={searchQuery ? 'No Collections Found' : 'No Collections Yet'}
           message={
             searchQuery
               ? 'Try adjusting your search terms'
-              : 'Create your first product to get started selling.'
+              : 'Create your first collection to organize your products.'
           }
-          actionLabel={searchQuery ? undefined : 'Add Product'}
+          actionLabel={searchQuery ? undefined : 'Add Collection'}
           onAction={searchQuery ? undefined : handleAddPress}
         />
       ) : (
         <FlatList
-          data={filteredProducts}
-          keyExtractor={(item) => item.productID}
+          data={filteredCollections}
+          keyExtractor={(item) => item.categoryID}
           renderItem={({ item }) => (
-            <ProductCard
-              product={item}
+            <CollectionCard
+              collection={item}
               onEdit={() => handleEditPress(item)}
               onDelete={() => handleDeletePress(item)}
-              onToggleAvailability={() => handleToggle(item.productID)}
+              onToggleAvailability={() => handleToggle(item.categoryID)}
             />
           )}
           contentContainerStyle={styles.listContent}
@@ -188,19 +198,20 @@ export const ProductsPage = () => {
         />
       )}
 
-      <ProductFormModal
+      <CollectionFormModal
         visible={formModalVisible}
         mode={modalMode}
-        product={selectedProduct}
+        collection={selectedCollection}
         onClose={() => setFormModalVisible(false)}
         onSubmit={handleFormSubmit}
         loading={creating || updating}
+        tenantID={userInfo?.activeTenantId!}
       />
 
       <DeleteConfirmationModal
         visible={deleteModalVisible}
-        title="Delete Product"
-        message={`Are you sure you want to delete "${selectedProduct?.name}"? This action cannot be undone.`}
+        title="Delete Collection"
+        message={`Are you sure you want to delete "${selectedCollection?.name}"? This won't delete the products in it.`}
         onConfirm={confirmDelete}
         onCancel={() => setDeleteModalVisible(false)}
         loading={deleting}
@@ -210,6 +221,10 @@ export const ProductsPage = () => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: theme.colors.surfaceSectionsBackgroundColor,
+  },
   header: {
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
@@ -219,13 +234,18 @@ const styles = StyleSheet.create({
   headerTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     padding: 16,
   },
   title: {
     fontSize: 24,
     fontWeight: '700',
     color: '#111827',
+    marginBottom: 4,
+  },
+  statsText: {
+    fontSize: 13,
+    color: '#6B7280',
   },
   addButton: {
     paddingHorizontal: 16,

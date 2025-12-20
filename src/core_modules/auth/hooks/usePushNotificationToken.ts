@@ -1,14 +1,11 @@
-import { useEffect } from 'react';
+/* import { useEffect } from 'react';
 import { useLazyQuery, useReactiveVar } from '@apollo/client';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-import Constants from 'expo-constants';
 import { pushTokenVar, setPushToken } from '~/store/user/pushToken';
 import { userData, updateUser } from '~/store/user';
 
-import { getUserQuery } from '../graphql/queries';
-
-const tenantId = Constants.expoConfig?.extra?.TENANTID;
+const tenantId = ENV.TENANTID;
 
 const getPushNotificationToken = async (): Promise<string> => {
   if (!Device.isDevice) {
@@ -76,7 +73,7 @@ export const usePushNotificationTokenSetup = () => {
             tenantId,
           },
           token: pushToken,
-          userId: userInfo.id,
+          userId: userInfo.userID,
         },
       }).then(() => {
         console.log('User data updated with push token');
@@ -89,3 +86,4 @@ export const usePushNotificationTokenSetup = () => {
     userInfo,
   };
 };
+ */

@@ -20,13 +20,12 @@ import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
 import { userData } from '~/store/user';
 import Constants from 'expo-constants';
+import { useTenant } from '~/store/tenant/useTenant';
 
 interface FeedbackFormData {
   subject: string;
   message: string;
 }
-
-const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const FeedbacksScreen = () => {
   const navigation = useNavigation();
@@ -34,7 +33,7 @@ export const FeedbacksScreen = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  const userInfo = useReactiveVar(userData);
+  const { userInfo } = useTenant();
 
   const [getPresignUrl] = useMutation(getImagesUploadUrl);
   const [addFeedback] = useMutation(addFeedbackMutation);
@@ -110,14 +109,14 @@ export const FeedbacksScreen = () => {
       const blob = await response.blob();
 
       // Generate unique filename
-      const filename = `feedback/${userInfo?.id}/${Date.now()}-${Math.random()
+      const filename = `feedback/${userInfo?.userID}/${Date.now()}-${Math.random()
         .toString(36)
         .substring(7)}.jpg`;
 
       const { data } = await getPresignUrl({
         variables: {
           tenant: {
-            tenantId: tenantId,
+            tenantId: userInfo?.activeTenantId,
           },
           imgInput: {
             filename: filename,
@@ -174,8 +173,8 @@ export const FeedbacksScreen = () => {
 
       // Submit feedback via GraphQL
       const input = {
-        userId: userInfo?.id,
-        userName: `${userInfo?.firstName} ${userInfo?.lastName}`,
+        userId: userInfo?.userID,
+        userName: `${userInfo?.name}`,
         subject: data.subject,
         message: data.message,
         pictureUrl,

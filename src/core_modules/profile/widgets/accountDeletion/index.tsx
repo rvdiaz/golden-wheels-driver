@@ -15,11 +15,10 @@ import { updateUser, userData } from '~/store/user';
 import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
 import { deleteUserMutation } from '~/core_modules/auth/graphql/mutations';
-
-const tenantId = Constants.expoConfig?.extra?.TENANTID;
+import { useTenant } from '~/store/tenant/useTenant';
 
 export const AccountDeletionModal = () => {
-  const user = useReactiveVar(userData);
+  const { userInfo } = useTenant();
   const [modalVisible, setModalVisible] = useState(false);
   const [confirmationStep, setConfirmationStep] = useState(1);
   const [confirmationText, setConfirmationText] = useState('');
@@ -39,8 +38,8 @@ export const AccountDeletionModal = () => {
     try {
       await deleteUser({
         variables: {
-          tenant: { tenantId },
-          userId: user?.id,
+          tenant: { tenantId: userInfo?.activeTenantId },
+          userId: userInfo?.userID,
         },
       });
 

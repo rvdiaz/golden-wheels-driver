@@ -21,21 +21,20 @@ import {
 import * as Notifications from 'expo-notifications';
 import { theme } from '~/theme/theme';
 import { getUserNotificationsVariables } from './helpers';
-
-const tenantId = Constants.expoConfig?.extra?.TENANTID;
+import { useTenant } from '~/store/tenant/useTenant';
 
 export const NotificationsScreen = () => {
   const navigation = useNavigation();
-  const user = useReactiveVar(userData);
+  const { userInfo } = useTenant();
 
   const { data, loading, refetch } = useQuery<GetUserNotificationsResponse>(
     getUserNotificationsQuery,
     {
       variables: {
         tenant: {
-          tenantId,
+          tenantId: userInfo?.activeTenantId,
         },
-        userId: user?.userID,
+        userId: userInfo?.userID,
         limit: 30,
       },
       fetchPolicy: 'cache-and-network',
@@ -48,7 +47,7 @@ export const NotificationsScreen = () => {
       refetchQueries: [
         {
           query: getUserNotificationsQuery,
-          variables: getUserNotificationsVariables(user?.userID),
+          variables: getUserNotificationsVariables(userInfo?.userID),
         },
       ],
       awaitRefetchQueries: true,
@@ -70,9 +69,9 @@ export const NotificationsScreen = () => {
             await markAsRead({
               variables: {
                 tenant: {
-                  tenantId,
+                  tenantId: userInfo?.activeTenantId,
                 },
-                userId: user?.userID,
+                userId: userInfo?.userID,
                 notificationIds: unreadNotificationIds,
               },
             });
@@ -89,7 +88,7 @@ export const NotificationsScreen = () => {
       }, 500);
 
       return () => clearTimeout(timer);
-    }, [data?.getUserNotifications?.items, markAsRead, user?.userID])
+    }, [data?.getUserNotifications?.items, markAsRead, userInfo?.userID])
   );
 
   const formatTimestamp = (timestamp: string) => {

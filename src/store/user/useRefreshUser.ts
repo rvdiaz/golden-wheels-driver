@@ -1,19 +1,18 @@
 import { useLazyQuery } from '@apollo/client';
 import { updateUser } from '.';
-import Constants from 'expo-constants';
 import { getAdminUserQuery } from '~/core_modules/auth/graphql/queries';
 import { IUser } from './interfaces';
-
-const tenantId = Constants.expoConfig?.extra?.TENANTID;
+import { useTenant } from '../tenant/useTenant';
 
 export const useRefreshUser = () => {
   const [getUserFn] = useLazyQuery(getAdminUserQuery, {});
+  const { userInfo } = useTenant();
 
   const refreshUser = async (userId: string, pushToken?: string) => {
     try {
       const { data } = await getUserFn({
         variables: {
-          tenant: { tenantId },
+          tenantID: userInfo?.activeTenantId,
           token: pushToken,
           userId,
         },

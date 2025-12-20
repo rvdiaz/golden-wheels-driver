@@ -1,4 +1,4 @@
-import { useReactiveVar, useSubscription } from '@apollo/client';
+/* import { useReactiveVar, useSubscription } from '@apollo/client';
 import { userData } from '~/store/user';
 import { getUserNotificationsQuery, onNotificationPublishedSubscription } from '../graphql/queries';
 import Constants from 'expo-constants';
@@ -12,7 +12,7 @@ export const useUserNotificationsSubscription = () => {
   useSubscription<OnNotificationPublishedData>(onNotificationPublishedSubscription, {
     variables: {
       tenantId,
-      userId: userInfo?.id ?? '',
+      userId: userInfo?.userID ?? '',
       sent: true,
       showOnApp: true,
     },
@@ -58,3 +58,4 @@ export const useUserNotificationsSubscription = () => {
     },
   });
 };
+ */

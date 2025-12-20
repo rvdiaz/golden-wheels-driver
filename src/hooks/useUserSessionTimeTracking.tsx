@@ -4,11 +4,10 @@ import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useMutation } from '@apollo/client';
 import { updateUserMutation } from '~/core_modules/auth/graphql/mutations';
-import { IUser } from '~/store/interface';
+import { IUser } from '~/store/user/interfaces';
 
 const SESSION_START_KEY = 'sessionStartTime';
 const SESSION_USER_ID_KEY = 'sessionUserId';
-const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export function useUserSessionTimeTracking({ user }: { user: IUser | null }) {
   const appState = useRef(AppState.currentState);
@@ -17,7 +16,7 @@ export function useUserSessionTimeTracking({ user }: { user: IUser | null }) {
   useEffect(() => {
     if (!user) return;
 
-    const currentUserId = String(user.id);
+    const currentUserId = String(user.userID);
 
     // ----- Start session when user logs in -----
     const startSession = async () => {
@@ -43,12 +42,12 @@ export function useUserSessionTimeTracking({ user }: { user: IUser | null }) {
         await updateUserTime({
           variables: {
             tenant: {
-              tenantId,
+              tenantId: user,
             },
             updates: {
               durationMs,
             },
-            userId: user.id,
+            userId: user.userID,
           },
         });
       } catch (err) {
@@ -92,5 +91,5 @@ export function useUserSessionTimeTracking({ user }: { user: IUser | null }) {
       subscription.remove();
       endSession(); // cleanup on unmount (logout)
     };
-  }, [user?.id]);
+  }, [user?.userID]);
 }

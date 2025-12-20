@@ -2,14 +2,16 @@
   "build": {
     "preview": {
       "distribution": "internal",
-      "channel": "preview"
+      "channel": "preview",
+      "env": { "APP_ENV": "development" }
     },
     "production": {
       "developmentClient": false,
       "distribution": "store",
       "env": {
-        "COGNITO_USERPOOL_ID": "COGNITO_USERPOOL_ID",
-        "COGNITO_CLIENT_ID": "COGNITO_CLIENT_ID"
+        /*  "COGNITO_USERPOOL_ID": "COGNITO_USERPOOL_ID",
+        "COGNITO_CLIENT_ID": "COGNITO_CLIENT_ID" */
+        "APP_ENV": "development"
       }
     },
     "development": {
@@ -17,15 +19,17 @@
       "distribution": "internal",
       "channel": "development",
       "env": {
-        "EAS_BUILD_PROFILE": "development"
+        /*  "EAS_BUILD_PROFILE": "development" */
+        "APP_ENV": "development"
       }
     }
   },
   "submit": {
     "production": {
       "ios": {
-        "appleId": "flaglervillagegroup@gmail.com",
-        "ascAppId": "6752781766"
+        //TODO::: CHANGE BY CODIDGE CREDENTIALS
+        /*      "appleId": "flaglervillagegroup@gmail.com",
+        "ascAppId": "6752781766" */
       }
     }
   },

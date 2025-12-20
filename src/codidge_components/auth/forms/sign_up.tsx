@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Constants from 'expo-constants';
 import {
   View,
   StyleSheet,
@@ -22,8 +21,6 @@ import TextButton from '~/codidge_components/UI/button/TextButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Text from '~/codidge_components/UI/text';
-import { TermsAndConditions } from './terms_and_conditions';
-import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import { parsePhoneNumber, validatePhoneNumber } from '~/codidge_components/helpers';
 import PhoneInput from '~/codidge_components/UI/form/inputs/phoneNumberInput';
 
@@ -78,7 +75,8 @@ export const SignUpForm = ({
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      const tenantId = Constants.expoConfig?.extra?.TENANTID;
+      //TODO::: DELETE THIS
+      //  const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
       setloading(true);
       const result = await signUp({
@@ -90,7 +88,7 @@ export const SignUpForm = ({
             phone_number: data.phone,
             'custom:user_type': 'customer',
             'custom:role': 'admin',
-            'custom:tenantId': tenantId,
+            'custom:tenantId': 'ss',
           },
         },
       });

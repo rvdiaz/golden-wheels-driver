@@ -1,8 +1,7 @@
-import { useReactiveVar, useSubscription } from '@apollo/client';
+/* import { useReactiveVar, useSubscription } from '@apollo/client';
 import { updateUser, userData } from '~/store/user';
 import Constants from 'expo-constants';
-import { IUser } from '~/store/interface';
-import { onUserUpdatedSubscription } from '~/core_modules/auth/graphql/queries';
+import { IUser } from '~/store/user/interfaces';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
@@ -31,3 +30,4 @@ export const useUserSubscription = () => {
     },
   });
 };
+ */

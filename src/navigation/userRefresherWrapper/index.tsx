@@ -3,21 +3,21 @@ import { AppState, AppStateStatus } from 'react-native';
 import { useApolloClient, useReactiveVar } from '@apollo/client';
 import { updateUser, userData } from '~/store/user';
 import Constants from 'expo-constants';
-import { getUserQuery } from '~/core_modules/auth/graphql/queries';
 import { pushTokenVar } from '~/store/user/pushToken';
-import { IUser } from '~/store/interface';
 import { getCurrentUser, signOut } from 'aws-amplify/auth';
+import { useTenant } from '~/store/tenant/useTenant';
+import { getAdminUserQuery } from '~/core_modules/auth/graphql/queries';
+import { IUser } from '~/store/user/interfaces';
 
 interface Props {
   children: React.ReactNode;
 }
 
-const tenantId = Constants.expoConfig?.extra?.TENANTID;
 const REFRESH_COOLDOWN_MS = 30000; // 30 seconds - increased from 10
 
 export const UserRefresherWrapper: React.FC<Props> = ({ children }) => {
   const client = useApolloClient();
-  const userInfo = useReactiveVar(userData);
+  const { userInfo } = useTenant();
   const pushToken = useReactiveVar(pushTokenVar);
   const appStateRef = useRef<AppStateStatus>(AppState.currentState);
   const lastFetchRef = useRef<number>(0);
@@ -76,7 +76,7 @@ export const UserRefresherWrapper: React.FC<Props> = ({ children }) => {
   // Memoized refresh function with proper dependencies
   const refreshUser = useCallback(async () => {
     // Guard conditions
-    if (!userInfo?.id || isFetchingRef.current) return;
+    if (!userInfo?.userID || isFetchingRef.current) return;
 
     const isTokenValid = await checkTokenValidity();
     if (!isTokenValid) return;
@@ -92,10 +92,10 @@ export const UserRefresherWrapper: React.FC<Props> = ({ children }) => {
 
     try {
       const { data } = await client.query({
-        query: getUserQuery,
+        query: getAdminUserQuery,
         variables: {
-          tenant: { tenantId },
-          userId: userInfo.id,
+          tenant: { tenantId: userInfo.activeTenantId },
+          userId: userInfo.userID,
           token: pushToken || undefined, // Handle null token
         },
         fetchPolicy: 'network-only',
@@ -112,11 +112,11 @@ export const UserRefresherWrapper: React.FC<Props> = ({ children }) => {
     } finally {
       isFetchingRef.current = false;
     }
-  }, [client, userInfo?.id, pushToken]);
+  }, [client, userInfo?.userID, pushToken]);
 
   // Initial refresh on mount (only if user exists)
   useEffect(() => {
-    if (userInfo?.id) {
+    if (userInfo?.userID) {
       // Small delay to ensure system settings are loaded first
       const timer = setTimeout(() => {
         refreshUser();
@@ -127,7 +127,7 @@ export const UserRefresherWrapper: React.FC<Props> = ({ children }) => {
 
   // Handle app state changes
   useEffect(() => {
-    if (!userInfo?.id) return;
+    if (!userInfo?.userID) return;
 
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
       const isComingToForeground =
@@ -145,7 +145,7 @@ export const UserRefresherWrapper: React.FC<Props> = ({ children }) => {
     return () => {
       subscription.remove();
     };
-  }, [refreshUser, userInfo?.id]);
+  }, [refreshUser, userInfo?.userID]);
 
   return <>{children}</>;
 };

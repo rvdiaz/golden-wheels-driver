@@ -1,6 +1,6 @@
 {
-  "name": "my-own-boss",
-  "version": "1.0.0",
+  "name": "servora",
+  "version": "0.0.1",
   "scripts": {
     "android": "expo run:android",
     "ios": "expo run:ios",

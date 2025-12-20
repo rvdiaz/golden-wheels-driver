@@ -8,22 +8,23 @@ import { AUTH_TYPE, AuthOptions, createAuthLink } from 'aws-appsync-auth-link';
 import { Navigation } from '~/navigation';
 import { UserRefresherWrapper } from '~/navigation/userRefresherWrapper';
 import { WelcomeScreenModal } from '~/store/user/welcomeScreenModal';
+import { ENV } from '~/store/env';
 
-if (Constants.expoConfig?.extra?.EAS_BUILD_PROFILE === 'development') {
+if (ENV.APP_ENV === 'development') {
   // Adds messages only in a dev environment
   loadDevMessages();
   loadErrorMessages();
 }
 
 const httpLink = new HttpLink({
-  uri: Constants.expoConfig?.extra?.GRAPHQL_ENDPOINT,
+  uri: ENV.GRAPHQL_ENDPOINT,
 });
 
 Amplify.configure({
   Auth: {
     Cognito: {
-      userPoolId: Constants.expoConfig?.extra?.COGNITO_USERPOOL_ID,
-      userPoolClientId: Constants.expoConfig?.extra?.COGNITO_CLIENT_ID,
+      userPoolId: ENV.COGNITO_USERPOOL_ID,
+      userPoolClientId: ENV.COGNITO_CLIENT_ID,
       loginWith: {
         email: true,
       },
@@ -51,8 +52,8 @@ const auth: AuthOptions = {
 };
 
 const authLink = createAuthLink({
-  url: Constants.expoConfig?.extra?.GRAPHQL_ENDPOINT,
-  region: Constants.expoConfig?.extra?.AWS_REGION,
+  url: ENV.GRAPHQL_ENDPOINT,
+  region: ENV.AWS_REGION,
   auth,
 });
 
@@ -73,8 +74,8 @@ const client = new ApolloClient({
     authLink,
     /* createSubscriptionHandshakeLink(
       {
-        url: Constants.expoConfig?.extra?.GRAPHQL_ENDPOINT,
-        region: Constants.expoConfig?.extra?.AWS_REGION,
+        url: ENV.GRAPHQL_ENDPOINT,
+        region: ENV.extra?.AWS_REGION,
         auth,
       },
       httpLink

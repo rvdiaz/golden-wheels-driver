@@ -1,4 +1,5 @@
-import { COUNTRIES, CountryData } from '../UI/form/inputs/phoneNumberInput';
+import { COUNTRIES } from '../data';
+import { CountryData } from '../interfaces';
 
 // Utility functions
 export const extractDigitsOnly = (text: string): string => {

@@ -1,20 +1,12 @@
 import React from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
-import { TaskMetricsStats } from './widgets/metricsStats';
-import { TodayTasks } from '../task/widgets/todayTasks';
+import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
-import { ProfileCompletionWidget } from './widgets/setupStatusGraph';
-import { RentAppShortcut } from '../tools/sections/transunion_rent_applications/widgets/rent_app_shortcut';
 
 export const Dashboard: React.FC = () => {
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <ProfileCompletionWidget />
-        <RentAppShortcut />
-        <TaskMetricsStats />
-        <TodayTasks />
-      </ScrollView>
+      <Text>Dash here</Text>
     </View>
   );
 };

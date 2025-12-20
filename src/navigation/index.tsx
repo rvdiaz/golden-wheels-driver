@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { userData } from '~/store/user';
-import { IModule, ModuleKeys } from '~/store/interface';
+import { ModuleKeys } from '~/store/interface';
 import {
   createNestedNavigationScreens,
   createTabNavigationBottomBar,
@@ -15,11 +15,14 @@ import { usePushNotificationTokenSetup } from '~/core_modules/auth/hooks/usePush
 import { CustomHeader } from './header/customHeader';
 import { theme } from '~/theme/theme';
 import { View } from 'react-native';
-import { useSystemSettings } from '~/system_setting/customHook';
 import { LoadingFirstScreen } from './header/loadingFirstScreen';
-import { StartPointScreen } from '~/core_modules/auth';
 import { IAuthModuleKeys } from '~/codidge_components/auth/interfaces';
 import { useGlobalSubscriptions } from '~/hooks/useGlobalSubscriptions';
+import { AuthWrapper } from '~/core_modules/auth/authWrapper';
+import { useTenant } from '~/store/tenant/useTenant';
+import { ITenantModule } from '~/store/user/interfaces';
+import { appModules, localMainModules } from '~/store/data/modules';
+import { ITenant } from '~/store/tenant/interface';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -28,7 +31,7 @@ function BottomTabs({
   tenantModules,
   onTabChange,
 }: {
-  tenantModules: IModule[];
+  tenantModules: ITenantModule[];
   onTabChange?: (routeName: ModuleKeys) => void;
 }) {
   const bottomBarNavigation = createTabNavigationBottomBar(Tab, tenantModules);
@@ -59,7 +62,7 @@ function BottomTabs({
 }
 
 // Wrapper component that includes the custom header
-function TabsWithCustomHeader({ tenantModules }: { tenantModules: IModule[] }) {
+function TabsWithCustomHeader({ tenantModules }: { tenantModules: ITenantModule[] }) {
   const [currentRouteName, setCurrentRouteName] = React.useState<ModuleKeys>(ModuleKeys.dashboard);
 
   return (
@@ -96,24 +99,22 @@ function TabsWithCustomHeader({ tenantModules }: { tenantModules: IModule[] }) {
 }
 
 export const Navigation = () => {
-  const userInfo = useReactiveVar(userData);
-  const { loading } = useSystemSettings();
+  const { tenantInfo, userInfo, loading } = useTenant();
 
-  useGlobalSubscriptions();
+  /*   useGlobalSubscriptions();
   usePushNotificationTokenSetup();
-
-  //useUserSessionTimeTracking({ user: userInfo });
-
-  const tenantModules = getTenantRoutes(userInfo);
-  const nestedNav = createNestedNavigationScreens(tenantModules, Stack);
-
+ */
   if (loading) {
-    return (
-      <NavigationContainer>
-        <LoadingFirstScreen />
-      </NavigationContainer>
-    );
+    return <LoadingFirstScreen />;
   }
+
+  const tempTenant: ITenant = {
+    ...tenantInfo!,
+    modules: [...appModules, ...localMainModules],
+  };
+
+  const tenantModules = getTenantRoutes(tempTenant);
+  const nestedNav = createNestedNavigationScreens(tenantModules, Stack);
 
   return (
     <NavigationContainer>
@@ -131,7 +132,7 @@ export const Navigation = () => {
               {() => (
                 <AuthProvider
                   defaultAuthScreen={userInfo === '' ? IAuthModuleKeys.signIn : undefined}>
-                  <StartPointScreen />
+                  <AuthWrapper />
                 </AuthProvider>
               )}
             </Stack.Screen>

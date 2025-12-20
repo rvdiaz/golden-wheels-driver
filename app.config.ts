@@ -11,17 +11,15 @@ export default (arg: ConfigContext): ExpoConfig => {
   return {
     ...config,
     plugins: [...config.plugins!, ...devOnlyPlugins],
-    android: {
+    /*  android: {
       ...config.android,
       googleServicesFile: process.env.GOOGLE_SERVICES_JSON || './google-services.json',
       package: process.env.ANDROID_PACKAGE_NAME || 'com.myvirtualboss.realestate',
-    },
+    }, */
     extra: {
       ...config.extra,
-      GRAPHQL_ENDPOINT:
-        process.env.GRAPHQL_ENDPOINT ||
-        'https://mliqeu5tf5hqnafxp55hwaekd4.appsync-api.us-east-1.amazonaws.com/graphql',
-      EAS_BUILD_PROFILE: process.env.EAS_BUILD_PROFILE || 'production',
+      GRAPHQL_ENDPOINT: process.env.GRAPHQL_ENDPOINT || 'http://192.168.1.145:4001/graphql',
+      //EAS_BUILD_PROFILE: process.env.EAS_BUILD_PROFILE || 'production',
     },
   } as ExpoConfig;
 };

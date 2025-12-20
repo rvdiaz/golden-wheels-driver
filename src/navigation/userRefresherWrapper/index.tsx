@@ -7,7 +7,6 @@ import { getUserQuery } from '~/core_modules/auth/graphql/queries';
 import { pushTokenVar } from '~/store/user/pushToken';
 import { IUser } from '~/store/interface';
 import { getCurrentUser, signOut } from 'aws-amplify/auth';
-import { apiKeyClient } from '~/store/config/apolloClient';
 
 interface Props {
   children: React.ReactNode;
@@ -40,7 +39,6 @@ export const UserRefresherWrapper: React.FC<Props> = ({ children }) => {
 
       // Clear Apollo cache
       await client.clearStore(); // Clears all cached data
-      await apiKeyClient.clearStore();
 
       // If you have an apiKeyClient, clear it too
       // await apiKeyClient.clearStore();

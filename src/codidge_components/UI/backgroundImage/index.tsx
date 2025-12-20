@@ -9,10 +9,7 @@ interface BackgroundComp {
 // Background Component
 const Background = ({ children, style }: BackgroundComp) => {
   return (
-    <ImageBackground
-      source={require('assets/background.png')}
-      style={[styles.background, style]}
-      resizeMode="cover">
+    <ImageBackground style={[styles.background, style]} resizeMode="cover">
       {children}
     </ImageBackground>
   );

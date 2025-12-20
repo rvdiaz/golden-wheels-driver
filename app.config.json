@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "My Virtual Boss",
-    "slug": "my-own-boss",
-    "version": "1.1.11",
+    "name": "Servora",
+    "slug": "servora",
+    "version": "0.0.1",
     "web": {
       "favicon": "assets/logo.png"
     },
@@ -11,22 +11,9 @@
     },
     "plugins": [
       [
-        "expo-contacts",
-        {
-          "contactsPermission": "Allow $(PRODUCT_NAME) to access your contacts to import business contacts."
-        }
-      ],
-      [
         "expo-image-picker",
         {
           "photosPermission": "The app accesses your photos to attach screenshots or images when submitting feedback."
-        }
-      ],
-      [
-        "expo-video",
-        {
-          "supportsBackgroundPlayback": false,
-          "supportsPictureInPicture": false
         }
       ],
       "expo-notifications"
@@ -43,7 +30,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.myvirtualboss.realestate",
-      "buildNumber": "26",
+      "buildNumber": "1",
       "infoPlist": {
         "NSContactsUsageDescription": "We use your contacts to help you import or export CRM records more easily. Contacts are only uploaded to your account if you give explicit consent."
       },
@@ -51,19 +38,16 @@
     },
     "android": {
       "package": "com.myvirtualboss.realestate",
-      "versionCode": 26,
+      "versionCode": 1,
       "edgeToEdgeEnabled": true
     },
     "extra": {
-      //"GRAPHQL_ENDPOINT": "http://localhost:4000/graphql",
-      "GRAPHQL_ENDPOINT": "https://mliqeu5tf5hqnafxp55hwaekd4.appsync-api.us-east-1.amazonaws.com/graphql",
-      "GRAPHQL_API_KEY": "da2-huzxlqwce5bi3odldx5lwaz3dy",
+      "GRAPHQL_ENDPOINT": "http://192.168.1.145:4001/graphql",
+      //"GRAPHQL_ENDPOINT": "https://mliqeu5tf5hqnafxp55hwaekd4.appsync-api.us-east-1.amazonaws.com/graphql",
       "AWS_REGION": "us-east-1",
-      "COGNITO_USERPOOL_ID": "us-east-1_4aq3CuAAr",
-      "COGNITO_CLIENT_ID": "77e3rsh7jds1lmvsuq4jt8j0h0",
-      "TRAINING_CATEGORY_ID": "431bcd10-c7f0-4e42-835b-bef57d2be968",
-      "TENANTID": "usa-my-own-boss",
-      "APPLE_APP_ID": 6752781766,
+      "COGNITO_USERPOOL_ID": "us-east-1_rXuolyDGQ",
+      "COGNITO_CLIENT_ID": "4r6sj034uhg0nvhmn4m3nl24ec",
+      //      "APPLE_APP_ID": 6752781766,
       "eas": {
         "projectId": "777406c6-4dff-46d3-a876-88315ae37291"
       }

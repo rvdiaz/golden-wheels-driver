@@ -23,7 +23,6 @@ import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Text from '~/codidge_components/UI/text';
 import { TermsAndConditions } from './terms_and_conditions';
-import { useSystemSettings } from '~/system_setting/customHook';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import { parsePhoneNumber, validatePhoneNumber } from '~/codidge_components/helpers';
 import PhoneInput from '~/codidge_components/UI/form/inputs/phoneNumberInput';
@@ -46,14 +45,6 @@ const schema = yup.object({
     .string()
     .oneOf([yup.ref('password')], 'Passwords must match')
     .required('Please confirm your password'),
-  agreeToTerms: yup
-    .boolean()
-    .required('You must agree to the terms and conditions')
-    .oneOf([true], 'You must agree to the terms and conditions'),
-  agreeToDataProcessing: yup
-    .boolean()
-    .required('You must agree to data processing')
-    .oneOf([true], 'You must agree to data processing to continue'),
 });
 
 export const SignUpForm = ({
@@ -71,9 +62,6 @@ export const SignUpForm = ({
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setloading] = useState(false);
 
-  const legal = useSystemSettings().legal;
-  const loadingSettings = useSystemSettings().loading;
-
   const {
     control,
     handleSubmit,
@@ -85,8 +73,6 @@ export const SignUpForm = ({
       phone: '',
       password: '',
       confirmPassword: '',
-      agreeToTerms: false,
-      agreeToDataProcessing: false,
     },
   });
 
@@ -138,10 +124,6 @@ export const SignUpForm = ({
       Alert.alert('Registration Failed', 'Please try again');
     }
   };
-
-  if (loadingSettings) {
-    return <PageLoading />;
-  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -290,62 +272,6 @@ export const SignUpForm = ({
                   )}
                 />
 
-                <Controller
-                  control={control}
-                  name="agreeToTerms"
-                  render={({ field: { onChange, value } }) => (
-                    <View style={styles.termsContainer}>
-                      <View style={styles.checkboxContainer}>
-                        <TouchableOpacity
-                          onPress={() => onChange(!value)}
-                          style={[styles.checkbox, value && styles.checkboxChecked]}>
-                          {value && <Icons.Check size={16} color="white" />}
-                        </TouchableOpacity>
-                        <Text style={styles.termsText}>
-                          I agree to the{' '}
-                          <TermsAndConditions
-                            sourceUrl={
-                              legal?.mvbTemrs ?? 'https://myvirtualboss.com/privacy-policy/'
-                            }
-                            title="Terms and conditions"
-                          />
-                        </Text>
-                      </View>
-                      {errors.agreeToTerms && (
-                        <Text style={styles.errorText}>{errors.agreeToTerms.message}</Text>
-                      )}
-                    </View>
-                  )}
-                />
-                <Controller
-                  control={control}
-                  name="agreeToDataProcessing"
-                  render={({ field: { onChange, value } }) => (
-                    <View style={styles.termsContainer}>
-                      <TouchableOpacity
-                        style={styles.checkboxContainer}
-                        onPress={() => onChange(!value)}>
-                        <View style={[styles.checkbox, value && styles.checkboxChecked]}>
-                          {value && <Icons.Check size={16} color="white" />}
-                        </View>
-                        <Text style={styles.termsText}>
-                          I authorize the app to share my information with{' '}
-                          <TermsAndConditions
-                            sourceUrl={
-                              legal?.tuTerms ??
-                              'https://d2i7obdpox0xae.cloudfront.net/privacy-policy-attachment-landloard.pdf'
-                            }
-                            title="TransUnion"
-                          />{' '}
-                          for rental application verification purposes.
-                        </Text>
-                      </TouchableOpacity>
-                      {errors.agreeToDataProcessing && (
-                        <Text style={styles.errorText}>{errors.agreeToDataProcessing.message}</Text>
-                      )}
-                    </View>
-                  )}
-                />
                 <PrimaryButton
                   onPress={handleSubmit(onSubmit)}
                   title="Create Account"

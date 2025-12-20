@@ -5,8 +5,6 @@ import { cognitoUserPoolsTokenProvider } from 'aws-amplify/auth/cognito';
 import { loadErrorMessages, loadDevMessages } from '@apollo/client/dev';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AUTH_TYPE, AuthOptions, createAuthLink } from 'aws-appsync-auth-link';
-import { createSubscriptionHandshakeLink } from 'aws-appsync-subscription-link';
-import { SubscriptionPricingPlanModal } from '~/custom_modules/iap/components/pricingPlanModal/subscriptions';
 import { Navigation } from '~/navigation';
 import { UserRefresherWrapper } from '~/navigation/userRefresherWrapper';
 import { WelcomeScreenModal } from '~/store/user/welcomeScreenModal';
@@ -73,14 +71,15 @@ const client = new ApolloClient({
   link: ApolloLink.from([
     removeTypeNameLink,
     authLink,
-    createSubscriptionHandshakeLink(
+    /* createSubscriptionHandshakeLink(
       {
         url: Constants.expoConfig?.extra?.GRAPHQL_ENDPOINT,
         region: Constants.expoConfig?.extra?.AWS_REGION,
         auth,
       },
       httpLink
-    ),
+    ), */
+    httpLink,
   ]),
   cache: new InMemoryCache(),
 });
@@ -92,7 +91,6 @@ export default function App() {
         <UserRefresherWrapper>
           <Navigation />
         </UserRefresherWrapper>
-        <SubscriptionPricingPlanModal />
         <WelcomeScreenModal />
       </SafeAreaProvider>
     </ApolloProvider>

@@ -1,191 +1,23 @@
 import { gql } from '@apollo/client';
 
-export const getUserQuery = gql`
-  query getUser($tenant: TenantData!, $userId: ID!, $token: String) {
-    getUser(tenant: $tenant, userId: $userId, token: $token) {
+export const getAdminUserQuery = gql`
+  query getAdminUser($userID: ID!, $firstTime: Boolean) {
+    getAdminUser(userID: $userID, firstTime: $firstTime) {
+      userID
+      tenantsList {
+        role
+        tenantID
+      }
+      name
       email
-      id
-      activeTemplateId
-      activeGoalsTemplateId
-      firstName
-      lastName
       phone
-      mlsNumber
-      vipMember
-      brokerage
-      durationMs
-      financialGoals {
-        avgCommissionByRents
-        avgCommissionBySales
-        desiredAnnualIncome
-      }
-      swotAnalysis {
-        strengths
-        weaknesses
-        opportunities
-        threats
-      }
-      visionMission {
-        statement
-        drivesYou
-        oneYear
-        fiveYear
-      }
-      address {
-        addressLine1
-        locality
-        region
-        postalCode
-        country
-      }
-      profileSteps {
-        id
-        title
-        subSteps
-      }
-      profileSetupSkipped
-      hasSeenProfileCompletionCongrats
-      modules {
-        icon
+      status
+      userType
+      permissions {
         label
-        isBottomBar
-        metaData
-        moduleKey
-        path
-        customIcon
-        comingSoon
-        modules {
-          label
-          metaData
-          icon
-          description
-          color
-          backgroundColor
-          moduleKey
-          available
-          comingSoon
-          comingSoonLabel
-          comingSoonScreenShoots
-          subscriptionRequired
-        }
+        slug
       }
-      balance {
-        amount
-        currency
-      }
-      createdAt
-      emailVerified
-      hasCustomSchedule
-      notificationToken
-      preferenceLanguage
-      subscription {
-        billingIssueDetectedDate
-        isAutoRenewing
-        endDate
-        originalStartDate
-        originalTransactionId
-        platform
-        productId
-        startDate
-        status
-      }
-    }
-  }
-`;
-
-export const onUserUpdatedSubscription = gql`
-  subscription onUserUpdated($tenantId: ID!, $userId: ID!) {
-    onUserUpdated(tenantId: $tenantId, userId: $userId) {
-      tenantId
-      userId
-      user {
-        email
-        id
-        activeTemplateId
-        activeGoalsTemplateId
-        firstName
-        lastName
-        phone
-        mlsNumber
-        vipMember
-        brokerage
-        durationMs
-        financialGoals {
-          avgCommissionByRents
-          avgCommissionBySales
-          desiredAnnualIncome
-        }
-        swotAnalysis {
-          strengths
-          weaknesses
-          opportunities
-          threats
-        }
-        visionMission {
-          statement
-          drivesYou
-          oneYear
-          fiveYear
-        }
-        address {
-          addressLine1
-          locality
-          region
-          postalCode
-          country
-        }
-        profileSteps {
-          id
-          title
-          subSteps
-        }
-        profileSetupSkipped
-        hasSeenProfileCompletionCongrats
-        modules {
-          icon
-          label
-          isBottomBar
-          metaData
-          moduleKey
-          path
-          customIcon
-          comingSoon
-          modules {
-            label
-            metaData
-            icon
-            description
-            color
-            backgroundColor
-            moduleKey
-            available
-            comingSoon
-            comingSoonLabel
-            comingSoonScreenShoots
-            subscriptionRequired
-          }
-        }
-        balance {
-          amount
-          currency
-        }
-        createdAt
-        emailVerified
-        hasCustomSchedule
-        notificationToken
-        preferenceLanguage
-        subscription {
-          billingIssueDetectedDate
-          isAutoRenewing
-          endDate
-          originalStartDate
-          originalTransactionId
-          platform
-          productId
-          startDate
-          status
-        }
-      }
+      metaData
     }
   }
 `;

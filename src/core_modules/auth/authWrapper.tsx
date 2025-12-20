@@ -2,14 +2,12 @@ import React, { ReactNode } from 'react';
 import { ConfirmResetPassword } from '~/codidge_components/auth/forms/confirm_reset_password';
 import { useAuthContext } from '~/codidge_components/auth/context';
 import { useReactiveVar } from '@apollo/client';
-import Constants from 'expo-constants';
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { addUserMutation, updateUserMutation } from './graphql/mutations';
+import { updateUserMutation } from './graphql/mutations';
 import { updateUser } from '~/store/user';
 import { pushTokenVar } from '~/store/user/pushToken';
-import { IUser } from '~/store/interface';
 import { signOut } from 'aws-amplify/auth/cognito';
-import { getUserQuery } from './graphql/queries';
+import { getAdminUserQuery } from './graphql/queries';
 import { IAuthModuleKeys } from '~/codidge_components/auth/interfaces';
 import { SignUpForm } from '~/codidge_components/auth/forms/sign_up';
 import { ResetPassword } from '~/codidge_components/auth/forms/reset_password';
@@ -26,46 +24,33 @@ import {
   MailOpen,
   RefreshCcw,
   UserCheck,
-  UserLock,
   UserPlus,
 } from 'lucide-react-native';
-import { StepIcon } from '../on_boarding/widgets/stepIcon';
-import { OnboardingFlowStorage } from './helpers/onboardingStorage';
-import { PersonalInformation } from './personalnformationForm';
-import { IPersonalData } from '../on_boarding/interface';
-import { apiKeyClient } from '~/store/config/apolloClient';
-import { paywallVisibility } from '~/store/subscription';
-import { welcomeScreen } from '~/store/user/welcomeScreen';
-
-const tenantId = Constants.expoConfig?.extra?.TENANTID;
+import { StepIcon } from '~/codidge_components/UI/stepIcon';
+import { IUser } from '~/store/user/interfaces';
 
 export const AuthWrapper = () => {
   const { currentView, setCurrentView } = useAuthContext();
-  const [addUserFn] = useMutation<{ addUser: IUser }>(addUserMutation, {
-    client: apiKeyClient,
-  });
+
   const [updateUserFn] = useMutation<{ updateUser: IUser }>(updateUserMutation);
-  const [getUserFn] = useLazyQuery<{ getUser: IUser }>(getUserQuery);
+  const [getUserFn] = useLazyQuery<{ getAdminUser: IUser }>(getAdminUserQuery);
   const pushToken = useReactiveVar(pushTokenVar);
 
   const handleLoginSuccess = async (userId: string) => {
     try {
       const user = await getUserFn({
         variables: {
-          tenant: {
-            tenantId,
-          },
-          token: pushToken,
-          userId,
+          userID: userId,
         },
       });
 
-      if (!user.data?.getUser) {
+      if (!user.data?.getAdminUser) {
         console.error(user.error);
         throw Error('Error getting user');
       }
-      await OnboardingFlowStorage.setAccountCreated();
-      updateUser(user.data?.getUser);
+      const userData = user.data?.getAdminUser;
+
+      updateUser({ ...userData, activeTenantId: userData.tenantsList[0].tenantID });
     } catch (error) {
       console.log('::::error getting user', error);
       await signOut();
@@ -74,27 +59,20 @@ export const AuthWrapper = () => {
 
   const handleRegisterSuccess = async (userId: string, formData: any) => {
     try {
-      const personalInfo = await OnboardingFlowStorage.getPersonalInfoCompleted();
-
       if (!pushToken) {
         console.log('::::not token creation');
         //Alert.alert('Not token');
         //return;
       }
-      const userData = await addUserFn({
+      /*  const userData = await addUserFn({
         variables: {
           tenant: {
             tenantId: tenantId,
           },
           user: {
-            firstName: personalInfo?.firstName,
-            lastName: personalInfo?.lastName,
-            mlsNumber: personalInfo?.mlsNumber,
-            brokerage: personalInfo?.brokerage,
+            name: '',
             email: formData.email,
-            phone: formData.phone,
-            userType: personalInfo.userType,
-            address: {
+               address: {
               addressLine1: personalInfo.addressLine1,
               postalCode: personalInfo.postalCode,
               region: personalInfo.region,
@@ -109,7 +87,7 @@ export const AuthWrapper = () => {
 
       if (!userData.data?.addUser) {
         throw Error('Error getting user');
-      }
+      } */
     } catch (error) {
       await signOut();
       console.log(':::error', error);
@@ -120,9 +98,9 @@ export const AuthWrapper = () => {
     try {
       const userData = await updateUserFn({
         variables: {
-          tenant: {
+          /*  tenant: {
             tenantId: tenantId,
-          },
+          }, */
           updates: {
             emailVerified: true,
           },
@@ -135,8 +113,6 @@ export const AuthWrapper = () => {
       }
 
       updateUser(userData.data?.updateUser);
-      welcomeScreen(true);
-      await OnboardingFlowStorage.setAccountCreated();
     } catch (error) {
       await signOut();
       console.log(':::error', error);
@@ -197,22 +173,14 @@ export const AuthWrapper = () => {
                 style={{
                   justifyContent: 'center',
                   alignItems: 'center',
-                }}>
-                <StepIcon icon={UserLock} />
-              </View>
+                }}></View>
 
               <Text style={styles.mainTitle}>Sign In</Text>
             </View>
           }>
           <SignInForm
             onSignUp={async () => {
-              const hasCompletedPersonalInfo =
-                await OnboardingFlowStorage.hasCompletedPersonalInfo();
-              if (!hasCompletedPersonalInfo) {
-                setCurrentView(IAuthModuleKeys.personalInfo);
-              } else {
-                setCurrentView(IAuthModuleKeys.signUp);
-              }
+              setCurrentView(IAuthModuleKeys.signUp);
             }}
             strictView={false}
             onLoginSuccess={handleLoginSuccess}
@@ -264,22 +232,6 @@ export const AuthWrapper = () => {
               ]}>
               <View
                 style={{
-                  position: 'absolute',
-                  top: 40,
-                  left: 0,
-                }}>
-                <IconButton
-                  style={{
-                    backgroundColor: 'transparent',
-                  }}
-                  onPress={() => {
-                    setCurrentView(IAuthModuleKeys.personalInfo);
-                  }}
-                  icon={<ArrowLeft color={'#FFF'} />}
-                />
-              </View>
-              <View
-                style={{
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}>
@@ -322,15 +274,7 @@ export const AuthWrapper = () => {
               </Text>
             </View>
           }>
-          <PersonalInformation
-            onNext={async (personalData: IPersonalData) => {
-              await OnboardingFlowStorage.setPersonalInfoCompleted(personalData);
-              setCurrentView(IAuthModuleKeys.signUp);
-            }}
-            openSignIn={() => {
-              setCurrentView(IAuthModuleKeys.signIn);
-            }}
-          />
+          <SignUpForm onSignUpSuccess={handleRegisterSuccess} />
         </AuthFormWrapper>
       );
   }

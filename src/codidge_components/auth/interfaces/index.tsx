@@ -1,5 +1,4 @@
 export enum IAuthModuleKeys {
-  personalInfo = 'PersonalInfo',
   signIn = 'SignIn',
   signUp = 'SignUp',
   forcePasswordChange = 'ForcePasswordChange',
@@ -19,8 +18,6 @@ export interface RegisterFormData {
   phone: string;
   password: string;
   confirmPassword: string;
-  agreeToTerms: boolean;
-  agreeToDataProcessing: boolean;
 }
 
 export interface ResetPasswordFormData {

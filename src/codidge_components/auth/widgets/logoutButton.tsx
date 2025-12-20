@@ -5,7 +5,6 @@ import { useApolloClient } from '@apollo/client';
 import { signOut } from 'aws-amplify/auth/cognito';
 import { updateUser } from '~/store/user';
 import Text from '~/codidge_components/UI/text';
-import { apiKeyClient } from '~/store/config/apolloClient';
 import { theme } from '~/theme/theme';
 
 export const LogoutButton = () => {
@@ -18,7 +17,6 @@ export const LogoutButton = () => {
       await signOut();
       updateUser('');
       await client.clearStore(); // Clears all cached data
-      await apiKeyClient.clearStore();
       setloadingLogout(false);
     } catch (error) {
       setloadingLogout(false);

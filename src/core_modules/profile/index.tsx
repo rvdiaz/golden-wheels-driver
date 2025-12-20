@@ -7,14 +7,11 @@ import { useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import { LogoutButton } from '~/codidge_components/auth/widgets/logoutButton';
 import Text from '~/codidge_components/UI/text';
-import { ProfileScreensWrapper } from '../profile_setup/widgets/wrapper';
 import { Header } from '~/codidge_components/UI/header';
 import { theme } from '~/theme/theme';
 import { ProfileNavigationSection } from '~/codidge_components/UI/navigationButtons';
-import { paywallVisibility } from '~/store/subscription';
 import TextButton from '~/codidge_components/UI/button/TextButton';
-import { BalanceWidget } from './widgets/userBalance';
-import { ProfileEditionForm } from './widgets/profileEditionForm';
+import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
 export const ProfileScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -22,31 +19,27 @@ export const ProfileScreen: React.FC = () => {
   const [showEditionForm, setshowEditionForm] = useState(false);
 
   return (
-    <ProfileScreensWrapper
-      header={
-        <View style={{ width: '100%' }}>
-          <Header
-            title={'My Profile'}
-            showBack={true}
-            contentContainerStyle={{
-              backgroundColor: 'transparent',
-              borderBottomWidth: 0,
-            }}
-            contentStyle={{
-              paddingVertical: 0,
-            }}
-            titleStyles={{ color: '#fff' }}
-            leftWidget={
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.goBack();
-                }}>
-                <Icons.ChevronLeftIcon color="#FFF" />
-              </TouchableOpacity>
-            }
-          />
-        </View>
-      }>
+    <PageSafeContainer>
+      <Header
+        title={'My Profile'}
+        showBack={true}
+        contentContainerStyle={{
+          backgroundColor: 'transparent',
+          borderBottomWidth: 0,
+        }}
+        contentStyle={{
+          paddingVertical: 0,
+        }}
+        titleStyles={{ color: '#fff' }}
+        leftWidget={
+          <TouchableOpacity
+            onPress={() => {
+              navigation.goBack();
+            }}>
+            <Icons.ChevronLeftIcon />
+          </TouchableOpacity>
+        }
+      />
       <View style={styles.container}>
         {/* <Header title="Profile" showBack onBack={() => navigation.goBack()} /> */}
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -66,9 +59,7 @@ export const ProfileScreen: React.FC = () => {
                 <Icons.BadgeCheck size={18} color="#fff" />
               </View>
             </View>
-            <Text style={styles.profileName}>
-              {user?.firstName} {user?.lastName}
-            </Text>
+
             <TextButton
               leftWidget={
                 <Icons.Edit size={16} style={{ marginRight: 8 }} color={theme.colors.primary} />
@@ -82,15 +73,6 @@ export const ProfileScreen: React.FC = () => {
               title="Edit Profile"
             />
           </View>
-          {/* Balance Widget */}
-          <BalanceWidget
-            balance={
-              user?.balance ?? {
-                amount: 0,
-                currency: 'USD',
-              }
-            }
-          />
 
           <ProfileNavigationSection
             sections={[
@@ -102,15 +84,7 @@ export const ProfileScreen: React.FC = () => {
                     label: 'Income',
                     icon: <Icons.HandCoins />,
                     onClick: () => {
-                      navigation.navigate(ModuleKeys.income as never);
-                    },
-                  },
-                  {
-                    id: 'goal',
-                    label: 'Goal',
-                    icon: <Icons.Goal />,
-                    onClick: () => {
-                      navigation.navigate(ModuleKeys.goals as never);
+                      //navigation.navigate(ModuleKeys.income as never);
                     },
                   },
                   {
@@ -118,7 +92,7 @@ export const ProfileScreen: React.FC = () => {
                     label: 'Privacy Policy',
                     icon: <Icons.LockIcon />,
                     onClick: () => {
-                      navigation.navigate(ModuleKeys.privacyPolicy as never);
+                      //navigation.navigate(ModuleKeys.privacyPolicy as never);
                     },
                   },
                 ],
@@ -126,14 +100,6 @@ export const ProfileScreen: React.FC = () => {
               {
                 title: 'Account',
                 items: [
-                  {
-                    id: 'subscriptions',
-                    label: 'Subscriptions Plans',
-                    icon: <Icons.BadgeDollarSign />,
-                    onClick: () => {
-                      paywallVisibility(true);
-                    },
-                  },
                   {
                     id: 'delete',
                     label: 'Account Deletion',
@@ -167,7 +133,7 @@ export const ProfileScreen: React.FC = () => {
             ]}
           />
         </ScrollView>
-        <Modal
+        {/* <Modal
           animationType="slide"
           transparent={true}
           visible={showEditionForm}
@@ -180,9 +146,9 @@ export const ProfileScreen: React.FC = () => {
             }}
             user={user!}
           />
-        </Modal>
+        </Modal> */}
       </View>
-    </ProfileScreensWrapper>
+    </PageSafeContainer>
   );
 };
 

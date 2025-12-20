@@ -20,7 +20,7 @@ const AuthContext = createContext<AuthContextState | undefined>(undefined);
 
 export const AuthProvider = ({
   children,
-  defaultAuthScreen = IAuthModuleKeys.personalInfo,
+  defaultAuthScreen = IAuthModuleKeys.signIn,
 }: {
   children: ReactNode;
   defaultAuthScreen?: IAuthModuleKeys;

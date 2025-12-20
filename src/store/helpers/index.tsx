@@ -1,111 +1,21 @@
 import { TypedNavigator } from '@react-navigation/native';
-import { IFeatureModule, IModule, IUser, ModuleKeys } from '../interface';
 import { Ionicons } from '@expo/vector-icons';
 import { moduleScreens } from '../config';
-import { Image } from 'react-native';
-
-export const localMainModules: IModule[] = [
-  {
-    label: 'Profile',
-    moduleKey: ModuleKeys.profile,
-    path: '/profile',
-    type: 'main',
-    metaData: '{}',
-    icon: 'calendar-outline',
-    modules: [
-      {
-        label: 'Income',
-        moduleKey: ModuleKeys.income,
-        metaData: {},
-        available: true,
-        comingSoon: false,
-      },
-      {
-        label: 'Goals',
-        moduleKey: ModuleKeys.goals,
-        metaData: {},
-        available: true,
-        comingSoon: false,
-      },
-      {
-        label: 'Privacy Policy',
-        moduleKey: ModuleKeys.privacyPolicy,
-        metaData: {},
-        available: true,
-        comingSoon: false,
-      },
-      {
-        label: 'Feedback',
-        moduleKey: ModuleKeys.feedBack,
-        metaData: {},
-        available: true,
-        comingSoon: false,
-      },
-      {
-        label: 'Account',
-        moduleKey: ModuleKeys.accountDeletion,
-        metaData: {},
-        available: true,
-        comingSoon: false,
-      },
-    ],
-  },
-];
+import { IFeatureModule, ITenantModule } from '../user/interfaces';
+import { ITenant } from '../tenant/interface';
 
 export const localToolModules: IFeatureModule[] = [];
 
-export const getTenantRoutes = (user: IUser | null): IModule[] => {
-  const userModules = user?.modules ?? [];
+export const getTenantRoutes = (tenant: ITenant): ITenantModule[] => {
+  const userModules = tenant?.modules ?? [];
 
-  const sanitizeBackendTools = [
-    ...userModules.filter((tool) => {
-      if (!localMainModules.find((t) => t.moduleKey === tool.moduleKey)?.moduleKey) {
-        return tool;
-      }
-    }),
-    ...localMainModules,
-  ];
-
-  const resModules = sanitizeBackendTools.map((module) => {
-    if (module.moduleKey !== ModuleKeys.tools) return module;
-
-    const backendTools = module.modules ?? [];
-
-    const mergedTools = [...backendTools, ...localToolModules];
-
-    return {
-      ...module,
-      modules: mergedTools,
-    };
-  });
-
-  return resModules;
+  return userModules;
 };
 
-export const customIcons: Record<string, { active: any; inactive: any }> = {
-  dashboard: {
-    active: require('assets/icons/dashboard-active.png'),
-    inactive: require('assets/icons/dashboard-inactive.png'),
-  },
-  task: {
-    active: require('assets/icons/task-active.png'),
-    inactive: require('assets/icons/task-inactive.png'),
-  },
-  crm: {
-    active: require('assets/icons/crm-active.png'),
-    inactive: require('assets/icons/crm-inactive.png'),
-  },
-  tools: {
-    active: require('assets/icons/tools-active.png'),
-    inactive: require('assets/icons/tools-inactive.png'),
-  },
-  training: {
-    active: require('assets/icons/training-active.png'),
-    inactive: require('assets/icons/training-inactive.png'),
-  },
-};
-
-export const createNestedNavigationScreens = (modules: IModule[], stack: TypedNavigator<any>) => {
+export const createNestedNavigationScreens = (
+  modules: ITenantModule[],
+  stack: TypedNavigator<any>
+) => {
   return modules.flatMap((mod) => {
     const screens: React.ReactNode[] = [];
 
@@ -124,6 +34,7 @@ export const createNestedNavigationScreens = (modules: IModule[], stack: TypedNa
             name={mod.moduleKey}
             component={moduleScreens[mod.moduleKey]?.body}
             options={{ title: mod.label ?? mod.moduleKey }}
+            initialParams={{ moduleData: mod }} // ✅ Pass module data here
           />
         );
       }
@@ -140,6 +51,10 @@ export const createNestedNavigationScreens = (modules: IModule[], stack: TypedNa
               name={feat.moduleKey}
               component={FeatureComp}
               options={{ title: feat.label ?? feat.moduleKey }}
+              initialParams={{
+                moduleData: feat,
+                parentModule: mod, // ✅ Also pass parent module if needed
+              }}
             />
           );
         }
@@ -150,30 +65,30 @@ export const createNestedNavigationScreens = (modules: IModule[], stack: TypedNa
   });
 };
 
-export const createTabNavigationBottomBar = (tab: TypedNavigator<any>, modules: IModule[]) => {
+export const createTabNavigationBottomBar = (
+  tab: TypedNavigator<any>,
+  modules: ITenantModule[]
+) => {
   return modules.map((mod) => mod.isBottomBar && createTabNavigationItem(tab, mod));
 };
 
-export const createTabNavigationItem = (tab: TypedNavigator<any>, module: IModule) => {
+export const createTabNavigationItem = (tab: TypedNavigator<any>, module: ITenantModule) => {
   return (
     <tab.Screen
       key={module.moduleKey}
       name={module.label ?? ''}
       component={moduleScreens[module.moduleKey].body}
       navigationKey={module.moduleKey}
+      initialParams={{ moduleData: module }}
       options={{
         tabBarIcon: ({ color, size, focused }: any) => {
-          if (module.customIcon) {
-            const { active, inactive } = customIcons[module.customIcon];
+          let name = module.icon ?? 'home';
 
-            return (
-              <Image
-                source={focused ? active : inactive}
-                style={{ width: size, height: size, marginBottom: 2, resizeMode: 'contain' }}
-              />
-            );
+          if (focused) {
+            name = module.activeIcon ?? module.icon ?? 'home';
           }
-          return <Ionicons name={(module.icon ?? 'home') as any} size={size} color={color} />;
+
+          return <Ionicons name={name as any} size={size} color={color} />;
         },
       }}
     />

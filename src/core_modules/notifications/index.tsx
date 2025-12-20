@@ -35,7 +35,7 @@ export const NotificationsScreen = () => {
         tenant: {
           tenantId,
         },
-        userId: user?.id,
+        userId: user?.userID,
         limit: 30,
       },
       fetchPolicy: 'cache-and-network',
@@ -48,7 +48,7 @@ export const NotificationsScreen = () => {
       refetchQueries: [
         {
           query: getUserNotificationsQuery,
-          variables: getUserNotificationsVariables(user?.id),
+          variables: getUserNotificationsVariables(user?.userID),
         },
       ],
       awaitRefetchQueries: true,
@@ -72,7 +72,7 @@ export const NotificationsScreen = () => {
                 tenant: {
                   tenantId,
                 },
-                userId: user?.id,
+                userId: user?.userID,
                 notificationIds: unreadNotificationIds,
               },
             });
@@ -89,7 +89,7 @@ export const NotificationsScreen = () => {
       }, 500);
 
       return () => clearTimeout(timer);
-    }, [data?.getUserNotifications?.items, markAsRead, user?.id])
+    }, [data?.getUserNotifications?.items, markAsRead, user?.userID])
   );
 
   const formatTimestamp = (timestamp: string) => {

@@ -1,14 +1,13 @@
-import { useCallback } from 'react';
-import { useApolloClient, useLazyQuery, useQuery } from '@apollo/client';
-import { getUserQuery } from '~/core_modules/auth/graphql/queries';
+import { useLazyQuery } from '@apollo/client';
 import { updateUser } from '.';
-import { IUser } from '../interface';
 import Constants from 'expo-constants';
+import { getAdminUserQuery } from '~/core_modules/auth/graphql/queries';
+import { IUser } from './interfaces';
 
 const tenantId = Constants.expoConfig?.extra?.TENANTID;
 
 export const useRefreshUser = () => {
-  const [getUserFn] = useLazyQuery(getUserQuery, {});
+  const [getUserFn] = useLazyQuery(getAdminUserQuery, {});
 
   const refreshUser = async (userId: string, pushToken?: string) => {
     try {

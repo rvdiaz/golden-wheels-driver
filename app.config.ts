@@ -59,6 +59,12 @@ export default (arg: ConfigContext): ExpoConfig => {
       },
       icon: 'assets/logo.png',
     },
+    updates: {
+      url: `https://u.expo.dev/${EAS_PROJECT_ID}`,
+    },
+    runtimeVersion: {
+      policy: 'appVersion',
+    },
     android: {
       package: process.env.ANDROID_PACKAGE_NAME || packageName,
       versionCode: 1,

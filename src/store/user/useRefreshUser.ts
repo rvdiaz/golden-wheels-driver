@@ -1,6 +1,6 @@
 import { useLazyQuery } from '@apollo/client';
 import { updateUser } from '.';
-import { getAdminUserQuery } from '~/core_modules/auth/graphql/queries';
+import { getAdminUserQuery } from '~/screens/auth/graphql/queries';
 import { IUser } from './interfaces';
 import { useTenant } from '../tenant/useTenant';
 

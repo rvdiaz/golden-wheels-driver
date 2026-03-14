@@ -1,5 +1,5 @@
 {
-  "name": "servora",
+  "name": "goldenwheels",
   "version": "0.0.1",
   "scripts": {
     "android": "expo run:android",
@@ -31,6 +31,7 @@
     "color": "^5.0.0",
     "expo": "^54.0.8",
     "expo-asset": "^12.0.8",
+    "expo-blur": "^15.0.8",
     "expo-constants": "^18.0.9",
     "expo-contacts": "~15.0.8",
     "expo-dev-client": "^6.0.12",

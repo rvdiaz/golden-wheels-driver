@@ -2,11 +2,9 @@ import React, { useEffect, useRef, useCallback } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { useApolloClient, useReactiveVar } from '@apollo/client';
 import { updateUser, userData } from '~/store/user';
-import Constants from 'expo-constants';
 import { pushTokenVar } from '~/store/user/pushToken';
 import { getCurrentUser, signOut } from 'aws-amplify/auth';
-import { useTenant } from '~/store/tenant/useTenant';
-import { getAdminUserQuery } from '~/core_modules/auth/graphql/queries';
+import { getAdminUserQuery } from '~/screens/auth/graphql/queries';
 import { IUser } from '~/store/user/interfaces';
 
 interface Props {
@@ -17,7 +15,7 @@ const REFRESH_COOLDOWN_MS = 30000; // 30 seconds - increased from 10
 
 export const UserRefresherWrapper: React.FC<Props> = ({ children }) => {
   const client = useApolloClient();
-  const { userInfo } = useTenant();
+  const userInfo = useReactiveVar(userData);
   const pushToken = useReactiveVar(pushTokenVar);
   const appStateRef = useRef<AppStateStatus>(AppState.currentState);
   const lastFetchRef = useRef<number>(0);
@@ -35,7 +33,7 @@ export const UserRefresherWrapper: React.FC<Props> = ({ children }) => {
       await signOut();
 
       // Clear user data from store
-      updateUser('');
+      updateUser(null);
 
       // Clear Apollo cache
       await client.clearStore(); // Clears all cached data

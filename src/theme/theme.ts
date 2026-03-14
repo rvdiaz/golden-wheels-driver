@@ -1,6 +1,13 @@
 export const theme = {
   colors: {
-    primary: '#4F46E5', // Indigo-600
+    primary: '#dac072', // Indigo-600
+    primaryAlpha: {
+      5: 'rgba(218,192,114,0.05)',
+      10: 'rgba(218,192,114,0.1)',
+      20: 'rgba(218,192,114,0.2)',
+      35: 'rgba(218,192,114,0.35)',
+      50: 'rgba(218,192,114,0.5)',
+    },
     accent: '#EA580C',
     //accent: '#3B82F6',
     primaryText: '#FFFFFF',

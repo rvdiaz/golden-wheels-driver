@@ -4,13 +4,13 @@ import { ConfigContext } from 'expo/config';
 // Replace these with your EAS project ID and project slug.
 // You can find them at https://expo.dev/accounts/[account]/projects/[project].
 const EAS_PROJECT_ID = '9150c5ea-e5db-487b-9a9b-d9d9ff5428da';
-const PROJECT_SLUG = 'servora';
+const PROJECT_SLUG = 'goldenwheels';
 const OWNER = 'rvdiaz1994';
 
 // App production config
-const APP_NAME = 'Servora';
-const BUNDLE_IDENTIFIER = 'com.codidge.servora';
-const PACKAGE_NAME = 'com.codidge.servora';
+const APP_NAME = 'Goldenwheels';
+const BUNDLE_IDENTIFIER = 'com.codidge.goldenwheels';
+const PACKAGE_NAME = 'com.codidge.goldenwheels';
 const ICON = './assets/logo.png';
 const ADAPTIVE_ICON = './assets/logo.png';
 const SCHEME = 'app-scheme';

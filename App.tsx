@@ -1,5 +1,4 @@
 import { ApolloClient, ApolloLink, ApolloProvider, HttpLink, InMemoryCache } from '@apollo/client';
-import Constants from 'expo-constants';
 import { Amplify } from 'aws-amplify';
 import { cognitoUserPoolsTokenProvider } from 'aws-amplify/auth/cognito';
 import { loadErrorMessages, loadDevMessages } from '@apollo/client/dev';
@@ -69,19 +68,7 @@ const removeTypeNameLink = new ApolloLink((operation, forward) => {
 });
 
 const client = new ApolloClient({
-  link: ApolloLink.from([
-    removeTypeNameLink,
-    authLink,
-    /* createSubscriptionHandshakeLink(
-      {
-        url: ENV.GRAPHQL_ENDPOINT,
-        region: ENV.extra?.AWS_REGION,
-        auth,
-      },
-      httpLink
-    ), */
-    httpLink,
-  ]),
+  link: ApolloLink.from([removeTypeNameLink, authLink, httpLink]),
   cache: new InMemoryCache(),
 });
 

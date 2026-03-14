@@ -1,144 +1,95 @@
-import React from 'react';
-import { useReactiveVar } from '@apollo/client';
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { userData } from '~/store/user';
-import { ModuleKeys } from '~/store/interface';
-import {
-  createNestedNavigationScreens,
-  createTabNavigationBottomBar,
-  getTenantRoutes,
-} from '~/store/helpers';
-import { AuthProvider } from '~/codidge_components/auth/context';
-import { usePushNotificationTokenSetup } from '~/core_modules/auth/hooks/usePushNotificationToken';
-import { CustomHeader } from './header/customHeader';
-import { theme } from '~/theme/theme';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LoadingFirstScreen } from './header/loadingFirstScreen';
-import { IAuthModuleKeys } from '~/codidge_components/auth/interfaces';
-import { useGlobalSubscriptions } from '~/hooks/useGlobalSubscriptions';
-import { AuthWrapper } from '~/core_modules/auth/authWrapper';
-import { useTenant } from '~/store/tenant/useTenant';
-import { ITenantModule } from '~/store/user/interfaces';
-import { appModules, localMainModules } from '~/store/data/modules';
-import { ITenant } from '~/store/tenant/interface';
+import { useReactiveVar } from '@apollo/client';
+import { userData } from '~/store/user';
+import { BodyWrapper } from '~/codidge_components/UI/bodyWrapper';
+import { HomeScreen } from '~/screens/home';
+import { TripsScreen } from '~/screens/trips';
+import { NotificationsScreen } from '~/screens/notifications';
+import { ProfileScreen } from '~/screens/profile';
+import { CustomTabBar } from './bottomBar';
+import { GetStartedScreen } from '~/screens/welcome_screen';
 
 const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
+const HAS_LAUNCHED_KEY = 'gw_has_launched4'; // namespaced to your app
 
-function BottomTabs({
-  tenantModules,
-  onTabChange,
-}: {
-  tenantModules: ITenantModule[];
-  onTabChange?: (routeName: ModuleKeys) => void;
-}) {
-  const bottomBarNavigation = createTabNavigationBottomBar(Tab, tenantModules);
+type TabName = 'Home' | 'Trips' | 'Notifications' | 'Account';
 
-  return (
-    <Tab.Navigator
-      screenOptions={{
-        headerShown: false, // Disable default header for tabs
-        tabBarActiveTintColor: theme.colors.menuItemActive, // iOS blue
-        tabBarInactiveTintColor: theme.colors.menuItemInactive, // iOS gray
-        tabBarShowLabel: true,
-      }}
-      screenListeners={{
-        state: (e) => {
-          // Get the current tab route name
-          const state = e.data.state;
-          const currentRoute = state.routes[state.index];
-          const currentRouteName = currentRoute?.name as ModuleKeys;
+const SCREENS: Record<TabName, React.ComponentType<any>> = {
+  Home: HomeScreen,
+  Trips: TripsScreen,
+  Notifications: NotificationsScreen,
+  Account: ProfileScreen,
+};
 
-          if (currentRouteName && onTabChange) {
-            onTabChange(currentRouteName);
-          }
-        },
-      }}>
-      {bottomBarNavigation}
-    </Tab.Navigator>
-  );
-}
-
-// Wrapper component that includes the custom header
-function TabsWithCustomHeader({ tenantModules }: { tenantModules: ITenantModule[] }) {
-  const [currentRouteName, setCurrentRouteName] = React.useState<ModuleKeys>(ModuleKeys.dashboard);
+function TabsWithHeader() {
+  const [activeTab, setActiveTab] = useState<TabName>('Home');
+  const ActiveScreen = SCREENS[activeTab];
 
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false, // Disable default stack header
-      }}>
-      <Stack.Screen name="TabsContent">
-        {({ navigation }) => {
-          return (
-            <View
-              style={{
-                backgroundColor: theme.colors.primary,
-                flex: 1,
-              }}>
-              <CustomHeader
-                navigation={navigation}
-                route={currentRouteName}
-                backgroundColor={theme.colors.headerBackground}
-                textColor="#fff"
-              />
-              <BottomTabs
-                tenantModules={tenantModules}
-                onTabChange={(routeName) => {
-                  setCurrentRouteName(routeName);
-                }}
-              />
-            </View>
-          );
-        }}
-      </Stack.Screen>
-    </Stack.Navigator>
+    <BodyWrapper gradientCoverage={1}>
+      <View style={styles.screenContainer}>
+        <ActiveScreen />
+      </View>
+      <CustomTabBar activeTab={activeTab} onTabPress={setActiveTab} />
+    </BodyWrapper>
   );
 }
 
 export const Navigation = () => {
-  const { tenantInfo, userInfo, loading } = useTenant();
+  const userInfo = useReactiveVar(userData);
+  const [appState, setAppState] = useState<'loading' | 'welcome' | 'ready'>('loading');
 
-  /*   useGlobalSubscriptions();
-  usePushNotificationTokenSetup();
- */
-  if (loading) {
+  useEffect(() => {
+    const checkFirstLaunch = async () => {
+      try {
+        const hasLaunched = await AsyncStorage.getItem(HAS_LAUNCHED_KEY);
+        if (!hasLaunched) {
+          // First time ever — show welcome screen
+          setAppState('welcome');
+        } else {
+          // Returning user — go straight to auth check
+          setAppState('ready');
+        }
+      } catch {
+        // If storage fails, skip welcome and go to auth
+        setAppState('ready');
+      }
+    };
+
+    checkFirstLaunch();
+  }, []);
+
+  const handleGetStarted = async () => {
+    // Mark as launched so welcome never shows again
+    await AsyncStorage.setItem(HAS_LAUNCHED_KEY, 'true');
+    setAppState('ready');
+  };
+
+  // Still checking AsyncStorage or waiting for auth
+  if (appState === 'loading' || userInfo?.loading) {
     return <LoadingFirstScreen />;
   }
 
-  const tempTenant: ITenant = {
-    ...tenantInfo!,
-    modules: [...appModules, ...localMainModules],
-  };
+  // First time launch
+  if (appState === 'welcome') {
+    return <GetStartedScreen onGetStarted={handleGetStarted} />;
+  }
 
-  const tenantModules = getTenantRoutes(tempTenant);
-  const nestedNav = createNestedNavigationScreens(tenantModules, Stack);
-
+  // Returning user — now check auth
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {userInfo ? (
-          <>
-            <Stack.Screen name="MainTabs">
-              {() => <TabsWithCustomHeader tenantModules={tenantModules} />}
-            </Stack.Screen>
-            {nestedNav}
-          </>
-        ) : (
-          <>
-            <Stack.Screen name="auth">
-              {() => (
-                <AuthProvider
-                  defaultAuthScreen={userInfo === '' ? IAuthModuleKeys.signIn : undefined}>
-                  <AuthWrapper />
-                </AuthProvider>
-              )}
-            </Stack.Screen>
-          </>
-        )}
+        <Stack.Screen name="Main" component={TabsWithHeader} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
+
+const styles = StyleSheet.create({
+  screenContainer: { flex: 1 },
+});

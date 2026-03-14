@@ -4,6 +4,7 @@ import { LoadingSpinner } from '../loading/loadingSpinner';
 import { theme } from '~/theme/theme';
 import { sizeStyles } from './types';
 import Text from '../text';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export enum ButtonSize {
   SMALL = 'sm',
@@ -19,8 +20,8 @@ interface PrimaryButtonProps {
   title: string;
   rightWidget?: ReactNode;
   leftWidget?: ReactNode;
-  style?: StyleProp<ViewStyle>; // ✅ FIXED
-  textStyle?: StyleProp<TextStyle>; // ✅ FIXED
+  style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
 }
 
 const PrimaryButton: React.FC<PrimaryButtonProps> = ({
@@ -39,18 +40,33 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
 
   return (
     <TouchableOpacity
-      activeOpacity={0.8}
+      activeOpacity={0.75}
       onPress={onPress}
       disabled={disabledAux}
       style={[
         styles.button,
         {
-          backgroundColor: disabledAux ? '#D1D5DB' : theme.colors.accent, // gray-300 or brand-500
           paddingVertical: sizeStyle.paddingVertical,
           paddingHorizontal: sizeStyle.paddingHorizontal,
+          opacity: disabledAux ? 0.5 : 1,
         },
         style,
       ]}>
+      {/* Gold gradient — rich shimmer effect */}
+      <LinearGradient
+        colors={['#f0d98a', '#c49a45', '#dab95e'] as [string, string, string]}
+        locations={[0, 0.6, 1]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={[StyleSheet.absoluteFill, { borderRadius: theme.borderRadius.lg }]}
+      />
+      {/* Subtle top shine */}
+      <LinearGradient
+        colors={['rgba(255,255,255,0.18)', 'rgba(255,255,255,0)'] as [string, string]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={[StyleSheet.absoluteFill, { borderRadius: theme.borderRadius.lg }]}
+      />
       {loading ? (
         <LoadingSpinner />
       ) : (
@@ -66,22 +82,28 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    minWidth: 96, // ~min-w-24
+    minWidth: 96,
     borderRadius: theme.borderRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-    fontSize: 12,
-    fontWeight: '700',
+    overflow: 'hidden',
+    // Subtle gold glow shadow
+    shadowColor: '#dab95e',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 8,
   },
   buttonBody: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    gap: 6,
   },
   text: {
-    color: '#fff',
-    fontWeight: '500',
+    color: '#1a1000', // Dark on gold — high contrast, premium feel
+    fontWeight: '700',
+    letterSpacing: 1,
   },
 });
 

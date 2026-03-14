@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useMutation } from '@apollo/client';
-import { updateUserMutation } from '~/core_modules/auth/graphql/mutations';
+import { updateUserMutation } from '~/screens/auth/graphql/mutations';
 import { IUser } from '~/store/user/interfaces';
 
 const SESSION_START_KEY = 'sessionStartTime';

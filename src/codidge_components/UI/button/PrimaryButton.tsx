@@ -2,15 +2,9 @@ import React, { ReactNode } from 'react';
 import { TouchableOpacity, StyleSheet, ViewStyle, TextStyle, View, StyleProp } from 'react-native';
 import { LoadingSpinner } from '../loading/loadingSpinner';
 import { theme } from '~/theme/theme';
-import { sizeStyles } from './types';
+import { ButtonSize, sizeStyles } from './types';
 import Text from '../text';
 import { LinearGradient } from 'expo-linear-gradient';
-
-export enum ButtonSize {
-  SMALL = 'sm',
-  MEDIUM = 'md',
-  LARGE = 'lg',
-}
 
 interface PrimaryButtonProps {
   loading?: boolean;
@@ -23,6 +17,12 @@ interface PrimaryButtonProps {
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
 }
+
+// Derived from theme.colors.primary (#dac072)
+// lighter stop → base → darker stop for depth
+const GRADIENT_COLORS = ['#D4A853', '#C49440', '#C49440'] as [string, string, string];
+const GRADIENT_LOCATIONS = [0, 0.5, 1] as [number, number, number];
+const SHINE_COLORS = ['rgba(255,255,255,0.18)', 'rgba(255,255,255,0)'] as [string, string];
 
 const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   loading = false,
@@ -40,7 +40,7 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
 
   return (
     <TouchableOpacity
-      activeOpacity={0.75}
+      activeOpacity={0.95}
       onPress={onPress}
       disabled={disabledAux}
       style={[
@@ -52,21 +52,22 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
         },
         style,
       ]}>
-      {/* Gold gradient — rich shimmer effect */}
+      {/* Primary gold gradient */}
       <LinearGradient
-        colors={['#f0d98a', '#c49a45', '#dab95e'] as [string, string, string]}
-        locations={[0, 0.6, 1]}
+        colors={GRADIENT_COLORS}
+        locations={GRADIENT_LOCATIONS}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
-        style={[StyleSheet.absoluteFill, { borderRadius: theme.borderRadius.lg }]}
+        style={[StyleSheet.absoluteFill, { borderRadius: theme.borderRadius.md }]}
       />
-      {/* Subtle top shine */}
+      {/* Top shine */}
       <LinearGradient
-        colors={['rgba(255,255,255,0.18)', 'rgba(255,255,255,0)'] as [string, string]}
+        colors={SHINE_COLORS}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
-        style={[StyleSheet.absoluteFill, { borderRadius: theme.borderRadius.lg }]}
+        style={[StyleSheet.absoluteFill, { borderRadius: theme.borderRadius.md }]}
       />
+
       {loading ? (
         <LoadingSpinner />
       ) : (
@@ -83,27 +84,28 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
 const styles = StyleSheet.create({
   button: {
     minWidth: 96,
-    borderRadius: theme.borderRadius.lg,
+    borderRadius: theme.borderRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
     overflow: 'hidden',
-    // Subtle gold glow shadow
-    shadowColor: '#dab95e',
+    // Glow derived from primary color
+    shadowColor: theme.colors.primary,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.45,
     shadowRadius: 12,
-    elevation: 8,
   },
   buttonBody: {
     flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
     alignItems: 'center',
     gap: 6,
   },
   text: {
-    color: '#1a1000', // Dark on gold — high contrast, premium feel
+    color: '#1a1000', // dark brown — high contrast on gold
     fontWeight: '700',
-    letterSpacing: 1,
+    letterSpacing: 0.8,
   },
 });
 

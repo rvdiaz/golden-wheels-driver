@@ -3,8 +3,8 @@ import { View, StyleSheet, TouchableOpacity, ViewStyle, TextStyle } from 'react-
 import * as Icons from 'lucide-react-native';
 import TextButton from '../button/TextButton';
 import { theme } from '~/theme/theme';
-import { ButtonSize } from '../button/PrimaryButton';
 import Text from '../text';
+import { ButtonSize } from '../button/types';
 
 interface HeaderProps {
   title: string;

@@ -1,6 +1,3 @@
-/* import Constants from 'expo-constants';
- */
-
 export const getUserNotificationsVariables = (userId = '') => ({
   tenant: {
     tenantId: '',

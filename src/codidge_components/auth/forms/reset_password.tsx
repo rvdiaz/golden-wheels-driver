@@ -3,11 +3,12 @@ import { View, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-n
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
 import { ResetPasswordFormData } from '../interfaces';
-import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import Text from '~/codidge_components/UI/text';
 import { resetPassword } from 'aws-amplify/auth';
 import { ForcePasswordChange } from './force_password_change';
+import { ButtonSize } from '~/codidge_components/UI/button/types';
 
 export const ResetPassword = () => {
   const [isLoading, setIsLoading] = useState(false);

@@ -6,8 +6,7 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
-import { ButtonSize } from './PrimaryButton';
-import { sizeStyles } from './types';
+import { ButtonSize, sizeStyles } from './types';
 import Text from '../text';
 
 interface TextButtonProps {

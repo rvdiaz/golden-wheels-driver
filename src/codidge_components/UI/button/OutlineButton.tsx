@@ -2,14 +2,8 @@ import React, { ReactNode } from 'react';
 import { TouchableOpacity, StyleSheet, ViewStyle, TextStyle, View } from 'react-native';
 import { LoadingSpinner } from '../loading/loadingSpinner';
 import { theme } from '~/theme/theme';
-import { sizeStyles } from './types';
+import { ButtonSize, sizeStyles } from './types';
 import Text from '../text';
-
-export enum ButtonSize {
-  SMALL = 'sm',
-  MEDIUM = 'md',
-  LARGE = 'lg',
-}
 
 interface OutlineButtonProps {
   loading?: boolean;

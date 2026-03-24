@@ -149,7 +149,6 @@ export const CarsCategories = ({
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.sectionLabel}>Our Fleet</Text>
-        <Text style={styles.sectionSub}>Choose your ride experience</Text>
       </View>
 
       {/* Carousel */}

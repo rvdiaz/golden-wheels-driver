@@ -17,9 +17,9 @@ import { Header } from '~/codidge_components/UI/header';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { addFeedbackMutation, getImagesUploadUrl } from './graphql/mutations';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
-import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { userData } from '~/store/user';
-import Constants from 'expo-constants';
+import { ButtonSize } from '~/codidge_components/UI/button/types';
 
 interface FeedbackFormData {
   subject: string;

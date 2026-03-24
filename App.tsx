@@ -6,24 +6,23 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AUTH_TYPE, AuthOptions, createAuthLink } from 'aws-appsync-auth-link';
 import { Navigation } from '~/navigation';
 import { UserRefresherWrapper } from '~/navigation/userRefresherWrapper';
-import { WelcomeScreenModal } from '~/store/user/welcomeScreenModal';
-import { ENV } from '~/store/env';
+import { ENV_Vars } from '~/store/env';
 
-if (ENV.APP_ENV === 'development') {
+if (ENV_Vars.APP_ENV === 'development') {
   // Adds messages only in a dev environment
   loadDevMessages();
   loadErrorMessages();
 }
 
 const httpLink = new HttpLink({
-  uri: ENV.GRAPHQL_ENDPOINT,
+  uri: ENV_Vars.GRAPHQL_ENDPOINT,
 });
 
 Amplify.configure({
   Auth: {
     Cognito: {
-      userPoolId: ENV.COGNITO_USERPOOL_ID,
-      userPoolClientId: ENV.COGNITO_CLIENT_ID,
+      userPoolId: ENV_Vars.COGNITO_USERPOOL_ID,
+      userPoolClientId: ENV_Vars.COGNITO_CLIENT_ID,
       loginWith: {
         email: true,
       },
@@ -38,21 +37,17 @@ const auth: AuthOptions = {
       const tokens = await cognitoUserPoolsTokenProvider.getTokens();
       const token = tokens?.idToken?.toString();
 
-      if (!token) {
-        throw new Error('No ID token available');
-      }
-
-      return token;
+      return token || '';
     } catch (error) {
       console.error('Error getting token:', error);
-      throw error;
+      return '';
     }
   },
 };
 
 const authLink = createAuthLink({
-  url: ENV.GRAPHQL_ENDPOINT,
-  region: ENV.AWS_REGION,
+  url: ENV_Vars.GRAPHQL_ENDPOINT,
+  region: ENV_Vars.AWS_REGION,
   auth,
 });
 
@@ -79,7 +74,6 @@ export default function App() {
         <UserRefresherWrapper>
           <Navigation />
         </UserRefresherWrapper>
-        <WelcomeScreenModal />
       </SafeAreaProvider>
     </ApolloProvider>
   );

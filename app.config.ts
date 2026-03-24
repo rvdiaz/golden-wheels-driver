@@ -84,6 +84,7 @@ export default (arg: ConfigContext): ExpoConfig => {
       COGNITO_USERPOOL_ID: process.env.COGNITO_USERPOOL_ID,
       //GRAPHQL_ENDPOINT: process.env.GRAPHQL_ENDPOINT,
       GRAPHQL_ENDPOINT: 'http://localhost:4001/graphql',
+      GRAPHQL_API_KEY: process.env.GRAPHQL_API_KEY,
       eas: {
         projectId: EAS_PROJECT_ID,
       },

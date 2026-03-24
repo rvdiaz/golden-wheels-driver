@@ -13,9 +13,10 @@ import { useAuthContext } from '../context';
 import { IAuthModuleKeys, MfaFormData } from '../interfaces';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import TextButton from '~/codidge_components/UI/button/TextButton';
-import OutlineButton, { ButtonSize } from '~/codidge_components/UI/button/OutlineButton';
+import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import Text from '~/codidge_components/UI/text';
+import { ButtonSize } from '~/codidge_components/UI/button/types';
 
 const EXPIRATION_COGNITO_TOKEN = 180;
 

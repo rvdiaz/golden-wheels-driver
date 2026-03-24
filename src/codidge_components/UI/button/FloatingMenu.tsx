@@ -1,7 +1,8 @@
 import React from 'react';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import * as Icons from 'lucide-react-native';
-import PrimaryButton, { ButtonSize } from './PrimaryButton';
+import PrimaryButton from './PrimaryButton';
+import { ButtonSize } from './types';
 
 interface FloatingMenuProps {
   title?: string;

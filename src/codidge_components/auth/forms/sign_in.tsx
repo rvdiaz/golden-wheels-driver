@@ -14,10 +14,11 @@ import * as Icons from 'lucide-react-native';
 import { fetchUserAttributes, signIn, signOut } from 'aws-amplify/auth/cognito';
 import { useAuthContext } from '../context';
 import { IAuthModuleKeys, LoginFormData } from '../interfaces';
-import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import Text from '~/codidge_components/UI/text';
+import { ButtonSize } from '~/codidge_components/UI/button/types';
 
 const schema = yup.object({
   email: yup.string().email('Please enter a valid email').required('Email is required'),

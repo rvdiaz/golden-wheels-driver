@@ -15,7 +15,7 @@ import { CustomTabBar } from './bottomBar';
 import { GetStartedScreen } from '~/screens/welcome_screen';
 
 const Stack = createStackNavigator();
-const HAS_LAUNCHED_KEY = 'gw_has_launched4'; // namespaced to your app
+const HAS_LAUNCHED_KEY = 'gw_has_launched8'; // namespaced to your app
 
 type TabName = 'Home' | 'Trips' | 'Notifications' | 'Account';
 

@@ -1,9 +1,9 @@
 import { Dimensions, ImageBackground, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { GAP_QUICK_BOOKS, QuickBookOption } from '../quick_book';
 import { LinearGradient } from 'expo-linear-gradient';
 import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
-
+import { QuickBookOption } from './interfaces';
+export const GAP_QUICK_BOOKS = 10;
 const { width } = Dimensions.get('window');
 const ITEM_SIZE = 149;
 

@@ -1,11 +1,12 @@
 import React from 'react';
 import { Image, ImageBackground, StyleSheet, View, SafeAreaView, StatusBar } from 'react-native';
-import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import Text from '~/codidge_components/UI/text';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '~/theme/theme';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import { ButtonSize } from '~/codidge_components/UI/button/types';
 
 interface GetStartedScreenProps {
   onGetStarted: () => void;
@@ -159,7 +160,6 @@ const styles = StyleSheet.create({
   },
   ctaButton: {
     width: '100%',
-    borderRadius: theme.borderRadius.lg,
     marginTop: 4,
   },
   signInRow: {

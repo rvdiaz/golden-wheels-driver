@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, ImageBackground, TouchableOpacity, Dimensions } from 'react-native';
+import { View, StyleSheet, ImageBackground, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ChevronRight } from 'lucide-react-native';
 import Text from '~/codidge_components/UI/text';
-
+import { BookingTrigger } from '~/components/bookForm';
 const { width } = Dimensions.get('window');
 const HEIGHT = width * 0.82; // ~62vw tall, feels cinematic
 
@@ -65,17 +64,30 @@ export const HeaderCallToAction = ({
             <Text style={styles.subtitle}>{subtitle}</Text>
             <Text style={styles.title}>{title}</Text>
 
-            <TouchableOpacity onPress={onPress} activeOpacity={0.8} style={styles.button}>
-              {/* Golden gradient button */}
-              <LinearGradient
-                colors={['#dac072', '#b8965a'] as [string, string]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={StyleSheet.absoluteFill}
-              />
-              <Text style={styles.buttonLabel}>{buttonLabel}</Text>
-              <ChevronRight size={18} color="#1a1208" strokeWidth={2.5} />
-            </TouchableOpacity>
+            <BookingTrigger
+              label={buttonLabel}
+              onSubmit={(data) => {
+                /* navigate to car select */
+              }}
+              onPickupPress={() => {
+                /* open address picker modal */
+              }}
+              onDropoffPress={() => {
+                /* open address picker modal */
+              }}
+              onDatePress={() => {
+                /* open date picker modal */
+              }}
+            />
+            {/* <GlassButton
+              size={ButtonSize.XLARGE}
+              onPress={onPress}
+              title={buttonLabel}
+              rightIcon={<ChevronRight size={24} color="#FFF" />}
+              style={{
+                width: '70%',
+              }}
+            /> */}
           </View>
         </View>
       </ImageBackground>
@@ -84,7 +96,6 @@ export const HeaderCallToAction = ({
 };
 
 const BOTTOM_HEIGHT = 160;
-const BUTTON_H = 48;
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -123,7 +134,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 20,
     alignItems: 'center',
-    gap: 6,
   },
 
   // ── Text ─────────────────────────────────────────────────────────────────
@@ -140,28 +150,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     textAlign: 'center',
     lineHeight: 28,
-    marginBottom: 4,
-  },
-
-  // ── Button ───────────────────────────────────────────────────────────────
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    height: BUTTON_H,
-    paddingHorizontal: 28,
-    borderRadius: BUTTON_H / 2,
-    overflow: 'hidden',
-    marginTop: 4,
-    // subtle inner shadow via border
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.15)',
-  },
-  buttonLabel: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#1a1208', // dark brown on gold
-    letterSpacing: 0.3,
+    marginBottom: 20,
+    marginTop: 3,
   },
 });

@@ -30,8 +30,32 @@ export const CustomTabBar = ({
 }) => {
   return (
     <View style={styles.wrapper} pointerEvents="box-none">
+      {/* <LinearGradient
+        colors={['transparent', '#D4A853', 'transparent']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 1,
+        }}
+      /> */}
       <LinearGradient
-        colors={[theme.colors.primaryAlpha[10], theme.colors.primaryAlpha[5]]}
+        colors={['transparent', '#D4A853', 'transparent']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 1,
+        }}
+      />
+      <LinearGradient
+        colors={[theme.colors.primaryAlpha[5], theme.colors.primaryAlpha[5]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.gradientBorder}>

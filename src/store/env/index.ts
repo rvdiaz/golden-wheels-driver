@@ -9,10 +9,11 @@ function required(name: string, value?: string): string {
   return value;
 }
 
-export const ENV = {
+export const ENV_Vars = {
   APP_ENV: required('APP_ENV', extra.APP_ENV),
   AWS_REGION: required('AWS_REGION', extra.AWS_REGION),
   COGNITO_CLIENT_ID: required('COGNITO_CLIENT_ID', extra.COGNITO_CLIENT_ID),
   COGNITO_USERPOOL_ID: required('COGNITO_USERPOOL_ID', extra.COGNITO_USERPOOL_ID),
   GRAPHQL_ENDPOINT: required('GRAPHQL_ENDPOINT', extra.GRAPHQL_ENDPOINT),
+  GRAPHQL_API_KEY: required('GRAPHQL_API_KEY', extra.GRAPHQL_API_KEY),
 };

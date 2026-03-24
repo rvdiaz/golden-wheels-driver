@@ -16,13 +16,14 @@ import * as yup from 'yup';
 import { signUp } from 'aws-amplify/auth/cognito';
 import { useAuthContext } from '../context';
 import { IAuthModuleKeys, RegisterFormData } from '../interfaces';
-import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Text from '~/codidge_components/UI/text';
 import { parsePhoneNumber, validatePhoneNumber } from '~/codidge_components/helpers';
 import PhoneInput from '~/codidge_components/UI/form/inputs/phoneNumberInput';
+import { ButtonSize } from '~/codidge_components/UI/button/types';
 
 const schema = yup.object({
   email: yup.string().email('Please enter a valid email').required('Email is required'),

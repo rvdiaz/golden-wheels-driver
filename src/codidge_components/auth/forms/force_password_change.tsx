@@ -12,10 +12,11 @@ import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
 import { useAuthContext } from '../context';
 import { ChangePasswordFormData, IAuthModuleKeys } from '../interfaces';
-import PrimaryButton, { ButtonSize } from '~/codidge_components/UI/button/PrimaryButton';
+import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import Text from '~/codidge_components/UI/text';
 import { confirmResetPassword } from 'aws-amplify/auth';
+import { ButtonSize } from '~/codidge_components/UI/button/types';
 
 export const ForcePasswordChange = ({
   username,

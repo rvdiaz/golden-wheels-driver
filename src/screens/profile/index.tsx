@@ -1,96 +1,106 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import * as Icons from 'lucide-react-native';
+import React from 'react';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import {
+  User,
+  LockKeyhole,
+  MessageCircleQuestion,
+  UserX,
+  LogOut,
+  ShieldCheck,
+} from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import { LogoutButton } from '~/codidge_components/auth/widgets/logoutButton';
-import { Header } from '~/codidge_components/UI/header';
 import { theme } from '~/theme/theme';
-import { ProfileNavigationSection } from '~/codidge_components/UI/navigationButtons';
-import TextButton from '~/codidge_components/UI/button/TextButton';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import Text from '~/codidge_components/UI/text';
+import { ProfileNavigationSection } from '~/codidge_components/UI/navigationButtons';
+
+// ─── Color tokens ─────────────────────────────────────────────────────────────
+
+const GOLD = '#dac072';
+const GOLD_10 = 'rgba(218,192,114,0.10)';
+const GOLD_18 = 'rgba(218,192,114,0.18)';
+const GOLD_30 = 'rgba(218,192,114,0.30)';
+
+// ─── Avatar ───────────────────────────────────────────────────────────────────
+
+const getInitials = (name?: string): string => {
+  if (!name) return '?';
+  return name
+    .split(' ')
+    .map((p) => p[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+};
+
+// ─── Screen ───────────────────────────────────────────────────────────────────
 
 export const ProfileScreen: React.FC = () => {
   const navigation = useNavigation();
   const user = useReactiveVar(userData);
-  const [showEditionForm, setshowEditionForm] = useState(false);
 
   return (
     <PageSafeContainer>
-      <Header
-        title={'My Profile'}
-        showBack={true}
-        contentContainerStyle={{
-          backgroundColor: 'transparent',
-          borderBottomWidth: 0,
-        }}
-        contentStyle={{
-          paddingVertical: 0,
-        }}
-        titleStyles={{ color: '#fff' }}
-        leftWidget={
-          <TouchableOpacity
-            onPress={() => {
-              navigation.goBack();
-            }}>
-            <Icons.ChevronLeftIcon />
-          </TouchableOpacity>
-        }
-      />
-      <View style={styles.container}>
-        {/* <Header title="Profile" showBack onBack={() => navigation.goBack()} /> */}
-        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-          {/* Profile Header */}
-          <View style={styles.profileHeader}>
-            <View style={styles.avatarContainer}>
-              <Icons.User size={28} color="#FFF" />
-              <View
-                style={{
-                  position: 'absolute',
-                  bottom: -3,
-                  right: -3,
-                  backgroundColor: theme.colors.success,
-                  borderRadius: '50%',
-                  padding: 2,
-                }}>
-                <Icons.BadgeCheck size={18} color="#fff" />
-              </View>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}>
+        {/* ── Avatar + name ── */}
+        <View style={styles.profileHeader}>
+          <View style={styles.avatarRing}>
+            <View style={styles.avatar}>
+              <Text style={styles.avatarInitials}>{getInitials(user?.name)}</Text>
             </View>
-
-            <TextButton
-              leftWidget={
-                <Icons.Edit size={16} style={{ marginRight: 8 }} color={theme.colors.primary} />
-              }
-              textStyle={{
-                color: theme.colors.primary,
-              }}
-              onPress={() => {
-                setshowEditionForm(true);
-              }}
-              title="Edit Profile"
-            />
           </View>
+          <Text style={styles.profileName}>{user?.name ?? 'Your Profile'}</Text>
+          {user?.email ? <Text style={styles.profileEmail}>{user.email}</Text> : null}
+        </View>
 
+        {/* ── Navigation sections ── */}
+        <View style={styles.sectionsWrap}>
           <ProfileNavigationSection
             sections={[
               {
                 title: 'Personal',
                 items: [
                   {
-                    id: 'income',
-                    label: 'Income',
-                    icon: <Icons.HandCoins />,
+                    id: 'personal-info',
+                    label: 'Personal Info',
+                    icon: <User />,
                     onClick: () => {
-                      //navigation.navigate(ModuleKeys.income as never);
+                      // navigation.navigate('PersonalInfo');
                     },
                   },
                   {
                     id: 'privacy',
                     label: 'Privacy Policy',
-                    icon: <Icons.LockIcon />,
+                    icon: <LockKeyhole />,
                     onClick: () => {
-                      //navigation.navigate(ModuleKeys.privacyPolicy as never);
+                      // navigation.navigate('PrivacyPolicy');
+                    },
+                  },
+                  {
+                    id: 'security',
+                    label: 'Security',
+                    icon: <ShieldCheck />,
+                    onClick: () => {
+                      // navigation.navigate('Security');
+                    },
+                  },
+                ],
+              },
+              {
+                title: 'Support',
+                items: [
+                  {
+                    id: 'feedback',
+                    label: 'Send Feedback',
+                    icon: <MessageCircleQuestion />,
+                    onClick: () => {
+                      // navigation.navigate('Feedback');
                     },
                   },
                 ],
@@ -100,182 +110,87 @@ export const ProfileScreen: React.FC = () => {
                 items: [
                   {
                     id: 'delete',
-                    label: 'Account Deletion',
-                    icon: <Icons.UserX />,
-                    onClick: () => {},
-                  },
-                ],
-              },
-              {
-                title: 'App',
-                items: [
-                  {
-                    id: 'feedback',
-                    label: 'Send Feedback',
-                    icon: <Icons.MessageCircleQuestionMark />,
-                    onClick: () => {},
+                    label: 'Delete Account',
+                    icon: <UserX />,
+                    danger: true,
+                    onClick: () => {
+                      // show confirmation modal
+                    },
                   },
                   {
                     id: 'logout',
-                    label: 'Logout',
+                    label: 'Sign Out',
                     replacementWidget: <LogoutButton />,
-                    icon: <Icons.HandCoins />,
+                    icon: <LogOut />,
                     onClick: () => {},
                   },
                 ],
               },
             ]}
           />
-        </ScrollView>
-        {/* <Modal
-          animationType="slide"
-          transparent={true}
-          visible={showEditionForm}
-          onRequestClose={() => {
-            setshowEditionForm(false);
-          }}>
-          <ProfileEditionForm
-            onClose={() => {
-              setshowEditionForm(false);
-            }}
-            user={user!}
-          />
-        </Modal> */}
-      </View>
+        </View>
+      </ScrollView>
     </PageSafeContainer>
   );
 };
 
+// ─── Styles ───────────────────────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
-  container: {
+  scroll: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
-    paddingVertical: 5,
   },
-  content: {
-    flex: 1,
-    paddingVertical: 16,
-    paddingHorizontal: 32,
+  scrollContent: {
+    paddingBottom: 40,
   },
+
+  // ── Profile header ──
   profileHeader: {
     alignItems: 'center',
-    marginBottom: 16,
+    paddingTop: theme.spacing.xl,
+    paddingBottom: theme.spacing.xl,
+    gap: 6,
   },
-  avatarContainer: {
-    width: 62,
-    height: 62,
-    borderRadius: 40,
-    backgroundColor: '#2B7FFF',
+  avatarRing: {
+    width: 76,
+    height: 76,
+    borderRadius: 38,
+    borderWidth: 1,
+    borderColor: GOLD_30,
+    backgroundColor: GOLD_10,
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 10,
-    borderWidth: 3,
-    borderColor: '#DBEAFE',
-    position: 'relative',
-  },
-  profileName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1F2937',
-    marginBottom: 10,
-  },
-  statsCard: {
-    padding: 20,
-    marginBottom: 16,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-    gap: 8,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1F2937',
-  },
-  mainStat: {
-    alignItems: 'center',
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
-    marginBottom: 16,
-  },
-  mainStatLabel: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginBottom: 8,
-  },
-  mainStatValue: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#2563EB',
-  },
-  miniStatsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  miniStat: {
-    alignItems: 'center',
-  },
-  miniStatNumber: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1F2937',
     marginBottom: 4,
   },
-  miniStatLabel: {
-    fontSize: 12,
-    color: '#6B7280',
-  },
-  progressCircleContainer: {
+  avatar: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(218,192,114,0.15)',
+    borderWidth: 0.5,
+    borderColor: GOLD_18,
     alignItems: 'center',
-    paddingVertical: 16,
-    marginBottom: 16,
-  },
-  progressCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    borderWidth: 8,
-    borderColor: '#10B981',
-    backgroundColor: '#D1FAE5',
     justifyContent: 'center',
-    alignItems: 'center',
   },
-  progressPercentage: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#10B981',
-  },
-  progressLabel: {
-    fontSize: 12,
-    color: '#6B7280',
-    marginTop: 4,
-  },
-  menuCard: {
-    marginBottom: 16,
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  menuText: {
-    flex: 1,
-    fontSize: 16,
-    color: '#374151',
-    marginLeft: 12,
+  avatarInitials: {
+    fontSize: 22,
     fontWeight: '500',
+    color: GOLD,
+    letterSpacing: 0.5,
+  },
+  profileName: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: 'rgba(255,255,255,0.88)',
+    letterSpacing: 0.2,
+  },
+  profileEmail: {
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.35)',
+  },
+
+  // ── Sections ──
+  sectionsWrap: {
+    paddingHorizontal: theme.spacing.lg,
   },
 });

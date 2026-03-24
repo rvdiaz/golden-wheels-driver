@@ -1,9 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { ModuleKeys } from '~/store/interface';
-import Constants from 'expo-constants';
-import { useEffect } from 'react';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { GetUserNotificationsResponse } from '../interfaces';
 import { getUserNotificationsQuery } from '../graphql/queries';
@@ -20,7 +17,6 @@ interface NotificationButtonProps {
 }
 
 export const NotificationButton: React.FC<NotificationButtonProps> = ({
-  navigation,
   showBadge = true,
   badgeColor = '#EF4444', // Red color
   iconColor = '#fff',
@@ -30,7 +26,7 @@ export const NotificationButton: React.FC<NotificationButtonProps> = ({
 
   // Don't show badge if count is 0 or showBadge is false
   const { data } = useQuery<GetUserNotificationsResponse>(getUserNotificationsQuery, {
-    variables: getUserNotificationsVariables(user?.id),
+    variables: getUserNotificationsVariables(user?.userID),
     fetchPolicy: 'cache-and-network', // Keep badge updated
   });
 
@@ -41,9 +37,7 @@ export const NotificationButton: React.FC<NotificationButtonProps> = ({
   const badgeText = unreadCount > 99 ? '99+' : unreadCount.toString();
 
   return (
-    <TouchableOpacity
-      onPress={() => navigation.navigate(ModuleKeys.notifications)}
-      style={styles.container}>
+    <TouchableOpacity onPress={() => {}} style={styles.container}>
       <View style={styles.iconContainer}>
         <Ionicons name="notifications-outline" size={iconSize} color={iconColor} />
 

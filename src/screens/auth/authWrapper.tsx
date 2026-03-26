@@ -19,7 +19,7 @@ import { useUser } from './hooks/useUser';
 export const AuthWrapper = () => {
   const { currentView, setCurrentView } = useAuthContext();
 
-  const { getCustomerFn, updateUserFn, addCustomerFn } = useUser();
+  const { getCustomerFn, updateCustomerFn, addCustomerFn } = useUser();
 
   const pushToken = useReactiveVar(pushTokenVar);
 
@@ -77,7 +77,7 @@ export const AuthWrapper = () => {
 
   const handleVerificationSuccess = async (userId: string) => {
     try {
-      const userData = await updateUserFn({
+      const userData = await updateCustomerFn({
         variables: {
           tenant: ENV_Vars.tenant,
           customer: {
@@ -87,11 +87,14 @@ export const AuthWrapper = () => {
         },
       });
 
-      if (!userData.data?.updateUser) {
+      const userRes = userData.data?.updateCustomer;
+
+      if (!userRes) {
         throw Error('Error getting user');
       }
 
-      updateUser(userData.data?.updateUser);
+      updateUser(userRes);
+      setCurrentView(IAuthModuleKeys.signIn);
     } catch (error) {
       await signOut();
       console.log(':::error', error);

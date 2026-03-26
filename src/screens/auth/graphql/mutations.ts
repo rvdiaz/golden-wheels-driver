@@ -11,9 +11,9 @@ export const addCustomerMutation = gql`
   }
 `;
 
-export const updateUserMutation = gql`
-  mutation updateUser($tenant: TenantData!, $customer: CustomerUpdateInput!, $customerId: ID!) {
-    updateUser(tenant: $tenant, customer: $customer, customerId: $customerId) {
+export const updateCustomerMutation = gql`
+  mutation updateCustomer($tenant: TenantData!, $customer: CustomerUpdateInput!, $customerId: ID!) {
+    updateCustomer(tenant: $tenant, customer: $customer, customerId: $customerId) {
       id
       name
       email

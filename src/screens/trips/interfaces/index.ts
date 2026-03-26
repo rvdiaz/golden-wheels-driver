@@ -1,16 +1,14 @@
+import { IImage } from '~/codidge_components/interfaces';
+
 export type BookingStatus = 'confirmed' | 'completed' | 'cancelled' | 'in_progress';
 export type TabKey = 'upcoming' | 'past' | 'cancelled';
 
 export interface CarType {
   id: string;
   name: string;
-  baseFare: number;
-  hourlyRate: number;
-  minimumFare: number;
-  pricePerMiles: number;
-  supportsDistance: boolean;
-  supportsHourly: boolean;
-  tripQuotePrice: number;
+  description?: string;
+  maxPassengers: number;
+  image: IImage;
 }
 
 export interface Car {

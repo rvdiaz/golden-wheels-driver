@@ -1,9 +1,9 @@
 import React from 'react';
 import { BodyWrapper } from '~/codidge_components/UI/bodyWrapper';
 import { HeaderCallToAction } from './components/header';
-import { ScrollView, View } from 'react-native';
-import { CarsCategories, MOCK_CATEGORIES } from './components/cars_categories';
-import { DEMO_OPTIONS, QuickBook } from './components/quickBooks';
+import { ScrollView } from 'react-native';
+import { CarsCategories } from './components/cars_categories';
+import { QuickBook } from './components/quickBooks';
 
 export const HomeScreen = () => {
   return (
@@ -19,13 +19,8 @@ export const HomeScreen = () => {
           buttonLabel="Book a Trip"
           onPress={() => {}}
         />
-        <QuickBook
-          options={DEMO_OPTIONS} // or omit for demo data
-        />
-        <CarsCategories
-          categories={MOCK_CATEGORIES}
-          onSelect={(id) => console.log('selected:', id)}
-        />
+        <QuickBook />
+        <CarsCategories />
       </ScrollView>
     </BodyWrapper>
   );

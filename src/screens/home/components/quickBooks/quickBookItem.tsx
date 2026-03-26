@@ -3,13 +3,16 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
 import { QuickBookOption } from './interfaces';
+import { iconMap } from './helpers';
+import { MapPin } from 'lucide-react-native';
 export const GAP_QUICK_BOOKS = 10;
 const { width } = Dimensions.get('window');
 const ITEM_SIZE = 149;
 
 export const QuickBookItem = ({ item }: { item: QuickBookOption }) => {
   const GRID_ITEM = (width - 40 - GAP_QUICK_BOOKS) / 2;
-  const Icon = item.icon;
+  const key = item.icon?.toLowerCase?.();
+  const Icon = iconMap[key as keyof typeof iconMap] || MapPin;
 
   const handlePress = () => {};
 
@@ -20,11 +23,11 @@ export const QuickBookItem = ({ item }: { item: QuickBookOption }) => {
       style={[styles.item, { width: GRID_ITEM }]}>
       {/* Background image */}
       <ImageBackground
-        source={item.imageUri ? { uri: item.imageUri } : undefined}
+        source={item.image?.url ? { uri: item.image.url } : undefined}
         style={StyleSheet.absoluteFill}
         resizeMode="cover">
         <LinearGradient
-          colors={['rgba(0,0,0,0.15)', 'rgba(0,0,0,0.75)'] as [string, string]}
+          colors={['rgba(0,0,0,0.55)', 'rgba(0,0,0,0.75)'] as [string, string]}
           start={{ x: 0.5, y: 0 }}
           end={{ x: 0.5, y: 1 }}
           style={StyleSheet.absoluteFill}

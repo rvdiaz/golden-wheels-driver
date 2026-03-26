@@ -8,10 +8,13 @@ import {
   TextStyle,
   ViewStyle,
 } from 'react-native';
-import { X } from 'lucide-react-native'; // make sure you have RN version
+import { X, ChevronRight } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { LoadingSpinner } from '../../loading/loadingSpinner';
 import { theme } from '~/theme/theme';
 import Text from '../../text';
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -26,8 +29,18 @@ interface InputProps extends TextInputProps {
   labelStyle?: TextStyle;
   required?: boolean;
   containerStyle?: ViewStyle;
-  allowCommas?: boolean; // New prop
+  allowCommas?: boolean;
+
+  // ── Dark / branded mode ──────────────────────────────────────────────────
+  // Pass variant="dark" to get the gold-bordered FormField look.
+  // In dark mode, onPress makes the whole field tappable (readonly).
+  variant?: 'light' | 'dark';
+  onPress?: () => void; // dark mode: makes field a tappable readonly row
+  showChevron?: boolean; // dark mode: show chevron (default true when onPress set)
+  icon?: ReactNode; // dark mode: left icon badge (replaces leftIcon)
 }
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 const InputField = forwardRef<TextInput, InputProps>(
   (
@@ -48,81 +61,135 @@ const InputField = forwardRef<TextInput, InputProps>(
       required,
       containerStyle,
       allowFontScaling = false,
-      allowCommas = false, // Default to false
+      allowCommas = false,
+      variant = 'light',
+      onPress,
+      showChevron,
+      icon,
+      placeholder,
+      editable = true,
       ...rest
     },
     ref
   ) => {
     const [isFocused, setIsFocused] = useState(false);
 
-    // Format number with commas
+    // ── Comma formatting ─────────────────────────────────────────────────────
+
     const formatWithCommas = (text: string): string => {
-      // Remove all non-digit characters except decimal point
       const cleanNumber = text.replace(/[^0-9.]/g, '');
-
       if (cleanNumber === '') return '';
-
-      // Split by decimal point to handle decimal numbers
       const parts = cleanNumber.split('.');
-
-      // Format the integer part with commas
       parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-
-      // Join back with decimal if it exists
       return parts.join('.');
     };
 
-    // Remove commas for editing
-    const removeCommas = (text: string): string => {
-      return text.replace(/,/g, '');
-    };
+    const removeCommas = (text: string): string => text.replace(/,/g, '');
+
+    const displayValue = allowCommas && value ? formatWithCommas(value.toString()) : (value ?? '');
+
+    // ── Handlers ─────────────────────────────────────────────────────────────
 
     const showClearButton = clearable && value !== undefined && value.toString().length > 0;
 
-    const handleClear = () => {
-      if (onChangeText) {
-        onChangeText('');
-      }
-    };
+    const handleClear = () => onChangeText?.('');
 
     const handleFocus = (e: any) => {
       setIsFocused(true);
-      if (rest.onFocus) {
-        rest.onFocus(e);
-      }
+      rest.onFocus?.(e);
     };
 
     const handleBlur = (e: any) => {
       setIsFocused(false);
-      if (rest.onBlur) {
-        rest.onBlur(e);
-      }
+      rest.onBlur?.(e);
     };
 
     const handleChangeText = (text: string) => {
       if (allowCommas) {
-        // Remove commas to get the clean number
-        const cleanText = removeCommas(text);
-
-        // Pass the clean number to parent
-        if (onChangeText) {
-          onChangeText(cleanText);
-        }
+        onChangeText?.(removeCommas(text));
       } else {
-        if (onChangeText) {
-          onChangeText(text);
-        }
+        onChangeText?.(text);
       }
     };
 
-    // Display formatted value with commas
-    const displayValue = allowCommas && value ? formatWithCommas(value.toString()) : (value ?? '');
+    // ── Dark variant ─────────────────────────────────────────────────────────
+
+    if (variant === 'dark') {
+      const isReadonly = !!onPress;
+      const resolvedShowChevron = showChevron ?? isReadonly;
+      const showClear = clearable && !isReadonly && value && value.toString().length > 0;
+
+      const darkInner = (
+        <LinearGradient
+          colors={['rgba(212,168,83,0.08)', 'rgba(212,168,83,0.03)']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[dark.gradient, !!error && dark.gradientError]}>
+          {icon && <View style={dark.iconWrap}>{icon}</View>}
+
+          {isReadonly ? (
+            <Text style={[dark.valueText, !value && dark.placeholder]} numberOfLines={1}>
+              {value || placeholder}
+            </Text>
+          ) : (
+            <TextInput
+              ref={ref}
+              value={displayValue}
+              onChangeText={handleChangeText}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+              placeholder={placeholder}
+              placeholderTextColor="rgba(255,255,255,0.4)"
+              editable={editable}
+              allowFontScaling={false}
+              style={[dark.valueText, dark.input]}
+              {...rest}
+            />
+          )}
+
+          {resolvedShowChevron && <ChevronRight size={20} color="rgba(212,168,83,0.5)" />}
+          {showClear && (
+            <TouchableOpacity
+              onPress={handleClear}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <X size={16} color="rgba(255,255,255,0.35)" />
+            </TouchableOpacity>
+          )}
+          {loading && <LoadingSpinner />}
+          {!resolvedShowChevron && !showClear && rightIcon && rightIcon}
+        </LinearGradient>
+      );
+
+      return (
+        <View style={[dark.wrapper, containerStyle]}>
+          {label && (
+            <Text style={[dark.label, labelStyle]}>
+              {label}
+              {required && <Text style={{ color: '#EF4444' }}> *</Text>}
+            </Text>
+          )}
+          {isReadonly ? (
+            <TouchableOpacity onPress={onPress} activeOpacity={0.75}>
+              {darkInner}
+            </TouchableOpacity>
+          ) : (
+            darkInner
+          )}
+          {hint && <Text style={dark.hint}>{hint}</Text>}
+          {errorMessage && <Text style={dark.error}>{errorMessage}</Text>}
+        </View>
+      );
+    }
+
+    // ── Light variant (original) ──────────────────────────────────────────────
 
     const inputBorderColor = error
-      ? '#EF4444' // red
+      ? '#EF4444'
       : success
-        ? '#22C55E' // green
-        : '#D1D5DB'; // gray
+        ? '#22C55E'
+        : isFocused
+          ? '#9CA3AF'
+          : '#D1D5DB';
 
     const inputPaddingLeft = leftIcon ? 46 : 12;
     const inputPaddingRight = rightIcon ? 38 : 12;
@@ -136,14 +203,16 @@ const InputField = forwardRef<TextInput, InputProps>(
           </Text>
         )}
         <View style={styles.container}>
-          {leftIcon && <View style={[styles.leftIcon]}>{leftIcon}</View>}
+          {leftIcon && <View style={styles.leftIcon}>{leftIcon}</View>}
           <TextInput
             allowFontScaling={allowFontScaling}
             ref={ref}
             value={displayValue}
+            placeholder={placeholder}
             onFocus={handleFocus}
             onBlur={handleBlur}
             onChangeText={handleChangeText}
+            editable={editable}
             style={[
               styles.input,
               {
@@ -178,9 +247,11 @@ const InputField = forwardRef<TextInput, InputProps>(
   }
 );
 
-InputField.displayName = 'Input';
+InputField.displayName = 'InputField';
 
 export default InputField;
+
+// ─── Light styles (original, unchanged) ──────────────────────────────────────
 
 const styles = StyleSheet.create({
   label: {
@@ -243,5 +314,66 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontSize: 14,
     color: '#EF4444',
+  },
+});
+
+// ─── Dark styles ──────────────────────────────────────────────────────────────
+
+const dark = StyleSheet.create({
+  wrapper: {
+    width: '100%',
+    marginBottom: 12,
+  },
+  label: {
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 1.4,
+    textTransform: 'uppercase',
+    color: 'white',
+    marginBottom: 8,
+  },
+  gradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(212,168,83,0.2)',
+    gap: 10,
+  },
+  gradientError: {
+    borderColor: 'rgba(239,68,68,0.6)',
+  },
+  iconWrap: {
+    width: 25,
+    height: 25,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  valueText: {
+    flex: 1,
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#ffffff',
+  },
+  input: {
+    padding: 0,
+    margin: 0,
+  },
+  placeholder: {
+    color: 'rgba(255,255,255,0.4)',
+  },
+  hint: {
+    marginTop: 4,
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.4)',
+  },
+  error: {
+    fontSize: 12,
+    color: '#EF4444',
+    marginTop: 5,
+    marginLeft: 2,
   },
 });

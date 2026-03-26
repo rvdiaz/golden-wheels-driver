@@ -16,4 +16,8 @@ export const ENV_Vars = {
   COGNITO_USERPOOL_ID: required('COGNITO_USERPOOL_ID', extra.COGNITO_USERPOOL_ID),
   GRAPHQL_ENDPOINT: required('GRAPHQL_ENDPOINT', extra.GRAPHQL_ENDPOINT),
   GRAPHQL_API_KEY: required('GRAPHQL_API_KEY', extra.GRAPHQL_API_KEY),
+  tenant: {
+    tenantId: required('TENANTID', extra.TENANTID),
+    solutionId: required('TENANT_SOLUTION', extra.TENANT_SOLUTION),
+  },
 };

@@ -85,6 +85,8 @@ export default (arg: ConfigContext): ExpoConfig => {
       //GRAPHQL_ENDPOINT: process.env.GRAPHQL_ENDPOINT,
       GRAPHQL_ENDPOINT: 'http://localhost:4001/graphql',
       GRAPHQL_API_KEY: process.env.GRAPHQL_API_KEY,
+      TENANTID: process.env.TENANTID,
+      TENANT_SOLUTION: process.env.TENANT_SOLUTION,
       eas: {
         projectId: EAS_PROJECT_ID,
       },

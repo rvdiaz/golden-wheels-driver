@@ -1,26 +1,23 @@
-import { useLazyQuery } from '@apollo/client';
 import { updateUser } from '.';
-import { getAdminUserQuery } from '~/screens/auth/graphql/queries';
 import { IUser } from './interfaces';
-import { useTenant } from '../tenant/useTenant';
+import { useUser } from '~/screens/auth/hooks/useUser';
+import { ENV_Vars } from '../env';
 
 export const useRefreshUser = () => {
-  const [getUserFn] = useLazyQuery(getAdminUserQuery, {});
-  const { userInfo } = useTenant();
+  const { getCustomerFn } = useUser();
 
   const refreshUser = async (userId: string, pushToken?: string) => {
     try {
-      const { data } = await getUserFn({
+      const { data } = await getCustomerFn({
         variables: {
-          tenantID: userInfo?.activeTenantId,
-          token: pushToken,
-          userId,
+          tenant: ENV_Vars.tenant,
+          customerId: userId,
         },
         fetchPolicy: 'network-only', // always hit the network for freshness
       });
 
-      if (data?.getUser) {
-        await updateUser(data.getUser as IUser); // <-- ✅ updates both AsyncStorage + reactive var
+      if (data?.getCustomer) {
+        await updateUser(data.getCustomer as IUser); // <-- ✅ updates both AsyncStorage + reactive var
       }
     } catch (error) {
       console.error('❌ Error refreshing user:', error);

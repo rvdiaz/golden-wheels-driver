@@ -201,8 +201,7 @@ export const ForcePasswordChange = ({
                     leftIcon={<Icons.Key size={16} color="#6B7280" />}
                     rightIcon={
                       <TouchableOpacity
-                        onPress={() => setShowCurrentPassword(!showCurrentPassword)}
-                        style={styles.eyeIcon}>
+                        onPress={() => setShowCurrentPassword(!showCurrentPassword)}>
                         {showCurrentPassword ? (
                           <Icons.EyeOff size={16} color="#6B7280" />
                         ) : (
@@ -245,9 +244,7 @@ export const ForcePasswordChange = ({
                     secureTextEntry={!showNewPassword}
                     leftIcon={<Icons.Lock size={16} color="#6B7280" />}
                     rightIcon={
-                      <TouchableOpacity
-                        onPress={() => setShowNewPassword(!showNewPassword)}
-                        style={styles.eyeIcon}>
+                      <TouchableOpacity onPress={() => setShowNewPassword(!showNewPassword)}>
                         {showNewPassword ? (
                           <Icons.EyeOff size={16} color="#6B7280" />
                         ) : (
@@ -367,7 +364,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 14,
-    color: '#6B7280',
+    color: '#FFFFFF',
     textAlign: 'center',
   },
   formCard: {
@@ -387,9 +384,6 @@ const styles = StyleSheet.create({
   },
   inputError: {
     borderColor: '#EF4444',
-  },
-  eyeIcon: {
-    paddingHorizontal: 10,
   },
   resendButton: {
     marginTop: 8,

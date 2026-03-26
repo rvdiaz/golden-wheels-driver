@@ -33,7 +33,7 @@ function TabsWithHeader() {
   return (
     <BodyWrapper gradientCoverage={1}>
       <View style={styles.screenContainer}>
-        <ActiveScreen />
+        <ActiveScreen onNavigateHome={() => setActiveTab('Home')} />
       </View>
       <CustomTabBar activeTab={activeTab} onTabPress={setActiveTab} />
     </BodyWrapper>

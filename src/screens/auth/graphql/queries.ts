@@ -1,24 +1,12 @@
 import { gql } from '@apollo/client';
 
-export const getAdminUserQuery = gql`
-  query getAdminUser($userID: ID!, $firstTime: Boolean) {
-    getAdminUser(userID: $userID, firstTime: $firstTime) {
-      userID
-      tenantsList {
-        role
-        tenantID
-      }
-      firstName
-      lastName
+export const getCustomerQuery = gql`
+  query getCustomer($tenant: TenantData!, $customerId: ID!) {
+    getCustomer(tenant: $tenant, customerId: $customerId) {
+      name
       email
       phone
-      status
-      userType
-      permissions {
-        label
-        slug
-      }
-      metaData
+      preferenceLanguage
     }
   }
 `;

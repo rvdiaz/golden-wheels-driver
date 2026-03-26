@@ -102,6 +102,7 @@ export const MfaAuth = () => {
                 <View style={styles.codeContainer}>
                   {[0, 1, 2, 3, 4, 5].map((index) => (
                     <InputField
+                      variant="dark"
                       key={index}
                       ref={(ref) => {
                         if (ref) inputRefs.current[index] = ref;
@@ -191,13 +192,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1F2937',
+    color: '#FFFFFF',
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280',
+    color: '#FFFFFF',
     textAlign: 'center',
     lineHeight: 24,
   },

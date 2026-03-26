@@ -79,6 +79,7 @@ export const SignInForm = ({
         setloading(false);
         return;
       }
+
       if (user.isSignedIn) {
         const att = await fetchUserAttributes();
 
@@ -106,6 +107,7 @@ export const SignInForm = ({
             name="email"
             render={({ field: { onChange, onBlur, value } }) => (
               <InputField
+                variant="dark"
                 leftIcon={<Icons.Mail size={16} color="#6B7280" />}
                 label="Email"
                 placeholder="Enter your email"
@@ -126,6 +128,7 @@ export const SignInForm = ({
             name="password"
             render={({ field: { onChange, onBlur, value } }) => (
               <InputField
+                variant="dark"
                 leftIcon={<Icons.Lock size={16} color="#6B7280" />}
                 label="Password"
                 placeholder="Enter your password"
@@ -137,9 +140,7 @@ export const SignInForm = ({
                 errorMessage={errors.password?.message}
                 autoComplete="password"
                 rightIcon={
-                  <TouchableOpacity
-                    onPress={() => setShowPassword(!showPassword)}
-                    style={styles.eyeIcon}>
+                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
                     {showPassword ? (
                       <Icons.EyeOff size={16} color="#6B7280" />
                     ) : (
@@ -153,7 +154,7 @@ export const SignInForm = ({
           {!strictView && (
             <View style={styles.optionsRow}>
               <TextButton
-                textStyle={styles.forgotPassword}
+                size={ButtonSize.LARGE}
                 title="Forgot Password?"
                 onPress={() => {
                   setCurrentView(IAuthModuleKeys.forcePasswordChange);
@@ -166,7 +167,7 @@ export const SignInForm = ({
             onPress={handleSubmit(onSubmit)}
             title="Sign In"
             loading={loading}
-            size={ButtonSize.LARGE}
+            size={ButtonSize.XLARGE}
           />
         </View>
         {back && (
@@ -200,8 +201,7 @@ export const SignInForm = ({
 const styles = StyleSheet.create({
   keyboardView: {
     flex: 1,
-    paddingVertical: 40,
-    paddingBottom: 32,
+    paddingVertical: 20,
   },
   header: {
     alignItems: 'center',
@@ -232,11 +232,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   form: {
-    paddingHorizontal: 24,
     gap: 8,
-  },
-  eyeIcon: {
-    paddingHorizontal: 10,
   },
   optionsRow: {
     flexDirection: 'row',
@@ -268,7 +264,6 @@ const styles = StyleSheet.create({
   },
   forgotPassword: {
     fontSize: 14,
-    color: '#2563EB',
     fontWeight: '600',
   },
   loginButton: {
@@ -297,8 +292,6 @@ const styles = StyleSheet.create({
   },
   signUpLink: {
     fontSize: 16,
-    color: '#2563EB',
-    fontWeight: '600',
   },
   testCredentials: {
     marginTop: 32,

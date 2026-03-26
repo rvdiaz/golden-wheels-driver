@@ -23,14 +23,14 @@ export const HeaderCallToAction = ({
     <View style={styles.wrapper}>
       <ImageBackground
         source={
-          imageUri ? { uri: imageUri } : require('/assets/header.jpg') // swap for your asset
+          imageUri ? { uri: imageUri } : require('/assets/header.jpeg') // swap for your asset
         }
         style={styles.image}
         resizeMode="cover">
         {/* Top fade — blends image into the dark gradient behind BodyWrapper */}
         <LinearGradient
           colors={
-            ['#111827', 'rgba(0,0,0,0.42)', 'rgba(0,0,0,0.72)', 'transparent'] as [
+            ['#111827', 'rgba(0,0,0,0.0)', 'rgba(0,0,0,0)', 'transparent'] as [
               string,
               string,
               string,
@@ -79,15 +79,6 @@ export const HeaderCallToAction = ({
                 /* open date picker modal */
               }}
             />
-            {/* <GlassButton
-              size={ButtonSize.XLARGE}
-              onPress={onPress}
-              title={buttonLabel}
-              rightIcon={<ChevronRight size={24} color="#FFF" />}
-              style={{
-                width: '70%',
-              }}
-            /> */}
           </View>
         </View>
       </ImageBackground>

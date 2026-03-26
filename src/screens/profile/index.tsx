@@ -38,8 +38,11 @@ const getInitials = (name?: string): string => {
 
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
-export const ProfileScreen: React.FC = () => {
-  const navigation = useNavigation();
+type Props = {
+  onNavigateHome?: () => void;
+};
+
+export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
   const user = useReactiveVar(userData);
 
   return (
@@ -120,7 +123,7 @@ export const ProfileScreen: React.FC = () => {
                   {
                     id: 'logout',
                     label: 'Sign Out',
-                    replacementWidget: <LogoutButton />,
+                    replacementWidget: <LogoutButton onSuccessLogout={onNavigateHome} />,
                     icon: <LogOut />,
                     onClick: () => {},
                   },

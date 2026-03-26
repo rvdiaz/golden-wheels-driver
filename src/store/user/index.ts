@@ -20,22 +20,15 @@ export const updateUser = async (user: IUser | null) => {
   }
 };
 
-export const getUser = async () => {
+(async () => {
   try {
     const storedUser = await AsyncStorage.getItem(USER_STORAGE_KEY);
 
     if (storedUser) {
       const parsedUser: IUser = JSON.parse(storedUser);
-
-      userData({
-        ...parsedUser,
-        loadedFromStorage: true,
-      });
-    } else {
-      userData(null);
+      userData({ ...parsedUser, loadedFromStorage: true });
     }
   } catch (error) {
-    console.error('Error getting user from storage', error);
-    userData(null);
+    console.error('Error loading user from storage', error);
   }
-};
+})();

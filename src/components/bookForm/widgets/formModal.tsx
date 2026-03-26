@@ -1,17 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  Modal,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  Animated,
-  Dimensions,
-  ScrollView,
-  Platform,
-} from 'react-native';
-import { BlurView } from 'expo-blur';
-import { LinearGradient } from 'expo-linear-gradient';
+import { View, StyleSheet, Animated, Dimensions, Platform } from 'react-native';
 import { Controller, useForm } from 'react-hook-form';
 import { ChevronRight, MapPin, Navigation, Calendar, X } from 'lucide-react-native';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
@@ -23,6 +11,7 @@ import { BookModeToggle } from './tripToggle';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { AddressPickerModal, IAddressSuggestion } from './addressPicker';
 import { DateTimeInputField } from '~/codidge_components/UI/form/inputs/dateTimePicker';
+import { BottomSheetModal } from '~/components/bottomSheetModal';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const MODAL_HEIGHT = SCREEN_HEIGHT * 0.82;
@@ -114,186 +103,129 @@ export const BookingModal = ({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="none"
-      statusBarTranslucent
-      onRequestClose={onClose}>
-      {/* Backdrop */}
-      <TouchableWithoutFeedback onPress={onClose}>
-        <Animated.View
-          style={[
-            modal.backdrop,
-            { opacity: backdropAnim.interpolate({ inputRange: [0, 1], outputRange: [0, 1] }) },
-          ]}
-        />
-      </TouchableWithoutFeedback>
-
-      {/* Sheet */}
-      <Animated.View
-        style={[modal.sheet, { transform: [{ translateY: slideAnim }] }]}
-        pointerEvents="box-none">
-        {/* Blurred glass background */}
-        {Platform.OS === 'ios' && (
-          <BlurView
-            intensity={60}
-            tint="dark"
-            style={[StyleSheet.absoluteFill, { borderRadius: 28 }]}
-          />
-        )}
-
-        {/* Dark overlay on top of blur */}
-        <LinearGradient
-          colors={['rgba(2,6,23,0.92)', 'rgba(2,6,23,0.97)']}
-          style={[StyleSheet.absoluteFill, { borderRadius: 28 }]}
+    <>
+      <BottomSheetModal visible={visible} onClose={onClose} title="Book Your Ride">
+        {/* Mode Toggle */}
+        <Controller
+          name="bookMode"
+          control={control}
+          render={({ field }) => <BookModeToggle value={field.value} onChange={field.onChange} />}
         />
 
-        {/* Gold top border accent */}
-        <LinearGradient
-          colors={['transparent', '#D4A853', 'transparent']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={modal.topBorder}
+        {/* Pickup */}
+        <Controller
+          name="pickupLocation"
+          control={control}
+          rules={{ validate: (v) => !!v.id || 'Pickup location is required' }}
+          render={({ field }) => (
+            <FormField
+              label="Pickup Location"
+              value={field.value.displayName}
+              placeholder="Enter pickup location"
+              icon={<Navigation size={16} color="#D4A853" />}
+              onPress={() => {
+                console.log(':::sss');
+                setActivePicker('pickup');
+              }}
+              error={errors.pickupLocation?.message}
+              style={{ marginTop: 20 }}
+            />
+          )}
         />
 
-        <ScrollView
-          style={modal.scroll}
-          contentContainerStyle={modal.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled">
-          {/* Header */}
-          <TouchableOpacity onPress={onClose} style={modal.closeBtn} activeOpacity={0.7}>
-            <X size={18} color="rgba(255,255,255,0.7)" />
-          </TouchableOpacity>
-          <View style={modal.header}>
-            <View>
-              <Text style={modal.title}>Book Your Ride</Text>
-            </View>
-          </View>
-
-          {/* Mode Toggle */}
+        {/* Dropoff — trip mode only */}
+        {bookMode === BookMode.trip && (
           <Controller
-            name="bookMode"
+            name="dropoffLocation"
             control={control}
-            render={({ field }) => <BookModeToggle value={field.value} onChange={field.onChange} />}
-          />
-
-          {/* Pickup */}
-          <Controller
-            name="pickupLocation"
-            control={control}
-            rules={{ validate: (v) => !!v.id || 'Pickup location is required' }}
+            rules={{ validate: (v) => !!v.id || 'Destination is required' }}
             render={({ field }) => (
               <FormField
-                label="Pickup Location"
+                label="Destination"
                 value={field.value.displayName}
-                placeholder="Enter pickup location"
-                icon={<Navigation size={16} color="#D4A853" />}
-                onPress={() => setActivePicker('pickup')}
-                error={errors.pickupLocation?.message}
-                style={{ marginTop: 20 }}
+                placeholder="Where to?"
+                icon={<MapPin size={16} color="#D4A853" />}
+                onPress={() => setActivePicker('dropoff')}
+                error={errors.dropoffLocation?.message}
+                style={{ marginTop: 16 }}
               />
             )}
           />
+        )}
 
-          {/* Dropoff — only for trip mode */}
-          {bookMode === BookMode.trip && (
-            <Controller
-              name="dropoffLocation"
-              control={control}
-              rules={{ validate: (v) => !!v.id || 'Destination is required' }}
-              render={({ field }) => (
-                <FormField
-                  label="Destination"
-                  value={field.value.displayName}
-                  placeholder="Where to?"
-                  icon={<MapPin size={16} color="#D4A853" />}
-                  onPress={() => setActivePicker('dropoff')}
-                  error={errors.dropoffLocation?.message}
-                  style={{ marginTop: 16 }}
-                />
-              )}
-            />
-          )}
-
-          {/* Date / Time */}
-          <View
-            style={{
-              marginTop: 16,
-            }}>
-            <Controller
-              name="startDate"
-              control={control}
-              rules={{ required: 'Pickup date is required' }}
-              render={({ field: { onChange, value } }) => (
-                <DateTimeInputField
-                  value={value ? new Date(value) : undefined} // ← undefined, not new Date()
-                  mode="datetime"
-                  label="Pickup Date & Time"
-                  placeholder="Select date and time"
-                  icon={<Calendar size={16} color="#D4A853" />}
-                  onChangeText={(res) => {
-                    const iso = res instanceof Date ? res.toISOString() : res;
-                    console.log(':::iso', iso);
-                    onChange(iso);
-                  }}
-                  error={!!errors.startDate}
-                  errorMessage={errors.startDate?.message}
-                />
-              )}
-            />
-          </View>
-
-          {/* Duration — only for hourly mode */}
-          {bookMode === BookMode.hourly && (
-            <Controller
-              name="bookHours"
-              control={control}
-              render={({ field }) => (
-                <View style={{ marginTop: 16 }}>
-                  <DurationPicker value={field.value} onChange={field.onChange} />
-                </View>
-              )}
-            />
-          )}
-
-          {/* Hourly area note */}
-          {bookMode === BookMode.hourly && (
-            <View style={note.wrapper}>
-              <View style={note.bar} />
-              <Text style={note.text}>
-                <Text style={note.bold}>* Note: </Text>
-                Hourly trips are limited to Miami-Dade and Broward County. For trips outside this
-                area, choose "One Trip".
-              </Text>
-            </View>
-          )}
-
-          {/* CTA */}
-          <PrimaryButton
-            size={ButtonSize.XLARGE}
-            title="Find Your Perfect Ride"
-            onPress={handleSubmit(onSubmit)}
-            style={{ marginTop: 28, width: '100%' }}
-            rightWidget={<ChevronRight size={24} />}
+        {/* Date / Time */}
+        <View style={{ marginTop: 16 }}>
+          <Controller
+            name="startDate"
+            control={control}
+            rules={{ required: 'Pickup date is required' }}
+            render={({ field: { onChange, value } }) => (
+              <DateTimeInputField
+                value={value ? new Date(value) : undefined}
+                mode="datetime"
+                label="Pickup Date & Time"
+                placeholder="Select date and time"
+                icon={<Calendar size={16} color="#D4A853" />}
+                onChangeText={(res) => {
+                  const iso = res instanceof Date ? res.toISOString() : res;
+                  onChange(iso);
+                }}
+                error={!!errors.startDate}
+                errorMessage={errors.startDate?.message}
+              />
+            )}
           />
+        </View>
 
-          <View style={{ height: 12 }} />
-        </ScrollView>
-      </Animated.View>
-      <AddressPickerModal
-        visible={activePicker !== null}
-        variant={activePicker ?? 'pickup'}
-        onClose={() => setActivePicker(null)}
-        onSelect={handleAddressSelect}
-        initialValue={
-          activePicker === 'pickup'
-            ? watch('pickupLocation').displayName
-            : watch('dropoffLocation').displayName
-        }
-      />
-    </Modal>
+        {/* Duration — hourly mode only */}
+        {bookMode === BookMode.hourly && (
+          <Controller
+            name="bookHours"
+            control={control}
+            render={({ field }) => (
+              <View style={{ marginTop: 16 }}>
+                <DurationPicker value={field.value} onChange={field.onChange} />
+              </View>
+            )}
+          />
+        )}
+
+        {/* Hourly note */}
+        {bookMode === BookMode.hourly && (
+          <View style={note.wrapper}>
+            <View style={note.bar} />
+            <Text style={note.text}>
+              <Text style={note.bold}>* Note: </Text>
+              Hourly trips are limited to Miami-Dade and Broward County. For trips outside this
+              area, choose "One Trip".
+            </Text>
+          </View>
+        )}
+
+        {/* CTA */}
+        <PrimaryButton
+          size={ButtonSize.XLARGE}
+          title="Find Your Perfect Ride"
+          onPress={handleSubmit((data) => onExternalSubmit?.(data))}
+          style={{ marginTop: 28, width: '100%' }}
+          rightWidget={<ChevronRight size={24} />}
+        />
+
+        <View style={{ height: 12 }} />
+        {/* Address picker — outside BookingModal so it layers on top */}
+        <AddressPickerModal
+          visible={activePicker !== null}
+          variant={activePicker ?? 'pickup'}
+          onClose={() => setActivePicker(null)}
+          onSelect={handleAddressSelect}
+          initialValue={
+            activePicker === 'pickup'
+              ? watch('pickupLocation').displayName
+              : watch('dropoffLocation').displayName
+          }
+        />
+      </BottomSheetModal>
+    </>
   );
 };
 

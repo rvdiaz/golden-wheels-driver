@@ -2,17 +2,21 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
-import { ResetPasswordFormData } from '../interfaces';
+import { IAuthModuleKeys, ResetPasswordFormData } from '../interfaces';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import Text from '~/codidge_components/UI/text';
 import { resetPassword } from 'aws-amplify/auth';
 import { ForcePasswordChange } from './force_password_change';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
+import TextButton from '~/codidge_components/UI/button/TextButton';
+import { useAuthContext } from '../context';
 
 export const ResetPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState('');
+
+  const { setCurrentView } = useAuthContext();
 
   const {
     control,
@@ -112,8 +116,8 @@ export const ResetPassword = () => {
       style={styles.keyboardView}>
       <View style={styles.content}>
         <View style={styles.header}>
-          <View style={styles.logoContainer}>
-            <Icons.Lock size={40} color="#4F46E5" />
+          <View>
+            <Icons.Lock size={40} color="#FFFFFF" />
           </View>
           <Text style={styles.title}>Forgot Password?</Text>
           <Text style={styles.subtitle}>
@@ -135,6 +139,7 @@ export const ResetPassword = () => {
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <InputField
+                  variant="dark"
                   containerStyle={{
                     marginBottom: 16,
                   }}
@@ -152,13 +157,25 @@ export const ResetPassword = () => {
                 />
               )}
             />
-            <PrimaryButton
-              size={ButtonSize.LARGE}
-              title="Send Reset Code"
-              onPress={handleSubmit(onSubmit)}
-              loading={isLoading}
-              disabled={isLoading}
-            />
+            <View
+              style={{
+                gap: 6,
+              }}>
+              <PrimaryButton
+                size={ButtonSize.LARGE}
+                title="Send Reset Code"
+                onPress={handleSubmit(onSubmit)}
+                loading={isLoading}
+                disabled={isLoading}
+              />
+              <TextButton
+                onPress={() => {
+                  setCurrentView(IAuthModuleKeys.signIn);
+                }}
+                size={ButtonSize.LARGE}
+                title="Back"
+              />
+            </View>
           </View>
         </View>
       </View>
@@ -171,7 +188,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    paddingVertical: 20,
     flex: 1,
   },
   header: {
@@ -180,31 +196,21 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     paddingHorizontal: 20,
   },
-  logoContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#EEF2FF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1F2937',
+    color: '#FFFFFF',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 14,
-    color: '#6B7280',
+    color: '#FFFFFF',
     textAlign: 'center',
   },
   formCard: {
     marginBottom: 12,
   },
   form: {
-    paddingHorizontal: 24,
     marginBottom: 12,
   },
 });

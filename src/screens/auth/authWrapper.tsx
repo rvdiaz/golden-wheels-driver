@@ -2,54 +2,44 @@ import React, { ReactNode } from 'react';
 import { ConfirmResetPassword } from '~/codidge_components/auth/forms/confirm_reset_password';
 import { useAuthContext } from '~/codidge_components/auth/context';
 import { useReactiveVar } from '@apollo/client';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { updateUserMutation } from './graphql/mutations';
 import { updateUser } from '~/store/user';
 import { pushTokenVar } from '~/store/user/pushToken';
 import { signOut } from 'aws-amplify/auth/cognito';
-import { getAdminUserQuery } from './graphql/queries';
 import { IAuthModuleKeys } from '~/codidge_components/auth/interfaces';
 import { SignUpForm } from '~/codidge_components/auth/forms/sign_up';
 import { ResetPassword } from '~/codidge_components/auth/forms/reset_password';
 import { VerifyEmail } from '~/codidge_components/auth/forms/verify_email';
 import { SignInForm } from '~/codidge_components/auth/forms/sign_in';
 import { AuthFormWrapper } from './authLayout';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import Text from '~/codidge_components/UI/text';
-import IconButton from '~/codidge_components/UI/button/IconButton';
-import {
-  ArrowLeft,
-  CheckCircle,
-  LockKeyhole,
-  MailOpen,
-  RefreshCcw,
-  UserPlus,
-} from 'lucide-react-native';
-import { StepIcon } from '~/codidge_components/UI/stepIcon';
-import { IUser } from '~/store/user/interfaces';
+import { ENV_Vars } from '~/store/env';
+import { useUser } from './hooks/useUser';
 
 export const AuthWrapper = () => {
   const { currentView, setCurrentView } = useAuthContext();
 
-  const [updateUserFn] = useMutation<{ updateUser: IUser }>(updateUserMutation);
-  const [getUserFn] = useLazyQuery<{ getAdminUser: IUser }>(getAdminUserQuery);
+  const { getCustomerFn, updateUserFn, addCustomerFn } = useUser();
+
   const pushToken = useReactiveVar(pushTokenVar);
 
   const handleLoginSuccess = async (userId: string) => {
     try {
-      const user = await getUserFn({
+      const user = await getCustomerFn({
         variables: {
-          userID: userId,
+          tenant: ENV_Vars.tenant,
+          customerId: userId,
         },
       });
 
-      if (!user.data?.getAdminUser) {
+      const userData = user.data?.getCustomer;
+
+      if (!userData) {
         console.error(user.error);
         throw Error('Error getting user');
       }
-      const userData = user.data?.getAdminUser;
 
-      updateUser({ ...userData, activeTenantId: userData.tenantsList[0].tenantID });
+      updateUser(userData);
     } catch (error) {
       console.log('::::error getting user', error);
       await signOut();
@@ -63,30 +53,22 @@ export const AuthWrapper = () => {
         //Alert.alert('Not token');
         //return;
       }
-      /*  const userData = await addUserFn({
+      const userData = await addCustomerFn({
         variables: {
-          tenant: {
-            tenantId: tenantId,
-          },
-          user: {
-            name: '',
+          tenant: ENV_Vars.tenant,
+          customer: {
+            name: formData.name,
             email: formData.email,
-               address: {
-              addressLine1: personalInfo.addressLine1,
-              postalCode: personalInfo.postalCode,
-              region: personalInfo.region,
-              country: personalInfo.country,
-              locality: personalInfo.city,
-            },
+            phone: formData.phone,
             notificationToken: pushToken,
           },
-          userId,
+          customerID: userId,
         },
       });
 
-      if (!userData.data?.addUser) {
+      if (!userData.data?.addCustomer) {
         throw Error('Error getting user');
-      } */
+      }
     } catch (error) {
       await signOut();
       console.log(':::error', error);
@@ -97,13 +79,11 @@ export const AuthWrapper = () => {
     try {
       const userData = await updateUserFn({
         variables: {
-          /*  tenant: {
-            tenantId: tenantId,
-          }, */
-          updates: {
+          tenant: ENV_Vars.tenant,
+          customer: {
             emailVerified: true,
           },
-          userId,
+          customerId: userId,
         },
       });
 
@@ -118,65 +98,14 @@ export const AuthWrapper = () => {
     }
   };
 
-  const getHeader = (title: string, icon: ReactNode, backFn?: () => void): ReactNode => {
-    return (
-      <View
-        style={[
-          styles.headerContainer,
-          {
-            marginBottom: 20,
-          },
-        ]}>
-        {backFn && (
-          <View
-            style={{
-              position: 'absolute',
-              top: 40,
-              left: 0,
-            }}>
-            <IconButton
-              style={{
-                backgroundColor: 'transparent',
-              }}
-              onPress={backFn}
-              icon={<ArrowLeft color={'#FFF'} />}
-            />
-          </View>
-        )}
-        <View
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          {icon}
-        </View>
-
-        <Text style={[styles.mainTitle]}>{title}</Text>
-      </View>
-    );
+  const getHeader = (title: string): ReactNode => {
+    return <Text style={[styles.mainTitle]}>{title}</Text>;
   };
 
   switch (currentView) {
     case IAuthModuleKeys.signIn:
       return (
-        <AuthFormWrapper
-          header={
-            <View
-              style={[
-                styles.headerContainer,
-                {
-                  marginBottom: 20,
-                },
-              ]}>
-              <View
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}></View>
-
-              <Text style={styles.mainTitle}>Sign In</Text>
-            </View>
-          }>
+        <AuthFormWrapper header={getHeader('Login')}>
           <SignInForm
             onSignUp={async () => {
               setCurrentView(IAuthModuleKeys.signUp);
@@ -189,63 +118,40 @@ export const AuthWrapper = () => {
 
     case IAuthModuleKeys.forcePasswordChange:
       return (
-        <AuthFormWrapper
-          header={getHeader('Forget password', <StepIcon icon={LockKeyhole} />, () => {
-            setCurrentView(IAuthModuleKeys.signIn);
-          })}>
+        <AuthFormWrapper>
           <ResetPassword />
         </AuthFormWrapper>
       );
 
     case IAuthModuleKeys.resetPassword:
       return (
-        <AuthFormWrapper header={getHeader('Reset password', <StepIcon icon={RefreshCcw} />)}>
+        <AuthFormWrapper header={getHeader('Reset password')}>
           <ResetPassword />
         </AuthFormWrapper>
       );
 
     case IAuthModuleKeys.confirmResetPassword:
       return (
-        <AuthFormWrapper
-          header={getHeader('Confirm Reset password', <StepIcon icon={CheckCircle} />)}>
+        <AuthFormWrapper>
           <ConfirmResetPassword />
         </AuthFormWrapper>
       );
 
     case IAuthModuleKeys.verifyEmail:
       return (
-        <AuthFormWrapper header={getHeader('Verify Email', <StepIcon icon={MailOpen} />)}>
+        <AuthFormWrapper>
           <VerifyEmail onVerificationSuccess={handleVerificationSuccess} />
         </AuthFormWrapper>
       );
     case IAuthModuleKeys.signUp:
       return (
-        <AuthFormWrapper
-          header={
-            <View
-              style={[
-                styles.headerContainer,
-                {
-                  marginBottom: 20,
-                },
-              ]}>
-              <View
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <StepIcon icon={UserPlus} />
-              </View>
-
-              <Text style={[styles.mainTitle]}>Account Creation</Text>
-            </View>
-          }>
+        <AuthFormWrapper header={getHeader('Register')}>
           <SignUpForm onSignUpSuccess={handleRegisterSuccess} />
         </AuthFormWrapper>
       );
     default:
       return (
-        <AuthFormWrapper header={<View></View>}>
+        <AuthFormWrapper>
           <SignUpForm onSignUpSuccess={handleRegisterSuccess} />
         </AuthFormWrapper>
       );
@@ -253,15 +159,6 @@ export const AuthWrapper = () => {
 };
 
 const styles = StyleSheet.create({
-  headerContainer: {
-    paddingTop: 60,
-    paddingHorizontal: 24,
-    alignItems: 'center',
-    position: 'relative',
-  },
-  image: {
-    width: 90,
-  },
   mainTitle: {
     fontSize: 24,
     fontWeight: '700',
@@ -269,11 +166,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 4,
     letterSpacing: -0.5,
-  },
-  iconContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1,
-    paddingHorizontal: 0,
   },
 });

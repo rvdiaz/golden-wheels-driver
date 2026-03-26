@@ -1,187 +1,23 @@
 import { gql } from '@apollo/client';
 
-export const addUserMutation = gql`
-  mutation addUser($tenant: TenantData!, $user: UserInput!, $userId: ID!) {
-    addUser(tenant: $tenant, user: $user, userId: $userId) {
-      email
+export const addCustomerMutation = gql`
+  mutation addCustomer($tenant: TenantData!, $customer: CustomerInput!, $customerID: String) {
+    addCustomer(tenant: $tenant, customer: $customer, customerID: $customerID) {
       id
-      activeTemplateId
-      activeGoalsTemplateId
-      firstName
-      lastName
+      name
+      email
       phone
-      mlsNumber
-      vipMember
-      brokerage
-      durationMs
-      financialGoals {
-        avgCommissionByRents
-        avgCommissionBySales
-        desiredAnnualIncome
-      }
-      swotAnalysis {
-        strengths
-        weaknesses
-        opportunities
-        threats
-      }
-      visionMission {
-        statement
-        drivesYou
-        oneYear
-        fiveYear
-      }
-      address {
-        addressLine1
-        locality
-        region
-        postalCode
-        country
-      }
-      profileSteps {
-        id
-        title
-        subSteps
-      }
-      profileSetupSkipped
-      hasSeenProfileCompletionCongrats
-      modules {
-        icon
-        label
-        isBottomBar
-        metaData
-        moduleKey
-        path
-        customIcon
-        comingSoon
-        modules {
-          label
-          metaData
-          icon
-          description
-          color
-          backgroundColor
-          moduleKey
-          available
-          comingSoon
-          comingSoonLabel
-          comingSoonScreenShoots
-          subscriptionRequired
-        }
-      }
-      balance {
-        amount
-        currency
-      }
-      createdAt
-      emailVerified
-      hasCustomSchedule
-      notificationToken
-      preferenceLanguage
-      subscription {
-        billingIssueDetectedDate
-        isAutoRenewing
-        endDate
-        originalStartDate
-        originalTransactionId
-        platform
-        productId
-        startDate
-        status
-      }
     }
   }
 `;
 
 export const updateUserMutation = gql`
-  mutation updateUser($tenant: TenantData!, $updates: UserUpdateInput!, $userId: ID!) {
-    updateUser(tenant: $tenant, updates: $updates, userId: $userId) {
-      email
+  mutation updateUser($tenant: TenantData!, $customer: CustomerUpdateInput!, $customerId: ID!) {
+    updateUser(tenant: $tenant, customer: $customer, customerId: $customerId) {
       id
-      activeTemplateId
-      activeGoalsTemplateId
-      firstName
-      lastName
+      name
+      email
       phone
-      mlsNumber
-      vipMember
-      brokerage
-      durationMs
-      financialGoals {
-        avgCommissionByRents
-        avgCommissionBySales
-        desiredAnnualIncome
-      }
-      swotAnalysis {
-        strengths
-        weaknesses
-        opportunities
-        threats
-      }
-      visionMission {
-        statement
-        drivesYou
-        oneYear
-        fiveYear
-      }
-      address {
-        addressLine1
-        locality
-        region
-        postalCode
-        country
-      }
-      profileSteps {
-        id
-        title
-        subSteps
-      }
-      profileSetupSkipped
-      hasSeenProfileCompletionCongrats
-      modules {
-        icon
-        label
-        isBottomBar
-        metaData
-        moduleKey
-        path
-        customIcon
-        comingSoon
-        modules {
-          label
-          metaData
-          icon
-          description
-          color
-          backgroundColor
-          moduleKey
-          available
-          comingSoon
-          comingSoonLabel
-          comingSoonScreenShoots
-          subscriptionRequired
-        }
-      }
-      balance {
-        amount
-        currency
-      }
-      createdAt
-      emailVerified
-      hasCustomSchedule
-      notificationToken
-      preferenceLanguage
-      subscription {
-        billingIssueDetectedDate
-        isAutoRenewing
-        endDate
-        originalStartDate
-        originalTransactionId
-        platform
-        productId
-        startDate
-        status
-      }
     }
   }
 `;

@@ -48,13 +48,13 @@ const TextButton: React.FC<TextButtonProps> = ({
         },
         style,
       ]}>
-      {leftWidget && leftWidget}
+      {!loading && leftWidget && leftWidget}
       {loading ? (
         <ActivityIndicator color="#6B7280" />
       ) : (
         <Text style={[styles.text, { fontSize: sizeStyle.fontSize }, textStyle]}>{title}</Text>
       )}
-      {rightWidget && rightWidget}
+      {!loading && rightWidget && rightWidget}
     </TouchableOpacity>
   );
 };
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   text: {
-    color: '#6B7280', // gray-500
+    color: '#FFFFFF', // gray-500
     fontWeight: '500',
   },
 });

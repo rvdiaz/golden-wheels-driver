@@ -71,7 +71,13 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <View style={styles.buttonBody}>
+        <View
+          style={[
+            styles.buttonBody,
+            {
+              justifyContent: rightWidget ? 'space-between' : 'center',
+            },
+          ]}>
           {leftWidget && leftWidget}
           <Text style={[styles.text, { fontSize: sizeStyle.fontSize }, textStyle]}>{title}</Text>
           {rightWidget && rightWidget}
@@ -98,7 +104,6 @@ const styles = StyleSheet.create({
   buttonBody: {
     flexDirection: 'row',
     width: '100%',
-    justifyContent: 'space-between',
     alignItems: 'center',
     gap: 6,
   },

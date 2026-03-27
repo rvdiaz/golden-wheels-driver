@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ImageBackground, Dimensions, Modal } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Text from '~/codidge_components/UI/text';
@@ -6,6 +6,9 @@ import { BookSelectionForm } from '~/components/bookTripJourney';
 import { GlassButton } from '~/codidge_components/UI/button/GlassButton';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
 import { ChevronRight } from 'lucide-react-native';
+import { useReactiveVar } from '@apollo/client';
+import { userData } from '~/store/user';
+import { updateAuthenticateStateUser } from '~/store/user/authSessionState';
 const { width } = Dimensions.get('window');
 const HEIGHT = width * 0.92; // ~62vw tall, feels cinematic
 
@@ -22,7 +25,25 @@ export const HeaderCallToAction = ({
   buttonLabel?: string;
   onPress?: () => void;
 }) => {
+  const userInfo = useReactiveVar(userData);
+  const [bookingIntent, setbookingIntent] = useState(false);
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (userInfo && bookingIntent) {
+      updateAuthenticateStateUser(false);
+      setOpen(true);
+    }
+  }, [userInfo, bookingIntent]);
+
+  const handlerBookStart = () => {
+    if (!userInfo) {
+      setbookingIntent(true);
+      updateAuthenticateStateUser(true);
+    } else {
+      setOpen(true);
+    }
+  };
 
   return (
     <View style={styles.wrapper}>
@@ -72,7 +93,7 @@ export const HeaderCallToAction = ({
             <GlassButton
               size={ButtonSize.XLARGE}
               title={buttonLabel}
-              onPress={() => setOpen(true)}
+              onPress={handlerBookStart}
               rightIcon={<ChevronRight size={20} color="#fff" />}
               style={{ width: '70%' }}
             />

@@ -104,7 +104,6 @@ export const BookSelectionForm = ({ onDismiss, onPayPress }: BookSelectionFormPr
     onPayPress?.(data);
   });
 
-  const isLastStep = currentStep === TOTAL_STEPS - 1;
   const step = STEPS[currentStep];
 
   return (
@@ -115,18 +114,11 @@ export const BookSelectionForm = ({ onDismiss, onPayPress }: BookSelectionFormPr
         stepLabel={step.label}
         stepSubtitle={step.subtitle}
         onBack={handleBack}
-        // On the last step, SummaryAndPayment owns its own pay button
-        // so we pass undefined to suppress the default footer CTA
-        onNext={isLastStep ? undefined : handleNext}
-        nextLabel="Continue"
-        onDismiss={onDismiss}
-        // Replace footer on last step with empty so SummaryAndPayment's
-        // pay button is the only CTA visible
-        customFooter={isLastStep ? <></> : undefined}>
-        {currentStep === 0 && <TrioBookForm onSubmit={() => []} />}
-        {currentStep === 1 && <CarCategorySelection />}
-        {currentStep === 2 && <ExtraServicesSelection />}
-        {currentStep === 3 && <SummaryAndPayment onPayPress={handlePay} />}
+        onDismiss={onDismiss}>
+        {currentStep === 0 && <TrioBookForm onNext={handleNext} />}
+        {currentStep === 1 && <CarCategorySelection onBack={handleBack} onNext={handleNext} />}
+        {currentStep === 2 && <ExtraServicesSelection onBack={handleBack} onNext={handleNext} />}
+        {currentStep === 3 && <SummaryAndPayment onPayPress={handlePay} onBack={handleBack} />}
       </BookingFlowWrapper>
     </FormProvider>
   );

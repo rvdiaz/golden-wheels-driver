@@ -1,7 +1,14 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { Users } from 'lucide-react-native';
 import React, { useRef, useState } from 'react';
-import { View, TouchableOpacity, StyleSheet, ImageBackground, Dimensions } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  ImageBackground,
+  Dimensions,
+  ViewStyle,
+} from 'react-native';
 import Text from '~/codidge_components/UI/text';
 import { CarType } from '~/screens/trips/interfaces';
 import { theme } from '~/theme/theme';
@@ -10,8 +17,16 @@ const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.62;
 const IMAGE_HEIGHT = CARD_WIDTH * 0.62;
 
-export const CarCard = ({ item, onPress }: { item: CarType; onPress: () => void }) => (
-  <TouchableOpacity onPress={onPress} activeOpacity={0.82} style={styles.card}>
+export const CarCard = ({
+  item,
+  onPress,
+  style,
+}: {
+  item: CarType;
+  onPress: () => void;
+  style?: ViewStyle;
+}) => (
+  <TouchableOpacity onPress={onPress} activeOpacity={0.82} style={[styles.card, style]}>
     {/* Image section */}
     <View style={styles.imageContainer}>
       <ImageBackground

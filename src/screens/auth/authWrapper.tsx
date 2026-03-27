@@ -15,6 +15,7 @@ import { StyleSheet } from 'react-native';
 import Text from '~/codidge_components/UI/text';
 import { ENV_Vars } from '~/store/env';
 import { useUser } from './hooks/useUser';
+import { updateAuthenticateStateUser } from '~/store/user/authSessionState';
 
 export const AuthWrapper = () => {
   const { currentView, setCurrentView } = useAuthContext();
@@ -40,6 +41,7 @@ export const AuthWrapper = () => {
       }
 
       updateUser(userData);
+      updateAuthenticateStateUser(false);
     } catch (error) {
       console.log('::::error getting user', error);
       await signOut();
@@ -69,6 +71,7 @@ export const AuthWrapper = () => {
       if (!userData.data?.addCustomer) {
         throw Error('Error getting user');
       }
+      updateAuthenticateStateUser(false);
     } catch (error) {
       await signOut();
       console.log(':::error', error);
@@ -94,6 +97,7 @@ export const AuthWrapper = () => {
       }
 
       updateUser(userRes);
+      updateAuthenticateStateUser(false);
       setCurrentView(IAuthModuleKeys.signIn);
     } catch (error) {
       await signOut();

@@ -19,7 +19,7 @@ import { ProfileNavigationSection } from '~/codidge_components/UI/navigationButt
 
 // ─── Color tokens ─────────────────────────────────────────────────────────────
 
-const GOLD = '#dac072';
+const GOLD = theme.colors.primary;
 const GOLD_10 = 'rgba(218,192,114,0.10)';
 const GOLD_18 = 'rgba(218,192,114,0.18)';
 const GOLD_30 = 'rgba(218,192,114,0.30)';

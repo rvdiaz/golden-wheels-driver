@@ -1,8 +1,9 @@
 // ─── Color tokens ─────────────────────────────────────────────────────────────
 
+import { theme } from '~/theme/theme';
 import { Booking, TabKey } from '../interfaces';
 
-export const GOLD = '#dac072';
+const GOLD = theme.colors.primary;
 export const GOLD_10 = 'rgba(218,192,114,0.10)';
 export const GOLD_20 = 'rgba(218,192,114,0.20)';
 export const GOLD_30 = 'rgba(218,192,114,0.30)';

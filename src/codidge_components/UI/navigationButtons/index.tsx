@@ -22,12 +22,10 @@ export interface INavigationSection {
 
 // ─── Color tokens ─────────────────────────────────────────────────────────────
 
-const GOLD = '#dac072';
-const GOLD_10 = 'rgba(218,192,114,0.10)';
-const GOLD_18 = 'rgba(218,192,114,0.18)';
-const GOLD_30 = 'rgba(218,192,114,0.30)';
+const GOLD = theme.colors.primary;
+const GOLD_10 = theme.colors.primaryAlpha[10];
+const GOLD_18 = theme.colors.primaryAlpha[20];
 const GLASS_BG = 'rgba(255,255,255,0.07)';
-const WHITE_08 = 'rgba(255,255,255,0.08)';
 const WHITE_10 = 'rgba(255,255,255,0.10)';
 
 // ─── Navigation Item ──────────────────────────────────────────────────────────

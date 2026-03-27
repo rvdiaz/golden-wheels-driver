@@ -59,7 +59,7 @@ interface AddressPickerModalProps {
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const GOLD = theme.colors.primary;
 const GOLD_DIM = 'rgba(212,168,83,0.6)';
-const GOLD_FAINT = 'rgba(212,168,83,0.12)';
+const GOLD_FAINT = 'rgba(212,168,83,0.16)';
 
 const VARIANT_CONFIG = {
   pickup: {
@@ -339,7 +339,7 @@ export const AddressPickerModal: React.FC<AddressPickerModalProps> = ({
 const modal = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.45)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'flex-end',
   },
   sheet: {
@@ -511,6 +511,6 @@ const suggestion = StyleSheet.create({
   },
   address: {
     fontSize: 12,
-    color: 'rgba(255,255,255,0.35)',
+    color: 'rgba(255,255,255,0.55)',
   },
 });

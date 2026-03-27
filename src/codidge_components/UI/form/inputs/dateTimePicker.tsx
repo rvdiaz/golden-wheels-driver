@@ -14,10 +14,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Calendar, Clock, ChevronRight, Check } from 'lucide-react-native';
 import Text from '~/codidge_components/UI/text';
 import { FormField } from '~/components/bookTripJourney/widgets/formField';
+import { theme } from '~/theme/theme';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const GOLD = '#D4A853';
+const GOLD = theme.colors.primary;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

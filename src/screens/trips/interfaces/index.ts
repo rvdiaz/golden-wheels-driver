@@ -63,6 +63,7 @@ export interface BookingBusinessData {
   bookHours: number;
   bookMode: BookMode;
   car: Car;
+  carType: CarType;
   customer: Customer;
   driver: Driver;
   pickupLocation: TripLocation;

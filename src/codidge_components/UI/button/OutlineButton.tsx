@@ -75,7 +75,7 @@ const OutlineButton: React.FC<OutlineButtonProps> = ({
 const styles = StyleSheet.create({
   button: {
     minWidth: 96,
-    borderRadius: theme.borderRadius.lg,
+    borderRadius: theme.borderRadius.md,
     borderWidth: 1,
     backgroundColor: 'transparent', // no fill
     alignItems: 'center',

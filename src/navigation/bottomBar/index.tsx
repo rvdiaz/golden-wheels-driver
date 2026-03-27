@@ -45,7 +45,6 @@ export const CustomTabBar = ({
   useEffect(() => {
     if (userInfo && redirectTab) {
       onTabPress(redirectTab); // ✅ GO TO SAVED TAB
-      updateAuthenticateStateUser(false);
       postLoginRedirectVar(null); // ✅ CLEAR IT
     }
   }, [userInfo, redirectTab]);

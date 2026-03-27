@@ -9,10 +9,17 @@ import { IExtraService, Booking } from '~/screens/trips/interfaces';
 import { theme } from '~/theme/theme';
 import { LoadingSkeleton } from '../../widgets/extraServiceSkeleton';
 import { ServiceCard } from '../../widgets/extraServiceCard';
+import { BookingFooter } from '../../widgets/bookFooter';
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export const ExtraServicesSelection = () => {
+export const ExtraServicesSelection = ({
+  onBack,
+  onNext,
+}: {
+  onBack?: () => void;
+  onNext?: () => void;
+}) => {
   const { data, loading } = useQuery<{
     getExtraServices: IExtraService[];
   }>(getExtraServicesQuery, {
@@ -21,11 +28,7 @@ export const ExtraServicesSelection = () => {
     },
   });
 
-  const {
-    watch,
-    setValue,
-    formState: { errors },
-  } = useFormContext<Booking>();
+  const { watch, setValue } = useFormContext<Booking>();
 
   // Selected IDs stored as array in form
   const selectedIds: string[] = watch('bookingBusinessData.extraServices') ?? [];
@@ -38,60 +41,67 @@ export const ExtraServicesSelection = () => {
     setValue('bookingBusinessData.extraServices', next);
   };
 
+  const onNextHandler = () => {
+    if (onNext) {
+      onNext();
+    }
+  };
+
   const services = data?.getExtraServices ?? [];
 
   if (loading) return <LoadingSkeleton />;
 
   return (
-    <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
-      {/* Header hint */}
-      <View style={s.hint}>
-        <View style={s.hintBar} />
-        <Text style={s.hintText}>
-          Optional add-ons for your trip. You can skip this step if you don't need any extras.
-        </Text>
-      </View>
-
-      {/* Service list */}
-      {services.map((service) => (
-        <ServiceCard
-          key={service.id}
-          service={service}
-          selected={selectedIds.includes(service.id)}
-          onPress={() => toggle(service)}
-        />
-      ))}
-
-      {/* Selected summary */}
-      {selectedIds.length > 0 && (
-        <View style={s.summary}>
-          <Text style={s.summaryText}>
-            {selectedIds.length} extra{selectedIds.length > 1 ? 's' : ''} selected
-          </Text>
-          <TouchableOpacity onPress={() => setValue('bookingBusinessData.extraServices', [])}>
-            <Text style={s.clearText}>Clear all</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* Empty state */}
-      {!loading && services.length === 0 && (
-        <View style={s.empty}>
-          <Text style={s.emptyTitle}>No extras available</Text>
-          <Text style={s.emptyDesc}>
-            No additional services are configured for this service area.
+    <>
+      <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
+        {/* Header hint */}
+        <View style={s.hint}>
+          <View style={s.hintBar} />
+          <Text style={s.hintText}>
+            Optional add-ons for your trip. You can skip this step if you don't need any extras.
           </Text>
         </View>
-      )}
-    </ScrollView>
+
+        {/* Service list */}
+        {services.map((service) => (
+          <ServiceCard
+            key={service.id}
+            service={service}
+            selected={selectedIds.includes(service.id)}
+            onPress={() => toggle(service)}
+          />
+        ))}
+
+        {/* Selected summary */}
+        {selectedIds.length > 0 && (
+          <View style={s.summary}>
+            <Text style={s.summaryText}>
+              {selectedIds.length} extra{selectedIds.length > 1 ? 's' : ''} selected
+            </Text>
+            <TouchableOpacity onPress={() => setValue('bookingBusinessData.extraServices', [])}>
+              <Text style={s.clearText}>Clear all</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Empty state */}
+        {!loading && services.length === 0 && (
+          <View style={s.empty}>
+            <Text style={s.emptyTitle}>No extras available</Text>
+            <Text style={s.emptyDesc}>
+              No additional services are configured for this service area.
+            </Text>
+          </View>
+        )}
+      </ScrollView>
+      <BookingFooter onBack={onBack} onNext={onNextHandler} />
+    </>
   );
 };
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 const s = StyleSheet.create({
   scroll: {
-    paddingHorizontal: 24,
-    paddingTop: 16,
     paddingBottom: 24,
     gap: 12,
   },
@@ -109,8 +119,8 @@ const s = StyleSheet.create({
   },
   hintText: {
     flex: 1,
-    fontSize: 12,
-    color: '#6B7280',
+    fontSize: 14,
+    color: '#fff',
     lineHeight: 18,
   },
   summary: {

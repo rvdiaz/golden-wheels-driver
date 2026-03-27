@@ -12,10 +12,11 @@ import {
 import { DateTimeInputField } from '~/codidge_components/UI/form/inputs/dateTimePicker';
 import { BookMode, Booking } from '~/screens/trips/interfaces';
 import Text from '~/codidge_components/UI/text';
+import { BookingFooter } from '../../widgets/bookFooter';
 
 type ActivePicker = 'pickup' | 'dropoff' | null;
 
-export const TrioBookForm = ({ onSubmit }: { onSubmit: () => void }) => {
+export const TrioBookForm = ({ onNext }: { onNext: () => void }) => {
   const {
     control,
     watch,
@@ -139,7 +140,12 @@ export const TrioBookForm = ({ onSubmit }: { onSubmit: () => void }) => {
           </View>
         )}
       </View>
-
+      <BookingFooter
+        nextLabel="Next"
+        onNext={() => {
+          onNext();
+        }}
+      />
       {/* Address picker modals */}
       <AddressPickerModal
         visible={activePicker !== null}

@@ -1,10 +1,13 @@
-import React from 'react';
-import { View, StyleSheet, ImageBackground, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, ImageBackground, Dimensions, Modal } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Text from '~/codidge_components/UI/text';
-import { BookingTrigger } from '~/components/bookForm';
+import { BookSelectionForm } from '~/components/bookTripJourney';
+import { GlassButton } from '~/codidge_components/UI/button/GlassButton';
+import { ButtonSize } from '~/codidge_components/UI/button/types';
+import { ChevronRight } from 'lucide-react-native';
 const { width } = Dimensions.get('window');
-const HEIGHT = width * 0.82; // ~62vw tall, feels cinematic
+const HEIGHT = width * 0.92; // ~62vw tall, feels cinematic
 
 export const HeaderCallToAction = ({
   imageUri,
@@ -19,6 +22,8 @@ export const HeaderCallToAction = ({
   buttonLabel?: string;
   onPress?: () => void;
 }) => {
+  const [open, setOpen] = useState(false);
+
   return (
     <View style={styles.wrapper}>
       <ImageBackground
@@ -63,25 +68,30 @@ export const HeaderCallToAction = ({
           <View style={styles.content}>
             <Text style={styles.subtitle}>{subtitle}</Text>
             <Text style={styles.title}>{title}</Text>
-
-            <BookingTrigger
-              label={buttonLabel}
-              onSubmit={(data) => {
-                /* navigate to car select */
-              }}
-              onPickupPress={() => {
-                /* open address picker modal */
-              }}
-              onDropoffPress={() => {
-                /* open address picker modal */
-              }}
-              onDatePress={() => {
-                /* open date picker modal */
-              }}
+            {/* Trigger button inside the card */}
+            <GlassButton
+              size={ButtonSize.XLARGE}
+              title={buttonLabel}
+              onPress={() => setOpen(true)}
+              rightIcon={<ChevronRight size={20} color="#fff" />}
+              style={{ width: '70%' }}
             />
           </View>
         </View>
       </ImageBackground>
+      <Modal
+        visible={open}
+        animationType="slide"
+        statusBarTranslucent
+        onRequestClose={() => setOpen(false)}>
+        <BookSelectionForm
+          onDismiss={() => setOpen(false)}
+          onPayPress={(data) => {
+            setOpen(false);
+            // handle payment
+          }}
+        />
+      </Modal>
     </View>
   );
 };

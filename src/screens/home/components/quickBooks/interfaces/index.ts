@@ -1,17 +1,10 @@
-import { LucideIcon } from 'lucide-react-native';
 import { IImage } from '~/codidge_components/interfaces';
-
-// ── Types ─────────────────────────────────────────────────────────────────────
-export interface ILocation {
-  id: string;
-  displayName: string;
-  formattedAddress: string;
-}
+import { TripLocation } from '~/screens/trips/interfaces';
 
 export interface QuickBookOption {
   id: string;
   title: string;
   image: IImage;
-  address: ILocation;
+  address: TripLocation;
   icon: string;
 }

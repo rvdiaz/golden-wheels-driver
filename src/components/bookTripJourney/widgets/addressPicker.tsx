@@ -17,14 +17,15 @@ import { gql, useLazyQuery } from '@apollo/client';
 import { X, Search, MapPin, Navigation, ChevronRight } from 'lucide-react-native';
 import Text from '~/codidge_components/UI/text';
 import { apiKeyClient } from '~/store/config/apolloClient';
+import { theme } from '~/theme/theme';
 
 export const getSearchAutoCompleteQuery = gql`
   query AutocompleteSearch($input: String!) {
     autoCompleteSearch(input: $input) {
       places {
-        placeId
+        id
+        formattedAddress
         displayName
-        address
       }
     }
   }
@@ -34,8 +35,8 @@ export const getSearchAutoCompleteQuery = gql`
 
 export interface IAddressSuggestion {
   displayName: string;
-  address: string;
-  placeId: string;
+  formattedAddress: string;
+  id: string;
   meta?: any;
 }
 
@@ -56,7 +57,7 @@ interface AddressPickerModalProps {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
-const GOLD = '#D4A853';
+const GOLD = theme.colors.primary;
 const GOLD_DIM = 'rgba(212,168,83,0.6)';
 const GOLD_FAINT = 'rgba(212,168,83,0.12)';
 
@@ -109,7 +110,7 @@ const SuggestionItem = ({
             {item.displayName}
           </Text>
           <Text style={suggestion.address} numberOfLines={1}>
-            {item.address}
+            {item.formattedAddress}
           </Text>
         </View>
         <ChevronRight size={14} color="#fff" />
@@ -318,7 +319,7 @@ export const AddressPickerModal: React.FC<AddressPickerModalProps> = ({
                 <Text style={result.sectionLabel}>SUGGESTIONS</Text>
                 {suggestions.map((item, index) => (
                   <SuggestionItem
-                    key={item.placeId}
+                    key={item.id}
                     item={item}
                     onPress={handleSelect}
                     isLast={index === suggestions.length - 1}
@@ -338,7 +339,7 @@ export const AddressPickerModal: React.FC<AddressPickerModalProps> = ({
 const modal = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.75)',
+    backgroundColor: 'rgba(0,0,0,0.45)',
     justifyContent: 'flex-end',
   },
   sheet: {

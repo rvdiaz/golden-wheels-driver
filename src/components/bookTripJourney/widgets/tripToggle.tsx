@@ -1,7 +1,7 @@
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { BookMode } from '../interfaces';
 import { LinearGradient } from 'expo-linear-gradient';
 import Text from '~/codidge_components/UI/text';
+import { BookMode } from '~/screens/trips/interfaces';
 
 export const BookModeToggle = ({
   value,
@@ -54,7 +54,6 @@ const toggle = StyleSheet.create({
     flex: 1,
   },
   tab: {
-    flex: 1,
     paddingVertical: 10,
     borderRadius: 9,
     alignItems: 'center',

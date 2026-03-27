@@ -11,6 +11,16 @@ export const getCarTypesQuery = gql`
         alt
       }
       maxPassengers
+      features {
+        label
+        value
+      }
+      supportsHourly
+      hourlyRate
+      supportsDistance
+      pricePerMiles
+      baseFare
+      minimumFare
     }
   }
 `;

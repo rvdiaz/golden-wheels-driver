@@ -1,6 +1,6 @@
-import { IImage } from '~/codidge_components/interfaces';
+import { IImage, IPrices } from '~/codidge_components/interfaces';
 
-export type BookingStatus = 'confirmed' | 'completed' | 'cancelled' | 'in_progress';
+export type BookingStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'in_progress';
 export type TabKey = 'upcoming' | 'past' | 'cancelled';
 
 export interface CarType {
@@ -9,6 +9,17 @@ export interface CarType {
   description?: string;
   maxPassengers: number;
   image: IImage;
+  features: {
+    label: string;
+    value: string;
+  }[];
+  supportsHourly: boolean;
+  supportsDistance: boolean;
+  hourlyRate: number;
+  pricePerMiles: number;
+  baseFare: number;
+  minimumFare: number;
+  tripQuotePrice: number;
 }
 
 export interface Car {
@@ -43,9 +54,14 @@ export interface TotalPrice {
   currencyCode: string;
 }
 
+export enum BookMode {
+  trip = 'trip',
+  hourly = 'hourly',
+}
+
 export interface BookingBusinessData {
   bookHours: number;
-  bookMode: 'trip' | 'hourly';
+  bookMode: BookMode;
   car: Car;
   customer: Customer;
   driver: Driver;
@@ -64,4 +80,14 @@ export interface Booking {
   createdAt: string;
   note: string;
   bookingBusinessData: BookingBusinessData;
+}
+
+export interface IExtraService {
+  id: string;
+  name: string;
+  description?: string;
+  price: IPrices;
+  createdAt: string;
+  available: boolean;
+  image?: IImage;
 }

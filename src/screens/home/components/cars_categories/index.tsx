@@ -4,6 +4,7 @@ import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
 import { CarCard } from './widgets/carTypeCard';
 import { useCarCategories } from './hooks/useCarCategories';
+import { CarCategoriesSkeleton } from './widgets/carTypesSkeletons';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.62;
@@ -19,7 +20,7 @@ const Dots = ({ total, active }: { total: number; active: number }) => (
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 export const CarsCategories = ({}: {}) => {
-  const { carCategories } = useCarCategories();
+  const { carCategories, loading } = useCarCategories();
 
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
@@ -29,6 +30,14 @@ export const CarsCategories = ({}: {}) => {
     const index = Math.round(x / (CARD_WIDTH + 14));
     setActiveIndex(index);
   };
+
+  if (loading) {
+    return <CarCategoriesSkeleton />;
+  }
+
+  if (carCategories.length === 0) {
+    return <View></View>;
+  }
 
   return (
     <View style={styles.wrapper}>

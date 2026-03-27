@@ -13,7 +13,7 @@ import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Calendar, Clock, ChevronRight, Check } from 'lucide-react-native';
 import Text from '~/codidge_components/UI/text';
-import { FormField } from '~/components/bookForm/widgets/formField';
+import { FormField } from '~/components/bookTripJourney/widgets/formField';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 

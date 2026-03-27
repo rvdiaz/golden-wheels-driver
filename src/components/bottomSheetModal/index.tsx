@@ -209,7 +209,7 @@ const sheet = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 'auto',
-    marginBottom: 5,
+    marginBottom: 24,
   },
   scroll: {
     flex: 1,

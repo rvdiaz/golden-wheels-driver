@@ -1,16 +1,24 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import Text from '~/codidge_components/UI/text';
-import { QuickBookItem } from './quickBookItem';
-import { QuickBookOption } from './interfaces';
+import { QuickBookItem } from './widgets/quickBookItem';
 import { useQuickBooks } from './hooks/useQuickBooks';
+import { QuickBookSkeleton_List } from './widgets/quickBookSkeletons';
 
 const GRID_THRESHOLD = 4;
 
 export const QuickBook = () => {
-  const { quickBooks } = useQuickBooks();
+  const { quickBooks, loadingQuickBooks } = useQuickBooks();
 
   const useGrid = quickBooks.length <= GRID_THRESHOLD;
+
+  if (loadingQuickBooks) {
+    return <QuickBookSkeleton_List />;
+  }
+
+  if (quickBooks.length === 0) {
+    return <View></View>;
+  }
 
   return (
     <View style={styles.wrapper}>

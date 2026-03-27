@@ -4,7 +4,7 @@ import { ENV_Vars } from '~/store/env';
 import { CarType } from '~/screens/trips/interfaces';
 
 export const useCarCategories = () => {
-  const { data, loading } = useQuery<{
+  const { data, error, loading } = useQuery<{
     getCarTypes: CarType[];
   }>(getCarTypesQuery, {
     variables: {

@@ -14,6 +14,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Text from '~/codidge_components/UI/text';
 import { IExtraService } from '~/screens/trips/interfaces';
 import { theme } from '~/theme/theme';
+import { formatCurrency } from '~/screens/trips/helpers';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -83,7 +84,7 @@ export const ServiceCard = ({
           {service.price != null && (
             <View style={card.priceWrap}>
               <Text style={[card.price, selected && card.priceSelected]}>
-                ${service.price.amount}
+                {formatCurrency(service.price.amount, service.price.currencyCode)}
               </Text>
             </View>
           )}

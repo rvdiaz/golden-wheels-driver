@@ -222,6 +222,9 @@ export const NotificationsScreen = () => {
 
   return (
     <PageSafeContainer style={styles.container}>
+      <View style={styles.screenHeader}>
+        <Text style={styles.screenTitle}>Notifications</Text>
+      </View>
       {/* Subtitle row */}
       {notifications.length > 0 && (
         <View style={styles.subtitleRow}>
@@ -260,6 +263,20 @@ export const NotificationsScreen = () => {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
+  screenHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.lg,
+    paddingBottom: theme.spacing.md,
+  },
+
+  screenTitle: {
+    fontSize: 22,
+    fontWeight: '600',
+    color: GOLD,
+    letterSpacing: 0.4,
+  },
   container: {
     flex: 1,
   },

@@ -38,7 +38,7 @@ export const AccountDeletionModal = () => {
       await deleteUser({
         variables: {
           tenant: { tenantId: userInfo?.activeTenantId },
-          userId: userInfo?.userID,
+          userId: userInfo?.id,
         },
       });
 

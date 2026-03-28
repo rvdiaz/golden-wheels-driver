@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { Alert, ScrollView, StyleSheet } from 'react-native';
 import { Controller, useFormContext } from 'react-hook-form';
 import Text from '~/codidge_components/UI/text';
 import { useCarCategories } from '~/screens/home/components/cars_categories/hooks/useCarCategories';
@@ -7,6 +7,8 @@ import { CarCategoriesSkeleton } from '~/screens/home/components/cars_categories
 import { Booking } from '~/screens/trips/interfaces';
 import { CarOptionCard } from '../../widgets/carCategoryCard';
 import { BookingFooter } from '../../widgets/bookFooter';
+import { useCustomerTrips } from '~/screens/trips/hooks/useCustomerTrips';
+import { ENV_Vars } from '~/store/env';
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
@@ -17,20 +19,75 @@ export const CarCategorySelection = ({
   onBack: () => void;
   onNext: () => void;
 }) => {
-  const { carCategories, loading } = useCarCategories();
-
   const {
     control,
     trigger,
+    getValues,
+    setValue,
+    watch,
     formState: { errors },
   } = useFormContext<Booking>();
 
+  const { bookHours, bookMode, dropoffLocation, pickupLocation } = watch('bookingBusinessData');
+
+  const { carCategoriesWithQuote, loadingGetCarTypesByTrip } = useCarCategories({
+    queryInput: {
+      bookHours,
+      bookMode,
+      dropoffLocation,
+      pickupLocation,
+    },
+  });
+  const { handleUpdateTrip, loadingTripUpdate } = useCustomerTrips({ skipQueries: false });
+
   const handleNext = async () => {
-    const valid = await trigger('bookingBusinessData.carType');
-    if (valid) onNext();
+    try {
+      const valid = await trigger('bookingBusinessData.carType');
+      if (valid) {
+        const values = getValues();
+        const bookingId = values.id;
+        const carTypeSelection = values.bookingBusinessData.carType;
+
+        const tripUpdateResponse = await handleUpdateTrip({
+          tenant: ENV_Vars.tenant,
+          bookingId,
+          booking: {
+            bookingBusinessData: {
+              carType: {
+                id: carTypeSelection.id,
+                name: carTypeSelection.name,
+                supportsHourly: carTypeSelection.supportsHourly,
+                hourlyRate: carTypeSelection.hourlyRate,
+                supportsDistance: carTypeSelection.supportsDistance,
+                pricePerMiles: carTypeSelection.pricePerMiles,
+                baseFare: carTypeSelection.baseFare,
+                minimumFare: carTypeSelection.minimumFare,
+                maxPassengers: carTypeSelection.maxPassengers,
+                features: carTypeSelection.features,
+                tripQuotePrice: carTypeSelection.tripQuotePrice,
+              },
+            },
+          },
+        });
+        if (!tripUpdateResponse?.id) {
+          throw new Error('Failed to updating booking');
+        }
+
+        setValue('bookingBusinessData.carType', tripUpdateResponse.bookingBusinessData.carType);
+        setValue(
+          'bookingBusinessData.totalPrice',
+          tripUpdateResponse.bookingBusinessData.totalPrice
+        );
+
+        onNext();
+      }
+    } catch (error) {
+      console.log(':::error', error);
+      Alert.alert('Something went wrong while trying to process car selection');
+    }
   };
 
-  if (loading) {
+  if (loadingGetCarTypesByTrip) {
     return <CarCategoriesSkeleton />;
   }
 
@@ -45,10 +102,11 @@ export const CarCategorySelection = ({
         render={({ field: { value, onChange } }) => (
           <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
             <Text style={s.resultCount}>
-              {carCategories.length} {carCategories.length === 1 ? 'car' : 'cars'} available
+              {carCategoriesWithQuote.length} {carCategoriesWithQuote.length === 1 ? 'car' : 'cars'}{' '}
+              available
             </Text>
 
-            {carCategories.map((car) => (
+            {carCategoriesWithQuote.map((car) => (
               <CarOptionCard
                 key={car.id}
                 car={car}
@@ -61,7 +119,13 @@ export const CarCategorySelection = ({
           </ScrollView>
         )}
       />
-      <BookingFooter errorMessage={error?.message} onBack={onBack} onNext={handleNext} />
+      <BookingFooter
+        backDisabled={loadingTripUpdate}
+        nextLoading={loadingTripUpdate}
+        errorMessage={error?.message}
+        onBack={onBack}
+        onNext={handleNext}
+      />
     </>
   );
 };

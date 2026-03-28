@@ -3,11 +3,6 @@
 import { theme } from '~/theme/theme';
 import { Booking, TabKey } from '../interfaces';
 
-const GOLD = theme.colors.primary;
-export const GOLD_10 = 'rgba(218,192,114,0.10)';
-export const GOLD_20 = 'rgba(218,192,114,0.20)';
-export const GOLD_30 = 'rgba(218,192,114,0.30)';
-
 // Subtle white glass — bumped up from 0.04/0.05 for a softer frosted feel
 export const GLASS_BG = 'rgba(255,255,255,0.08)';
 
@@ -20,8 +15,9 @@ export const WHITE_35 = 'rgba(255,255,255,0.35)';
 
 export const TABS: { key: TabKey; label: string }[] = [
   { key: 'upcoming', label: 'Upcoming' },
-  { key: 'past', label: 'Past' },
+  { key: 'draft', label: 'Draft' },
   { key: 'cancelled', label: 'Cancelled' },
+  { key: 'past', label: 'Past' },
 ];
 
 // ─── Formatters ───────────────────────────────────────────────────────────────
@@ -53,5 +49,7 @@ export const filterByTab = (bookings: Booking[], tab: TabKey): Booking[] => {
   if (tab === 'upcoming')
     return bookings.filter((b) => b.status === 'confirmed' || b.status === 'in_progress');
   if (tab === 'past') return bookings.filter((b) => b.status === 'completed');
+  if (tab === 'draft') return bookings.filter((b) => b.status === 'draft');
+  if (tab === 'cancelled') return bookings.filter((b) => b.status === 'cancelled');
   return bookings.filter((b) => b.status === 'cancelled');
 };

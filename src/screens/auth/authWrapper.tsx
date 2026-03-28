@@ -35,6 +35,8 @@ export const AuthWrapper = () => {
 
       const userData = user.data?.getCustomer;
 
+      console.log(':;userData', userData);
+
       if (!userData) {
         console.error(user.error);
         throw Error('Error getting user');

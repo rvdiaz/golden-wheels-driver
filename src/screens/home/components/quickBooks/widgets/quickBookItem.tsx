@@ -1,4 +1,11 @@
-import { Dimensions, ImageBackground, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  Dimensions,
+  ImageBackground,
+  Modal,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
@@ -6,6 +13,7 @@ import { QuickBookOption } from '../interfaces';
 import { iconMap } from '../helpers';
 import { MapPin } from 'lucide-react-native';
 import { useState } from 'react';
+import { BookSelectionForm } from '~/components/bookTripJourney';
 export const GAP_QUICK_BOOKS = 10;
 const { width } = Dimensions.get('window');
 const ITEM_SIZE = 149;
@@ -49,8 +57,24 @@ export const QuickBookItem = ({ item }: { item: QuickBookOption }) => {
           </Text>
         </View>
       </TouchableOpacity>
-      {/*       <BookingModal visible={open} onClose={() => setOpen(false)} pickupLocation={item.address} />
-       */}{' '}
+      <Modal
+        visible={open}
+        animationType="slide"
+        statusBarTranslucent
+        onRequestClose={() => setOpen(false)}>
+        <BookSelectionForm
+          onDismiss={() => setOpen(false)}
+          initialValues={{
+            bookingBusinessData: {
+              pickupLocation: {
+                displayName: item.address.displayName,
+                formattedAddress: item.address.formattedAddress,
+                id: item.address.id,
+              },
+            },
+          }}
+        />
+      </Modal>
     </>
   );
 };

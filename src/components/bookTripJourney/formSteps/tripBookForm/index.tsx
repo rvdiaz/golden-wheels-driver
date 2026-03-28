@@ -13,18 +13,29 @@ import { DateTimeInputField } from '~/codidge_components/UI/form/inputs/dateTime
 import { BookMode, Booking } from '~/screens/trips/interfaces';
 import Text from '~/codidge_components/UI/text';
 import { BookingFooter } from '../../widgets/bookFooter';
+import { useCustomerTrips } from '~/screens/trips/hooks/useCustomerTrips';
+import { ENV_Vars } from '~/store/env';
+import { useReactiveVar } from '@apollo/client';
+import { userData } from '~/store/user';
 
 type ActivePicker = 'pickup' | 'dropoff' | null;
 
 export const TrioBookForm = ({ onNext }: { onNext: () => void }) => {
+  const userInfo = useReactiveVar(userData);
+
   const {
     control,
     watch,
     setValue,
     clearErrors,
+    getValues,
     formState: { errors },
   } = useFormContext<Booking>();
 
+  const { handleAddTrip, handleUpdateTrip, loadingTripUpdate, loadingTripCreation } =
+    useCustomerTrips({
+      skipQueries: true,
+    });
   const [activePicker, setActivePicker] = useState<ActivePicker>(null);
 
   const bookMode = watch('bookingBusinessData.bookMode');
@@ -42,6 +53,65 @@ export const TrioBookForm = ({ onNext }: { onNext: () => void }) => {
     });
     clearErrors(field);
     setActivePicker(null);
+  };
+
+  const handlerBookingDraftCreation = async () => {
+    try {
+      const values = getValues();
+      let response = undefined;
+      const id = values.id;
+      if (id) {
+        response = await handleUpdateTrip({
+          tenant: ENV_Vars.tenant,
+          bookingId: id,
+          booking: {
+            startDate: values.startDate,
+            status: 'draft',
+            bookingBusinessData: {
+              pickupLocation: values.bookingBusinessData.pickupLocation,
+              dropoffLocation: values.bookingBusinessData.dropoffLocation,
+              bookMode: values.bookingBusinessData.bookMode,
+              bookHours: values.bookingBusinessData.bookHours,
+            },
+          },
+        });
+        if (!response?.id) {
+          throw new Error('Failed to updating booking');
+        }
+      } else {
+        response = await handleAddTrip({
+          tenant: ENV_Vars.tenant,
+          booking: {
+            startDate: values.startDate,
+            status: 'draft',
+            bookingBusinessData: {
+              customer: {
+                id: userInfo?.id,
+                name: userInfo?.name,
+                email: userInfo?.email,
+                phone: userInfo?.phone,
+              },
+              pickupLocation: values.bookingBusinessData.pickupLocation,
+              dropoffLocation: values.bookingBusinessData.dropoffLocation,
+              bookMode: values.bookingBusinessData.bookMode,
+              bookHours: values.bookingBusinessData.bookHours,
+            },
+          },
+        });
+        if (!response?.id) {
+          throw new Error('Failed to create booking');
+        }
+
+        setValue('id', response.id);
+      }
+
+      setValue('bookingBusinessData', response.bookingBusinessData);
+
+      // ✅ Move to next step
+      onNext();
+    } catch (err) {
+      console.error('Booking creation failed:', err);
+    }
   };
 
   return (
@@ -142,9 +212,8 @@ export const TrioBookForm = ({ onNext }: { onNext: () => void }) => {
       </View>
       <BookingFooter
         nextLabel="Next"
-        onNext={() => {
-          onNext();
-        }}
+        onNext={handlerBookingDraftCreation}
+        nextLoading={loadingTripCreation || loadingTripUpdate}
       />
       {/* Address picker modals */}
       <AddressPickerModal

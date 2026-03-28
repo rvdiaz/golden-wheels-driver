@@ -3,44 +3,14 @@ import { View, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { BodyWrapper } from '~/codidge_components/UI/bodyWrapper';
 import Text from '~/codidge_components/UI/text';
 import { Booking, TabKey } from './interfaces';
-import { filterByTab, GOLD, GOLD_20, GOLD_30, TABS } from './helpers';
-import { MOCK_BOOKINGS } from './data';
+import { filterByTab } from './helpers';
 import { TripCard } from './components/tripCard';
 import { theme } from '~/theme/theme';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import { useCustomerTrips } from './hooks/useCustomerTrips';
+import { TabBar } from './components/statusTabs';
 
-// ─── Tab Bar ──────────────────────────────────────────────────────────────────
-
-interface TabBarProps {
-  activeTab: TabKey;
-  counts: Record<TabKey, number>;
-  onTabChange: (tab: TabKey) => void;
-}
-
-const TabBar = ({ activeTab, counts, onTabChange }: TabBarProps) => (
-  <View style={styles.tabBar}>
-    {TABS.map((t) => {
-      const isActive = t.key === activeTab;
-      return (
-        <TouchableOpacity
-          key={t.key}
-          onPress={() => onTabChange(t.key)}
-          activeOpacity={0.75}
-          style={[styles.tabItem, isActive && styles.tabItemActive]}>
-          {isActive && <View style={styles.tabDot} />}
-          <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>{t.label}</Text>
-          <View style={[styles.tabCount, !isActive && styles.tabCountInactive]}>
-            <Text style={[styles.tabCountText, !isActive && styles.tabCountTextInactive]}>
-              {counts[t.key]}
-            </Text>
-          </View>
-        </TouchableOpacity>
-      );
-    })}
-  </View>
-);
-
-// ─── Empty State ──────────────────────────────────────────────────────────────
+const GOLD = theme.colors.primary;
 
 const EmptyState = ({ tab }: { tab: TabKey }) => (
   <View style={styles.emptyState}>
@@ -60,18 +30,17 @@ const EmptyState = ({ tab }: { tab: TabKey }) => (
 
 export const TripsScreen = () => {
   const [activeTab, setActiveTab] = useState<TabKey>('upcoming');
-
-  // Replace MOCK_BOOKINGS with your real data source / API hook:
-  // const { data: bookings = [], isLoading } = useBookings();
-  const bookings: Booking[] = MOCK_BOOKINGS;
+  const { tripLists, loadingTrips } = useCustomerTrips({});
 
   const counts: Record<TabKey, number> = {
-    upcoming: filterByTab(bookings, 'upcoming').length,
-    past: filterByTab(bookings, 'past').length,
-    cancelled: filterByTab(bookings, 'cancelled').length,
+    upcoming: filterByTab(tripLists, 'upcoming').length,
+    past: filterByTab(tripLists, 'past').length,
+
+    cancelled: filterByTab(tripLists, 'cancelled').length,
+    draft: filterByTab(tripLists, 'draft').length,
   };
 
-  const filtered = filterByTab(bookings, activeTab);
+  const filtered = filterByTab(tripLists, activeTab);
 
   const handleCardPress = (booking: Booking) => {
     // Wire up your navigation here:
@@ -84,9 +53,6 @@ export const TripsScreen = () => {
       <PageSafeContainer>
         {/* Header */}
         <View style={styles.screenHeader}>
-          <View style={styles.titleIconWrap}>
-            <View style={styles.titleIconDot} />
-          </View>
           <Text style={styles.screenTitle}>My Trips</Text>
         </View>
 
@@ -124,84 +90,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.lg,
     paddingBottom: theme.spacing.md,
   },
-  titleIconWrap: {
-    width: 28,
-    height: 28,
-    borderRadius: theme.borderRadius.sm,
-    backgroundColor: GOLD,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  titleIconDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#0a0a0f',
-  },
+
   screenTitle: {
     fontSize: 22,
     fontWeight: '600',
     color: GOLD,
     letterSpacing: 0.4,
-  },
-
-  // ── Tab bar ──
-  tabBar: {
-    flexDirection: 'row',
-    marginHorizontal: theme.spacing.lg,
-    marginBottom: theme.spacing.lg,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderWidth: 0.5,
-    borderColor: 'rgba(218,192,114,0.14)',
-    borderRadius: theme.borderRadius.lg,
-    padding: 4,
-    gap: 4,
-  },
-  tabItem: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 9,
-    borderRadius: 10,
-    gap: 5,
-  },
-  tabItemActive: {
-    backgroundColor: GOLD_20,
-    borderWidth: 0.5,
-    borderColor: GOLD_30,
-  },
-  tabDot: {
-    width: 5,
-    height: 5,
-    borderRadius: 3,
-    backgroundColor: GOLD,
-  },
-  tabLabel: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.35)',
-    fontWeight: '400',
-  },
-  tabLabelActive: {
-    color: GOLD,
-    fontWeight: '500',
-  },
-  tabCount: {
-    backgroundColor: GOLD_20,
-    paddingHorizontal: 6,
-    paddingVertical: 1,
-    borderRadius: 20,
-  },
-  tabCountInactive: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
-  },
-  tabCountText: {
-    fontSize: 10,
-    color: GOLD,
-    fontWeight: '500',
-  },
-  tabCountTextInactive: {
-    color: 'rgba(255,255,255,0.3)',
   },
 
   // ── List ──
@@ -220,17 +114,17 @@ const styles = StyleSheet.create({
   },
   emptyIcon: {
     fontSize: 28,
-    color: 'rgba(255,255,255,0.12)',
+    color: 'rgba(255,255,255,0.62)',
     marginBottom: 4,
   },
   emptyTitle: {
     fontSize: 15,
-    color: 'rgba(255,255,255,0.25)',
+    color: 'rgba(255,255,255,0.65)',
     fontWeight: '500',
   },
   emptySubtitle: {
     fontSize: 13,
-    color: 'rgba(255,255,255,0.15)',
+    color: 'rgba(255,255,255,0.45)',
     textAlign: 'center',
     paddingHorizontal: 32,
   },

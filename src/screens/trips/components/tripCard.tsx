@@ -1,10 +1,8 @@
-import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import Text from '~/codidge_components/UI/text';
 import { Booking, BookingStatus, TabKey } from '../interfaces';
 import {
-  GOLD,
-  GOLD_30,
   GLASS_BG,
   WHITE_08,
   WHITE_10,
@@ -16,6 +14,10 @@ import {
   getInitials,
 } from '../helpers';
 import { theme } from '~/theme/theme';
+import { BookSelectionForm } from '~/components/bookTripJourney';
+
+const GOLD = theme.colors.primary;
+const GOLD_30 = theme.colors.primaryAlpha[35];
 
 // ─── Status Badge ─────────────────────────────────────────────────────────────
 
@@ -26,6 +28,18 @@ interface StatusBadgeProps {
 export const StatusBadge = ({ status }: StatusBadgeProps) => {
   const config: Record<BookingStatus, { label: string; bg: string; text: string; border: string }> =
     {
+      draft: {
+        label: 'Draft',
+        bg: 'rgba(156,163,175,0.12)', // gray subtle
+        text: '#9ca3af',
+        border: 'rgba(156,163,175,0.3)',
+      },
+      pending: {
+        label: 'Pending',
+        bg: 'rgba(251,191,36,0.12)', // amber
+        text: '#fbbf24',
+        border: 'rgba(251,191,36,0.3)',
+      },
       confirmed: {
         label: 'Confirmed',
         bg: 'rgba(218,192,114,0.12)',
@@ -84,6 +98,7 @@ interface TripCardProps {
 
 export const TripCard = ({ booking, tab, onPress }: TripCardProps) => {
   const { bookingBusinessData: biz, bookingCode, status, startDate } = booking;
+  const [open, setOpen] = useState(false);
 
   const isPast = tab === 'past';
   const isCancelled = tab === 'cancelled';
@@ -126,127 +141,154 @@ export const TripCard = ({ booking, tab, onPress }: TripCardProps) => {
   const avatarTextColor = isPast || isCancelled ? 'rgba(255,255,255,0.3)' : GOLD;
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.82}
-      onPress={() => onPress?.(booking)}
-      style={[cardStyles.card, { backgroundColor: cardBg, borderColor: cardBorder }]}>
-      {/* Top shimmer accent */}
-      <View style={[cardStyles.shimmer, { backgroundColor: shimmerColor }]} />
+    <>
+      <TouchableOpacity
+        activeOpacity={0.82}
+        onPress={() => {
+          setOpen(true);
+        }}
+        style={[cardStyles.card, { backgroundColor: cardBg, borderColor: cardBorder }]}>
+        {/* Top shimmer accent */}
+        <View style={[cardStyles.shimmer, { backgroundColor: shimmerColor }]} />
 
-      {/* Subtle inner white glow at top-left corner */}
-      <View style={cardStyles.glassHighlight} />
+        {/* Subtle inner white glow at top-left corner */}
+        <View style={cardStyles.glassHighlight} />
 
-      {/* Header */}
-      <View style={cardStyles.header}>
-        <Text
-          style={[
-            cardStyles.bookingCode,
-            {
-              color: isCancelled ? 'rgba(248,113,113,0.85)' : 'rgba(218,192,114,0.85)',
-            },
-          ]}>
-          {bookingCode}
-        </Text>
-        <StatusBadge status={status} />
-      </View>
-
-      {/* Route */}
-      <View style={cardStyles.routeRow}>
-        <View style={cardStyles.routeLine}>
-          <View style={[cardStyles.routeDot, { backgroundColor: dotColor }]} />
-          <View style={[cardStyles.routeConnector, { backgroundColor: lineColor }]} />
-          <View style={[cardStyles.routeDot, { backgroundColor: dotEndColor }]} />
-        </View>
-        <View style={cardStyles.routeAddresses}>
-          <View style={cardStyles.locationBlock}>
-            <Text
-              style={[cardStyles.locationLabel, { color: `rgba(218,192,114,${labelOpacity})` }]}>
-              Pickup · {formatDate(startDate)} · {formatTime(startDate)}
-            </Text>
-            <Text
-              style={[cardStyles.locationName, { color: `rgba(255,255,255,${textOpacity})` }]}
-              numberOfLines={1}>
-              {biz.pickupLocation.displayName}
-            </Text>
-            <Text style={cardStyles.locationAddr} numberOfLines={1}>
-              {biz.pickupLocation.formattedAddress}
-            </Text>
-          </View>
-          <View style={cardStyles.locationBlock}>
-            <Text
-              style={[cardStyles.locationLabel, { color: `rgba(218,192,114,${labelOpacity})` }]}>
-              Drop-off
-            </Text>
-            <Text
-              style={[cardStyles.locationName, { color: `rgba(255,255,255,${textOpacity})` }]}
-              numberOfLines={1}>
-              {biz.dropoffLocation.displayName}
-            </Text>
-            <Text style={cardStyles.locationAddr} numberOfLines={1}>
-              {biz.dropoffLocation.formattedAddress}
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Divider */}
-      <View style={[cardStyles.divider, { backgroundColor: WHITE_10 }]} />
-
-      {/* Meta row */}
-      <View style={cardStyles.metaRow}>
-        <View style={cardStyles.metaItem}>
-          <Text style={cardStyles.metaLabel}>Vehicle</Text>
+        {/* Header */}
+        <View style={cardStyles.header}>
           <Text
-            style={[cardStyles.metaValue, { color: `rgba(255,255,255,${textOpacity})` }]}
-            numberOfLines={1}>
-            {biz.car.carType.name}
-          </Text>
-        </View>
-        <View style={cardStyles.metaItem}>
-          <Text style={cardStyles.metaLabel}>Mode</Text>
-          <Text style={[cardStyles.metaValue, { color: `rgba(255,255,255,${textOpacity})` }]}>
-            {biz.bookMode === 'trip' ? 'Trip' : 'Hourly'}
-          </Text>
-        </View>
-        <View style={cardStyles.metaItem}>
-          <Text style={cardStyles.metaLabel}>{isCancelled ? 'Refund' : 'Total'}</Text>
-          <Text style={[cardStyles.metaPrice, { color: priceColor }]}>
-            {formatCurrency(biz.totalPrice.amount, biz.totalPrice.currencyCode)}
-          </Text>
-        </View>
-      </View>
-
-      {/* Divider */}
-      <View style={[cardStyles.divider, { backgroundColor: WHITE_10 }]} />
-
-      {/* Footer */}
-      <View style={cardStyles.footer}>
-        <View style={cardStyles.driverPill}>
-          <View
             style={[
-              cardStyles.driverAvatar,
-              { backgroundColor: avatarBg, borderColor: avatarBorder },
+              cardStyles.bookingCode,
+              {
+                color: isCancelled ? 'rgba(248,113,113,0.85)' : 'rgba(218,192,114,0.85)',
+              },
             ]}>
-            <Text style={[cardStyles.driverInitials, { color: avatarTextColor }]}>
-              {getInitials(biz.driver.name)}
+            {bookingCode}
+          </Text>
+          <StatusBadge status={status} />
+        </View>
+
+        {/* Route */}
+        <View style={cardStyles.routeRow}>
+          <View style={cardStyles.routeLine}>
+            <View style={[cardStyles.routeDot, { backgroundColor: dotColor }]} />
+            <View style={[cardStyles.routeConnector, { backgroundColor: lineColor }]} />
+            <View style={[cardStyles.routeDot, { backgroundColor: dotEndColor }]} />
+          </View>
+          <View style={cardStyles.routeAddresses}>
+            <View style={cardStyles.locationBlock}>
+              <Text
+                style={[cardStyles.locationLabel, { color: `rgba(218,192,114,${labelOpacity})` }]}>
+                Pickup · {formatDate(startDate)} · {formatTime(startDate)}
+              </Text>
+              <Text
+                style={[cardStyles.locationName, { color: `rgba(255,255,255,${textOpacity})` }]}
+                numberOfLines={1}>
+                {biz.pickupLocation.displayName}
+              </Text>
+              <Text style={cardStyles.locationAddr} numberOfLines={1}>
+                {biz.pickupLocation.formattedAddress}
+              </Text>
+            </View>
+            <View style={cardStyles.locationBlock}>
+              <Text
+                style={[cardStyles.locationLabel, { color: `rgba(218,192,114,${labelOpacity})` }]}>
+                Drop-off
+              </Text>
+              <Text
+                style={[cardStyles.locationName, { color: `rgba(255,255,255,${textOpacity})` }]}
+                numberOfLines={1}>
+                {biz.dropoffLocation.displayName}
+              </Text>
+              <Text style={cardStyles.locationAddr} numberOfLines={1}>
+                {biz.dropoffLocation.formattedAddress}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Divider */}
+        <View style={[cardStyles.divider, { backgroundColor: WHITE_10 }]} />
+
+        {/* Meta row */}
+        <View style={cardStyles.metaRow}>
+          <View style={cardStyles.metaItem}>
+            <Text style={cardStyles.metaLabel}>Vehicle</Text>
+            <Text
+              style={[cardStyles.metaValue, { color: `rgba(255,255,255,${textOpacity})` }]}
+              numberOfLines={1}>
+              {biz.carType?.name}
             </Text>
           </View>
-          <Text style={cardStyles.driverName}>{biz.driver.name}</Text>
+          <View style={cardStyles.metaItem}>
+            <Text style={cardStyles.metaLabel}>Mode</Text>
+            <Text style={[cardStyles.metaValue, { color: `rgba(255,255,255,${textOpacity})` }]}>
+              {biz.bookMode === 'trip' ? 'Trip' : 'Hourly'}
+            </Text>
+          </View>
+          {biz.totalPrice?.amount && (
+            <View style={cardStyles.metaItem}>
+              <Text style={cardStyles.metaLabel}>{isCancelled ? 'Refund' : 'Total'}</Text>
+              <Text style={[cardStyles.metaPrice, { color: priceColor }]}>
+                {formatCurrency(biz.totalPrice?.amount, biz.totalPrice.currencyCode)}
+              </Text>
+            </View>
+          )}
         </View>
-        <View style={cardStyles.carTag}>
-          <Text style={cardStyles.carTagText} numberOfLines={1}>
-            {biz.car.brand}
-          </Text>
-        </View>
-      </View>
 
-      {/* Cancel note */}
-      {isCancelled && booking.note ? (
-        <View style={cardStyles.cancelNote}>
-          <Text style={cardStyles.cancelNoteText}>{booking.note}</Text>
+        {/* Divider */}
+        <View style={[cardStyles.divider, { backgroundColor: WHITE_10 }]} />
+
+        {/* Footer */}
+        <View style={cardStyles.footer}>
+          <View style={cardStyles.driverPill}>
+            {biz.driver && (
+              <>
+                <View
+                  style={[
+                    cardStyles.driverAvatar,
+                    { backgroundColor: avatarBg, borderColor: avatarBorder },
+                  ]}>
+                  <Text style={[cardStyles.driverInitials, { color: avatarTextColor }]}>
+                    {getInitials(biz.driver?.name)}
+                  </Text>
+                </View>
+
+                <Text style={cardStyles.driverName}>{biz.driver?.name}</Text>
+              </>
+            )}
+          </View>
+          {biz.car && (
+            <View style={cardStyles.carTag}>
+              <Text style={cardStyles.carTagText} numberOfLines={1}>
+                {biz.car?.brand}
+              </Text>
+            </View>
+          )}
         </View>
-      ) : null}
-    </TouchableOpacity>
+
+        {/* Cancel note */}
+        {isCancelled && booking.note ? (
+          <View style={cardStyles.cancelNote}>
+            <Text style={cardStyles.cancelNoteText}>{booking.note}</Text>
+          </View>
+        ) : null}
+      </TouchableOpacity>
+      <Modal
+        visible={open}
+        animationType="slide"
+        statusBarTranslucent
+        onRequestClose={() => setOpen(false)}>
+        <BookSelectionForm
+          onDismiss={() => setOpen(false)}
+          onPayPress={(data) => {
+            setOpen(false);
+            // handle payment
+          }}
+          initialValues={booking}
+        />
+      </Modal>
+    </>
   );
 };
 

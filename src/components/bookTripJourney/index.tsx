@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, FormProvider, DeepPartial } from 'react-hook-form';
 import { Booking, BookMode } from '~/screens/trips/interfaces';
 import { TrioBookForm } from './formSteps/tripBookForm';
 import { CarCategorySelection } from './formSteps/carCategorySelection';
 import { SummaryAndPayment } from './formSteps/summaryAndPayment';
 import { ExtraServicesSelection } from './formSteps/addonsSelection';
 import { BookingFlowWrapper } from './widgets/formWrapper';
+import { deepMerge } from './helpers';
 
 // ─── Step config ──────────────────────────────────────────────────────────────
 
@@ -35,27 +36,36 @@ const TOTAL_STEPS = STEPS.length;
 interface BookSelectionFormProps {
   onDismiss?: () => void;
   onPayPress?: (data: Booking) => void;
+  initialValues?: DeepPartial<Booking>; // ← new
+  initialStep?: number;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export const BookSelectionForm = ({ onDismiss, onPayPress }: BookSelectionFormProps) => {
+export const BookSelectionForm = ({
+  onDismiss,
+  onPayPress,
+  initialValues,
+}: BookSelectionFormProps) => {
   const [currentStep, setCurrentStep] = useState(0);
 
   const methods = useForm<Booking>({
-    defaultValues: {
-      status: 'pending',
-      startDate: '',
-      endDate: '',
-      note: '',
-      bookingBusinessData: {
-        bookMode: BookMode.trip,
-        bookHours: 2,
-        pickupLocation: { displayName: '', formattedAddress: '', id: '' },
-        dropoffLocation: { displayName: '', formattedAddress: '', id: '' },
-        extraServices: [],
+    defaultValues: deepMerge(
+      {
+        status: 'pending',
+        startDate: '',
+        endDate: '',
+        note: '',
+        bookingBusinessData: {
+          bookMode: BookMode.trip,
+          bookHours: 2,
+          pickupLocation: { displayName: '', formattedAddress: '', id: '' },
+          dropoffLocation: { displayName: '', formattedAddress: '', id: '' },
+          extraServices: [],
+        },
       },
-    },
+      initialValues ?? {} // ← anything passed in wins
+    ),
     mode: 'onTouched',
   });
 
@@ -78,13 +88,15 @@ export const BookSelectionForm = ({ onDismiss, onPayPress }: BookSelectionFormPr
       case 3:
         return true; // summary — no new fields
       default:
-        return true;
+        return false;
     }
   };
 
   // ── Navigation ─────────────────────────────────────────────────────────────
 
   const handleNext = async () => {
+    console.log('::currentStep', currentStep);
+
     const valid = await validateStep(currentStep);
     if (!valid) return;
     setCurrentStep((s) => s + 1);
@@ -111,8 +123,8 @@ export const BookSelectionForm = ({ onDismiss, onPayPress }: BookSelectionFormPr
       <BookingFlowWrapper
         currentStep={currentStep}
         totalSteps={TOTAL_STEPS}
-        stepLabel={step.label}
-        stepSubtitle={step.subtitle}
+        stepLabel={step?.label ?? ''}
+        stepSubtitle={step?.subtitle ?? ''}
         onBack={handleBack}
         onDismiss={onDismiss}>
         {currentStep === 0 && <TrioBookForm onNext={handleNext} />}

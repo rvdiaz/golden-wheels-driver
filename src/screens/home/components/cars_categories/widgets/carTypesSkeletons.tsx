@@ -51,7 +51,6 @@ const CarCardSkeleton = () => {
 
 export const CarCategoriesSkeleton = ({ count = 3 }: { count?: number }) => (
   <ScrollView
-    horizontal
     showsHorizontalScrollIndicator={false}
     scrollEnabled={false}
     contentContainerStyle={sk.scrollContent}>
@@ -65,15 +64,14 @@ export const CarCategoriesSkeleton = ({ count = 3 }: { count?: number }) => (
 
 const sk = StyleSheet.create({
   scrollContent: {
-    paddingHorizontal: 20,
     gap: 14,
   },
   card: {
-    width: CARD_WIDTH,
     borderRadius: theme.borderRadius.xxl,
     overflow: 'hidden',
     backgroundColor: '#0f172a',
     borderWidth: 1,
+    height: 300,
     borderColor: theme.colors.primaryAlpha[20],
   },
   imageContainer: {

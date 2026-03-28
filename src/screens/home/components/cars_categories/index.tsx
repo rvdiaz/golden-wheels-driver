@@ -20,7 +20,7 @@ const Dots = ({ total, active }: { total: number; active: number }) => (
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 export const CarsCategories = ({}: {}) => {
-  const { carCategories, loading } = useCarCategories();
+  const { carCategories, loading } = useCarCategories({});
 
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef<ScrollView>(null);

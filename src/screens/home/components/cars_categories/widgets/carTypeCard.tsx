@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { Users } from 'lucide-react-native';
-import React, { useRef, useState } from 'react';
+import { Car, Users } from 'lucide-react-native';
+import React from 'react';
 import {
   View,
   TouchableOpacity,
@@ -29,11 +29,17 @@ export const CarCard = ({
   <TouchableOpacity onPress={onPress} activeOpacity={0.82} style={[styles.card, style]}>
     {/* Image section */}
     <View style={styles.imageContainer}>
-      <ImageBackground
-        source={{ uri: item.image.url }}
-        style={StyleSheet.absoluteFill}
-        resizeMode="cover"
-      />
+      {item.image?.url ? (
+        <ImageBackground
+          source={{ uri: item.image.url }}
+          style={StyleSheet.absoluteFill}
+          resizeMode="cover"
+        />
+      ) : (
+        <View style={styles.imageFallback}>
+          <Car size={32} color="rgba(212,168,83,0.25)" strokeWidth={1.2} />
+        </View>
+      )}
       {/* Bottom fade into card body */}
       <LinearGradient
         colors={['transparent', '#0f172a'] as [string, string]}
@@ -132,5 +138,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'rgba(255,255,255,0.4)',
     fontWeight: '500',
+  },
+  imageFallback: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(212,168,83,0.04)',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(212,168,83,0.08)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

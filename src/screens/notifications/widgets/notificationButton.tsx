@@ -26,7 +26,7 @@ export const NotificationButton: React.FC<NotificationButtonProps> = ({
 
   // Don't show badge if count is 0 or showBadge is false
   const { data } = useQuery<GetUserNotificationsResponse>(getUserNotificationsQuery, {
-    variables: getUserNotificationsVariables(user?.userID),
+    variables: getUserNotificationsVariables(user?.id),
     fetchPolicy: 'cache-and-network', // Keep badge updated
   });
 

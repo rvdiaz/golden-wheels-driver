@@ -10,14 +10,12 @@ import {
   CreditCard,
   Sparkles,
   Users,
+  DollarSign,
 } from 'lucide-react-native';
 import Text from '~/codidge_components/UI/text';
-import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import { Booking, BookMode } from '~/screens/trips/interfaces';
-import { ButtonSize } from '~/codidge_components/UI/button/types';
 import { theme } from '~/theme/theme';
-import { formatDate } from '~/screens/trips/helpers';
-import { CarCard } from '~/screens/home/components/cars_categories/widgets/carTypeCard';
+import { formatCurrency, formatDate } from '~/screens/trips/helpers';
 import { BookingFooter } from '../../widgets/bookFooter';
 
 const GOLD = theme.colors.primary;
@@ -79,25 +77,18 @@ export const SummaryAndPayment = ({
 
   const data = watch();
   const biz = data.bookingBusinessData;
+
   const isHourly = biz?.bookMode === BookMode.hourly;
   const carType = biz?.carType; // ← the selected ICarType
-  const extraServices: string[] = biz?.extraServices ?? [];
-  const totalPrice = biz?.totalPrice;
+  const extraServices = biz?.extraServices ?? [];
+  const extraServicesTotal = extraServices.reduce((sum, ext) => {
+    return sum + (ext.price.amount ?? 0);
+  }, 0);
+  const totalPrice = biz?.totalPrice ?? 0;
 
   return (
     <>
       <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
-        {/* ── Car type image card ── */}
-        {carType && (
-          <CarCard
-            onPress={() => {}}
-            item={carType}
-            style={{
-              width: '100%',
-            }}
-          />
-        )}
-
         {/* ── Trip ── */}
         <Section title="Trip">
           <ReviewRow
@@ -127,7 +118,7 @@ export const SummaryAndPayment = ({
         </Section>
 
         {/* ── Vehicle category ── */}
-        {carType && (
+        {carType ? (
           <Section title="Vehicle Category">
             <ReviewRow
               icon={<Car size={14} color={GOLD} />}
@@ -141,27 +132,19 @@ export const SummaryAndPayment = ({
                 value={`${carType.maxPassengers}`}
               />
             ) : null}
-            {carType.minimumFare ? (
+            {carType.tripQuotePrice ? (
               <ReviewRow
-                icon={<CreditCard size={14} color={GOLD} />}
-                label="Minimum Fare"
-                value={`$${carType.minimumFare}`}
-                last={!carType.hourlyRate}
-              />
-            ) : null}
-            {carType.hourlyRate ? (
-              <ReviewRow
-                icon={<Clock size={14} color={GOLD} />}
-                label="Hourly Rate"
-                value={`$${carType.hourlyRate}/hr`}
-                last
+                icon={<DollarSign size={14} color={GOLD} />}
+                label="Trip Price"
+                value={formatCurrency(carType.tripQuotePrice, totalPrice.currencyCode)}
+                last={true}
               />
             ) : null}
           </Section>
-        )}
+        ) : null}
 
         {/* ── Extras ── */}
-        {extraServices.length > 0 && (
+        {extraServices.length > 0 ? (
           <Section title="Extras">
             <ReviewRow
               icon={<Sparkles size={14} color={GOLD} />}
@@ -170,28 +153,35 @@ export const SummaryAndPayment = ({
               last
             />
           </Section>
-        )}
+        ) : null}
 
         {/* ── Pricing ── */}
-        {totalPrice && (
+        {totalPrice ? (
           <View style={priceS.wrapper}>
             <Text style={sec.title}>Price</Text>
             <View style={priceS.card}>
               <PriceRow
                 label={isHourly ? 'Hourly rate' : 'Base fare'}
-                value={`$${carType?.minimumFare ?? 0}`}
+                value={formatCurrency(carType?.tripQuotePrice, totalPrice.currencyCode)}
               />
-              {extraServices.length > 0 && <PriceRow label="Extras" value="+$0" />}
+              {extraServices.length > 0 ? (
+                <PriceRow
+                  label="Extras"
+                  value={formatCurrency(extraServicesTotal, totalPrice.currencyCode)}
+                />
+              ) : (
+                <View />
+              )}
               <View style={priceS.divider} />
               <PriceRow
                 label="Total"
-                value={`$${totalPrice.amount} ${totalPrice.currencyCode}`}
+                value={formatCurrency(totalPrice.amount, totalPrice.currencyCode)}
                 bold
                 gold
               />
             </View>
           </View>
-        )}
+        ) : null}
 
         {/* ── Policy ── */}
         <View style={s.policy}>

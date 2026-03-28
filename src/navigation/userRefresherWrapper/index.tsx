@@ -4,8 +4,8 @@ import { useApolloClient, useReactiveVar } from '@apollo/client';
 import { updateUser, userData } from '~/store/user';
 import { pushTokenVar } from '~/store/user/pushToken';
 import { getCurrentUser, signOut } from 'aws-amplify/auth';
-import { getAdminUserQuery } from '~/screens/auth/graphql/queries';
 import { IUser } from '~/store/user/interfaces';
+import { getCustomerQuery } from '~/screens/auth/graphql/queries';
 
 interface Props {
   children: React.ReactNode;
@@ -74,7 +74,7 @@ export const UserRefresherWrapper: React.FC<Props> = ({ children }) => {
   // Memoized refresh function with proper dependencies
   const refreshUser = useCallback(async () => {
     // Guard conditions
-    if (!userInfo?.userID || isFetchingRef.current) return;
+    if (!userInfo?.id || isFetchingRef.current) return;
 
     const isTokenValid = await checkTokenValidity();
     if (!isTokenValid) return;
@@ -90,10 +90,10 @@ export const UserRefresherWrapper: React.FC<Props> = ({ children }) => {
 
     try {
       const { data } = await client.query({
-        query: getAdminUserQuery,
+        query: getCustomerQuery,
         variables: {
           tenant: { tenantId: userInfo.activeTenantId },
-          userId: userInfo.userID,
+          customerId: userInfo.id,
           token: pushToken || undefined, // Handle null token
         },
         fetchPolicy: 'network-only',
@@ -101,8 +101,8 @@ export const UserRefresherWrapper: React.FC<Props> = ({ children }) => {
         errorPolicy: 'none',
       });
 
-      if (data?.getUser) {
-        await updateUser(data.getUser as IUser);
+      if (data?.getCustomer) {
+        await updateUser(data.getCustomer as IUser);
       }
     } catch (err) {
       // Only log non-network errors to avoid spam
@@ -110,11 +110,11 @@ export const UserRefresherWrapper: React.FC<Props> = ({ children }) => {
     } finally {
       isFetchingRef.current = false;
     }
-  }, [client, userInfo?.userID, pushToken]);
+  }, [client, userInfo?.id, pushToken]);
 
   // Initial refresh on mount (only if user exists)
   useEffect(() => {
-    if (userInfo?.userID) {
+    if (userInfo?.id) {
       // Small delay to ensure system settings are loaded first
       const timer = setTimeout(() => {
         refreshUser();
@@ -125,7 +125,7 @@ export const UserRefresherWrapper: React.FC<Props> = ({ children }) => {
 
   // Handle app state changes
   useEffect(() => {
-    if (!userInfo?.userID) return;
+    if (!userInfo?.id) return;
 
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
       const isComingToForeground =
@@ -143,7 +143,7 @@ export const UserRefresherWrapper: React.FC<Props> = ({ children }) => {
     return () => {
       subscription.remove();
     };
-  }, [refreshUser, userInfo?.userID]);
+  }, [refreshUser, userInfo?.id]);
 
   return <>{children}</>;
 };

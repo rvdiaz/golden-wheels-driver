@@ -12,6 +12,7 @@ export interface FooterBookingProps {
   onBack?: () => void;
   onNext?: () => void;
   nextLabel?: string;
+  backDisabled?: boolean;
   nextDisabled?: boolean;
   nextLoading?: boolean;
   hideBack?: boolean;
@@ -24,6 +25,7 @@ export const BookingFooter: React.FC<FooterBookingProps> = ({
   onNext,
   nextLabel = 'Continue',
   nextDisabled = false,
+  backDisabled = false,
   nextLoading = false,
   hideBack = false,
   errorMessage,
@@ -45,10 +47,13 @@ export const BookingFooter: React.FC<FooterBookingProps> = ({
       <View style={styles.footerRow}>
         {!hideBack && onBack && (
           <OutlineButton
+            disabled={backDisabled}
             size={ButtonSize.LARGE}
             onPress={onBack}
             title="Back"
-            leftWidget={<ArrowLeft size={16} color={theme.colors.primary} />}
+            leftWidget={
+              <ArrowLeft size={16} color={backDisabled ? '#D1D5DB' : theme.colors.primary} />
+            }
           />
         )}
         <PrimaryButton

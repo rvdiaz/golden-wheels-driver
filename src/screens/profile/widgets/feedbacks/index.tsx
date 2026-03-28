@@ -107,7 +107,7 @@ export const FeedbacksScreen = () => {
       const blob = await response.blob();
 
       // Generate unique filename
-      const filename = `feedback/${userInfo?.userID}/${Date.now()}-${Math.random()
+      const filename = `feedback/${userInfo?.id}/${Date.now()}-${Math.random()
         .toString(36)
         .substring(7)}.jpg`;
 
@@ -171,7 +171,7 @@ export const FeedbacksScreen = () => {
 
       // Submit feedback via GraphQL
       const input = {
-        userId: userInfo?.userID,
+        userId: userInfo?.id,
         userName: `${userInfo?.name}`,
         subject: data.subject,
         message: data.message,

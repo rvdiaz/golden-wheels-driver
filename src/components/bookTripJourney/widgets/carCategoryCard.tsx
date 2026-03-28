@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Users, Check } from 'lucide-react-native';
 import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
+import { formatCurrency } from '~/screens/trips/helpers';
 const { width } = Dimensions.get('window');
 
 const GOLD = theme.colors.primary;
@@ -57,7 +58,9 @@ export const CarOptionCard = ({
       {/* Price */}
       {(car.minimumFare || car.tripQuotePrice) && (
         <View style={styles.priceWrap}>
-          <Text style={styles.price}>${car.tripQuotePrice ?? car.minimumFare}</Text>
+          <Text style={styles.price}>
+            {formatCurrency(car.tripQuotePrice ?? car.minimumFare, 'USD')}
+          </Text>
         </View>
       )}
     </View>

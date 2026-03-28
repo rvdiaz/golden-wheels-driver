@@ -1,41 +1,10 @@
 import { IImage } from '~/codidge_components/interfaces';
-import { ModuleKeys } from '~/store/interface';
 
 export enum ProductModules {
   variants = 'variants',
   pricing = 'pricing',
   metafields = 'metafields',
   modifiersGroups = 'modifiersGroups',
-}
-
-export interface IFeatureModule {
-  label?: string;
-  moduleKey: ModuleKeys;
-  metaData: { [key: string]: any };
-  modules: ITenantModule[];
-  icon?: string;
-  color?: string;
-}
-
-export interface ITenantTheme {
-  colorPalette: {
-    primary: string;
-  };
-  logo: IImage;
-  cover: IImage;
-}
-
-export interface ITenantModule {
-  label?: string;
-  moduleKey: ModuleKeys;
-  path: string;
-  type?: string;
-  metaData: any;
-  modules?: IFeatureModule[];
-  permissions?: IPermission[];
-  icon?: string;
-  activeIcon?: string;
-  isBottomBar?: boolean;
 }
 
 export enum StatusUser {
@@ -59,7 +28,7 @@ export interface IUser {
   email: string;
   loading?: boolean;
   phone: string;
-  userID: string;
+  id: string;
   name: string;
   status: StatusUser | string;
   role: UserRoles | 'OWNER';

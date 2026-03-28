@@ -7,6 +7,8 @@ import { SummaryAndPayment } from './formSteps/summaryAndPayment';
 import { ExtraServicesSelection } from './formSteps/addonsSelection';
 import { BookingFlowWrapper } from './widgets/formWrapper';
 import { deepMerge } from './helpers';
+import { BookingConfirmationScreen } from './formSteps/confirmationResults';
+import { setActiveTab } from '~/store/navigationTabs';
 
 // ─── Step config ──────────────────────────────────────────────────────────────
 
@@ -42,13 +44,19 @@ interface BookSelectionFormProps {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export const BookSelectionForm = ({
-  onDismiss,
-  onPayPress,
-  initialValues,
-}: BookSelectionFormProps) => {
+export const BookSelectionForm = ({ onDismiss, initialValues }: BookSelectionFormProps) => {
   const [currentStep, setCurrentStep] = useState(0);
-
+  const [finishPayment, setfinishPayment] = useState<
+    | {
+        bookingCode: string;
+        pickupDisplayName: string;
+        startDate: string;
+        carTypeName?: string;
+        totalAmount?: number;
+        currencyCode?: string;
+      }
+    | undefined
+  >();
   const methods = useForm<Booking>({
     defaultValues: deepMerge(
       {
@@ -113,10 +121,38 @@ export const BookSelectionForm = ({
   // ── Final submit ───────────────────────────────────────────────────────────
 
   const handlePay = handleSubmit((data) => {
-    onPayPress?.(data);
+    setfinishPayment({
+      bookingCode: data.bookingCode,
+      pickupDisplayName: data.bookingBusinessData.pickupLocation.displayName,
+      startDate: data.startDate,
+      carTypeName: data.bookingBusinessData.carType.name,
+      currencyCode: data.bookingBusinessData.totalPrice.currencyCode,
+      totalAmount: data.bookingBusinessData.totalPrice.amount,
+    });
   });
 
   const step = STEPS[currentStep];
+
+  if (finishPayment) {
+    return (
+      <BookingConfirmationScreen
+        bookingCode={finishPayment.bookingCode}
+        pickupDisplayName={finishPayment.pickupDisplayName}
+        carTypeName={finishPayment.carTypeName}
+        currencyCode={finishPayment.currencyCode}
+        startDate={finishPayment.startDate}
+        totalAmount={finishPayment.totalAmount}
+        onGoHome={() => {
+          onDismiss?.();
+          setActiveTab('Home');
+        }}
+        onViewTrips={() => {
+          onDismiss?.();
+          setActiveTab('Trips');
+        }}
+      />
+    );
+  }
 
   return (
     <FormProvider {...methods}>
@@ -130,7 +166,7 @@ export const BookSelectionForm = ({
         {currentStep === 0 && <TrioBookForm onNext={handleNext} />}
         {currentStep === 1 && <CarCategorySelection onBack={handleBack} onNext={handleNext} />}
         {currentStep === 2 && <ExtraServicesSelection onBack={handleBack} onNext={handleNext} />}
-        {currentStep === 3 && <SummaryAndPayment onPayPress={handlePay} onBack={handleBack} />}
+        {currentStep === 3 && <SummaryAndPayment finish={handlePay} onBack={handleBack} />}
       </BookingFlowWrapper>
     </FormProvider>
   );

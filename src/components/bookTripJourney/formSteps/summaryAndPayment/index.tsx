@@ -17,61 +17,16 @@ import { Booking, BookMode } from '~/screens/trips/interfaces';
 import { theme } from '~/theme/theme';
 import { formatCurrency, formatDate } from '~/screens/trips/helpers';
 import { BookingFooter } from '../../widgets/bookFooter';
+import { SummaryPriceRow, SummaryReviewRow, SummarySection } from './subComponents';
 
 const GOLD = theme.colors.primary;
 
-const ReviewRow = ({
-  icon,
-  label,
-  value,
-  last,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  last?: boolean;
-}) => (
-  <View style={[row.wrapper, last && { borderBottomWidth: 0 }]}>
-    <View style={row.iconWrap}>{icon}</View>
-    <View style={row.content}>
-      <Text style={row.label}>{label}</Text>
-      <Text style={row.value} numberOfLines={2}>
-        {value || '—'}
-      </Text>
-    </View>
-  </View>
-);
-
-const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
-  <View style={sec.wrapper}>
-    <Text style={sec.title}>{title}</Text>
-    <View style={sec.card}>{children}</View>
-  </View>
-);
-
-const PriceRow = ({
-  label,
-  value,
-  bold,
-  gold,
-}: {
-  label: string;
-  value: string;
-  bold?: boolean;
-  gold?: boolean;
-}) => (
-  <View style={priceS.row}>
-    <Text style={[priceS.label, bold && priceS.bold]}>{label}</Text>
-    <Text style={[priceS.value, bold && priceS.bold, gold && priceS.gold]}>{value}</Text>
-  </View>
-);
-
 export const SummaryAndPayment = ({
   onBack,
-  onPayPress,
+  finish,
 }: {
   onBack: () => void;
-  onPayPress?: () => void;
+  finish: () => void;
 }) => {
   const { watch } = useFormContext<Booking>();
 
@@ -86,73 +41,77 @@ export const SummaryAndPayment = ({
   }, 0);
   const totalPrice = biz?.totalPrice ?? 0;
 
+  const onPayPressHandler = () => {
+    finish();
+  };
+
   return (
     <>
       <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
         {/* ── Trip ── */}
-        <Section title="Trip">
-          <ReviewRow
+        <SummarySection title="Trip">
+          <SummaryReviewRow
             icon={<Navigation size={14} color={GOLD} />}
             label="Pickup"
             value={biz?.pickupLocation?.displayName ?? ''}
           />
           {!isHourly ? (
-            <ReviewRow
+            <SummaryReviewRow
               icon={<MapPin size={14} color={GOLD} />}
               label="Destination"
               value={biz?.dropoffLocation?.displayName ?? ''}
             />
           ) : (
-            <ReviewRow
+            <SummaryReviewRow
               icon={<Clock size={14} color={GOLD} />}
               label="Duration"
               value={`${biz?.bookHours ?? 0} hours`}
             />
           )}
-          <ReviewRow
+          <SummaryReviewRow
             icon={<Calendar size={14} color={GOLD} />}
             label="Date & Time"
             value={formatDate(data.startDate)}
             last
           />
-        </Section>
+        </SummarySection>
 
         {/* ── Vehicle category ── */}
         {carType ? (
-          <Section title="Vehicle Category">
-            <ReviewRow
+          <SummarySection title="Vehicle Category">
+            <SummaryReviewRow
               icon={<Car size={14} color={GOLD} />}
               label="Category"
               value={carType.name}
             />
             {carType.maxPassengers ? (
-              <ReviewRow
+              <SummaryReviewRow
                 icon={<Users size={14} color={GOLD} />}
                 label="Max Passengers"
                 value={`${carType.maxPassengers}`}
               />
             ) : null}
             {carType.tripQuotePrice ? (
-              <ReviewRow
+              <SummaryReviewRow
                 icon={<DollarSign size={14} color={GOLD} />}
                 label="Trip Price"
                 value={formatCurrency(carType.tripQuotePrice, totalPrice.currencyCode)}
                 last={true}
               />
             ) : null}
-          </Section>
+          </SummarySection>
         ) : null}
 
         {/* ── Extras ── */}
         {extraServices.length > 0 ? (
-          <Section title="Extras">
-            <ReviewRow
+          <SummarySection title="Extras">
+            <SummaryReviewRow
               icon={<Sparkles size={14} color={GOLD} />}
               label="Add-ons"
               value={`${extraServices.length} extra service${extraServices.length > 1 ? 's' : ''} included`}
               last
             />
-          </Section>
+          </SummarySection>
         ) : null}
 
         {/* ── Pricing ── */}
@@ -160,12 +119,12 @@ export const SummaryAndPayment = ({
           <View style={priceS.wrapper}>
             <Text style={sec.title}>Price</Text>
             <View style={priceS.card}>
-              <PriceRow
+              <SummaryPriceRow
                 label={isHourly ? 'Hourly rate' : 'Base fare'}
                 value={formatCurrency(carType?.tripQuotePrice, totalPrice.currencyCode)}
               />
               {extraServices.length > 0 ? (
-                <PriceRow
+                <SummaryPriceRow
                   label="Extras"
                   value={formatCurrency(extraServicesTotal, totalPrice.currencyCode)}
                 />
@@ -173,7 +132,7 @@ export const SummaryAndPayment = ({
                 <View />
               )}
               <View style={priceS.divider} />
-              <PriceRow
+              <SummaryPriceRow
                 label="Total"
                 value={formatCurrency(totalPrice.amount, totalPrice.currencyCode)}
                 bold
@@ -195,7 +154,7 @@ export const SummaryAndPayment = ({
         <View style={{ height: 8 }} />
       </ScrollView>
       <BookingFooter
-        onNext={onPayPress}
+        onNext={onPayPressHandler}
         nextLabel="Proceed to Payment"
         rightWidget={<CreditCard size={18} />}
       />
@@ -224,38 +183,6 @@ const sec = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.08)',
     backgroundColor: 'rgba(255,255,255,0.05)',
     overflow: 'hidden',
-  },
-});
-
-const row = StyleSheet.create({
-  wrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    gap: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: 'rgba(255,255,255,0.06)', // dark divider
-  },
-  iconWrap: {
-    width: 28,
-    height: 28,
-    borderRadius: 8,
-    backgroundColor: 'rgba(212,168,83,0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  content: { flex: 1, gap: 4 },
-  label: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.65)', // muted white
-    fontWeight: '500',
-  },
-  value: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: 'rgba(255,255,255,0.9)', // bright white
-    lineHeight: 19,
   },
 });
 

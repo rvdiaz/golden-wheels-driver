@@ -13,6 +13,7 @@ import { NotificationsScreen } from '~/screens/notifications';
 import { ProfileScreen } from '~/screens/profile';
 import { CustomTabBar } from './bottomBar';
 import { GetStartedScreen } from '~/screens/welcome_screen';
+import { activeTabVar, setActiveTab } from '~/store/navigationTabs';
 
 const Stack = createStackNavigator();
 const HAS_LAUNCHED_KEY = 'gw_has_launched9'; // namespaced to your app
@@ -27,7 +28,7 @@ const SCREENS: Record<TabName, React.ComponentType<any>> = {
 };
 
 function TabsWithHeader() {
-  const [activeTab, setActiveTab] = useState<TabName>('Home');
+  const activeTab = useReactiveVar(activeTabVar);
   const ActiveScreen = SCREENS[activeTab];
 
   return (

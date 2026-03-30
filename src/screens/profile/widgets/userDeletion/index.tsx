@@ -4,14 +4,11 @@ import { AccountDeletionModal } from '../accountDeletion';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { theme } from '~/theme/theme';
 import { Header } from '~/codidge_components/UI/header';
-import { useNavigation } from '@react-navigation/native';
 
-export const UserDeletionScreen = () => {
-  const navigation = useNavigation();
-
+export const UserDeletionScreen = ({ onBack }: { onBack: () => void }) => {
   return (
     <PageSafeContainer style={styles.container}>
-      <Header title="Account" showBack onBack={() => navigation.goBack()} />
+      <Header title="Account" showBack onBack={onBack} />
       <View
         style={{
           padding: 16,

@@ -1,7 +1,6 @@
 import React from 'react';
-import { Image, ImageBackground, StyleSheet, View, SafeAreaView, StatusBar } from 'react-native';
+import { Image, ImageBackground, StyleSheet, View, StatusBar } from 'react-native';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
-import TextButton from '~/codidge_components/UI/button/TextButton';
 import Text from '~/codidge_components/UI/text';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '~/theme/theme';
@@ -69,17 +68,6 @@ export const GetStartedScreen = ({ onGetStarted }: GetStartedScreenProps) => {
               size={ButtonSize.LARGE}
               style={styles.ctaButton}
             />
-
-            <View style={styles.signInRow}>
-              <Text style={styles.signInText}>Already have an account? </Text>
-              <TextButton
-                title="Sign In"
-                style={{
-                  paddingLeft: 5,
-                }}
-                textStyle={styles.signInButtonText}
-              />
-            </View>
           </View>
         </PageSafeContainer>
       </ImageBackground>
@@ -161,19 +149,5 @@ const styles = StyleSheet.create({
   ctaButton: {
     width: '100%',
     marginTop: 4,
-  },
-  signInRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  signInText: {
-    color: 'rgba(255,255,255,0.6)',
-    fontSize: 14,
-  },
-  signInButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
   },
 });

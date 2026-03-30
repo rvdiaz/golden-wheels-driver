@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, ScrollView, StyleSheet, Alert } from 'react-native';
 import { useFormContext } from 'react-hook-form';
 import {
   Navigation,
@@ -11,13 +11,43 @@ import {
   Sparkles,
   Users,
   DollarSign,
+  Lock,
 } from 'lucide-react-native';
 import Text from '~/codidge_components/UI/text';
 import { Booking, BookMode } from '~/screens/trips/interfaces';
 import { theme } from '~/theme/theme';
-import { formatCurrency, formatDate } from '~/screens/trips/helpers';
+import { formatCurrency, formatDate, formatDateTime } from '~/screens/trips/helpers';
 import { BookingFooter } from '../../widgets/bookFooter';
-import { SummaryPriceRow, SummaryReviewRow, SummarySection } from './subComponents';
+import {
+  SummaryPriceRow,
+  SummaryReviewRow,
+  SummarySection,
+  SummaryTrustBanner,
+} from './subComponents';
+import { useCustomerTrips } from '~/screens/trips/hooks/useCustomerTrips';
+import { useReactiveVar } from '@apollo/client';
+import { userData } from '~/store/user';
+import { ENV_Vars } from '~/store/env';
+
+let useStripe: () => {
+  initPaymentSheet: (params: any) => Promise<{ error?: { message: string } }>;
+  presentPaymentSheet: () => Promise<{ error?: { code: string; message: string } }>;
+};
+
+try {
+  useStripe = require('@stripe/stripe-react-native').useStripe;
+} catch {
+  useStripe = () => ({
+    initPaymentSheet: async () => {
+      console.warn('[Stripe] Native module not available');
+      return {};
+    },
+    presentPaymentSheet: async () => {
+      console.warn('[Stripe] Native module not available');
+      return {};
+    },
+  });
+}
 
 const GOLD = theme.colors.primary;
 
@@ -29,10 +59,16 @@ export const SummaryAndPayment = ({
   finish: () => void;
 }) => {
   const { watch } = useFormContext<Booking>();
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
+
+  const { handlePaymentIntent, loadingPaymentProcessment } = useCustomerTrips({
+    skipQueries: true,
+  });
+  const user = useReactiveVar(userData);
+  const [loadingSheet, setLoadingSheet] = useState(false);
 
   const data = watch();
   const biz = data.bookingBusinessData;
-
   const isHourly = biz?.bookMode === BookMode.hourly;
   const carType = biz?.carType; // ← the selected ICarType
   const extraServices = biz?.extraServices ?? [];
@@ -40,14 +76,82 @@ export const SummaryAndPayment = ({
     return sum + (ext.price.amount ?? 0);
   }, 0);
   const totalPrice = biz?.totalPrice ?? 0;
+  const loading = loadingPaymentProcessment || loadingSheet;
 
-  const onPayPressHandler = () => {
-    finish();
+  const onPayPressHandler = async () => {
+    if (!totalPrice || !data.id || !user?.id) {
+      Alert.alert('Missing info', 'Booking or user information is incomplete.');
+      return;
+    }
+
+    setLoadingSheet(true);
+
+    try {
+      // 1. Create PaymentIntent on backend
+      //    capture_method: 'manual' — card HELD, not charged
+      //    Charge happens later when driver confirms via capturePayment resolver
+      const intentData = await handlePaymentIntent({
+        tenant: ENV_Vars.tenant,
+        bookingId: data.id,
+        customerId: user.id,
+      });
+
+      if (!intentData?.clientSecret) {
+        throw new Error('Failed to initialize payment. Please try again.');
+      }
+
+      // 2. Init Stripe payment sheet with the clientSecret
+      const { error: initError } = await initPaymentSheet({
+        paymentIntentClientSecret: intentData.clientSecret,
+        customerId: intentData.stripeCustomerId,
+        customerEphemeralKeySecret: intentData.ephemeralKey,
+        merchantDisplayName: 'Golden Wheels',
+        primaryButtonLabel: `Authorize ${formatCurrency(totalPrice.amount, totalPrice.currencyCode)}`,
+        appearance: {
+          colors: {
+            primary: GOLD,
+            background: '#020617',
+            componentBackground: '#0f172a',
+            componentBorder: 'rgba(255,255,255,0.08)',
+            componentDivider: 'rgba(255,255,255,0.06)',
+            primaryText: '#ffffff',
+            secondaryText: 'rgba(255,255,255,0.55)',
+            componentText: '#ffffff',
+            placeholderText: 'rgba(255,255,255,0.3)',
+            icon: GOLD,
+          },
+          shapes: { borderRadius: 12, borderWidth: 1 },
+        },
+      });
+
+      if (initError) throw new Error(initError.message);
+
+      // 3. Present sheet — user enters card, Stripe handles 3DS automatically
+      const { error: presentError } = await presentPaymentSheet();
+
+      if (presentError) {
+        // User dismissed — silent. Any other error gets shown.
+        if (presentError.code !== 'Canceled') {
+          Alert.alert('Payment error', presentError.message);
+        }
+        return;
+      }
+
+      // 4. Authorization complete — card held, NOT charged
+      //    Backend paymentStatus is now 'authorized'
+      //    Driver confirmation will trigger capturePayment → actual charge
+      finish();
+    } catch (error: any) {
+      Alert.alert('Something went wrong', error?.message ?? 'Please try again.');
+    } finally {
+      setLoadingSheet(false);
+    }
   };
 
   return (
     <>
       <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
+        <SummaryTrustBanner />
         {/* ── Trip ── */}
         <SummarySection title="Trip">
           <SummaryReviewRow
@@ -71,7 +175,7 @@ export const SummaryAndPayment = ({
           <SummaryReviewRow
             icon={<Calendar size={14} color={GOLD} />}
             label="Date & Time"
-            value={formatDate(data.startDate)}
+            value={formatDateTime(data.startDate)}
             last
           />
         </SummarySection>
@@ -151,11 +255,22 @@ export const SummaryAndPayment = ({
           </Text>
         </View>
 
+        {/* Stripe badge */}
+        <View style={s.secureBadge}>
+          <Lock size={11} color="rgba(255,255,255,0.45)" />
+          <Text style={s.secureText}>Payments secured by Stripe</Text>
+        </View>
+
         <View style={{ height: 8 }} />
       </ScrollView>
       <BookingFooter
         onNext={onPayPressHandler}
-        nextLabel="Proceed to Payment"
+        nextLabel={
+          totalPrice
+            ? `Authorize ${formatCurrency(totalPrice.amount, totalPrice.currencyCode)}`
+            : 'Proceed to Payment'
+        }
+        nextLoading={loading}
         rightWidget={<CreditCard size={18} />}
       />
     </>
@@ -167,6 +282,13 @@ const s = StyleSheet.create({
   policy: { flexDirection: 'row', gap: 10, alignItems: 'flex-start' },
   policyBar: { width: 3, borderRadius: 2, backgroundColor: GOLD, alignSelf: 'stretch' },
   policyText: { flex: 1, fontSize: 12, color: '#fff', lineHeight: 18 },
+  secureBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 5,
+  },
+  secureText: { fontSize: 11, color: 'rgba(255,255,255,0.45)', fontWeight: '500' },
 });
 const sec = StyleSheet.create({
   wrapper: { gap: 8 },

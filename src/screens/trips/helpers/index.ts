@@ -62,7 +62,9 @@ export const formatCurrency = (amount: number, code: string): string =>
 
 export const filterByTab = (bookings: Booking[], tab: TabKey): Booking[] => {
   if (tab === 'upcoming')
-    return bookings.filter((b) => b.status === 'confirmed' || b.status === 'in_progress');
+    return bookings.filter(
+      (b) => b.status === 'confirmed' || b.status === 'in_progress' || b.status === 'pending'
+    );
   if (tab === 'past') return bookings.filter((b) => b.status === 'completed');
   if (tab === 'draft') return bookings.filter((b) => b.status === 'draft');
   if (tab === 'cancelled') return bookings.filter((b) => b.status === 'cancelled');

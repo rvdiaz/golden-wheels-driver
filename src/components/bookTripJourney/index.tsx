@@ -50,6 +50,7 @@ export const BookSelectionForm = ({ onDismiss, initialValues }: BookSelectionFor
     | {
         bookingCode: string;
         pickupDisplayName: string;
+        destinationDisplayName: string;
         startDate: string;
         carTypeName?: string;
         totalAmount?: number;
@@ -103,8 +104,6 @@ export const BookSelectionForm = ({ onDismiss, initialValues }: BookSelectionFor
   // ── Navigation ─────────────────────────────────────────────────────────────
 
   const handleNext = async () => {
-    console.log('::currentStep', currentStep);
-
     const valid = await validateStep(currentStep);
     if (!valid) return;
     setCurrentStep((s) => s + 1);
@@ -120,10 +119,11 @@ export const BookSelectionForm = ({ onDismiss, initialValues }: BookSelectionFor
 
   // ── Final submit ───────────────────────────────────────────────────────────
 
-  const handlePay = handleSubmit((data) => {
+  const handlePay = handleSubmit((data: Booking) => {
     setfinishPayment({
       bookingCode: data.bookingCode,
       pickupDisplayName: data.bookingBusinessData.pickupLocation.displayName,
+      destinationDisplayName: data.bookingBusinessData.dropoffLocation.displayName,
       startDate: data.startDate,
       carTypeName: data.bookingBusinessData.carType.name,
       currencyCode: data.bookingBusinessData.totalPrice.currencyCode,
@@ -138,6 +138,7 @@ export const BookSelectionForm = ({ onDismiss, initialValues }: BookSelectionFor
       <BookingConfirmationScreen
         bookingCode={finishPayment.bookingCode}
         pickupDisplayName={finishPayment.pickupDisplayName}
+        destinationDisplayName={finishPayment.destinationDisplayName}
         carTypeName={finishPayment.carTypeName}
         currencyCode={finishPayment.currencyCode}
         startDate={finishPayment.startDate}

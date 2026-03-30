@@ -45,11 +45,7 @@ export const Header: React.FC<HeaderProps> = ({
           <View style={{ flexDirection: 'row', gap: 2, alignItems: 'center' }}>
             {showBack && (
               <TouchableOpacity onPress={onBack} style={styles.backButton}>
-                {leftWidget ? (
-                  leftWidget
-                ) : (
-                  <Icons.ArrowLeft size={20} color={theme.colors.primary} />
-                )}
+                {leftWidget ? leftWidget : <Icons.ArrowLeft size={20} />}
               </TouchableOpacity>
             )}
             {leftText && <Text style={styles.title}>{leftText}</Text>}
@@ -95,7 +91,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: 'rgba(212,168,83,0.08)',
   },
   content: {
     flexDirection: 'row',
@@ -124,7 +120,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: '600',
-    color: theme.colors.headerModalText,
   },
   rightButton: {
     paddingVertical: 8,

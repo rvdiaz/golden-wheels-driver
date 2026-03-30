@@ -1,14 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import {
-  User,
-  LockKeyhole,
-  MessageCircleQuestion,
-  UserX,
-  LogOut,
-  ShieldCheck,
-} from 'lucide-react-native';
-import { useNavigation } from '@react-navigation/native';
+import { User, LockKeyhole, MessageCircleQuestion, UserX, LogOut } from 'lucide-react-native';
 import { useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import { LogoutButton } from '~/codidge_components/auth/widgets/logoutButton';
@@ -16,6 +8,11 @@ import { theme } from '~/theme/theme';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
 import { ProfileNavigationSection } from '~/codidge_components/UI/navigationButtons';
+import { PageTransition } from '~/codidge_components/UI/pageTransition';
+import { PrivacyPolicyScreen } from './widgets/termsAndConditions';
+import { UserDeletionScreen } from './widgets/userDeletion';
+import { PersonalInfo } from './widgets/personalInfo';
+import { ContactSubmissionsScreen } from './widgets/contact';
 
 // ─── Color tokens ─────────────────────────────────────────────────────────────
 
@@ -44,96 +41,145 @@ type Props = {
 
 export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
   const user = useReactiveVar(userData);
+  const [screen, setScreen] = useState<
+    'personal-info' | 'privacy' | 'feedback' | 'delete' | null
+  >();
+
+  let targetComponent = <View></View>;
+
+  switch (screen) {
+    case 'privacy':
+      targetComponent = (
+        <PrivacyPolicyScreen
+          onBack={() => {
+            setScreen(null);
+          }}
+        />
+      );
+      break;
+    case 'delete':
+      targetComponent = (
+        <UserDeletionScreen
+          onBack={() => {
+            setScreen(null);
+          }}
+        />
+      );
+      break;
+    case 'feedback':
+      targetComponent = (
+        <ContactSubmissionsScreen
+          onBack={() => {
+            setScreen(null);
+          }}
+        />
+      );
+      break;
+    case 'personal-info':
+      targetComponent = (
+        <PersonalInfo
+          onBack={() => {
+            setScreen(null);
+          }}
+        />
+      );
+      break;
+
+    default:
+      targetComponent = <View></View>;
+
+      break;
+  }
 
   return (
-    <PageSafeContainer>
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}>
-        {/* ── Avatar + name ── */}
-        <View style={styles.profileHeader}>
-          <View style={styles.avatarRing}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarInitials}>{getInitials(user?.name)}</Text>
+    <>
+      <PageSafeContainer>
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}>
+          {/* ── Avatar + name ── */}
+          <View style={styles.profileHeader}>
+            <View style={styles.avatarRing}>
+              <View style={styles.avatar}>
+                <Text style={styles.avatarInitials}>{getInitials(user?.name)}</Text>
+              </View>
             </View>
+            <Text style={styles.profileName}>{user?.name ?? 'Your Profile'}</Text>
+            {user?.email ? <Text style={styles.profileEmail}>{user.email}</Text> : null}
           </View>
-          <Text style={styles.profileName}>{user?.name ?? 'Your Profile'}</Text>
-          {user?.email ? <Text style={styles.profileEmail}>{user.email}</Text> : null}
-        </View>
 
-        {/* ── Navigation sections ── */}
-        <View style={styles.sectionsWrap}>
-          <ProfileNavigationSection
-            sections={[
-              {
-                title: 'Personal',
-                items: [
-                  {
-                    id: 'personal-info',
-                    label: 'Personal Info',
-                    icon: <User />,
-                    onClick: () => {
-                      // navigation.navigate('PersonalInfo');
+          {/* ── Navigation sections ── */}
+          <View style={styles.sectionsWrap}>
+            <ProfileNavigationSection
+              sections={[
+                {
+                  title: 'Personal',
+                  items: [
+                    {
+                      id: 'personal-info',
+                      label: 'Personal Info',
+                      icon: <User />,
+                      onClick: () => {
+                        setScreen('personal-info');
+                        // navigation.navigate('PersonalInfo');
+                      },
                     },
-                  },
-                  {
-                    id: 'privacy',
-                    label: 'Privacy Policy',
-                    icon: <LockKeyhole />,
-                    onClick: () => {
-                      // navigation.navigate('PrivacyPolicy');
+                    {
+                      id: 'privacy',
+                      label: 'Privacy Policy',
+                      icon: <LockKeyhole />,
+                      onClick: () => {
+                        setScreen('privacy');
+                        // navigation.navigate('PrivacyPolicy');
+                      },
                     },
-                  },
-                  {
-                    id: 'security',
-                    label: 'Security',
-                    icon: <ShieldCheck />,
-                    onClick: () => {
-                      // navigation.navigate('Security');
+                  ],
+                },
+                {
+                  title: 'Support',
+                  items: [
+                    {
+                      id: 'feedback',
+                      label: 'Send Feedback',
+                      icon: <MessageCircleQuestion />,
+                      onClick: () => {
+                        setScreen('feedback');
+
+                        // navigation.navigate('Feedback');
+                      },
                     },
-                  },
-                ],
-              },
-              {
-                title: 'Support',
-                items: [
-                  {
-                    id: 'feedback',
-                    label: 'Send Feedback',
-                    icon: <MessageCircleQuestion />,
-                    onClick: () => {
-                      // navigation.navigate('Feedback');
+                  ],
+                },
+                {
+                  title: 'Account',
+                  items: [
+                    {
+                      id: 'delete',
+                      label: 'Delete Account',
+                      icon: <UserX />,
+                      danger: true,
+                      onClick: () => {
+                        setScreen('feedback');
+                        // show confirmation modal
+                      },
                     },
-                  },
-                ],
-              },
-              {
-                title: 'Account',
-                items: [
-                  {
-                    id: 'delete',
-                    label: 'Delete Account',
-                    icon: <UserX />,
-                    danger: true,
-                    onClick: () => {
-                      // show confirmation modal
+                    {
+                      id: 'logout',
+                      label: 'Sign Out',
+                      replacementWidget: <LogoutButton onSuccessLogout={onNavigateHome} />,
+                      icon: <LogOut />,
+                      onClick: () => {},
                     },
-                  },
-                  {
-                    id: 'logout',
-                    label: 'Sign Out',
-                    replacementWidget: <LogoutButton onSuccessLogout={onNavigateHome} />,
-                    icon: <LogOut />,
-                    onClick: () => {},
-                  },
-                ],
-              },
-            ]}
-          />
-        </View>
-      </ScrollView>
-    </PageSafeContainer>
+                  ],
+                },
+              ]}
+            />
+          </View>
+        </ScrollView>
+      </PageSafeContainer>
+      <PageTransition isVisible={!!screen}>{targetComponent}</PageTransition>
+    </>
   );
 };
 

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Controller, useFormContext } from 'react-hook-form';
 import { Navigation, MapPin, Calendar } from 'lucide-react-native';
-import { FormField } from '~/components/bookTripJourney/widgets/formField';
 import { BookModeToggle } from '~/components/bookTripJourney/widgets/tripToggle';
 import { DurationPicker } from '~/components/bookTripJourney/widgets/durationPicker';
 import {
@@ -17,6 +16,7 @@ import { useCustomerTrips } from '~/screens/trips/hooks/useCustomerTrips';
 import { ENV_Vars } from '~/store/env';
 import { useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
+import InputField from '~/codidge_components/UI/form/inputs/inputField';
 
 type ActivePicker = 'pickup' | 'dropoff' | null;
 
@@ -66,7 +66,6 @@ export const TrioBookForm = ({ onNext }: { onNext: () => void }) => {
           bookingId: id,
           booking: {
             startDate: values.startDate,
-            status: 'draft',
             bookingBusinessData: {
               pickupLocation: values.bookingBusinessData.pickupLocation,
               dropoffLocation: values.bookingBusinessData.dropoffLocation,
@@ -106,6 +105,7 @@ export const TrioBookForm = ({ onNext }: { onNext: () => void }) => {
       }
 
       setValue('bookingBusinessData', response.bookingBusinessData);
+      setValue('bookingCode', response.bookingCode);
 
       // ✅ Move to next step
       onNext();
@@ -118,11 +118,16 @@ export const TrioBookForm = ({ onNext }: { onNext: () => void }) => {
     <>
       <View style={s.wrapper}>
         {/* Trip mode toggle */}
-        <Controller
-          name="bookingBusinessData.bookMode"
-          control={control}
-          render={({ field }) => <BookModeToggle value={field.value} onChange={field.onChange} />}
-        />
+        <View
+          style={{
+            marginBottom: 10,
+          }}>
+          <Controller
+            name="bookingBusinessData.bookMode"
+            control={control}
+            render={({ field }) => <BookModeToggle value={field.value} onChange={field.onChange} />}
+          />
+        </View>
 
         {/* Pickup */}
         <Controller
@@ -130,14 +135,15 @@ export const TrioBookForm = ({ onNext }: { onNext: () => void }) => {
           control={control}
           rules={{ validate: (v) => !!v?.id || 'Pickup location is required' }}
           render={({ field }) => (
-            <FormField
+            <InputField
+              variant="dark"
               label="Pickup Location"
               value={field.value?.displayName}
               placeholder="Where are you?"
               icon={<Navigation size={16} color="#D4A853" />}
               onPress={() => setActivePicker('pickup')}
-              error={errors.bookingBusinessData?.pickupLocation?.message}
-              style={{ marginTop: 20 }}
+              error={!!errors.bookingBusinessData?.pickupLocation}
+              errorMessage={errors.bookingBusinessData?.pickupLocation?.message}
             />
           )}
         />
@@ -149,21 +155,22 @@ export const TrioBookForm = ({ onNext }: { onNext: () => void }) => {
             control={control}
             rules={{ validate: (v) => !!v?.id || 'Destination is required' }}
             render={({ field }) => (
-              <FormField
+              <InputField
+                variant="dark"
                 label="Destination"
                 value={field.value?.displayName}
                 placeholder="Where to?"
                 icon={<MapPin size={16} color="#D4A853" />}
                 onPress={() => setActivePicker('dropoff')}
-                error={errors.bookingBusinessData?.dropoffLocation?.message}
-                style={{ marginTop: 16 }}
+                error={!!errors.bookingBusinessData?.dropoffLocation}
+                errorMessage={errors.bookingBusinessData?.dropoffLocation?.message}
               />
             )}
           />
         )}
 
         {/* Date / Time */}
-        <View style={{ marginTop: 16 }}>
+        <View>
           <Controller
             name="startDate"
             control={control}
@@ -191,7 +198,7 @@ export const TrioBookForm = ({ onNext }: { onNext: () => void }) => {
             name="bookingBusinessData.bookHours"
             control={control}
             render={({ field }) => (
-              <View style={{ marginTop: 16 }}>
+              <View>
                 <DurationPicker value={field.value} onChange={field.onChange} />
               </View>
             )}
@@ -234,6 +241,7 @@ export const TrioBookForm = ({ onNext }: { onNext: () => void }) => {
 const s = StyleSheet.create({
   wrapper: {
     flex: 1,
+    gap: 10,
   },
 });
 

@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#ffffff',
     letterSpacing: 0.2,
+    textTransform: 'uppercase',
   },
   sectionSub: {
     fontSize: 12,

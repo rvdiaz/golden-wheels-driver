@@ -32,11 +32,7 @@ export interface IUser {
   name: string;
   status: StatusUser | string;
   role: UserRoles | 'OWNER';
-  tenantsList: {
-    role: string;
-    tenantID: string;
-  }[];
   metaData: any;
-  permissions?: IPermission[];
-  activeTenantId?: string;
+  image?: IImage;
+  preferenceLanguage?: string;
 }

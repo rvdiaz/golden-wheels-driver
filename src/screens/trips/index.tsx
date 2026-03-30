@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { View, StyleSheet, FlatList } from 'react-native';
 import { BodyWrapper } from '~/codidge_components/UI/bodyWrapper';
 import Text from '~/codidge_components/UI/text';
 import { Booking, TabKey } from './interfaces';
@@ -9,6 +9,7 @@ import { theme } from '~/theme/theme';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { useCustomerTrips } from './hooks/useCustomerTrips';
 import { TabBar } from './components/statusTabs';
+import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 
 const GOLD = theme.colors.primary;
 
@@ -56,11 +57,13 @@ export const TripsScreen = () => {
           <Text style={styles.screenTitle}>My Trips</Text>
         </View>
 
-        {/* Tabs */}
+        {/* Tabs — always visible */}
         <TabBar activeTab={activeTab} counts={counts} onTabChange={setActiveTab} />
 
-        {/* Content */}
-        {filtered.length === 0 ? (
+        {/* Content — spinner or list */}
+        {loadingTrips ? (
+          <PageLoading />
+        ) : filtered.length === 0 ? (
           <EmptyState tab={activeTab} />
         ) : (
           <FlatList

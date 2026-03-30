@@ -13,8 +13,8 @@ import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Calendar, Clock, ChevronRight, Check } from 'lucide-react-native';
 import Text from '~/codidge_components/UI/text';
-import { FormField } from '~/components/bookTripJourney/widgets/formField';
 import { theme } from '~/theme/theme';
+import InputField from './inputField';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -305,13 +305,14 @@ export const DateTimeInputField: React.FC<DateInputFieldProps> = ({
 
   return (
     <>
-      <FormField
+      <InputField
+        variant="dark"
         label={label ?? 'Pickup Date & Time'}
         value={inputValue}
         placeholder={placeholder ?? 'Select date and time'}
         icon={icon ?? <Calendar size={16} color={GOLD} />}
         onPress={() => setShowModal(true)}
-        error={errorMessage}
+        errorMessage={errorMessage}
       />
 
       {/* ── Android: native system picker (no custom styling possible) ── */}

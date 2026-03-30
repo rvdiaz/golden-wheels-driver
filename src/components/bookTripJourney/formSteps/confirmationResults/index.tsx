@@ -18,6 +18,8 @@ interface BookingConfirmationProps {
   // Pass the minimal details needed to show the confirmation
   bookingCode: string;
   pickupDisplayName: string;
+  destinationDisplayName: string;
+
   startDate: string;
   carTypeName?: string;
   totalAmount?: number;
@@ -94,6 +96,7 @@ const DetailRow = ({ icon, value }: { icon: React.ReactNode; value: string }) =>
 export const BookingConfirmationScreen: React.FC<BookingConfirmationProps> = ({
   bookingCode,
   pickupDisplayName,
+  destinationDisplayName,
   startDate,
   carTypeName,
   totalAmount,
@@ -183,6 +186,9 @@ export const BookingConfirmationScreen: React.FC<BookingConfirmationProps> = ({
                 },
               ]}>
               <DetailRow icon={<MapPin size={13} color={GOLD} />} value={pickupDisplayName} />
+              <DetailRow icon={<MapPin size={13} color={GOLD} />} value={destinationDisplayName} />
+              <View style={screen.summaryDivider} />
+
               <View style={screen.summaryDivider} />
               <DetailRow
                 icon={<Calendar size={13} color={GOLD} />}

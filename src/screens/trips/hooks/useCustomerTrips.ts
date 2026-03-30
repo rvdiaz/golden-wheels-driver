@@ -2,7 +2,11 @@ import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import { getCustomerBookingQuery } from '../graphql/queries';
 import { Booking } from '../interfaces';
 import { ENV_Vars } from '~/store/env';
-import { addBookingQuery, updateBookingMutation } from '../graphql/mutation';
+import {
+  addBookingMutation,
+  createPaymentIntentMutation,
+  updateBookingMutation,
+} from '../graphql/mutation';
 import { userData } from '~/store/user';
 
 export const useCustomerTrips = ({ skipQueries }: { skipQueries?: boolean }) => {
@@ -19,13 +23,21 @@ export const useCustomerTrips = ({ skipQueries }: { skipQueries?: boolean }) => 
     skip: skipQueries || !user?.id,
   });
 
-  const [addTrip, { data, loading: loadingTripCreation }] = useMutation<{
+  const [addTrip, { loading: loadingTripCreation }] = useMutation<{
     addBooking: Booking;
-  }>(addBookingQuery);
+  }>(addBookingMutation);
 
   const [updateTrip, { loading: loadingTripUpdate }] = useMutation<{
     updateBooking: Booking;
   }>(updateBookingMutation);
+
+  const [createPaymentIntentFn, { loading: loadingPaymentProcessment }] = useMutation<{
+    createPaymentIntent: {
+      clientSecret: string;
+      stripeCustomerId: string;
+      ephemeralKey: string;
+    };
+  }>(createPaymentIntentMutation);
 
   const handleAddTrip = async ({
     tenant,
@@ -42,6 +54,26 @@ export const useCustomerTrips = ({ skipQueries }: { skipQueries?: boolean }) => 
     });
 
     return response.data?.addBooking;
+  };
+
+  const handlePaymentIntent = async ({
+    tenant,
+    bookingId,
+    customerId,
+  }: {
+    tenant: any;
+    bookingId: string;
+    customerId: string;
+  }) => {
+    const response = await createPaymentIntentFn({
+      variables: {
+        tenant,
+        bookingId,
+        customerId,
+      },
+    });
+
+    return response.data?.createPaymentIntent;
   };
 
   const handleUpdateTrip = async ({
@@ -61,6 +93,8 @@ export const useCustomerTrips = ({ skipQueries }: { skipQueries?: boolean }) => 
       },
     });
 
+    console.log(':::update', response.data?.updateBooking);
+
     return response.data?.updateBooking;
   };
 
@@ -71,7 +105,10 @@ export const useCustomerTrips = ({ skipQueries }: { skipQueries?: boolean }) => 
     loadingTrips,
     handleAddTrip,
     handleUpdateTrip,
+    handlePaymentIntent,
     loadingTripCreation,
     loadingTripUpdate,
+    createPaymentIntentMutation,
+    loadingPaymentProcessment,
   };
 };

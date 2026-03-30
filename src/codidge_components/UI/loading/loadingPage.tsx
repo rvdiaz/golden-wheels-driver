@@ -4,6 +4,8 @@ import { LoadingSpinner } from './loadingSpinner';
 import { Header } from '../header';
 import { useNavigation } from '@react-navigation/native';
 import { PageSafeContainer } from '../pageSafeContainer';
+import { BodyWrapper } from '../bodyWrapper';
+import { theme } from '~/theme/theme';
 
 interface ILoadingPageProps {
   headerTitle?: string;
@@ -14,21 +16,22 @@ export const PageLoading = ({ style, headerTitle }: ILoadingPageProps) => {
   const navigation = useNavigation();
 
   return (
-    <PageSafeContainer style={styles.container}>
-      {headerTitle && (
-        <Header showBack={true} title={headerTitle} onBack={() => navigation.goBack()} />
-      )}
-      <View style={styles.centerContent}>
-        <LoadingSpinner color="gray" />
-      </View>
-    </PageSafeContainer>
+    <BodyWrapper>
+      <PageSafeContainer style={styles.container}>
+        {headerTitle && (
+          <Header showBack={true} title={headerTitle} onBack={() => navigation.goBack()} />
+        )}
+        <View style={styles.centerContent}>
+          <LoadingSpinner color={theme.colors.primary} />
+        </View>
+      </PageSafeContainer>
+    </BodyWrapper>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF',
   },
   centerContent: {
     flex: 1,

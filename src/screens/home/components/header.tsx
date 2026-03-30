@@ -3,12 +3,12 @@ import { View, StyleSheet, ImageBackground, Dimensions, Modal } from 'react-nati
 import { LinearGradient } from 'expo-linear-gradient';
 import Text from '~/codidge_components/UI/text';
 import { BookSelectionForm } from '~/components/bookTripJourney';
-import { GlassButton } from '~/codidge_components/UI/button/GlassButton';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
 import { ChevronRight } from 'lucide-react-native';
 import { useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import { updateAuthenticateStateUser } from '~/store/user/authSessionState';
+import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 const { width } = Dimensions.get('window');
 const HEIGHT = width * 0.92; // ~62vw tall, feels cinematic
 
@@ -90,11 +90,11 @@ export const HeaderCallToAction = ({
             <Text style={styles.subtitle}>{subtitle}</Text>
             <Text style={styles.title}>{title}</Text>
             {/* Trigger button inside the card */}
-            <GlassButton
+            <PrimaryButton
               size={ButtonSize.XLARGE}
               title={buttonLabel}
               onPress={handlerBookStart}
-              rightIcon={<ChevronRight size={20} color="#fff" />}
+              rightWidget={<ChevronRight size={20} />}
               style={{ width: '70%' }}
             />
           </View>

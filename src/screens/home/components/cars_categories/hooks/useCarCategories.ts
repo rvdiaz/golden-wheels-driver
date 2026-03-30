@@ -2,6 +2,7 @@ import { useQuery } from '@apollo/client';
 import { getCarTypesByTripQuery, getCarTypesQuery } from '../graphql/queries';
 import { ENV_Vars } from '~/store/env';
 import { BookingCartTypesPriceQueryInput, CarType } from '~/screens/trips/interfaces';
+import { apiKeyClient } from '~/store/config/apolloClient';
 
 export const useCarCategories = ({
   queryInput,
@@ -16,6 +17,7 @@ export const useCarCategories = ({
       returnAll: false,
     },
     skip: !!queryInput,
+    client: apiKeyClient,
   });
 
   const { data: getCarTypesByTrip, loading: loadingGetCarTypesByTrip } = useQuery<{

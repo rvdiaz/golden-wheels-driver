@@ -9,12 +9,12 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import * as Icons from 'lucide-react-native';
-import Constants from 'expo-constants';
 import { useReactiveVar, useMutation, gql, useApolloClient } from '@apollo/client';
 import { updateUser, userData } from '~/store/user';
 import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
 import { deleteUserMutation } from '~/screens/auth/graphql/mutations';
+import { ENV_Vars } from '~/store/env';
 
 export const AccountDeletionModal = () => {
   const userInfo = useReactiveVar(userData);
@@ -37,7 +37,7 @@ export const AccountDeletionModal = () => {
     try {
       await deleteUser({
         variables: {
-          tenant: { tenantId: userInfo?.activeTenantId },
+          tenant: ENV_Vars.tenant,
           userId: userInfo?.id,
         },
       });

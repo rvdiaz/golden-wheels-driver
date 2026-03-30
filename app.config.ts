@@ -1,18 +1,16 @@
 import { ExpoConfig } from '@expo/config-types';
 import { ConfigContext } from 'expo/config';
 
-// Replace these with your EAS project ID and project slug.
-// You can find them at https://expo.dev/accounts/[account]/projects/[project].
-const EAS_PROJECT_ID = '9150c5ea-e5db-487b-9a9b-d9d9ff5428da';
-const PROJECT_SLUG = 'goldenwheels';
+const EAS_PROJECT_ID = 'bf4ea28e-ea3b-4071-9b5c-b6fba74685dc';
+const PROJECT_SLUG = 'golden-wheels';
 const OWNER = 'rvdiaz1994';
 
 // App production config
-const APP_NAME = 'Goldenwheels';
+const APP_NAME = 'Golden Wheels';
 const BUNDLE_IDENTIFIER = 'com.codidge.goldenwheels';
 const PACKAGE_NAME = 'com.codidge.goldenwheels';
-const ICON = './assets/logo.png';
-const ADAPTIVE_ICON = './assets/logo.png';
+const ICON = './assets/logo.jpeg';
+const ADAPTIVE_ICON = './assets/logo.jpeg';
 const SCHEME = 'app-scheme';
 import { version } from './package.json';
 
@@ -20,7 +18,6 @@ export default (arg: ConfigContext): ExpoConfig => {
   const { config } = arg;
   const isDevelopment = process.env.APP_ENV === 'development';
 
-  console.log('⚙️ Building app for environment:', process.env.APP_ENV);
   const { name, bundleIdentifier, icon, adaptiveIcon, packageName, scheme } = getDynamicAppConfig(
     (process.env.APP_ENV as 'development' | 'preview' | 'production') || 'development'
   );
@@ -39,14 +36,11 @@ export default (arg: ConfigContext): ExpoConfig => {
     scheme: scheme,
     owner: OWNER,
     plugins: [
-      [
-        'expo-image-picker',
-        {
-          photosPermission:
-            'The app accesses your photos to attach screenshots or images when submitting feedback.',
-        },
-      ],
       'expo-notifications',
+      /* '@stripe/stripe-react-native', // ← required for Stripe native module
+      {
+        merchantIdentifier: 'com.codidge.goldenwheels',
+      }, */
       ...devOnlyPlugins,
     ],
     ios: {
@@ -54,8 +48,8 @@ export default (arg: ConfigContext): ExpoConfig => {
       bundleIdentifier: bundleIdentifier,
       buildNumber: '1',
       infoPlist: {
-        NSContactsUsageDescription:
-          'We use your contacts to help you import or export CRM records more easily. Contacts are only uploaded to your account if you give explicit consent.',
+        // existing
+        NSContactsUsageDescription: '...',
       },
       icon: 'assets/logo.png',
     },
@@ -82,14 +76,15 @@ export default (arg: ConfigContext): ExpoConfig => {
       AWS_REGION: process.env.AWS_REGION,
       COGNITO_CLIENT_ID: process.env.COGNITO_CLIENT_ID,
       COGNITO_USERPOOL_ID: process.env.COGNITO_USERPOOL_ID,
-      //GRAPHQL_ENDPOINT: process.env.GRAPHQL_ENDPOINT,
-      GRAPHQL_ENDPOINT: 'http://localhost:4001/graphql',
+      GRAPHQL_ENDPOINT: process.env.GRAPHQL_ENDPOINT,
+      //GRAPHQL_ENDPOINT: 'http://localhost:4001/graphql',
       GRAPHQL_API_KEY: process.env.GRAPHQL_API_KEY,
       TENANTID: process.env.TENANTID,
       TENANT_SOLUTION: process.env.TENANT_SOLUTION,
       eas: {
         projectId: EAS_PROJECT_ID,
       },
+      STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
     },
   } as ExpoConfig;
 };

@@ -1,6 +1,7 @@
 import { gql } from '@apollo/client';
+import { G } from 'react-native-svg';
 
-export const addBookingQuery = gql`
+export const addBookingMutation = gql`
   mutation addBooking($tenant: TenantData!, $booking: BookingInput!) {
     addBooking(tenant: $tenant, booking: $booking) {
       id
@@ -71,6 +72,16 @@ export const addBookingQuery = gql`
         bookHours
         bookMode
       }
+    }
+  }
+`;
+
+export const createPaymentIntentMutation = gql`
+  mutation createPaymentIntent($tenant: TenantData!, $bookingId: ID!, $customerId: ID!) {
+    createPaymentIntent(tenant: $tenant, bookingId: $bookingId, customerId: $customerId) {
+      clientSecret
+      stripeCustomerId
+      ephemeralKey
     }
   }
 `;

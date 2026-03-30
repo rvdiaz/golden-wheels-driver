@@ -38,6 +38,7 @@ export const CarCategorySelection = ({
       pickupLocation,
     },
   });
+
   const { handleUpdateTrip, loadingTripUpdate } = useCustomerTrips({ skipQueries: false });
 
   const handleNext = async () => {

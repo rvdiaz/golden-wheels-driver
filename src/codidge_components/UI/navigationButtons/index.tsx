@@ -129,13 +129,12 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 11,
-    fontWeight: '500',
-    color: 'rgba(218,192,114,0.45)',
+    fontWeight: '700',
+    letterSpacing: 1.2,
     textTransform: 'uppercase',
-    letterSpacing: 1,
-    paddingHorizontal: 4,
-    paddingBottom: 8,
-    paddingTop: 4,
+    color: GOLD,
+    marginBottom: 10,
+    marginTop: 10,
   },
 
   // ── Card group ──

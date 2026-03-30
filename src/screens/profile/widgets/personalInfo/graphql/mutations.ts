@@ -14,3 +14,18 @@ export const updateCustomerMutation = gql`
     }
   }
 `;
+
+export const deleteCustomerMutation = gql`
+  mutation deleteCustomer($tenant: TenantData!, $customerId: ID!) {
+    deleteCustomer(tenant: $tenant, customerId: $customerId) {
+      name
+      email
+      phone
+      preferenceLanguage
+      image {
+        url
+        alt
+      }
+    }
+  }
+`;

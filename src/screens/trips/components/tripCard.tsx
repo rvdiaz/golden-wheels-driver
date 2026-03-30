@@ -145,7 +145,9 @@ export const TripCard = ({ booking, tab, onPress }: TripCardProps) => {
       <TouchableOpacity
         activeOpacity={0.82}
         onPress={() => {
-          setOpen(true);
+          if (booking.status === 'draft') {
+            setOpen(true);
+          }
         }}
         style={[cardStyles.card, { backgroundColor: cardBg, borderColor: cardBorder }]}>
         {/* Top shimmer accent */}

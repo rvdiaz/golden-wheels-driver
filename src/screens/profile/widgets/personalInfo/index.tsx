@@ -68,7 +68,7 @@ export const PersonalInfo = ({ onBack }: { onBack: () => void }) => {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled">
           {/* ── Avatar section ── */}
-          <View style={styles.avatarSection}>
+          {/*  <View style={styles.avatarSection}>
             <Avatar
               imageUrl={user?.image?.url}
               name={user?.name}
@@ -76,7 +76,7 @@ export const PersonalInfo = ({ onBack }: { onBack: () => void }) => {
               onPress={() => {}}
             />
             <Text style={styles.avatarHint}>Tap to change profile photo</Text>
-          </View>
+          </View> */}
 
           {/* ── Read-only info ── */}
           <View style={styles.section}>
@@ -100,7 +100,7 @@ export const PersonalInfo = ({ onBack }: { onBack: () => void }) => {
 
             <View
               style={{
-                gap: 24,
+                gap: 10,
               }}>
               <Controller
                 name="name"

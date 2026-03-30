@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { User, LockKeyhole, MessageCircleQuestion, UserX, LogOut } from 'lucide-react-native';
+import { User, LockKeyhole, MessageCircleQuestion, LogOut } from 'lucide-react-native';
 import { useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import { LogoutButton } from '~/codidge_components/auth/widgets/logoutButton';
@@ -10,7 +10,7 @@ import Text from '~/codidge_components/UI/text';
 import { ProfileNavigationSection } from '~/codidge_components/UI/navigationButtons';
 import { PageTransition } from '~/codidge_components/UI/pageTransition';
 import { PrivacyPolicyScreen } from './widgets/termsAndConditions';
-import { UserDeletionScreen } from './widgets/userDeletion';
+import { AccountDeletionScreen } from './widgets/userDeletion';
 import { PersonalInfo } from './widgets/personalInfo';
 import { ContactSubmissionsScreen } from './widgets/contact';
 
@@ -41,14 +41,12 @@ type Props = {
 
 export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
   const user = useReactiveVar(userData);
-  const [screen, setScreen] = useState<
-    'personal-info' | 'privacy' | 'feedback' | 'delete' | null
-  >();
+  const [screen, setScreen] = useState<'personal-info' | 'terms' | 'feedback' | 'delete' | null>();
 
   let targetComponent = <View></View>;
 
   switch (screen) {
-    case 'privacy':
+    case 'terms':
       targetComponent = (
         <PrivacyPolicyScreen
           onBack={() => {
@@ -59,7 +57,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
       break;
     case 'delete':
       targetComponent = (
-        <UserDeletionScreen
+        <AccountDeletionScreen
           onBack={() => {
             setScreen(null);
           }}
@@ -126,11 +124,11 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
                       },
                     },
                     {
-                      id: 'privacy',
-                      label: 'Privacy Policy',
+                      id: 'Terms And Conditions',
+                      label: 'Terms And Conditions',
                       icon: <LockKeyhole />,
                       onClick: () => {
-                        setScreen('privacy');
+                        setScreen('terms');
                         // navigation.navigate('PrivacyPolicy');
                       },
                     },
@@ -157,11 +155,9 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
                     {
                       id: 'delete',
                       label: 'Delete Account',
-                      icon: <UserX />,
-                      danger: true,
+                      icon: <LogOut />,
                       onClick: () => {
-                        setScreen('feedback');
-                        // show confirmation modal
+                        setScreen('delete');
                       },
                     },
                     {

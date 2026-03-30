@@ -10,6 +10,7 @@ import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { useCustomerTrips } from './hooks/useCustomerTrips';
 import { TabBar } from './components/statusTabs';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
+import { LoadingSpinner } from '~/codidge_components/UI/loading/loadingSpinner';
 
 const GOLD = theme.colors.primary;
 
@@ -62,7 +63,14 @@ export const TripsScreen = () => {
 
         {/* Content — spinner or list */}
         {loadingTrips ? (
-          <PageLoading />
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <LoadingSpinner />
+          </View>
         ) : filtered.length === 0 ? (
           <EmptyState tab={activeTab} />
         ) : (

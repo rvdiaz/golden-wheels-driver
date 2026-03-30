@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useQuery } from '@apollo/client';
 import { Mail, Phone, ArrowLeft, MessageCircle } from 'lucide-react-native';
 import { Header } from '~/codidge_components/UI/header';
@@ -61,7 +61,11 @@ export const ContactSubmissionsScreen = ({ onBack }: { onBack: () => void }) => 
           contentContainerStyle={{ backgroundColor: 'transparent' }}
           showBack
           title="Contact Us"
-          leftWidget={<ArrowLeft color="#FFF" />}
+          leftWidget={
+            <TouchableOpacity onPress={onBack} style={s.iconBtn} activeOpacity={0.7}>
+              <ArrowLeft size={18} color="rgba(255,255,255,0.8)" />
+            </TouchableOpacity>
+          }
           titleStyles={{ color: '#FFF' }}
           onBack={onBack}
         />
@@ -180,6 +184,16 @@ const s = StyleSheet.create({
   unavailableText: {
     fontSize: 14,
     color: 'rgba(255,255,255,0.35)',
+  },
+  iconBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

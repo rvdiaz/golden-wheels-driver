@@ -1,8 +1,10 @@
-import { useMutation, useReactiveVar } from '@apollo/client';
+import { useApolloClient, useMutation, useReactiveVar } from '@apollo/client';
 import { Alert } from 'react-native';
 import { userData, updateUser } from '~/store/user';
 import { ENV_Vars } from '~/store/env';
-import { updateCustomerMutation } from '../graphql/mutations';
+import { deleteCustomerMutation, updateCustomerMutation } from '../graphql/mutations';
+import { signOut } from 'aws-amplify/auth';
+import { apiKeyClient } from '~/store/config/apolloClient';
 
 interface PersonalInfoFormData {
   name: string;
@@ -12,8 +14,26 @@ interface PersonalInfoFormData {
 
 export const usePersonalInfo = () => {
   const user = useReactiveVar(userData);
+  const client = useApolloClient();
 
   const [updateCustomer, { loading: loadingUpdate }] = useMutation(updateCustomerMutation);
+  const [deleteCustomer, { loading: loadingDeletion }] = useMutation(deleteCustomerMutation);
+
+  const handleDeleteProfile = async () => {
+    if (!user?.id) return;
+    await deleteCustomer({
+      variables: {
+        tenant: ENV_Vars.tenant,
+        customerId: user.id,
+      },
+    });
+    await signOut();
+    updateUser(null);
+    await client.clearStore(); // Clears all cached data
+    await apiKeyClient.clearStore();
+    try {
+    } catch (error) {}
+  };
 
   const handleUpdateProfile = async (fields: Partial<PersonalInfoFormData & { image: string }>) => {
     if (!user?.id) return;
@@ -51,5 +71,7 @@ export const usePersonalInfo = () => {
     user,
     loadingUpdate,
     handleUpdateProfile,
+    handleDeleteProfile,
+    loadingDeletion,
   };
 };

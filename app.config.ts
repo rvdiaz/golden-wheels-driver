@@ -71,7 +71,7 @@ export default (arg: ConfigContext): ExpoConfig => {
     extra: {
       ...config.extra,
       //TODO::: TAKE APPLE APP ID FROM APPLE
-      /*  "APPLE_APP_ID": 6752781766, */
+      /*  "APPLE_APP_ID": 6752781766,*/
       APP_ENV: process.env.APP_ENV,
       AWS_REGION: process.env.AWS_REGION,
       COGNITO_CLIENT_ID: process.env.COGNITO_CLIENT_ID,

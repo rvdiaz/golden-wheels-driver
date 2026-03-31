@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-  Platform,
-  ScrollView,
-  TouchableWithoutFeedback,
-  Keyboard,
-} from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Alert, Platform, ScrollView } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -126,180 +117,178 @@ export const SignUpForm = ({
 
   return (
     <View style={{ flex: 1 }}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <KeyboardAwareScrollView
+      <KeyboardAwareScrollView
+        showsVerticalScrollIndicator={false}
+        enableOnAndroid={true}
+        extraScrollHeight={Platform.OS === 'ios' ? 0 : 80}
+        keyboardShouldPersistTaps="handled">
+        <ScrollView
           showsVerticalScrollIndicator={false}
-          enableOnAndroid={true}
-          extraScrollHeight={Platform.OS === 'ios' ? 0 : 80}
-          keyboardShouldPersistTaps="handled">
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContent}>
-            <View style={styles.formCard}>
-              <View style={styles.form}>
-                <Controller
-                  control={control}
-                  name="name"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <InputField
-                      variant="dark"
-                      icon={<Icons.User size={16} color="#6B7280" />}
-                      label="Name"
-                      required={true}
-                      placeholder="Enter your name"
-                      value={value}
-                      onChangeText={onChange}
-                      onBlur={onBlur}
-                      keyboardType="default"
-                      error={!!errors.email}
-                      errorMessage={errors.email?.message}
-                      autoCapitalize="none"
-                    />
-                  )}
-                />
-                <Controller
-                  control={control}
-                  name="email"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <InputField
-                      variant="dark"
-                      icon={<Icons.Mail size={16} color="#6B7280" />}
-                      label="Email"
-                      required={true}
-                      placeholder="Enter your email"
-                      value={value}
-                      onChangeText={onChange}
-                      onBlur={onBlur}
-                      keyboardType="email-address"
-                      error={!!errors.email}
-                      errorMessage={errors.email?.message}
-                      autoCapitalize="none"
-                    />
-                  )}
-                />
+          contentContainerStyle={styles.scrollContent}>
+          <View style={styles.formCard}>
+            <View style={styles.form}>
+              <Controller
+                control={control}
+                name="name"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    variant="dark"
+                    icon={<Icons.User size={16} color="#6B7280" />}
+                    label="Name"
+                    required={true}
+                    placeholder="Enter your name"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    keyboardType="default"
+                    error={!!errors.email}
+                    errorMessage={errors.email?.message}
+                    autoCapitalize="none"
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name="email"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    variant="dark"
+                    icon={<Icons.Mail size={16} color="#6B7280" />}
+                    label="Email"
+                    required={true}
+                    placeholder="Enter your email"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    keyboardType="email-address"
+                    error={!!errors.email}
+                    errorMessage={errors.email?.message}
+                    autoCapitalize="none"
+                  />
+                )}
+              />
 
-                <Controller
-                  control={control}
-                  name="phone"
-                  rules={{
-                    required: 'Phone number is required',
-                    validate: (value) => {
-                      const parsed = parsePhoneNumber(value);
-                      const validation = validatePhoneNumber(parsed.number, parsed.country);
-                      return validation.isValid || validation.message || 'Invalid phone number';
-                    },
+              <Controller
+                control={control}
+                name="phone"
+                rules={{
+                  required: 'Phone number is required',
+                  validate: (value) => {
+                    const parsed = parsePhoneNumber(value);
+                    const validation = validatePhoneNumber(parsed.number, parsed.country);
+                    return validation.isValid || validation.message || 'Invalid phone number';
+                  },
+                }}
+                render={({ field: { onChange, value } }) => (
+                  <PhoneInput
+                    variant="dark"
+                    value={value}
+                    onChangeValue={onChange}
+                    label="Phone Number"
+                    placeholder="Enter your phone number"
+                    required={true}
+                    error={!!errors.phone}
+                    errorMessage={errors.phone?.message}
+                    defaultCountry="US"
+                    disabledSelection={true}
+                  />
+                )}
+              />
+
+              <Controller
+                control={control}
+                name="password"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    variant="dark"
+                    icon={<Icons.Lock size={16} color="#6B7280" />}
+                    label="Password"
+                    required={true}
+                    placeholder="Create a password"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    error={!!errors.password}
+                    errorMessage={errors.password?.message}
+                    secureTextEntry={!showPassword}
+                    autoComplete="off"
+                    textContentType="none"
+                    hint={
+                      !errors.password
+                        ? 'At least 8 characters with uppercase, lowercase, number, and special character'
+                        : ''
+                    }
+                    rightIcon={
+                      <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                        {showPassword ? (
+                          <Icons.EyeOff size={16} color="#6B7280" />
+                        ) : (
+                          <Icons.Eye size={16} color="#6B7280" />
+                        )}
+                      </TouchableOpacity>
+                    }
+                  />
+                )}
+              />
+
+              <Controller
+                control={control}
+                name="confirmPassword"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    variant="dark"
+                    icon={<Icons.Lock size={16} color="#6B7280" />}
+                    label="Confirm Password"
+                    placeholder="Confirm your password"
+                    value={value}
+                    required={true}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    error={!!errors.confirmPassword}
+                    errorMessage={errors.confirmPassword?.message}
+                    secureTextEntry={!showConfirmPassword}
+                    autoComplete="off"
+                    textContentType="none"
+                    rightIcon={
+                      <TouchableOpacity
+                        onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+                        {showConfirmPassword ? (
+                          <Icons.EyeOff size={16} color="#6B7280" />
+                        ) : (
+                          <Icons.Eye size={16} color="#6B7280" />
+                        )}
+                      </TouchableOpacity>
+                    }
+                  />
+                )}
+              />
+
+              <PrimaryButton
+                onPress={handleSubmit(onSubmit)}
+                title="Create Account"
+                loading={loading}
+                size={ButtonSize.XLARGE}
+              />
+            </View>
+            {!strictView && (
+              <View style={styles.footer}>
+                <Text style={styles.footerText}>Already have an account? </Text>
+                <TextButton
+                  textStyle={styles.signInLink}
+                  title="Sign In"
+                  size={ButtonSize.SMALL}
+                  onPress={() => {
+                    if (loginScreenRequest) {
+                      loginScreenRequest();
+                    }
+                    setCurrentView(IAuthModuleKeys.signIn);
                   }}
-                  render={({ field: { onChange, value } }) => (
-                    <PhoneInput
-                      variant="dark"
-                      value={value}
-                      onChangeValue={onChange}
-                      label="Phone Number"
-                      placeholder="Enter your phone number"
-                      required={true}
-                      error={!!errors.phone}
-                      errorMessage={errors.phone?.message}
-                      defaultCountry="US"
-                      disabledSelection={true}
-                    />
-                  )}
-                />
-
-                <Controller
-                  control={control}
-                  name="password"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <InputField
-                      variant="dark"
-                      icon={<Icons.Lock size={16} color="#6B7280" />}
-                      label="Password"
-                      required={true}
-                      placeholder="Create a password"
-                      value={value}
-                      onChangeText={onChange}
-                      onBlur={onBlur}
-                      error={!!errors.password}
-                      errorMessage={errors.password?.message}
-                      secureTextEntry={!showPassword}
-                      autoComplete="off"
-                      textContentType="none"
-                      hint={
-                        !errors.password
-                          ? 'At least 8 characters with uppercase, lowercase, number, and special character'
-                          : ''
-                      }
-                      rightIcon={
-                        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                          {showPassword ? (
-                            <Icons.EyeOff size={16} color="#6B7280" />
-                          ) : (
-                            <Icons.Eye size={16} color="#6B7280" />
-                          )}
-                        </TouchableOpacity>
-                      }
-                    />
-                  )}
-                />
-
-                <Controller
-                  control={control}
-                  name="confirmPassword"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <InputField
-                      variant="dark"
-                      icon={<Icons.Lock size={16} color="#6B7280" />}
-                      label="Confirm Password"
-                      placeholder="Confirm your password"
-                      value={value}
-                      required={true}
-                      onChangeText={onChange}
-                      onBlur={onBlur}
-                      error={!!errors.confirmPassword}
-                      errorMessage={errors.confirmPassword?.message}
-                      secureTextEntry={!showConfirmPassword}
-                      autoComplete="off"
-                      textContentType="none"
-                      rightIcon={
-                        <TouchableOpacity
-                          onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-                          {showConfirmPassword ? (
-                            <Icons.EyeOff size={16} color="#6B7280" />
-                          ) : (
-                            <Icons.Eye size={16} color="#6B7280" />
-                          )}
-                        </TouchableOpacity>
-                      }
-                    />
-                  )}
-                />
-
-                <PrimaryButton
-                  onPress={handleSubmit(onSubmit)}
-                  title="Create Account"
-                  loading={loading}
-                  size={ButtonSize.XLARGE}
                 />
               </View>
-              {!strictView && (
-                <View style={styles.footer}>
-                  <Text style={styles.footerText}>Already have an account? </Text>
-                  <TextButton
-                    textStyle={styles.signInLink}
-                    title="Sign In"
-                    size={ButtonSize.SMALL}
-                    onPress={() => {
-                      if (loginScreenRequest) {
-                        loginScreenRequest();
-                      }
-                      setCurrentView(IAuthModuleKeys.signIn);
-                    }}
-                  />
-                </View>
-              )}
-            </View>
-          </ScrollView>
-        </KeyboardAwareScrollView>
-      </TouchableWithoutFeedback>
+            )}
+          </View>
+        </ScrollView>
+      </KeyboardAwareScrollView>
     </View>
   );
 };

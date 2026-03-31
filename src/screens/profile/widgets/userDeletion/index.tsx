@@ -8,6 +8,7 @@ import { BottomSheetModal } from '~/components/bottomSheetModal';
 import Text from '~/codidge_components/UI/text';
 import { usePersonalInfo } from '../personalInfo/hooks/useCustomer';
 import { StepConfirm, StepWarning } from './subComponents';
+import { setActiveTab } from '~/store/navigationTabs';
 
 const RED = '#EF4444';
 const RED_DIM = 'rgba(239,68,68,0.12)';
@@ -38,7 +39,7 @@ export const AccountDeletionScreen = ({ onBack }: { onBack: () => void }) => {
           style={{
             margin: 16,
           }}>
-          <AccountDeletionModal />
+          <AccountDeletionModal onBack={onBack} />
         </View>
       </PageSafeContainer>
     </BodyWrapper>
@@ -47,7 +48,7 @@ export const AccountDeletionScreen = ({ onBack }: { onBack: () => void }) => {
 
 // ─── Trigger button ───────────────────────────────────────────────────────────
 
-export const AccountDeletionModal = () => {
+export const AccountDeletionModal = ({ onBack }: { onBack: () => void }) => {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
   const { handleDeleteProfile, loadingDeletion } = usePersonalInfo();
@@ -64,6 +65,8 @@ export const AccountDeletionModal = () => {
   const handleDelete = async () => {
     await handleDeleteProfile();
     handleClose();
+    onBack();
+    setActiveTab('Home');
   };
 
   return (

@@ -9,12 +9,13 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import * as Icons from 'lucide-react-native';
-import { useReactiveVar, useMutation, gql, useApolloClient } from '@apollo/client';
+import { useReactiveVar, useMutation, useApolloClient } from '@apollo/client';
 import { updateUser, userData } from '~/store/user';
 import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
 import { deleteUserMutation } from '~/screens/auth/graphql/mutations';
 import { ENV_Vars } from '~/store/env';
+import { setActiveTab } from '~/store/navigationTabs';
 
 export const AccountDeletionModal = () => {
   const userInfo = useReactiveVar(userData);
@@ -48,6 +49,7 @@ export const AccountDeletionModal = () => {
 
       updateUser(null);
       await client.clearStore(); // Clears all cached data
+      setActiveTab('Home');
     } catch (error) {
       Alert.alert('Error', 'Failed to delete account. Please try again or contact support.', [
         { text: 'OK' },

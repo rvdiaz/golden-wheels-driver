@@ -16,6 +16,7 @@ import Text from '~/codidge_components/UI/text';
 import { ENV_Vars } from '~/store/env';
 import { useUser } from './hooks/useUser';
 import { updateAuthenticateStateUser } from '~/store/user/authSessionState';
+import { apiKeyClient } from '~/store/config/apolloClient';
 
 export const AuthWrapper = () => {
   const { currentView, setCurrentView } = useAuthContext();
@@ -34,8 +35,6 @@ export const AuthWrapper = () => {
       });
 
       const userData = user.data?.getCustomer;
-
-      console.log(':;userData', userData);
 
       if (!userData) {
         console.error(user.error);
@@ -68,12 +67,12 @@ export const AuthWrapper = () => {
           },
           customerID: userId,
         },
+        client: apiKeyClient,
       });
 
       if (!userData.data?.addCustomer) {
         throw Error('Error getting user');
       }
-      updateAuthenticateStateUser(false);
     } catch (error) {
       await signOut();
       console.log(':::error', error);

@@ -13,14 +13,14 @@ export const ProcessForm = ({ form, variant }: { form: any; variant?: 'light' | 
 
   const handleSubmit = async (values: Record<string, any>) => {
     try {
+      console.log(':::form', form);
+
       const { data } = await submitContact({
         variables: {
           tenant: ENV_Vars.tenant,
           formData: {
             formId: form.formId,
             fields: JSON.stringify(values),
-            userId: user?.id,
-            userName: user?.name,
           },
         },
       });

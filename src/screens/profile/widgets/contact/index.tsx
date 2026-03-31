@@ -11,6 +11,7 @@ import { theme } from '~/theme/theme';
 import { getTenantConfigQuery } from './graphql/query';
 import { ProcessForm } from '~/codidge_components/formProcessor';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
+import { LoadingSpinner } from '~/codidge_components/UI/loading/loadingSpinner';
 
 const GOLD = theme.colors.primary;
 
@@ -103,7 +104,13 @@ export const ContactSubmissionsScreen = ({ onBack }: { onBack: () => void }) => 
             </View>
 
             {loading ? (
-              <PageLoading />
+              <View
+                style={{
+                  height: 250,
+                  justifyContent: 'center',
+                }}>
+                <LoadingSpinner />
+              </View>
             ) : form ? (
               <ProcessForm form={form} variant="dark" />
             ) : (

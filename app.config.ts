@@ -4,7 +4,6 @@ import { ConfigContext } from 'expo/config';
 const EAS_PROJECT_ID = 'bf4ea28e-ea3b-4071-9b5c-b6fba74685dc';
 const PROJECT_SLUG = 'golden-wheels';
 const OWNER = 'rvdiaz1994';
-
 // App production config
 const APP_NAME = 'Golden Wheels';
 const BUNDLE_IDENTIFIER = 'com.codidge.goldenwheels';

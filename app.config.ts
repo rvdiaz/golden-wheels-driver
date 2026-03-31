@@ -11,7 +11,8 @@ const PACKAGE_NAME = 'com.codidge.goldenwheels';
 const ICON = './assets/logo.jpeg';
 const ADAPTIVE_ICON = './assets/logo.jpeg';
 const SCHEME = 'app-scheme';
-import { version } from './package.json';
+const VERSION = '1.0.1';
+const BUILD_NUMBER = 1;
 
 export default (arg: ConfigContext): ExpoConfig => {
   const { config } = arg;
@@ -26,7 +27,7 @@ export default (arg: ConfigContext): ExpoConfig => {
   return {
     ...config,
     name: name,
-    version, // Automatically bump your project version with `npm version patch`, `npm version minor` or `npm version major`.
+    version: VERSION, // Automatically bump your project version with `npm version patch`, `npm version minor` or `npm version major`.
     slug: PROJECT_SLUG, // Must be consistent across all environments.
     orientation: 'portrait',
     userInterfaceStyle: 'automatic',
@@ -36,16 +37,17 @@ export default (arg: ConfigContext): ExpoConfig => {
     owner: OWNER,
     plugins: [
       'expo-notifications',
-      /* '@stripe/stripe-react-native', // ← required for Stripe native module
+      '@stripe/stripe-react-native',
       {
-        merchantIdentifier: 'com.codidge.goldenwheels',
-      }, */
+        merchantIdentifier: bundleIdentifier,
+        enableGooglePay: true,
+      },
       ...devOnlyPlugins,
     ],
     ios: {
       supportsTablet: false,
       bundleIdentifier: bundleIdentifier,
-      buildNumber: '1',
+      buildNumber: `${BUILD_NUMBER}`,
       infoPlist: {
         // existing
         NSContactsUsageDescription: '...',
@@ -60,7 +62,7 @@ export default (arg: ConfigContext): ExpoConfig => {
     },
     android: {
       package: process.env.ANDROID_PACKAGE_NAME || packageName,
-      versionCode: 1,
+      versionCode: BUILD_NUMBER,
       adaptiveIcon: {
         foregroundImage: adaptiveIcon,
         backgroundColor: '#ffffff',

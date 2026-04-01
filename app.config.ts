@@ -10,14 +10,14 @@ const BUNDLE_IDENTIFIER = 'com.codidge.goldenwheels';
 const PACKAGE_NAME = 'com.codidge.goldenwheels';
 const ICON = './assets/logo.jpeg';
 const ADAPTIVE_ICON = './assets/logo.jpeg';
-const VERSION = '1.0.3';
-const BUILD_NUMBER = 3;
+const VERSION = '1.0.4';
+const BUILD_NUMBER = 4;
 
 export default (arg: ConfigContext): ExpoConfig => {
   const { config } = arg;
   const isDevelopment = process.env.APP_ENV === 'development';
 
-  const { name, bundleIdentifier, icon, adaptiveIcon, packageName, scheme } = getDynamicAppConfig(
+  const { name, bundleIdentifier, icon, adaptiveIcon, packageName } = getDynamicAppConfig(
     (process.env.APP_ENV as 'development' | 'preview' | 'production') || 'development'
   );
 
@@ -29,10 +29,9 @@ export default (arg: ConfigContext): ExpoConfig => {
     version: VERSION, // Automatically bump your project version with `npm version patch`, `npm version minor` or `npm version major`.
     slug: PROJECT_SLUG, // Must be consistent across all environments.
     orientation: 'portrait',
-    userInterfaceStyle: 'automatic',
+    userInterfaceStyle: 'dark',
     newArchEnabled: true,
     icon: icon,
-    scheme: scheme,
     owner: OWNER,
     plugins: [
       'expo-notifications',
@@ -72,7 +71,6 @@ export default (arg: ConfigContext): ExpoConfig => {
     },
     extra: {
       ...config.extra,
-      //TODO::: TAKE APPLE APP ID FROM APPLE
       APPLE_APP_ID: process.env.APPLE_APP_ID,
       APP_ENV: process.env.APP_ENV,
       AWS_REGION: process.env.AWS_REGION,

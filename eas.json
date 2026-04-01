@@ -43,8 +43,6 @@
   "submit": {
     "production": {
       "ios": {
-        //TODO::: CHANGE BY CODIDGE CREDENTIALS
-        "appleId": "info@codidge.com",
         "ascAppId": "6761308542"
       }
     }

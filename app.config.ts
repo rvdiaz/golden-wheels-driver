@@ -52,7 +52,7 @@ export default (arg: ConfigContext): ExpoConfig => {
       buildNumber: `${BUILD_NUMBER}`,
       infoPlist: {
         // existing
-        NSContactsUsageDescription: '...',
+        ITSAppUsesNonExemptEncryption: false,
       },
       icon: 'assets/logo.png',
     },

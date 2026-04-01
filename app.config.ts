@@ -11,8 +11,8 @@ const PACKAGE_NAME = 'com.codidge.goldenwheels';
 const ICON = './assets/logo.jpeg';
 const ADAPTIVE_ICON = './assets/logo.jpeg';
 const SCHEME = 'app-scheme';
-const VERSION = '1.0.1';
-const BUILD_NUMBER = 1;
+const VERSION = '1.0.2';
+const BUILD_NUMBER = 2;
 
 export default (arg: ConfigContext): ExpoConfig => {
   const { config } = arg;

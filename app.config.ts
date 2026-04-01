@@ -37,11 +37,13 @@ export default (arg: ConfigContext): ExpoConfig => {
     owner: OWNER,
     plugins: [
       'expo-notifications',
-      '@stripe/stripe-react-native',
-      {
-        merchantIdentifier: bundleIdentifier,
-        enableGooglePay: true,
-      },
+      [
+        '@stripe/stripe-react-native',
+        {
+          merchantIdentifier: bundleIdentifier,
+          enableGooglePay: true,
+        },
+      ],
       ...devOnlyPlugins,
     ],
     ios: {

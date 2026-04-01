@@ -10,9 +10,8 @@ const BUNDLE_IDENTIFIER = 'com.codidge.goldenwheels';
 const PACKAGE_NAME = 'com.codidge.goldenwheels';
 const ICON = './assets/logo.jpeg';
 const ADAPTIVE_ICON = './assets/logo.jpeg';
-const SCHEME = 'app-scheme';
-const VERSION = '1.0.2';
-const BUILD_NUMBER = 2;
+const VERSION = '1.0.3';
+const BUILD_NUMBER = 3;
 
 export default (arg: ConfigContext): ExpoConfig => {
   const { config } = arg;
@@ -74,7 +73,7 @@ export default (arg: ConfigContext): ExpoConfig => {
     extra: {
       ...config.extra,
       //TODO::: TAKE APPLE APP ID FROM APPLE
-      /*  "APPLE_APP_ID": 6752781766,*/
+      APPLE_APP_ID: process.env.APPLE_APP_ID,
       APP_ENV: process.env.APP_ENV,
       AWS_REGION: process.env.AWS_REGION,
       COGNITO_CLIENT_ID: process.env.COGNITO_CLIENT_ID,
@@ -102,7 +101,6 @@ export const getDynamicAppConfig = (environment: 'development' | 'preview' | 'pr
       packageName: PACKAGE_NAME,
       icon: ICON,
       adaptiveIcon: ADAPTIVE_ICON,
-      scheme: SCHEME,
     };
   }
 
@@ -113,7 +111,6 @@ export const getDynamicAppConfig = (environment: 'development' | 'preview' | 'pr
       packageName: `${PACKAGE_NAME}.preview`,
       icon: ICON,
       adaptiveIcon: ICON,
-      scheme: `${SCHEME}-prev`,
     };
   }
 
@@ -123,6 +120,5 @@ export const getDynamicAppConfig = (environment: 'development' | 'preview' | 'pr
     packageName: `${PACKAGE_NAME}.dev`,
     icon: ICON,
     adaptiveIcon: ICON,
-    scheme: `${SCHEME}-dev`,
   };
 };

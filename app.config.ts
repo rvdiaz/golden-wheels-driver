@@ -10,8 +10,8 @@ const BUNDLE_IDENTIFIER = 'com.codidge.goldenwheels';
 const PACKAGE_NAME = 'com.codidge.goldenwheels';
 const ICON = './assets/logo.jpeg';
 const ADAPTIVE_ICON = './assets/logo.jpeg';
-const VERSION = '1.0.4';
-const BUILD_NUMBER = 4;
+const VERSION = '1.0.5';
+const BUILD_NUMBER = 5;
 
 export default (arg: ConfigContext): ExpoConfig => {
   const { config } = arg;
@@ -52,7 +52,7 @@ export default (arg: ConfigContext): ExpoConfig => {
         // existing
         ITSAppUsesNonExemptEncryption: false,
       },
-      icon: 'assets/logo.png',
+      icon: icon,
     },
     updates: {
       url: `https://u.expo.dev/${EAS_PROJECT_ID}`,

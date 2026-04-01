@@ -10,8 +10,9 @@ const BUNDLE_IDENTIFIER = 'com.codidge.goldenwheels';
 const PACKAGE_NAME = 'com.codidge.goldenwheels';
 const ICON = './assets/logo.jpeg';
 const ADAPTIVE_ICON = './assets/logo.jpeg';
-const VERSION = '1.0.6';
-const BUILD_NUMBER = 6;
+const VERSION = '1.0.7';
+const BUILD_NUMBER = 7;
+const MERCHANTID = 'merchant.com.codidge.goldenwheels';
 
 export default (arg: ConfigContext): ExpoConfig => {
   const { config } = arg;
@@ -38,8 +39,8 @@ export default (arg: ConfigContext): ExpoConfig => {
       [
         '@stripe/stripe-react-native',
         {
-          merchantIdentifier: 'merchant.com.codidge.goldenwheels',
-          enableGooglePay: true,
+          merchantIdentifier: MERCHANTID,
+          enableGooglePay: false,
         },
       ],
       ...devOnlyPlugins,
@@ -53,6 +54,9 @@ export default (arg: ConfigContext): ExpoConfig => {
         ITSAppUsesNonExemptEncryption: false,
       },
       icon: icon,
+      entitlements: {
+        'com.apple.developer.in-app-payments': [MERCHANTID],
+      },
     },
     updates: {
       url: `https://u.expo.dev/${EAS_PROJECT_ID}`,

@@ -10,8 +10,8 @@ const BUNDLE_IDENTIFIER = 'com.codidge.goldenwheels';
 const PACKAGE_NAME = 'com.codidge.goldenwheels';
 const ICON = './assets/logo.jpeg';
 const ADAPTIVE_ICON = './assets/logo.jpeg';
-const VERSION = '1.0.7';
-const BUILD_NUMBER = 7;
+const VERSION = '1.0.8';
+const BUILD_NUMBER = 8;
 const MERCHANTID = 'merchant.com.codidge.goldenwheels';
 
 export default (arg: ConfigContext): ExpoConfig => {

@@ -1902,6 +1902,11 @@
   resolved "https://registry.npmjs.org/@expo/schema-utils/-/schema-utils-0.1.7.tgz"
   integrity sha512-jWHoSuwRb5ZczjahrychMJ3GWZu54jK9ulNdh1d4OzAEq672K9E5yOlnlBsfIHWHGzUAT+0CL7Yt1INiXTz68g==
 
+"@expo/schema-utils@^55.0.2":
+  version "55.0.2"
+  resolved "https://registry.npmjs.org/@expo/schema-utils/-/schema-utils-55.0.2.tgz#f45be98fe57e4dc87c4fc36c7ac532672e0ecf86"
+  integrity sha512-QZ5WKbJOWkCrMq0/kfhV9ry8te/OaS34YgLVpG8u9y2gix96TlpRTbxM/YATjNcUR2s4fiQmPCOxkGtog4i37g==
+
 "@expo/sdk-runtime-versions@^1.0.0":
   version "1.0.0"
   resolved "https://registry.npmjs.org/@expo/sdk-runtime-versions/-/sdk-runtime-versions-1.0.0.tgz"
@@ -2927,10 +2932,10 @@
   resolved "https://registry.npmjs.org/@standard-schema/utils/-/utils-0.3.0.tgz"
   integrity sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==
 
-"@stripe/stripe-react-native@^0.61.0":
-  version "0.61.0"
-  resolved "https://registry.npmjs.org/@stripe/stripe-react-native/-/stripe-react-native-0.61.0.tgz#c26b09c2b359f3e81d0e4a657cdb9e42e9f8ad54"
-  integrity sha512-2UdFpxOZXccg8yHPl4DtCD5fZtKRZ6JwBDd8rNKoMdzpArEnpHG0qUFMWJY7hxa0Nort0+xb1iooFIYDyv50hA==
+"@stripe/stripe-react-native@^0.62.0":
+  version "0.62.0"
+  resolved "https://registry.npmjs.org/@stripe/stripe-react-native/-/stripe-react-native-0.62.0.tgz#4bcf894ac66cf5db3076b555126c0f62873f7c9c"
+  integrity sha512-ojYyebNlLNCMtu5dNMuoWrOXiF6bZqygtBQOi9WdjQRWCoB76H51i9Pi1rvDq7Gz81djCy8+zt6AFa3VEJ9Z7A==
 
 "@tanstack/match-sorter-utils@^8.19.4":
   version "8.19.4"
@@ -4858,6 +4863,15 @@ expo-blur@^15.0.8:
   version "15.0.8"
   resolved "https://registry.yarnpkg.com/expo-blur/-/expo-blur-15.0.8.tgz#846cea275a6644639c5c338987b4cca54cf93eca"
   integrity sha512-rWyE1NBRZEu9WD+X+5l7gyPRszw7n12cW3IRNAb5i6KFzaBp8cxqT5oeaphJapqURvcqhkOZn2k5EtBSbsuU7w==
+
+expo-build-properties@^55.0.10:
+  version "55.0.10"
+  resolved "https://registry.npmjs.org/expo-build-properties/-/expo-build-properties-55.0.10.tgz#a66fe93e60fc338ea8b975857bbfbedebc8807c2"
+  integrity sha512-9+JCQuIQaEi27XDIFTR2Y4vok0FidWux2UKrKWD5E38/0fozbZcVUzS14FgMF1F0lalmXMgebH/vjRpbYWJIMA==
+  dependencies:
+    "@expo/schema-utils" "^55.0.2"
+    resolve-from "^5.0.0"
+    semver "^7.6.0"
 
 expo-constants@^18.0.9, expo-constants@~18.0.8, expo-constants@~18.0.9:
   version "18.0.9"

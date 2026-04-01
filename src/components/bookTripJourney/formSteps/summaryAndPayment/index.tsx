@@ -112,12 +112,12 @@ export const SummaryAndPayment = ({
             primary: GOLD,
             background: '#020617',
             componentBackground: '#0f172a',
-            componentBorder: 'rgba(255,255,255,0.08)',
-            componentDivider: 'rgba(255,255,255,0.06)',
+            componentBorder: '#ffffff14', // rgba(255,255,255,0.08)
+            componentDivider: '#ffffff0f', // rgba(255,255,255,0.06)
             primaryText: '#ffffff',
-            secondaryText: 'rgba(255,255,255,0.55)',
+            secondaryText: '#ffffff8c', // rgba(255,255,255,0.55)
             componentText: '#ffffff',
-            placeholderText: 'rgba(255,255,255,0.3)',
+            placeholderText: '#ffffff4d', // rgba(255,255,255,0.30)
             icon: GOLD,
           },
           shapes: { borderRadius: 12, borderWidth: 1 },

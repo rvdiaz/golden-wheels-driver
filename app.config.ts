@@ -43,6 +43,16 @@ export default (arg: ConfigContext): ExpoConfig => {
           enableGooglePay: false,
         },
       ],
+      [
+        'expo-build-properties',
+        {
+          android: {
+            compileSdkVersion: 36,
+            targetSdkVersion: 36,
+            kotlinVersion: '2.0.21',
+          },
+        },
+      ],
       ...devOnlyPlugins,
     ],
     ios: {
@@ -70,6 +80,9 @@ export default (arg: ConfigContext): ExpoConfig => {
       adaptiveIcon: {
         foregroundImage: adaptiveIcon,
         backgroundColor: '#ffffff',
+      },
+      buildProperties: {
+        kotlinVersion: '2.0.21',
       },
       googleServicesFile: process.env.GOOGLE_SERVICES_JSON || './google-services.json',
     },

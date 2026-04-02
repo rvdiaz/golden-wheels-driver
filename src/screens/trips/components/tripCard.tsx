@@ -15,6 +15,7 @@ import {
 } from '../helpers';
 import { theme } from '~/theme/theme';
 import { BookSelectionForm } from '~/components/bookTripJourney';
+import { BookingConfirmationScreen } from '~/components/bookTripJourney/formSteps/confirmationResults';
 
 const GOLD = theme.colors.primary;
 const GOLD_30 = theme.colors.primaryAlpha[35];
@@ -93,12 +94,12 @@ const badgeStyles = StyleSheet.create({
 interface TripCardProps {
   booking: Booking;
   tab: TabKey;
-  onPress?: (booking: Booking) => void;
 }
 
-export const TripCard = ({ booking, tab, onPress }: TripCardProps) => {
+export const TripCard = ({ booking, tab }: TripCardProps) => {
   const { bookingBusinessData: biz, bookingCode, status, startDate } = booking;
   const [open, setOpen] = useState(false);
+  const [bookingDetails, setbookingDetails] = useState(false);
 
   const isPast = tab === 'past';
   const isCancelled = tab === 'cancelled';
@@ -140,15 +141,19 @@ export const TripCard = ({ booking, tab, onPress }: TripCardProps) => {
   const avatarBorder = isPast || isCancelled ? 'rgba(255,255,255,0.1)' : GOLD_30;
   const avatarTextColor = isPast || isCancelled ? 'rgba(255,255,255,0.3)' : GOLD;
 
+  const handleContinueBooking = () => {
+    if (booking.status === 'draft') {
+      setOpen(true);
+    } else {
+      setbookingDetails(true);
+    }
+  };
+
   return (
     <>
       <TouchableOpacity
         activeOpacity={0.82}
-        onPress={() => {
-          if (booking.status === 'draft') {
-            setOpen(true);
-          }
-        }}
+        onPress={handleContinueBooking}
         style={[cardStyles.card, { backgroundColor: cardBg, borderColor: cardBorder }]}>
         {/* Top shimmer accent */}
         <View style={[cardStyles.shimmer, { backgroundColor: shimmerColor }]} />
@@ -288,6 +293,27 @@ export const TripCard = ({ booking, tab, onPress }: TripCardProps) => {
             // handle payment
           }}
           initialValues={booking}
+        />
+      </Modal>
+      <Modal
+        visible={bookingDetails}
+        animationType="slide"
+        statusBarTranslucent
+        onRequestClose={() => {
+          setbookingDetails(false);
+        }}>
+        <BookingConfirmationScreen
+          bookingCode={booking.bookingCode}
+          destinationDisplayName={biz.dropoffLocation.displayName}
+          pickupDisplayName={biz.pickupLocation.displayName}
+          startDate={booking.startDate}
+          carTypeName={biz.carType.name}
+          currencyCode={biz.totalPrice.currencyCode}
+          totalAmount={biz.totalPrice.amount}
+          onBack={() => {
+            setbookingDetails(false);
+          }}
+          headerTitle="Order Details"
         />
       </Modal>
     </>

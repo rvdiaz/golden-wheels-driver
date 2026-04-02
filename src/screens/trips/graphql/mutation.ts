@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { G } from 'react-native-svg';
 
 export const addBookingMutation = gql`
   mutation addBooking($tenant: TenantData!, $booking: BookingInput!) {

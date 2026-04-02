@@ -10,8 +10,8 @@ const BUNDLE_IDENTIFIER = 'com.codidge.goldenwheels';
 const PACKAGE_NAME = 'com.codidge.goldenwheels';
 const ICON = './assets/logo.jpeg';
 const ADAPTIVE_ICON = './assets/logo.jpeg';
-const VERSION = '1.0.9';
-const BUILD_NUMBER = 9;
+const VERSION = '1.1.0';
+const BUILD_NUMBER = 10;
 const MERCHANTID = 'merchant.com.codidge.goldenwheels';
 
 export default (arg: ConfigContext): ExpoConfig => {
@@ -102,6 +102,7 @@ export default (arg: ConfigContext): ExpoConfig => {
         projectId: EAS_PROJECT_ID,
       },
       STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
+      VERSION: `${VERSION}(${BUILD_NUMBER})`,
     },
   } as ExpoConfig;
 };
@@ -132,7 +133,7 @@ export const getDynamicAppConfig = (environment: 'development' | 'preview' | 'pr
   return {
     name: `${APP_NAME} Development`,
     bundleIdentifier: `${BUNDLE_IDENTIFIER}.dev`,
-    packageName: `${PACKAGE_NAME}.dev`,
+    packageName: `${PACKAGE_NAME}`,
     icon: ICON,
     adaptiveIcon: ICON,
   };

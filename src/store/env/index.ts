@@ -1,6 +1,7 @@
 import Constants from 'expo-constants';
 
 const extra = Constants.expoConfig?.extra ?? {};
+const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
 
 function required(name: string, value?: string): string {
   if (!value) {
@@ -11,6 +12,8 @@ function required(name: string, value?: string): string {
 
 export const ENV_Vars = {
   APP_ENV: required('APP_ENV', extra.APP_ENV),
+  APP_VERSION: required('VERSION', extra.VERSION),
+  EAS_PROJECT_ID: projectId,
   AWS_REGION: required('AWS_REGION', extra.AWS_REGION),
   COGNITO_CLIENT_ID: required('COGNITO_CLIENT_ID', extra.COGNITO_CLIENT_ID),
   COGNITO_USERPOOL_ID: required('COGNITO_USERPOOL_ID', extra.COGNITO_USERPOOL_ID),

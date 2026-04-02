@@ -7,6 +7,7 @@ import { useState, useCallback } from 'react';
 import { theme } from '~/theme/theme';
 import { useUserNotifications } from './hooks/useUserNotifications';
 import { NotificationCard } from './widgets/notificationCard';
+import { Header } from '~/codidge_components/UI/header';
 
 // ─── Color tokens ─────────────────────────────────────────────────────────────
 
@@ -54,9 +55,25 @@ export const NotificationsScreen = () => {
 
   return (
     <PageSafeContainer style={styles.container}>
-      <View style={styles.screenHeader}>
-        <Text style={styles.screenTitle}>Notifications</Text>
-      </View>
+      <Header
+        contentContainerStyle={{
+          backgroundColor: 'transparent',
+        }}
+        contentStyle={{
+          paddingVertical: 0,
+        }}
+        titleStyles={{
+          color: '#FFF',
+        }}
+        leftWidget={
+          <View style={styles.screenHeader}>
+            <Text style={styles.screenTitle}>Notifications</Text>
+          </View>
+        }
+        title={''}
+        showBack
+      />
+
       {/* Subtitle row */}
       {notifications.length > 0 && (
         <View style={styles.subtitleRow}>
@@ -99,7 +116,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.lg,
     paddingBottom: theme.spacing.md,
   },
 

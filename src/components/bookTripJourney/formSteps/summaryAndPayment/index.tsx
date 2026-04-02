@@ -16,7 +16,7 @@ import {
 import Text from '~/codidge_components/UI/text';
 import { Booking, BookMode } from '~/screens/trips/interfaces';
 import { theme } from '~/theme/theme';
-import { formatCurrency, formatDate, formatDateTime } from '~/screens/trips/helpers';
+import { formatCurrency, formatDateTime } from '~/screens/trips/helpers';
 import { BookingFooter } from '../../widgets/bookFooter';
 import {
   SummaryPriceRow,
@@ -110,17 +110,8 @@ export const SummaryAndPayment = ({
         appearance: {
           colors: {
             primary: GOLD,
-            background: '#020617',
-            componentBackground: '#0f172a',
-            componentBorder: '#ffffff14', // rgba(255,255,255,0.08)
-            componentDivider: '#ffffff0f', // rgba(255,255,255,0.06)
-            primaryText: '#ffffff',
-            secondaryText: '#ffffff8c', // rgba(255,255,255,0.55)
-            componentText: '#ffffff',
-            placeholderText: '#ffffff4d', // rgba(255,255,255,0.30)
             icon: GOLD,
           },
-          shapes: { borderRadius: 12, borderWidth: 1 },
         },
       });
 

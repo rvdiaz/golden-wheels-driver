@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, TouchableOpacity, StyleSheet, Platform, Dimensions, Modal } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { House, MapPin, Bell, User, LucideIcon, X } from 'lucide-react-native';
+import { House, MapPin, Bell, User, LucideIcon } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
@@ -29,8 +29,9 @@ const TABS: ITAB[] = [
 ];
 
 const BAR_HEIGHT = 72;
-const BAR_WIDTH = width - 48;
+const BAR_WIDTH = width - 40;
 const RADIUS = 32;
+const BOTTOM_OFFSET = Platform.OS === 'android' ? 50 : 24;
 
 export const CustomTabBar = ({
   activeTab,
@@ -62,12 +63,14 @@ export const CustomTabBar = ({
   return (
     <>
       <View style={styles.wrapper} pointerEvents="box-none">
-        <LinearGradient
-          colors={['transparent', '#D4A853', 'transparent']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.topBorder}
-        />
+        {Platform.OS === 'ios' && (
+          <LinearGradient
+            colors={['transparent', '#D4A853', 'transparent']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.topBorder}
+          />
+        )}
         <LinearGradient
           colors={[theme.colors.primaryAlpha[5], theme.colors.primaryAlpha[5]]}
           start={{ x: 0, y: 0 }}
@@ -116,7 +119,7 @@ export const CustomTabBar = ({
 const styles = StyleSheet.create({
   wrapper: {
     position: 'absolute',
-    bottom: 24,
+    bottom: BOTTOM_OFFSET,
     left: 0,
     right: 0,
     alignItems: 'center',

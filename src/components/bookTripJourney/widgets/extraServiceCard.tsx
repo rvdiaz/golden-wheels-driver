@@ -1,24 +1,11 @@
 import React, { useState, useRef } from 'react';
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  Animated,
-  LayoutAnimation,
-  Platform,
-  UIManager,
-} from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Image, Animated, LayoutAnimation } from 'react-native';
 import { Check, ChevronDown } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Text from '~/codidge_components/UI/text';
 import { IExtraService } from '~/screens/trips/interfaces';
 import { theme } from '~/theme/theme';
 import { formatCurrency } from '~/screens/trips/helpers';
-
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
 
 const GOLD = theme.colors.primary;
 

@@ -9,8 +9,8 @@ import { theme } from '~/theme/theme';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { useCustomerTrips } from './hooks/useCustomerTrips';
 import { TabBar } from './components/statusTabs';
-import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import { LoadingSpinner } from '~/codidge_components/UI/loading/loadingSpinner';
+import { Header } from '~/codidge_components/UI/header';
 
 const GOLD = theme.colors.primary;
 
@@ -44,19 +44,28 @@ export const TripsScreen = () => {
 
   const filtered = filterByTab(tripLists, activeTab);
 
-  const handleCardPress = (booking: Booking) => {
-    // Wire up your navigation here:
-    // navigation.navigate('TripDetail', { bookingId: booking.id });
-    console.log('Tapped booking:', booking.bookingCode);
-  };
-
   return (
     <BodyWrapper gradientCoverage={0.45}>
       <PageSafeContainer>
         {/* Header */}
-        <View style={styles.screenHeader}>
-          <Text style={styles.screenTitle}>My Trips</Text>
-        </View>
+        <Header
+          contentContainerStyle={{
+            backgroundColor: 'transparent',
+          }}
+          contentStyle={{
+            paddingVertical: 0,
+          }}
+          titleStyles={{
+            color: '#FFF',
+          }}
+          leftWidget={
+            <View style={styles.screenHeader}>
+              <Text style={styles.screenTitle}>My Trips</Text>
+            </View>
+          }
+          title={''}
+          showBack
+        />
 
         {/* Tabs — always visible */}
         <TabBar activeTab={activeTab} counts={counts} onTabChange={setActiveTab} />
@@ -79,9 +88,7 @@ export const TripsScreen = () => {
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <TripCard booking={item} tab={activeTab} onPress={handleCardPress} />
-            )}
+            renderItem={({ item }) => <TripCard booking={item} tab={activeTab} />}
             ItemSeparatorComponent={() => <View style={{ height: 14 }} />}
           />
         )}
@@ -98,7 +105,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.lg,
     paddingBottom: theme.spacing.md,
   },
 

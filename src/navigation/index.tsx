@@ -14,6 +14,7 @@ import { ProfileScreen } from '~/screens/profile';
 import { CustomTabBar } from './bottomBar';
 import { GetStartedScreen } from '~/screens/welcome_screen';
 import { activeTabVar, setActiveTab } from '~/store/navigationTabs';
+import { usePushNotificationTokenSetup } from '~/screens/auth/hooks/usePushNotificationToken';
 
 const Stack = createStackNavigator();
 const HAS_LAUNCHED_KEY = 'gw_has_launched9'; // namespaced to your app
@@ -44,6 +45,8 @@ function TabsWithHeader() {
 export const Navigation = () => {
   const userInfo = useReactiveVar(userData);
   const [appState, setAppState] = useState<'loading' | 'welcome' | 'ready'>('loading');
+
+  usePushNotificationTokenSetup();
 
   useEffect(() => {
     const checkFirstLaunch = async () => {

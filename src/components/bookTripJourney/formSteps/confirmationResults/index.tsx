@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Animated, ScrollView } from 'react-native';
-import { CheckCircle, Clock, Car, Calendar, MapPin } from 'lucide-react-native';
+import { View, StyleSheet, Animated, ScrollView, TouchableOpacity } from 'react-native';
+import { CheckCircle, Clock, Car, Calendar, MapPin, ArrowLeft } from 'lucide-react-native';
 import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
 import { formatCurrency, formatDateTime } from '~/screens/trips/helpers';
@@ -9,6 +9,8 @@ import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import { Header } from '~/codidge_components/UI/header';
+import { ICar, Driver } from '~/screens/trips/interfaces';
 
 const GOLD = theme.colors.primary;
 
@@ -24,10 +26,14 @@ interface BookingConfirmationProps {
   carTypeName?: string;
   totalAmount?: number;
   currencyCode?: string;
+  driver?: Driver;
+  car?: ICar;
 
   // Callbacks
-  onViewTrips: () => void;
-  onGoHome: () => void;
+  onViewTrips?: () => void;
+  onGoHome?: () => void;
+  onBack?: () => void;
+  headerTitle?: string;
 }
 
 // ─── Animated check icon ──────────────────────────────────────────────────────
@@ -82,15 +88,25 @@ const AnimatedCheck = () => {
 
 // ─── Detail row ───────────────────────────────────────────────────────────────
 
-const DetailRow = ({ icon, value }: { icon: React.ReactNode; value: string }) => (
+const DetailRow = ({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label?: string;
+  value: string;
+}) => (
   <View style={detail.row}>
     <View style={detail.iconWrap}>{icon}</View>
-    <Text style={detail.value} numberOfLines={2}>
-      {value}
-    </Text>
+    <View style={detail.textWrap}>
+      {label ? <Text style={detail.label}>{label}</Text> : null}
+      <Text style={detail.value} numberOfLines={2}>
+        {value}
+      </Text>
+    </View>
   </View>
 );
-
 // ─── Main screen ──────────────────────────────────────────────────────────────
 
 export const BookingConfirmationScreen: React.FC<BookingConfirmationProps> = ({
@@ -101,8 +117,12 @@ export const BookingConfirmationScreen: React.FC<BookingConfirmationProps> = ({
   carTypeName,
   totalAmount,
   currencyCode = 'USD',
+  driver,
+  car,
   onViewTrips,
   onGoHome,
+  onBack,
+  headerTitle,
 }) => {
   const contentAnim = useRef(new Animated.Value(0)).current;
 
@@ -119,35 +139,54 @@ export const BookingConfirmationScreen: React.FC<BookingConfirmationProps> = ({
     <BodyWrapper>
       <ScrollView>
         <PageSafeContainer>
+          {onBack && (
+            <Header
+              contentContainerStyle={{
+                backgroundColor: 'transparent',
+              }}
+              titleStyles={{
+                color: '#FFF',
+              }}
+              leftWidget={
+                <TouchableOpacity onPress={onBack} style={screen.iconBtn} activeOpacity={0.7}>
+                  <ArrowLeft size={18} color="rgba(255,255,255,0.8)" />
+                </TouchableOpacity>
+              }
+              title={headerTitle ?? ''}
+              showBack
+            />
+          )}
           {/* Subtle gold glow behind check */}
           <View style={screen.glow} />
 
           <View style={screen.content}>
             {/* Check animation */}
-            <AnimatedCheck />
+            {!onBack && <AnimatedCheck />}
 
             {/* Heading */}
-            <Animated.View
-              style={[
-                screen.headingWrap,
-                {
-                  opacity: contentAnim,
-                  transform: [
-                    {
-                      translateY: contentAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [16, 0],
-                      }),
-                    },
-                  ],
-                },
-              ]}>
-              <Text style={screen.eyebrow}>GOLDEN WHEELS</Text>
-              <Text style={screen.heading}>Request Received</Text>
-              <Text style={screen.sub}>
-                We're finding the best driver for your trip. You'll be notified once confirmed.
-              </Text>
-            </Animated.View>
+            {!onBack && (
+              <Animated.View
+                style={[
+                  screen.headingWrap,
+                  {
+                    opacity: contentAnim,
+                    transform: [
+                      {
+                        translateY: contentAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [16, 0],
+                        }),
+                      },
+                    ],
+                  },
+                ]}>
+                <Text style={screen.eyebrow}>GOLDEN WHEELS</Text>
+                <Text style={screen.heading}>Request Received</Text>
+                <Text style={screen.sub}>
+                  We're finding the best driver for your trip. You'll be notified once confirmed.
+                </Text>
+              </Animated.View>
+            )}
 
             {/* Booking code */}
             <Animated.View
@@ -185,46 +224,93 @@ export const BookingConfirmationScreen: React.FC<BookingConfirmationProps> = ({
                   ],
                 },
               ]}>
-              <DetailRow icon={<MapPin size={13} color={GOLD} />} value={pickupDisplayName} />
-              <DetailRow icon={<MapPin size={13} color={GOLD} />} value={destinationDisplayName} />
-              <View style={screen.summaryDivider} />
-
-              <View style={screen.summaryDivider} />
-              <DetailRow
-                icon={<Calendar size={13} color={GOLD} />}
-                value={formatDateTime(startDate)}
-              />
-              {carTypeName ? (
-                <>
-                  <View style={screen.summaryDivider} />
-                  <DetailRow icon={<Car size={13} color={GOLD} />} value={carTypeName} />
-                </>
-              ) : null}
-              {totalAmount ? (
+              {car ? (
                 <>
                   <View style={screen.summaryDivider} />
                   <DetailRow
-                    icon={<Clock size={13} color={GOLD} />}
-                    value={`${formatCurrency(totalAmount, currencyCode)} — charged on confirmation`}
+                    icon={<Car size={13} color={GOLD} />}
+                    label="Car"
+                    value={`${car.brand} ${car.model}`}
                   />
                 </>
+              ) : null}
+
+              {driver ? (
+                <>
+                  <View style={screen.summaryDivider} />
+                  <View style={detail.row}>
+                    <View style={detail.iconWrap}>
+                      {/* Initials avatar */}
+                      <View style={driverS.avatar}>
+                        <Text style={driverS.initials}>
+                          {driver.name
+                            .split(' ')
+                            .map((n) => n[0])
+                            .join('')
+                            .slice(0, 2)
+                            .toUpperCase()}
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={detail.textWrap}>
+                      <Text style={detail.label}>Driver</Text>
+                      <Text style={detail.value}>{driver.name}</Text>
+                      <Text style={driverS.sub}>{driver.phone}</Text>
+                    </View>
+                  </View>
+                </>
+              ) : null}
+              <DetailRow
+                icon={<MapPin size={13} color={GOLD} />}
+                label="Pickup"
+                value={pickupDisplayName}
+              />
+              <DetailRow
+                icon={<MapPin size={13} color={GOLD} />}
+                label="Destination"
+                value={destinationDisplayName}
+              />
+              <DetailRow
+                icon={<Calendar size={13} color={GOLD} />}
+                label="Date & time"
+                value={formatDateTime(startDate)}
+              />
+              {carTypeName ? (
+                <DetailRow
+                  icon={<Car size={13} color={GOLD} />}
+                  label="Vehicle"
+                  value={carTypeName}
+                />
+              ) : null}
+              {totalAmount ? (
+                <DetailRow
+                  icon={<Clock size={13} color={GOLD} />}
+                  label="Payment"
+                  value={`${formatCurrency(totalAmount, currencyCode)} — charged on confirmation`}
+                />
               ) : null}
             </Animated.View>
 
             {/* Notice */}
-            <Animated.View style={[screen.notice, { opacity: contentAnim }]}>
-              <View style={screen.noticeDot} />
-              <Text style={screen.noticeText}>
-                Your card has been saved but not charged. Payment is collected only after a driver
-                accepts your trip.
-              </Text>
-            </Animated.View>
+            {!onBack && (
+              <Animated.View style={[screen.notice, { opacity: contentAnim }]}>
+                <View style={screen.noticeDot} />
+                <Text style={screen.noticeText}>
+                  Your card has been saved but not charged. Payment is collected only after a driver
+                  accepts your trip.
+                </Text>
+              </Animated.View>
+            )}
           </View>
 
           {/* CTAs */}
           <Animated.View style={[screen.actions, { opacity: contentAnim }]}>
-            <PrimaryButton size={ButtonSize.XLARGE} onPress={onViewTrips} title="View My Trips" />
-            <TextButton size={ButtonSize.XLARGE} onPress={onGoHome} title="Back to Home" />
+            {onViewTrips && (
+              <PrimaryButton size={ButtonSize.XLARGE} onPress={onViewTrips} title="View My Trips" />
+            )}
+            {onGoHome && (
+              <TextButton size={ButtonSize.XLARGE} onPress={onGoHome} title="Back to Home" />
+            )}
           </Animated.View>
         </PageSafeContainer>
       </ScrollView>
@@ -261,7 +347,6 @@ const check = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-
 const detail = StyleSheet.create({
   row: {
     flexDirection: 'row',
@@ -279,8 +364,20 @@ const detail = StyleSheet.create({
     marginTop: 1,
     flexShrink: 0,
   },
-  value: {
+  textWrap: {
+    // ← new
     flex: 1,
+    gap: 1,
+  },
+  label: {
+    // ← new
+    fontSize: 10,
+    fontWeight: '600',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    color: 'rgba(212,168,83,0.85)',
+  },
+  value: {
     fontSize: 13,
     color: 'rgba(255,255,255,0.75)',
     fontWeight: '500',
@@ -389,5 +486,40 @@ const screen = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 16,
     gap: 12,
+  },
+  iconBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+
+const driverS = StyleSheet.create({
+  avatar: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: 'rgba(212,168,83,0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(212,168,83,0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  initials: {
+    fontSize: 8,
+    fontWeight: '700',
+    color: GOLD,
+    letterSpacing: 0.3,
+  },
+  sub: {
+    fontSize: 11,
+    color: 'rgba(255,255,255,0.4)',
+    fontWeight: '400',
+    marginTop: 1,
   },
 });

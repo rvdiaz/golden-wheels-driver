@@ -186,7 +186,8 @@ const IOSDateSheet = ({
             display="spinner"
             onChange={handlePickerChange}
             textColor="#ffffff"
-            themeVariant="dark"
+            themeVariant="light"
+            accentColor={GOLD}
             style={sheet.picker}
           />
         </View>
@@ -322,6 +323,7 @@ export const DateTimeInputField: React.FC<DateInputFieldProps> = ({
           mode={getAndroidMode()}
           display={getAndroidMode() === 'date' ? 'calendar' : 'clock'}
           onChange={handleAndroidChange}
+          style={sheet.picker}
         />
       )}
 

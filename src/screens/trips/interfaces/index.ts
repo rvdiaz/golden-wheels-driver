@@ -28,7 +28,7 @@ export interface CarType {
   tripQuotePrice: number;
 }
 
-export interface Car {
+export interface ICar {
   id: string;
   brand: string;
   model: string;
@@ -72,7 +72,7 @@ export type BookingCartTypesPriceQueryInput = Pick<
 export interface BookingBusinessData {
   bookHours: number;
   bookMode: BookMode;
-  car: Car;
+  car: ICar;
   carType: CarType;
   customer: Customer;
   driver: Driver;

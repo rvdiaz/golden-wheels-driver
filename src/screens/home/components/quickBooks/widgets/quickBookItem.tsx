@@ -12,20 +12,38 @@ import { theme } from '~/theme/theme';
 import { QuickBookOption } from '../interfaces';
 import { iconMap } from '../helpers';
 import { MapPin } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BookSelectionForm } from '~/components/bookTripJourney';
+import { useReactiveVar } from '@apollo/client';
+import { userData } from '~/store/user';
+import { updateAuthenticateStateUser } from '~/store/user/authSessionState';
 export const GAP_QUICK_BOOKS = 10;
 const { width } = Dimensions.get('window');
 const ITEM_SIZE = 149;
 
 export const QuickBookItem = ({ item }: { item: QuickBookOption }) => {
+  const userInfo = useReactiveVar(userData);
+  const [bookingIntent, setbookingIntent] = useState(false);
+
   const GRID_ITEM = (width - 40 - GAP_QUICK_BOOKS) / 2;
   const key = item.icon?.toLowerCase?.();
   const Icon = iconMap[key as keyof typeof iconMap] || MapPin;
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    if (userInfo && bookingIntent) {
+      updateAuthenticateStateUser(false);
+      setOpen(true);
+    }
+  }, [userInfo, bookingIntent]);
+
   const handlePress = () => {
-    setOpen(true);
+    if (!userInfo) {
+      setbookingIntent(true);
+      updateAuthenticateStateUser(true);
+    } else {
+      setOpen(true);
+    }
   };
 
   return (

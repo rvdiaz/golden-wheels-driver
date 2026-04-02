@@ -93,8 +93,6 @@ export const useCustomerTrips = ({ skipQueries }: { skipQueries?: boolean }) => 
       },
     });
 
-    console.log(':::update', response.data?.updateBooking);
-
     return response.data?.updateBooking;
   };
 

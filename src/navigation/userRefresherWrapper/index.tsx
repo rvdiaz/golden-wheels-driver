@@ -1,17 +1,21 @@
 import React, { useEffect, useRef, useCallback } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
+import { AppState, AppStateStatus, Platform } from 'react-native';
 import { useApolloClient, useReactiveVar } from '@apollo/client';
 import { updateUser, userData } from '~/store/user';
 import { pushTokenVar } from '~/store/user/pushToken';
 import { getCurrentUser, signOut } from 'aws-amplify/auth';
 import { IUser } from '~/store/user/interfaces';
 import { getCustomerQuery } from '~/screens/auth/graphql/queries';
+import { ENV_Vars } from '~/store/env';
+import Constants from 'expo-constants';
+import * as Device from 'expo-device';
 
 interface Props {
   children: React.ReactNode;
 }
 
 const REFRESH_COOLDOWN_MS = 30000; // 30 seconds - increased from 10
+const APP_VERSION = ENV_Vars.APP_VERSION;
 
 export const UserRefresherWrapper: React.FC<Props> = ({ children }) => {
   const client = useApolloClient();
@@ -89,12 +93,33 @@ export const UserRefresherWrapper: React.FC<Props> = ({ children }) => {
     lastFetchRef.current = now;
 
     try {
+      const appInfo = {
+        appVersion: APP_VERSION,
+        buildNumber:
+          Constants.expoConfig?.ios?.buildNumber ||
+          Constants.expoConfig?.android?.versionCode?.toString(),
+
+        platform: Platform.OS,
+        osVersion: Device.osVersion,
+
+        deviceName: Device.deviceName,
+        deviceModel: Device.modelName,
+        brand: Device.brand,
+        manufacturer: Device.manufacturer,
+
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        locale: Intl.DateTimeFormat().resolvedOptions().locale,
+
+        isDevice: Device.isDevice,
+      };
+
       const { data } = await client.query({
         query: getCustomerQuery,
         variables: {
-          tenant: { tenantId: userInfo.activeTenantId },
+          tenant: ENV_Vars.tenant,
           customerId: userInfo.id,
-          token: pushToken || undefined, // Handle null token
+          token: pushToken || undefined,
+          appInfo, // Handle null token
         },
         fetchPolicy: 'network-only',
         // Add error policy to handle partial errors

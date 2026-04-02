@@ -7,7 +7,7 @@ export const getCustomerQuery = gql`
     $token: String
     $appInfo: AppInfoInput
   ) {
-    getCustomer(tenant: $tenant, customerId: $customerId) {
+    getCustomer(tenant: $tenant, customerId: $customerId, token: $token, appInfo: $appInfo) {
       id
       name
       email

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Animated, StyleSheet, ViewStyle } from 'react-native';
 
 interface PageTransitionProps {
@@ -16,11 +16,13 @@ export const PageTransition: React.FC<PageTransitionProps> = ({
   direction = 'right',
   duration = 200,
 }) => {
-  const slideAnim = useRef<any>(new Animated.Value(direction === 'right' ? 1 : -1)).current;
-  const opacityAnim = useRef<any>(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(direction === 'right' ? 1 : -1)).current;
+  const opacityAnim = useRef(new Animated.Value(0)).current;
+  const [shouldRender, setShouldRender] = useState(isVisible);
 
   useEffect(() => {
     if (isVisible) {
+      setShouldRender(true);
       // Slide in animation
       Animated.parallel([
         Animated.timing(slideAnim, {
@@ -47,22 +49,27 @@ export const PageTransition: React.FC<PageTransitionProps> = ({
           duration: duration * 0.6,
           useNativeDriver: true,
         }),
-      ]).start();
+      ]).start(() => {
+        // Only unmount after animation completes
+        setShouldRender(false);
+      });
     }
   }, [isVisible, slideAnim, opacityAnim, direction, duration]);
 
-  if (!isVisible && opacityAnim._value === 0) {
+  // Don't render anything if not visible and animation is done
+  if (!shouldRender) {
     return null;
   }
 
   const translateX = slideAnim.interpolate({
     inputRange: [-1, 0, 1],
-    outputRange: [-100, 0, 100],
+    outputRange: [-300, 0, 300], // Increased from 100 to ensure full off-screen
     extrapolate: 'clamp',
   });
 
   return (
     <Animated.View
+      pointerEvents={isVisible ? 'auto' : 'none'} // Critical fix: disable touch when hidden
       style={[
         styles.container,
         style,
@@ -84,5 +91,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+    backgroundColor: 'transparent', // Ensure no background blocking
   },
 });

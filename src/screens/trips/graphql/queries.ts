@@ -1,13 +1,14 @@
 import { gql } from '@apollo/client';
 
 export const getCustomerBookingQuery = gql`
-  query getCustomerBooking($customerId: ID!, $tenant: TenantData!) {
-    getCustomerBooking(customerId: $customerId, tenant: $tenant) {
+  query getCustomerBooking($tenant: TenantData!) {
+    getCustomerBooking(tenant: $tenant) {
       id
       bookingCode
       startDate
       endDate
       status
+      driverStatus
       createdAt
       note
       bookingBusinessData {
@@ -58,11 +59,13 @@ export const getCustomerBookingQuery = gql`
           id
           displayName
           formattedAddress
+          types
         }
         dropoffLocation {
           id
           displayName
           formattedAddress
+          types
         }
         totalPrice {
           amount

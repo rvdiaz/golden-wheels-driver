@@ -4,16 +4,15 @@
       "distribution": "internal",
       "channel": "preview",
       "env": {
-        "APP_ENV": "production",
+        "APP_ENV": "development",
         "COGNITO_USERPOOL_ID": "us-east-2_wT26orWBG",
         "COGNITO_CLIENT_ID": "1n7qbm76c1ge9tc2d85p8r7l6t",
-        "AWS_REGION": "us-east-1",
+        "AWS_REGION": "us-east-2",
         "GRAPHQL_ENDPOINT": "https://pj764drd2jbqfezl5arzuecqeq.appsync-api.us-east-2.amazonaws.com/graphql",
         "GRAPHQL_API_KEY": "da2-hjp3bbdwdrhs3kesagakowpxwm",
         "TENANTID": "98faecfa-56f1-4bed-97fd-90312f6a27de",
         "TENANT_SOLUTION": "booking",
-        "APPLE_APP_ID": "6761308542",
-        "STRIPE_PUBLISHABLE_KEY": "pk_test_51TAxQCEFHBYEk2XlNbnOnbaOzIbNFf7jiEpepcp1Q8HMOGHJ3TN5SnMxXbThdD8OftOvxvQ9N3DxBltsBshsgZZG00wkG5Nddh"
+        "APPLE_APP_ID": "6761308542"
       }
     },
     "production": {
@@ -28,8 +27,7 @@
         "GRAPHQL_API_KEY": "da2-hjp3bbdwdrhs3kesagakowpxwm",
         "TENANTID": "98faecfa-56f1-4bed-97fd-90312f6a27de",
         "TENANT_SOLUTION": "booking",
-        "APPLE_APP_ID": "6761308542",
-        "STRIPE_PUBLISHABLE_KEY": "pk_test_51TAxQCEFHBYEk2XlNbnOnbaOzIbNFf7jiEpepcp1Q8HMOGHJ3TN5SnMxXbThdD8OftOvxvQ9N3DxBltsBshsgZZG00wkG5Nddh"
+        "APPLE_APP_ID": "6761308542"
       }
     },
     "development": {
@@ -37,15 +35,14 @@
       "distribution": "internal",
       "channel": "development",
       "env": {
-        "APP_ENV": "production",
+        "APP_ENV": "development",
         "COGNITO_USERPOOL_ID": "us-east-2_wT26orWBG",
         "COGNITO_CLIENT_ID": "1n7qbm76c1ge9tc2d85p8r7l6t",
-        "AWS_REGION": "us-east-1",
+        "AWS_REGION": "us-east-2",
         "GRAPHQL_ENDPOINT": "https://pj764drd2jbqfezl5arzuecqeq.appsync-api.us-east-2.amazonaws.com/graphql",
         "GRAPHQL_API_KEY": "da2-hjp3bbdwdrhs3kesagakowpxwm",
         "TENANTID": "98faecfa-56f1-4bed-97fd-90312f6a27de",
-        "TENANT_SOLUTION": "booking",
-        "STRIPE_PUBLISHABLE_KEY": "pk_test_51TAxQCEFHBYEk2XlNbnOnbaOzIbNFf7jiEpepcp1Q8HMOGHJ3TN5SnMxXbThdD8OftOvxvQ9N3DxBltsBshsgZZG00wkG5Nddh"
+        "TENANT_SOLUTION": "booking"
       }
     }
   },

@@ -5,7 +5,7 @@ import { useFormContext } from 'react-hook-form';
 import Text from '~/codidge_components/UI/text';
 import { getExtraServicesQuery } from './graphql/queries';
 import { ENV_Vars } from '~/store/env';
-import { IExtraService, Booking } from '~/screens/trips/interfaces';
+import { IExtraService, BookingForm } from '~/screens/trips/interfaces';
 import { theme } from '~/theme/theme';
 import { LoadingSkeleton } from '../../widgets/extraServiceSkeleton';
 import { ServiceCard } from '../../widgets/extraServiceCard';
@@ -30,7 +30,9 @@ export const ExtraServicesSelection = ({
   });
   const { handleUpdateTrip, loadingTripUpdate } = useCustomerTrips({ skipQueries: false });
 
-  const { watch, setValue, getValues } = useFormContext<Booking>();
+  const { watch, setValue, getValues } = useFormContext<BookingForm>();
+
+  const pickUpLocation = watch('bookingBusinessData.pickupLocation');
 
   // Selected IDs stored as array in form
   const selectedAddons = watch('bookingBusinessData.extraServices') ?? [];

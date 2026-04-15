@@ -10,7 +10,6 @@ import { ButtonSize } from '~/codidge_components/UI/button/types';
 import { theme } from '~/theme/theme';
 import { usePersonalInfo } from './hooks/useCustomer';
 import { BodyWrapper } from '~/codidge_components/UI/bodyWrapper';
-import { Avatar } from './widgets/accountAvatar';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import PhoneInput from '~/codidge_components/UI/form/inputs/phoneNumberInput';
 
@@ -40,8 +39,11 @@ export const PersonalInfo = ({ onBack }: { onBack: () => void }) => {
   });
 
   const onSubmit = async (data: FormData) => {
-    await handleUpdateProfile(data);
-    reset();
+    const userRes = await handleUpdateProfile(data);
+    reset({
+      name: userRes?.name,
+      phone: userRes?.phone,
+    });
   };
 
   return (

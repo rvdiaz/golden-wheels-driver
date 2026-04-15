@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, ScrollView, StyleSheet, Alert } from 'react-native';
 import { useFormContext } from 'react-hook-form';
 import {
@@ -12,9 +12,10 @@ import {
   Users,
   DollarSign,
   Lock,
+  FileText,
 } from 'lucide-react-native';
 import Text from '~/codidge_components/UI/text';
-import { Booking, BookMode } from '~/screens/trips/interfaces';
+import { BookingForm, BookMode } from '~/screens/trips/interfaces';
 import { theme } from '~/theme/theme';
 import { formatCurrency, formatDateTime } from '~/screens/trips/helpers';
 import { BookingFooter } from '../../widgets/bookFooter';
@@ -51,21 +52,21 @@ try {
 
 const GOLD = theme.colors.primary;
 
-export const SummaryAndPayment = ({
-  onBack,
-  finish,
-}: {
-  onBack: () => void;
-  finish: () => void;
-}) => {
-  const { watch } = useFormContext<Booking>();
+export const SummaryAndPayment = ({ finish }: { onBack: () => void; finish: () => void }) => {
+  const { watch } = useFormContext<BookingForm>();
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
+  const { handleUpdateTrip } = useCustomerTrips({ skipQueries: false });
 
   const { handlePaymentIntent, loadingPaymentProcessment } = useCustomerTrips({
     skipQueries: true,
   });
   const user = useReactiveVar(userData);
   const [loadingSheet, setLoadingSheet] = useState(false);
+  const [cachedIntent, setCachedIntent] = useState<{
+    clientSecret: string;
+    stripeCustomerId: string;
+    ephemeralKey: string;
+  } | null>(null);
 
   const data = watch();
   const biz = data.bookingBusinessData;
@@ -87,20 +88,29 @@ export const SummaryAndPayment = ({
     setLoadingSheet(true);
 
     try {
-      // 1. Create PaymentIntent on backend
-      //    capture_method: 'manual' — card HELD, not charged
-      //    Charge happens later when driver confirms via capturePayment resolver
-      const intentData = await handlePaymentIntent({
-        tenant: ENV_Vars.tenant,
-        bookingId: data.id,
-        customerId: user.id,
-      });
+      // 1. Reuse existing intent if user dismissed previously
+      let intentData = cachedIntent;
 
-      if (!intentData?.clientSecret) {
-        throw new Error('Failed to initialize payment. Please try again.');
+      if (!intentData) {
+        const response = await handlePaymentIntent({
+          tenant: ENV_Vars.tenant,
+          bookingId: data.id,
+        });
+
+        if (!response?.clientSecret) {
+          throw new Error('Failed to initialize payment. Please try again.');
+        }
+
+        intentData = {
+          clientSecret: response.clientSecret,
+          stripeCustomerId: response.stripeCustomerId,
+          ephemeralKey: response.ephemeralKey,
+        };
+
+        setCachedIntent(intentData); // ← cache it
       }
 
-      // 2. Init Stripe payment sheet with the clientSecret
+      // 2. Always re-init the sheet (required by Stripe even on retry)
       const { error: initError } = await initPaymentSheet({
         paymentIntentClientSecret: intentData.clientSecret,
         customerId: intentData.stripeCustomerId,
@@ -108,31 +118,36 @@ export const SummaryAndPayment = ({
         merchantDisplayName: 'Golden Wheels',
         primaryButtonLabel: `Authorize ${formatCurrency(totalPrice.amount, totalPrice.currencyCode)}`,
         appearance: {
-          colors: {
-            primary: GOLD,
-            icon: GOLD,
-          },
+          colors: { primary: GOLD, icon: GOLD },
         },
       });
 
       if (initError) throw new Error(initError.message);
 
-      // 3. Present sheet — user enters card, Stripe handles 3DS automatically
+      // 3. Present sheet
       const { error: presentError } = await presentPaymentSheet();
 
       if (presentError) {
-        // User dismissed — silent. Any other error gets shown.
         if (presentError.code !== 'Canceled') {
+          // A real error — clear cache so a fresh intent is created next time
+          setCachedIntent(null);
           Alert.alert('Payment error', presentError.message);
         }
+        // Canceled — keep cachedIntent so next tap reuses the same intent
         return;
       }
 
-      // 4. Authorization complete — card held, NOT charged
-      //    Backend paymentStatus is now 'authorized'
-      //    Driver confirmation will trigger capturePayment → actual charge
+      await handleUpdateTrip({
+        tenant: ENV_Vars.tenant,
+        bookingId: data.id,
+        booking: { status: 'pending' },
+      });
+
+      // 4. Success — clear cache and finish
+      setCachedIntent(null);
       finish();
     } catch (error: any) {
+      setCachedIntent(null); // clear on unexpected errors too
       Alert.alert('Something went wrong', error?.message ?? 'Please try again.');
     } finally {
       setLoadingSheet(false);
@@ -206,6 +221,26 @@ export const SummaryAndPayment = ({
               value={`${extraServices.length} extra service${extraServices.length > 1 ? 's' : ''} included`}
               last
             />
+          </SummarySection>
+        ) : null}
+
+        {/* ── Notes ── */}
+        {data.note ? (
+          <SummarySection title="Notes">
+            {data.note.split(' | ').map((part, index) => {
+              const [label, ...rest] = part.split(': ');
+              const value = rest.join(': '); // handles colons inside the value
+
+              return (
+                <SummaryReviewRow
+                  key={index}
+                  icon={<FileText size={14} color={GOLD} />}
+                  label={label}
+                  value={value}
+                  last={index === data.note.split(' | ').length - 1}
+                />
+              );
+            })}
           </SummarySection>
         ) : null}
 

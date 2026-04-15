@@ -10,6 +10,8 @@ npm-debug.*
 *.orig.*
 web-build/
 .env
+.env.dev
+.env.prod
 .env.local
 tsconfig.tsbuildinfo
 

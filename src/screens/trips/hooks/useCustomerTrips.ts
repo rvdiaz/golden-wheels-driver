@@ -4,6 +4,7 @@ import { Booking } from '../interfaces';
 import { ENV_Vars } from '~/store/env';
 import {
   addBookingMutation,
+  cancellationRequestTripMutation,
   createPaymentIntentMutation,
   updateBookingMutation,
 } from '../graphql/mutation';
@@ -12,12 +13,15 @@ import { userData } from '~/store/user';
 export const useCustomerTrips = ({ skipQueries }: { skipQueries?: boolean }) => {
   const user = useReactiveVar(userData);
 
-  const { data: customerBookings, loading: loadingTrips } = useQuery<{
+  const {
+    data: customerBookings,
+    loading: loadingTrips,
+    refetch: refetchTripList,
+  } = useQuery<{
     getCustomerBooking: Booking[];
   }>(getCustomerBookingQuery, {
     variables: {
       tenant: ENV_Vars.tenant,
-      customerId: user?.id,
     },
     fetchPolicy: 'network-only',
     skip: skipQueries || !user?.id,
@@ -39,6 +43,19 @@ export const useCustomerTrips = ({ skipQueries }: { skipQueries?: boolean }) => 
     };
   }>(createPaymentIntentMutation);
 
+  const [cancellationRequestTripFn, { loading: loadingTripCancellation }] = useMutation<{
+    cancellationRequestTrip: Booking;
+  }>(cancellationRequestTripMutation, {
+    refetchQueries: [
+      {
+        query: getCustomerBookingQuery,
+        variables: {
+          tenant: ENV_Vars.tenant,
+        },
+      },
+    ],
+  });
+
   const handleAddTrip = async ({
     tenant,
     booking,
@@ -56,20 +73,11 @@ export const useCustomerTrips = ({ skipQueries }: { skipQueries?: boolean }) => 
     return response.data?.addBooking;
   };
 
-  const handlePaymentIntent = async ({
-    tenant,
-    bookingId,
-    customerId,
-  }: {
-    tenant: any;
-    bookingId: string;
-    customerId: string;
-  }) => {
+  const handlePaymentIntent = async ({ tenant, bookingId }: { tenant: any; bookingId: string }) => {
     const response = await createPaymentIntentFn({
       variables: {
         tenant,
         bookingId,
-        customerId,
       },
     });
 
@@ -96,14 +104,34 @@ export const useCustomerTrips = ({ skipQueries }: { skipQueries?: boolean }) => 
     return response.data?.updateBooking;
   };
 
+  const handleTripCancellation = async ({
+    tenant,
+    bookingId,
+  }: {
+    tenant: any; // replace with TenantData
+    bookingId: string;
+  }) => {
+    const response = await cancellationRequestTripFn({
+      variables: {
+        tenant,
+        bookingId,
+      },
+    });
+
+    return response.data?.cancellationRequestTrip;
+  };
+
   const tripLists = customerBookings?.getCustomerBooking ?? [];
 
   return {
     tripLists,
+    refetchTripList,
     loadingTrips,
     handleAddTrip,
     handleUpdateTrip,
     handlePaymentIntent,
+    handleTripCancellation,
+    loadingTripCancellation,
     loadingTripCreation,
     loadingTripUpdate,
     createPaymentIntentMutation,

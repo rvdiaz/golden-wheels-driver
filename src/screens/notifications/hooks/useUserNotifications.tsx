@@ -8,8 +8,14 @@ import { INotification } from '../interfaces';
 export const useUserNotifications = () => {
   const userInfo = useReactiveVar(userData);
 
-  const { data, loading: loadingNotifications } = useQuery<{
-    getUserNotifications: INotification[];
+  const {
+    data,
+    loading: loadingNotifications,
+    refetch: refetchNotifications,
+  } = useQuery<{
+    getUserNotifications: {
+      items: INotification[];
+    };
   }>(getUserNotificationsQuery, {
     variables: {
       userId: userInfo?.id,
@@ -18,10 +24,11 @@ export const useUserNotifications = () => {
     skip: !userInfo?.id,
   });
 
-  const notificationList = data?.getUserNotifications ?? [];
+  const notificationList = data?.getUserNotifications?.items ?? [];
 
   return {
     notifications: notificationList,
     loadingNotifications,
+    refetchNotifications,
   };
 };

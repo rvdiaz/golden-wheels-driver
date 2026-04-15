@@ -31,7 +31,7 @@ const TABS: ITAB[] = [
 const BAR_HEIGHT = 72;
 const BAR_WIDTH = width - 40;
 const RADIUS = 32;
-const BOTTOM_OFFSET = Platform.OS === 'android' ? 50 : 24;
+const BOTTOM_OFFSET = Platform.OS === 'android' ? 35 : 24;
 
 export const CustomTabBar = ({
   activeTab,
@@ -136,10 +136,10 @@ const styles = StyleSheet.create({
     padding: 1.0,
     borderRadius: RADIUS,
     shadowColor: '#FFF',
-    shadowOffset: { width: 0, height: 12 },
+    shadowOffset: { width: 0, height: 7 },
     shadowOpacity: 0.5,
-    shadowRadius: 24,
-    elevation: 12,
+    shadowRadius: 4,
+    elevation: 7,
   },
   container: {
     width: BAR_WIDTH,

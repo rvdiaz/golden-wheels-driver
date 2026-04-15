@@ -5,6 +5,7 @@ import { ENV_Vars } from '~/store/env';
 import { deleteCustomerMutation, updateCustomerMutation } from '../graphql/mutations';
 import { signOut } from 'aws-amplify/auth';
 import { apiKeyClient } from '~/store/config/apolloClient';
+import { IUser } from '~/store/user/interfaces';
 
 interface PersonalInfoFormData {
   name: string;
@@ -16,7 +17,9 @@ export const usePersonalInfo = () => {
   const user = useReactiveVar(userData);
   const client = useApolloClient();
 
-  const [updateCustomer, { loading: loadingUpdate }] = useMutation(updateCustomerMutation);
+  const [updateCustomer, { loading: loadingUpdate }] = useMutation<{
+    updateCustomer: IUser;
+  }>(updateCustomerMutation);
   const [deleteCustomer, { loading: loadingDeletion }] = useMutation(deleteCustomerMutation);
 
   const handleDeleteProfile = async () => {
@@ -24,7 +27,6 @@ export const usePersonalInfo = () => {
     await deleteCustomer({
       variables: {
         tenant: ENV_Vars.tenant,
-        customerId: user.id,
       },
     });
     await signOut();
@@ -42,7 +44,6 @@ export const usePersonalInfo = () => {
       const { data } = await updateCustomer({
         variables: {
           tenant: ENV_Vars.tenant,
-          customerId: user.id,
           customer: fields,
         },
       });
@@ -58,9 +59,9 @@ export const usePersonalInfo = () => {
         image: updated.image ?? user.image,
         preferenceLanguage: updated.preferenceLanguage ?? user.preferenceLanguage,
       });
-
       // ✅ Success alert
       Alert.alert('Success', 'Profile updated successfully!');
+      return updated;
     } catch (error) {
       console.error('[Profile] Update failed:', error);
       Alert.alert('Update Failed', 'Could not save changes. Please try again.');

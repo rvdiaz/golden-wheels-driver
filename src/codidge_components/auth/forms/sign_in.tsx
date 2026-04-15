@@ -34,7 +34,7 @@ export const SignInForm = ({
   back,
   onSignUp,
 }: {
-  onLoginSuccess: (userId: string) => void;
+  onLoginSuccess: () => void;
   strictView?: boolean;
   back?: () => void;
   onSignUp?: () => void;
@@ -81,11 +81,7 @@ export const SignInForm = ({
       }
 
       if (user.isSignedIn) {
-        const att = await fetchUserAttributes();
-
-        const userId = att?.['sub'] || '';
-
-        await onLoginSuccess(userId);
+        await onLoginSuccess();
         setloading(false);
       }
     } catch (error: any) {

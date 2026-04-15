@@ -16,9 +16,17 @@ import {
 import { theme } from '~/theme/theme';
 import { BookSelectionForm } from '~/components/bookTripJourney';
 import { BookingConfirmationScreen } from '~/components/bookTripJourney/formSteps/confirmationResults';
+import { DriverStatusBar } from './driverStatusBar';
+import { BookingDetailsScreen } from './tripDetails';
 
 const GOLD = theme.colors.primary;
 const GOLD_30 = theme.colors.primaryAlpha[35];
+
+const GREEN = '#4ade80';
+const GREEN_12 = 'rgba(34,197,94,0.12)';
+const GREEN_30 = 'rgba(34,197,94,0.30)';
+const GREEN_22 = 'rgba(34,197,94,0.22)';
+const GREEN_50 = 'rgba(34,197,94,0.50)';
 
 // ─── Status Badge ─────────────────────────────────────────────────────────────
 
@@ -31,21 +39,21 @@ export const StatusBadge = ({ status }: StatusBadgeProps) => {
     {
       draft: {
         label: 'Draft',
-        bg: 'rgba(156,163,175,0.12)', // gray subtle
+        bg: 'rgba(156,163,175,0.12)',
         text: '#9ca3af',
         border: 'rgba(156,163,175,0.3)',
       },
       pending: {
         label: 'Pending',
-        bg: 'rgba(251,191,36,0.12)', // amber
+        bg: 'rgba(251,191,36,0.12)',
         text: '#fbbf24',
         border: 'rgba(251,191,36,0.3)',
       },
       confirmed: {
         label: 'Confirmed',
-        bg: 'rgba(218,192,114,0.12)',
-        text: GOLD,
-        border: GOLD_30,
+        bg: GREEN_12,
+        text: GREEN,
+        border: GREEN_30,
       },
       in_progress: {
         label: 'In Progress',
@@ -97,49 +105,92 @@ interface TripCardProps {
 }
 
 export const TripCard = ({ booking, tab }: TripCardProps) => {
-  const { bookingBusinessData: biz, bookingCode, status, startDate } = booking;
+  const { bookingBusinessData: biz, bookingCode, status, startDate, driverStatus } = booking;
   const [open, setOpen] = useState(false);
   const [bookingDetails, setbookingDetails] = useState(false);
 
   const isPast = tab === 'past';
   const isCancelled = tab === 'cancelled';
+  const isConfirmed = status === 'confirmed';
 
-  // ── Glass card surface ──
   const cardBg = GLASS_BG;
+
+  const showDriverStatus = (!!driverStatus || isConfirmed) && !isCancelled;
 
   // ── Borders ──
   const cardBorder = isCancelled
     ? 'rgba(220,38,38,0.22)'
     : isPast
       ? 'rgba(255,255,255,0.11)'
-      : 'rgba(218,192,114,0.22)';
+      : isConfirmed
+        ? GREEN_30
+        : 'rgba(218,192,114,0.22)';
 
   // ── Top shimmer line ──
   const shimmerColor = isCancelled
     ? 'rgba(220,38,38,0.22)'
     : isPast
       ? 'rgba(255,255,255,0.14)'
-      : 'rgba(218,192,114,0.38)';
+      : isConfirmed
+        ? GREEN_50
+        : 'rgba(218,192,114,0.38)';
 
-  // ── Text alphas ──
   const textOpacity = isPast || isCancelled ? 0.88 : 1;
   const labelOpacity = isPast || isCancelled ? 0.88 : 1;
 
   // ── Route dots ──
-  const dotColor = isCancelled ? 'rgba(220,38,38,0.45)' : isPast ? 'rgba(255,255,255,0.28)' : GOLD;
+  const dotColor = isCancelled
+    ? 'rgba(220,38,38,0.45)'
+    : isPast
+      ? 'rgba(255,255,255,0.28)'
+      : isConfirmed
+        ? GREEN
+        : GOLD;
+
   const dotEndColor = isCancelled
     ? 'rgba(220,38,38,0.18)'
     : isPast
       ? 'rgba(255,255,255,0.12)'
-      : 'rgba(218,192,114,0.38)';
+      : isConfirmed
+        ? GREEN_30
+        : 'rgba(218,192,114,0.38)';
 
-  const lineColor = isCancelled ? 'rgba(220,38,38,0.18)' : 'rgba(218,192,114,0.22)';
+  const lineColor = isCancelled
+    ? 'rgba(220,38,38,0.18)'
+    : isConfirmed
+      ? GREEN_22
+      : 'rgba(218,192,114,0.22)';
+
+  // ── Location label color ──
+  const locationLabelColor = isConfirmed
+    ? `rgba(74,222,128,${labelOpacity})`
+    : `rgba(218,192,114,${labelOpacity})`;
 
   // ── Price & driver ──
-  const priceColor = isCancelled ? '#4ade80' : GOLD;
-  const avatarBg = isPast || isCancelled ? 'rgba(255,255,255,0.06)' : 'rgba(218,192,114,0.15)';
-  const avatarBorder = isPast || isCancelled ? 'rgba(255,255,255,0.1)' : GOLD_30;
-  const avatarTextColor = isPast || isCancelled ? 'rgba(255,255,255,0.3)' : GOLD;
+  const priceColor = isCancelled || isConfirmed ? GREEN : GOLD;
+
+  const avatarBg =
+    isPast || isCancelled
+      ? 'rgba(255,255,255,0.06)'
+      : isConfirmed
+        ? GREEN_12
+        : 'rgba(218,192,114,0.15)';
+
+  const avatarBorder =
+    isPast || isCancelled
+      ? 'rgba(255,255,255,0.1)'
+      : isConfirmed
+        ? 'rgba(34,197,94,0.35)'
+        : GOLD_30;
+
+  const avatarTextColor =
+    isPast || isCancelled ? 'rgba(255,255,255,0.3)' : isConfirmed ? GREEN : GOLD;
+
+  const bookingCodeColor = isCancelled
+    ? 'rgba(248,113,113,0.85)'
+    : isConfirmed
+      ? 'rgba(74,222,128,0.85)'
+      : 'rgba(218,192,114,0.85)';
 
   const handleContinueBooking = () => {
     if (booking.status === 'draft') {
@@ -148,6 +199,10 @@ export const TripCard = ({ booking, tab }: TripCardProps) => {
       setbookingDetails(true);
     }
   };
+
+  const allowCancellation =
+    (booking.status === 'confirmed' || booking.status === 'pending') &&
+    new Date(booking.startDate).getTime() - Date.now() > 2 * 60 * 60 * 1000;
 
   return (
     <>
@@ -161,20 +216,18 @@ export const TripCard = ({ booking, tab }: TripCardProps) => {
         {/* Subtle inner white glow at top-left corner */}
         <View style={cardStyles.glassHighlight} />
 
-        {/* Header */}
+        {/* Upcoming trip banner — confirmed only */}
         <View style={cardStyles.header}>
-          <Text
-            style={[
-              cardStyles.bookingCode,
-              {
-                color: isCancelled ? 'rgba(248,113,113,0.85)' : 'rgba(218,192,114,0.85)',
-              },
-            ]}>
-            {bookingCode}
-          </Text>
-          <StatusBadge status={status} />
+          <Text style={[cardStyles.bookingCode, { color: bookingCodeColor }]}>{bookingCode}</Text>
+          {isConfirmed ? (
+            <View style={cardStyles.upcomingBanner}>
+              <View style={cardStyles.upcomingPulseDot} />
+              <Text style={cardStyles.upcomingBannerText}>Upcoming Trip</Text>
+            </View>
+          ) : (
+            <StatusBadge status={status} />
+          )}
         </View>
-
         {/* Route */}
         <View style={cardStyles.routeRow}>
           <View style={cardStyles.routeLine}>
@@ -184,8 +237,7 @@ export const TripCard = ({ booking, tab }: TripCardProps) => {
           </View>
           <View style={cardStyles.routeAddresses}>
             <View style={cardStyles.locationBlock}>
-              <Text
-                style={[cardStyles.locationLabel, { color: `rgba(218,192,114,${labelOpacity})` }]}>
+              <Text style={[cardStyles.locationLabel, { color: locationLabelColor }]}>
                 Pickup · {formatDate(startDate)} · {formatTime(startDate)}
               </Text>
               <Text
@@ -198,8 +250,7 @@ export const TripCard = ({ booking, tab }: TripCardProps) => {
               </Text>
             </View>
             <View style={cardStyles.locationBlock}>
-              <Text
-                style={[cardStyles.locationLabel, { color: `rgba(218,192,114,${labelOpacity})` }]}>
+              <Text style={[cardStyles.locationLabel, { color: locationLabelColor }]}>
                 Drop-off
               </Text>
               <Text
@@ -260,7 +311,6 @@ export const TripCard = ({ booking, tab }: TripCardProps) => {
                     {getInitials(biz.driver?.name)}
                   </Text>
                 </View>
-
                 <Text style={cardStyles.driverName}>{biz.driver?.name}</Text>
               </>
             )}
@@ -273,6 +323,13 @@ export const TripCard = ({ booking, tab }: TripCardProps) => {
             </View>
           )}
         </View>
+        {/* ── Driver Status Bar ── */}
+        {showDriverStatus && (
+          <DriverStatusBar
+            driverStatus={driverStatus ?? 'assigned'}
+            driverName={biz.driver?.name}
+          />
+        )}
 
         {/* Cancel note */}
         {isCancelled && booking.note ? (
@@ -281,6 +338,7 @@ export const TripCard = ({ booking, tab }: TripCardProps) => {
           </View>
         ) : null}
       </TouchableOpacity>
+
       <Modal
         visible={open}
         animationType="slide"
@@ -290,11 +348,11 @@ export const TripCard = ({ booking, tab }: TripCardProps) => {
           onDismiss={() => setOpen(false)}
           onPayPress={(data) => {
             setOpen(false);
-            // handle payment
           }}
           initialValues={booking}
         />
       </Modal>
+
       <Modal
         visible={bookingDetails}
         animationType="slide"
@@ -302,18 +360,11 @@ export const TripCard = ({ booking, tab }: TripCardProps) => {
         onRequestClose={() => {
           setbookingDetails(false);
         }}>
-        <BookingConfirmationScreen
-          bookingCode={booking.bookingCode}
-          destinationDisplayName={biz.dropoffLocation.displayName}
-          pickupDisplayName={biz.pickupLocation.displayName}
-          startDate={booking.startDate}
-          carTypeName={biz.carType.name}
-          currencyCode={biz.totalPrice.currencyCode}
-          totalAmount={biz.totalPrice.amount}
-          onBack={() => {
-            setbookingDetails(false);
-          }}
-          headerTitle="Order Details"
+        <BookingDetailsScreen
+          booking={booking}
+          onBack={() => setbookingDetails(false)}
+          headerTitle="Trip Details"
+          onCancelBooking={allowCancellation}
         />
       </Modal>
     </>
@@ -329,7 +380,6 @@ const cardStyles = StyleSheet.create({
     paddingBottom: 14,
     overflow: 'hidden',
   },
-  // Horizontal shimmer line across top edge
   shimmer: {
     position: 'absolute',
     top: 0,
@@ -338,7 +388,6 @@ const cardStyles = StyleSheet.create({
     height: 1,
     borderRadius: 1,
   },
-  // Subtle white inner glow — simulates glass catching light
   glassHighlight: {
     position: 'absolute',
     top: 0,
@@ -348,6 +397,33 @@ const cardStyles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.04)',
     borderTopLeftRadius: theme.borderRadius.lg,
     borderTopRightRadius: theme.borderRadius.lg,
+  },
+  // ── Upcoming Trip banner (confirmed only) ──
+  upcomingBanner: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    marginBottom: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    backgroundColor: 'rgba(34,197,94,0.10)',
+    borderWidth: 0.5,
+    borderColor: 'rgba(34,197,94,0.28)',
+    borderRadius: 6,
+  },
+  upcomingPulseDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#4ade80',
+  },
+  upcomingBannerText: {
+    fontSize: 10,
+    color: '#4ade80',
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
   header: {
     flexDirection: 'row',

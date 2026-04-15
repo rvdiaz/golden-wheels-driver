@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { User, LockKeyhole, MessageCircleQuestion, LogOut } from 'lucide-react-native';
+import { User, MessageCircleQuestion, LogOut, Shield, BookText } from 'lucide-react-native';
 import { useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import { LogoutButton } from '~/codidge_components/auth/widgets/logoutButton';
@@ -9,10 +9,12 @@ import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import Text from '~/codidge_components/UI/text';
 import { ProfileNavigationSection } from '~/codidge_components/UI/navigationButtons';
 import { PageTransition } from '~/codidge_components/UI/pageTransition';
-import { PrivacyPolicyScreen } from './widgets/termsAndConditions';
+import { TermsAndConditions } from './widgets/termsAndConditions';
 import { AccountDeletionScreen } from './widgets/userDeletion';
 import { PersonalInfo } from './widgets/personalInfo';
 import { ContactSubmissionsScreen } from './widgets/contact';
+import { PrivacyPolicyScreen } from './widgets/privacyPolicy';
+import { useFocusEffect } from '@react-navigation/native';
 
 // ─── Color tokens ─────────────────────────────────────────────────────────────
 
@@ -41,14 +43,36 @@ type Props = {
 
 export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
   const user = useReactiveVar(userData);
-  const [screen, setScreen] = useState<'personal-info' | 'terms' | 'feedback' | 'delete' | null>();
+  const [screen, setScreen] = useState<
+    'personal-info' | 'privacy-policy' | 'terms' | 'feedback' | 'delete' | null
+  >();
 
-  let targetComponent = <View></View>;
+  // Reset screen state when component comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      // Optional: reset to main profile view when screen regains focus
+      // Remove this if you want to preserve the sub-screen state
+      return () => {
+        setScreen(null);
+      };
+    }, [])
+  );
+
+  let targetComponent: React.ReactNode = null;
 
   switch (screen) {
-    case 'terms':
+    case 'privacy-policy':
       targetComponent = (
         <PrivacyPolicyScreen
+          onBack={() => {
+            setScreen(null);
+          }}
+        />
+      );
+      break;
+    case 'terms':
+      targetComponent = (
+        <TermsAndConditions
           onBack={() => {
             setScreen(null);
           }}
@@ -84,8 +108,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
       break;
 
     default:
-      targetComponent = <View></View>;
-
+      targetComponent = null;
       break;
   }
 
@@ -126,10 +149,18 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
                     {
                       id: 'Terms And Conditions',
                       label: 'Terms And Conditions',
-                      icon: <LockKeyhole />,
+                      icon: <BookText />,
                       onClick: () => {
                         setScreen('terms');
                         // navigation.navigate('PrivacyPolicy');
+                      },
+                    },
+                    {
+                      id: 'privacy-policy',
+                      label: 'Privacy Policy',
+                      icon: <Shield />,
+                      onClick: () => {
+                        setScreen('privacy-policy');
                       },
                     },
                   ],
@@ -174,7 +205,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
           </View>
         </ScrollView>
       </PageSafeContainer>
-      <PageTransition isVisible={!!screen}>{targetComponent}</PageTransition>
+      <PageTransition isVisible={!!screen}>{targetComponent && targetComponent}</PageTransition>
     </>
   );
 };

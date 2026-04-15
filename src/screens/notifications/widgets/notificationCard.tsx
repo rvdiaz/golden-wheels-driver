@@ -67,7 +67,7 @@ export const NotificationCard = ({ item }: { item: INotification }) => {
               {isUnread && <View style={styles.unreadDot} />}
             </View>
             <View style={styles.timeWrap}>
-              <Clock size={10} color="rgba(255,255,255,0.25)" strokeWidth={1.5} />
+              <Clock size={10} color="rgba(255,255,255,0.45)" strokeWidth={1.5} />
               <Text style={styles.timestamp}>{formatDateTime(item.createdAt)}</Text>
             </View>
           </View>
@@ -166,8 +166,8 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   timestamp: {
-    fontSize: 11,
-    color: 'rgba(255,255,255,0.25)',
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.55)',
   },
   body: {
     fontSize: 13,

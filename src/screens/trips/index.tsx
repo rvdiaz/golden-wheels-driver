@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
 import { BodyWrapper } from '~/codidge_components/UI/bodyWrapper';
 import Text from '~/codidge_components/UI/text';
-import { Booking, TabKey } from './interfaces';
+import { TabKey } from './interfaces';
 import { filterByTab } from './helpers';
 import { TripCard } from './components/tripCard';
 import { theme } from '~/theme/theme';
@@ -11,12 +11,14 @@ import { useCustomerTrips } from './hooks/useCustomerTrips';
 import { TabBar } from './components/statusTabs';
 import { LoadingSpinner } from '~/codidge_components/UI/loading/loadingSpinner';
 import { Header } from '~/codidge_components/UI/header';
+import { Ban } from 'lucide-react-native';
+import { RefreshControl } from 'react-native-gesture-handler';
 
 const GOLD = theme.colors.primary;
 
 const EmptyState = ({ tab }: { tab: TabKey }) => (
   <View style={styles.emptyState}>
-    <Text style={styles.emptyIcon}>○</Text>
+    <Ban style={styles.emptyIcon} />
     <Text style={styles.emptyTitle}>No {tab} trips</Text>
     <Text style={styles.emptySubtitle}>
       {tab === 'upcoming'
@@ -32,17 +34,29 @@ const EmptyState = ({ tab }: { tab: TabKey }) => (
 
 export const TripsScreen = () => {
   const [activeTab, setActiveTab] = useState<TabKey>('upcoming');
-  const { tripLists, loadingTrips } = useCustomerTrips({});
+  const [refreshing, setRefreshing] = useState(false);
+
+  const { tripLists, loadingTrips, refetchTripList } = useCustomerTrips({});
 
   const counts: Record<TabKey, number> = {
     upcoming: filterByTab(tripLists, 'upcoming').length,
     past: filterByTab(tripLists, 'past').length,
-
     cancelled: filterByTab(tripLists, 'cancelled').length,
     draft: filterByTab(tripLists, 'draft').length,
   };
 
   const filtered = filterByTab(tripLists, activeTab);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await refetchTripList();
+    } catch (error) {
+      console.error('Error refreshing trips:', error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   return (
     <BodyWrapper gradientCoverage={0.45}>
@@ -71,7 +85,7 @@ export const TripsScreen = () => {
         <TabBar activeTab={activeTab} counts={counts} onTabChange={setActiveTab} />
 
         {/* Content — spinner or list */}
-        {loadingTrips ? (
+        {loadingTrips && !refreshing ? (
           <View
             style={{
               flex: 1,
@@ -81,7 +95,20 @@ export const TripsScreen = () => {
             <LoadingSpinner />
           </View>
         ) : filtered.length === 0 ? (
-          <EmptyState tab={activeTab} />
+          <FlatList
+            data={[]}
+            renderItem={null}
+            ListEmptyComponent={<EmptyState tab={activeTab} />}
+            contentContainerStyle={styles.emptyListContent} // Add this
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor={GOLD}
+                colors={[GOLD]}
+              />
+            }
+          />
         ) : (
           <FlatList
             data={filtered}
@@ -90,6 +117,14 @@ export const TripsScreen = () => {
             showsVerticalScrollIndicator={false}
             renderItem={({ item }) => <TripCard booking={item} tab={activeTab} />}
             ItemSeparatorComponent={() => <View style={{ height: 14 }} />}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor={GOLD}
+                colors={[GOLD]}
+              />
+            }
           />
         )}
       </PageSafeContainer>
@@ -118,7 +153,7 @@ const styles = StyleSheet.create({
   // ── List ──
   listContent: {
     paddingHorizontal: theme.spacing.lg,
-    paddingBottom: 32,
+    paddingBottom: 70,
   },
 
   // ── Empty state ──
@@ -144,5 +179,9 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.45)',
     textAlign: 'center',
     paddingHorizontal: 32,
+  },
+  emptyListContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
   },
 });

@@ -9,15 +9,7 @@ import { UserRefresherWrapper } from '~/navigation/userRefresherWrapper';
 import { ENV_Vars } from '~/store/env';
 import { AuthProvider } from '~/codidge_components/auth/context';
 import { AuthenticateScreen } from '~/store/user/authenticateScreen';
-
-// ── Stripe — optional, only available in native builds ──────────────────────
-let StripeProvider: React.FC<{ publishableKey: string; children: React.ReactNode }> | null = null;
-
-try {
-  StripeProvider = require('@stripe/stripe-react-native').StripeProvider;
-} catch (e) {
-  console.warn('[Stripe] Native module not available — Stripe features disabled');
-}
+import { StripeWrapper } from '~/store/stripeConfig';
 
 if (ENV_Vars.APP_ENV === 'development') {
   // Adds messages only in a dev environment
@@ -79,7 +71,7 @@ const client = new ApolloClient({
 });
 
 export default function App() {
-  const inner = (
+  return (
     <ApolloProvider client={client}>
       <SafeAreaProvider>
         <AuthProvider>
@@ -91,12 +83,4 @@ export default function App() {
       </SafeAreaProvider>
     </ApolloProvider>
   );
-
-  if (StripeProvider) {
-    return (
-      <StripeProvider publishableKey={ENV_Vars.STRIPE_PUBLISHABLE_KEY}>{inner}</StripeProvider>
-    );
-  }
-
-  return inner;
 }

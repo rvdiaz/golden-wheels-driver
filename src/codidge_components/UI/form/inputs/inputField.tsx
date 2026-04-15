@@ -142,7 +142,7 @@ const InputField = forwardRef<TextInput, InputProps>(
               placeholderTextColor="rgba(255,255,255,0.4)"
               editable={editable}
               allowFontScaling={false}
-              style={[dark.valueText, dark.input]}
+              style={[dark.valueText, dark.input, style]}
               {...rest}
             />
           )}

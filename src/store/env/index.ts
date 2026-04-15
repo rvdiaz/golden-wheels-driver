@@ -23,5 +23,4 @@ export const ENV_Vars = {
     tenantId: required('TENANTID', extra.TENANTID),
     solutionId: required('TENANT_SOLUTION', extra.TENANT_SOLUTION),
   },
-  STRIPE_PUBLISHABLE_KEY: required('GRAPHQL_ENDPOINT', extra.STRIPE_PUBLISHABLE_KEY),
 };

@@ -6,7 +6,7 @@ import { BodyWrapper } from '~/codidge_components/UI/bodyWrapper';
 import { Header } from '~/codidge_components/UI/header';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 
-export const TermsAndConditions = ({ onBack }: { onBack: () => void }) => {
+export const PrivacyPolicyScreen = ({ onBack }: { onBack: () => void }) => {
   return (
     <BodyWrapper>
       <PageSafeContainer>

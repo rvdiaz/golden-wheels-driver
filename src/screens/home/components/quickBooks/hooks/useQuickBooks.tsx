@@ -5,7 +5,10 @@ import { quickBookOptionsQuery } from '../graphql/queries';
 import { apiKeyClient } from '~/store/config/apolloClient';
 
 export const useQuickBooks = () => {
-  const { data, loading: loadingQuickBooks } = useQuery<{
+  const {
+    data,
+    loading: loadingQuickBooks,
+  } = useQuery<{
     quickBookOptions: QuickBookOption[];
   }>(quickBookOptionsQuery, {
     variables: {

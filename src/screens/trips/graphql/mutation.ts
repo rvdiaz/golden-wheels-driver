@@ -8,6 +8,7 @@ export const addBookingMutation = gql`
       startDate
       endDate
       status
+      driverStatus
       createdAt
       note
       bookingBusinessData {
@@ -58,11 +59,91 @@ export const addBookingMutation = gql`
           id
           displayName
           formattedAddress
+          types
         }
         dropoffLocation {
           id
           displayName
           formattedAddress
+          types
+        }
+        totalPrice {
+          amount
+          currencyCode
+        }
+        bookHours
+        bookMode
+      }
+    }
+  }
+`;
+
+export const cancellationRequestTripMutation = gql`
+  mutation cancellationRequestTrip($tenant: TenantData!, $bookingId: ID!) {
+    cancellationRequestTrip(tenant: $tenant, bookingId: $bookingId) {
+      id
+      bookingCode
+      startDate
+      endDate
+      status
+      driverStatus
+      createdAt
+      note
+      bookingBusinessData {
+        customer {
+          id
+          name
+          email
+          phone
+        }
+        driver {
+          id
+          name
+          email
+          phone
+        }
+        car {
+          id
+          brand
+          model
+        }
+        carType {
+          id
+          name
+          supportsHourly
+          hourlyRate
+          supportsDistance
+          pricePerMiles
+          baseFare
+          minimumFare
+          maxPassengers
+        }
+        extraServices {
+          id
+          name
+          description
+          price {
+            amount
+            currencyCode
+          }
+          createdAt
+          image {
+            alt
+            url
+          }
+          available
+        }
+        pickupLocation {
+          id
+          displayName
+          formattedAddress
+          types
+        }
+        dropoffLocation {
+          id
+          displayName
+          formattedAddress
+          types
         }
         totalPrice {
           amount
@@ -76,8 +157,8 @@ export const addBookingMutation = gql`
 `;
 
 export const createPaymentIntentMutation = gql`
-  mutation createPaymentIntent($tenant: TenantData!, $bookingId: ID!, $customerId: ID!) {
-    createPaymentIntent(tenant: $tenant, bookingId: $bookingId, customerId: $customerId) {
+  mutation createPaymentIntent($tenant: TenantData!, $bookingId: ID!) {
+    createPaymentIntent(tenant: $tenant, bookingId: $bookingId) {
       clientSecret
       stripeCustomerId
       ephemeralKey
@@ -93,6 +174,7 @@ export const updateBookingMutation = gql`
       startDate
       endDate
       status
+      driverStatus
       createdAt
       note
       bookingBusinessData {
@@ -144,11 +226,13 @@ export const updateBookingMutation = gql`
           id
           displayName
           formattedAddress
+          types
         }
         dropoffLocation {
           id
           displayName
           formattedAddress
+          types
         }
         totalPrice {
           amount

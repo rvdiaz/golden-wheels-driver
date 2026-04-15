@@ -1,5 +1,6 @@
 // ─── Color tokens ─────────────────────────────────────────────────────────────
 
+import { BadgeType } from '~/codidge_components/UI/badge';
 import { Booking, TabKey } from '../interfaces';
 
 // Subtle white glass — bumped up from 0.04/0.05 for a softer frosted feel
@@ -61,12 +62,43 @@ export const formatCurrency = (amount: number, code: string): string =>
 // ─── Filter ───────────────────────────────────────────────────────────────────
 
 export const filterByTab = (bookings: Booking[], tab: TabKey): Booking[] => {
-  if (tab === 'upcoming')
-    return bookings.filter(
-      (b) => b.status === 'confirmed' || b.status === 'in_progress' || b.status === 'pending'
-    );
-  if (tab === 'past') return bookings.filter((b) => b.status === 'completed');
-  if (tab === 'draft') return bookings.filter((b) => b.status === 'draft');
-  if (tab === 'cancelled') return bookings.filter((b) => b.status === 'cancelled');
-  return bookings.filter((b) => b.status === 'cancelled');
+  const filtered = bookings.filter((b) => {
+    switch (tab) {
+      case 'upcoming':
+        return b.status === 'confirmed' || b.status === 'pending' || b.status === 'in_progress';
+      case 'past':
+        return b.status === 'completed';
+      case 'cancelled':
+        return b.status === 'cancelled';
+      case 'draft':
+        return b.status === 'draft';
+      default:
+        return false;
+    }
+  });
+
+  filtered.sort((a, b) => {
+    // ✅ Special rule for upcoming
+    if (tab === 'upcoming') {
+      if (a.status === 'confirmed' && b.status !== 'confirmed') return -1;
+      if (a.status !== 'confirmed' && b.status === 'confirmed') return 1;
+    }
+
+    // ✅ Sort by startDate
+    return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
+  });
+
+  return filtered;
 };
+
+const DRIVER_STATUS_BADGE_TYPE: Record<string, BadgeType> = {
+  assigned: 'info',
+  en_route: 'info',
+  arrived: 'warning',
+  passenger_on_board: 'success',
+  in_progress: 'success',
+  completed: 'normal',
+};
+
+export const getDriverBadgeType = (status: string): BadgeType =>
+  DRIVER_STATUS_BADGE_TYPE[status] ?? 'info';

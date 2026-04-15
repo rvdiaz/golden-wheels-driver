@@ -117,7 +117,6 @@ export const UserRefresherWrapper: React.FC<Props> = ({ children }) => {
         query: getCustomerQuery,
         variables: {
           tenant: ENV_Vars.tenant,
-          customerId: userInfo.id,
           token: pushToken || undefined,
           appInfo, // Handle null token
         },

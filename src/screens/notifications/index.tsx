@@ -8,6 +8,7 @@ import { theme } from '~/theme/theme';
 import { useUserNotifications } from './hooks/useUserNotifications';
 import { NotificationCard } from './widgets/notificationCard';
 import { Header } from '~/codidge_components/UI/header';
+import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 
 // ─── Color tokens ─────────────────────────────────────────────────────────────
 
@@ -31,7 +32,7 @@ const EmptyState = () => (
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
 export const NotificationsScreen = () => {
-  const { notifications, loadingNotifications } = useUserNotifications();
+  const { notifications, loadingNotifications, refetchNotifications } = useUserNotifications();
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -43,37 +44,50 @@ export const NotificationsScreen = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleRefresh = useCallback(() => {
+  const handleRefresh = useCallback(async () => {
     setRefreshing(true);
+    await refetchNotifications();
     setTimeout(() => {
       //setNotifications(MOCK_NOTIFICATIONS);
       setRefreshing(false);
     }, 800);
   }, []);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const header = (
+    <Header
+      contentContainerStyle={{
+        backgroundColor: 'transparent',
+      }}
+      contentStyle={{
+        paddingVertical: 0,
+      }}
+      titleStyles={{
+        color: '#FFF',
+      }}
+      leftWidget={
+        <View style={styles.screenHeader}>
+          <Text style={styles.screenTitle}>Notifications</Text>
+        </View>
+      }
+      title={''}
+      showBack
+    />
+  );
+
+  if (loadingNotifications) {
+    return (
+      <PageSafeContainer style={styles.container}>
+        {header}
+        <PageLoading />
+      </PageSafeContainer>
+    );
+  }
+
+  const unreadCount = notifications?.filter((n) => !n.read).length;
 
   return (
     <PageSafeContainer style={styles.container}>
-      <Header
-        contentContainerStyle={{
-          backgroundColor: 'transparent',
-        }}
-        contentStyle={{
-          paddingVertical: 0,
-        }}
-        titleStyles={{
-          color: '#FFF',
-        }}
-        leftWidget={
-          <View style={styles.screenHeader}>
-            <Text style={styles.screenTitle}>Notifications</Text>
-          </View>
-        }
-        title={''}
-        showBack
-      />
-
+      {header}
       {/* Subtitle row */}
       {notifications.length > 0 && (
         <View style={styles.subtitleRow}>

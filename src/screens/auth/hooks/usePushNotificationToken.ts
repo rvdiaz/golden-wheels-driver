@@ -79,7 +79,6 @@ export const usePushNotificationTokenSetup = () => {
             tenantId,
           },
           token: pushToken,
-          userId: userInfo.id,
         },
       }).then(() => {
         console.log('User data updated with push token');

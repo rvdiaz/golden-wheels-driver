@@ -26,6 +26,7 @@ export const getSearchAutoCompleteQuery = gql`
         id
         formattedAddress
         displayName
+        types
       }
     }
   }
@@ -37,7 +38,7 @@ export interface IAddressSuggestion {
   displayName: string;
   formattedAddress: string;
   id: string;
-  meta?: any;
+  types?: string[];
 }
 
 interface ISearchResults {
@@ -136,7 +137,7 @@ export const AddressPickerModal: React.FC<AddressPickerModalProps> = ({
   const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
   // Apollo lazy query
-  const [fetchSuggestions, { data, loading, error }] = useLazyQuery<{
+  const [fetchSuggestions, { data, loading }] = useLazyQuery<{
     autoCompleteSearch: ISearchResults;
   }>(getSearchAutoCompleteQuery, {
     client: apiKeyClient,

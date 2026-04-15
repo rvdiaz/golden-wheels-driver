@@ -187,6 +187,7 @@ export const ForcePasswordChange = ({
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
+                    variant="dark"
                     containerStyle={{
                       flex: 1,
                       width: '100%',
@@ -232,6 +233,7 @@ export const ForcePasswordChange = ({
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
+                    variant="dark"
                     containerStyle={{
                       flex: 1,
                       width: '100%',

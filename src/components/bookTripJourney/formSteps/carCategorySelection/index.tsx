@@ -4,7 +4,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 import Text from '~/codidge_components/UI/text';
 import { useCarCategories } from '~/screens/home/components/cars_categories/hooks/useCarCategories';
 import { CarCategoriesSkeleton } from '~/screens/home/components/cars_categories/widgets/carTypesSkeletons';
-import { Booking } from '~/screens/trips/interfaces';
+import { BookingForm } from '~/screens/trips/interfaces';
 import { CarOptionCard } from '../../widgets/carCategoryCard';
 import { BookingFooter } from '../../widgets/bookFooter';
 import { useCustomerTrips } from '~/screens/trips/hooks/useCustomerTrips';
@@ -26,7 +26,7 @@ export const CarCategorySelection = ({
     setValue,
     watch,
     formState: { errors },
-  } = useFormContext<Booking>();
+  } = useFormContext<BookingForm>();
 
   const { bookHours, bookMode, dropoffLocation, pickupLocation } = watch('bookingBusinessData');
 
@@ -141,9 +141,8 @@ const s = StyleSheet.create({
   resultCount: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#6B7280',
+    color: '#FFF',
     letterSpacing: 0.8,
     textTransform: 'uppercase',
-    marginBottom: 4,
   },
 });

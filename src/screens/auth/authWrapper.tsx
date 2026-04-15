@@ -25,12 +25,11 @@ export const AuthWrapper = () => {
 
   const pushToken = useReactiveVar(pushTokenVar);
 
-  const handleLoginSuccess = async (userId: string) => {
+  const handleLoginSuccess = async () => {
     try {
       const user = await getCustomerFn({
         variables: {
           tenant: ENV_Vars.tenant,
-          customerId: userId,
         },
       });
 
@@ -79,7 +78,7 @@ export const AuthWrapper = () => {
     }
   };
 
-  const handleVerificationSuccess = async (userId: string) => {
+  const handleVerificationSuccess = async () => {
     try {
       const userData = await updateCustomerFn({
         variables: {
@@ -87,7 +86,6 @@ export const AuthWrapper = () => {
           customer: {
             emailVerified: true,
           },
-          customerId: userId,
         },
       });
 

@@ -2,29 +2,26 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, StyleSheet, Alert, KeyboardAvoidingView, Platform, TextInput } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
+import { confirmSignUp, resendSignUpCode, signIn, signOut } from 'aws-amplify/auth/cognito';
 import {
-  confirmSignUp,
-  fetchUserAttributes,
-  resendSignUpCode,
-  signIn,
-  signOut,
-} from 'aws-amplify/auth/cognito';
+  CodeField,
+  Cursor,
+  useBlurOnFulfill,
+  useClearByFocusCell,
+} from 'react-native-confirmation-code-field';
 import { useAuthContext } from '../context';
 import { IAuthModuleKeys, MfaFormData } from '../interfaces';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import OutlineButton from '~/codidge_components/UI/button/OutlineButton';
-import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import Text from '~/codidge_components/UI/text';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
+import { theme } from '~/theme/theme';
 
 const EXPIRATION_COGNITO_TOKEN = 180;
+const CELL_COUNT = 6;
 
-export const VerifyEmail = ({
-  onVerificationSuccess,
-}: {
-  onVerificationSuccess: (userId: string) => void;
-}) => {
+export const VerifyEmail = ({ onVerificationSuccess }: { onVerificationSuccess: () => void }) => {
   const { setCurrentView, tempData } = useAuthContext();
 
   const [loading, setloading] = useState(false);
@@ -46,6 +43,11 @@ export const VerifyEmail = ({
   });
 
   const codeValue = watch('code');
+  const ref = useBlurOnFulfill({ value: codeValue, cellCount: CELL_COUNT });
+  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+    value: codeValue,
+    setValue: (value) => setValue('code', value),
+  });
 
   useEffect(() => {
     if (countdown > 0) {
@@ -78,10 +80,7 @@ export const VerifyEmail = ({
         });
 
         if (user.isSignedIn) {
-          const att = await fetchUserAttributes();
-          const userId = att?.['sub'] || '';
-
-          await onVerificationSuccess(userId);
+          await onVerificationSuccess();
         }
       }
 
@@ -132,6 +131,8 @@ export const VerifyEmail = ({
       });
       setCountdown(EXPIRATION_COGNITO_TOKEN);
       setCanResend(false);
+      setValue('code', '');
+
       Alert.alert('Code Sent', 'A new verification code has been sent');
     } catch (error) {
       console.log(':::error', error);
@@ -153,29 +154,32 @@ export const VerifyEmail = ({
             <Controller
               control={control}
               name="code"
-              render={({ field: { value } }) => (
-                <View style={styles.codeContainer}>
-                  {[0, 1, 2, 3, 4, 5].map((index) => (
-                    <InputField
+              render={({ field: { value, onChange } }) => (
+                <CodeField
+                  ref={ref}
+                  {...props}
+                  value={value}
+                  onChangeText={onChange}
+                  cellCount={CELL_COUNT}
+                  rootStyle={styles.codeContainer}
+                  keyboardType="number-pad"
+                  textContentType="oneTimeCode"
+                  renderCell={({ index, symbol, isFocused }) => (
+                    <View
                       key={index}
-                      ref={(ref) => {
-                        if (ref) inputRefs.current[index] = ref;
-                      }}
                       style={[
                         styles.codeInput,
                         errors.code && styles.codeInputError,
-                        value[index] && styles.codeInputFilled,
+                        symbol && styles.codeInputFilled,
+                        isFocused && styles.codeInputFocused,
                       ]}
-                      value={value[index] || ''}
-                      onChangeText={(text) => handleCodeChange(text, index)}
-                      onKeyPress={({ nativeEvent }) => handleKeyPress(nativeEvent.key, index)}
-                      keyboardType="numeric"
-                      maxLength={1}
-                      textAlign="center"
-                      selectTextOnFocus
-                    />
-                  ))}
-                </View>
+                      onLayout={getCellOnLayoutHandler(index)}>
+                      <Text style={styles.codeInputText}>
+                        {symbol || (isFocused ? <Cursor /> : null)}
+                      </Text>
+                    </View>
+                  )}
+                />
               )}
             />
             {errors.code && <Text style={styles.errorText}>{errors.code.message}</Text>}
@@ -246,19 +250,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   form: {
-    padding: 24,
+    paddingVertical: 24,
   },
   codeContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 24,
+    gap: 2,
   },
   codeInput: {
     width: 48,
     height: 56,
     borderWidth: 2,
-    borderColor: '#D1D5DB',
+    borderColor: theme.colors.primary,
     borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
     fontSize: 24,
     fontWeight: '600',
     color: '#1F2937',
@@ -297,5 +304,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 4,
+  },
+  codeInputFocused: {
+    borderColor: '#2563EB',
+  },
+  codeInputText: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#1F2937',
+    textAlign: 'center',
   },
 });

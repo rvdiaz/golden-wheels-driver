@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useForm, FormProvider, DeepPartial } from 'react-hook-form';
-import { Booking, BookMode } from '~/screens/trips/interfaces';
+import { Booking, BookingForm, BookMode } from '~/screens/trips/interfaces';
 import { TrioBookForm } from './formSteps/tripBookForm';
 import { CarCategorySelection } from './formSteps/carCategorySelection';
 import { SummaryAndPayment } from './formSteps/summaryAndPayment';
-import { ExtraServicesSelection } from './formSteps/addonsSelection';
 import { BookingFlowWrapper } from './widgets/formWrapper';
 import { deepMerge } from './helpers';
 import { BookingConfirmationScreen } from './formSteps/confirmationResults';
 import { setActiveTab } from '~/store/navigationTabs';
+import { ExtraNotes } from './formSteps/extraNotesForm.tsx';
 
 // ─── Step config ──────────────────────────────────────────────────────────────
 
@@ -37,7 +37,7 @@ const TOTAL_STEPS = STEPS.length;
 
 interface BookSelectionFormProps {
   onDismiss?: () => void;
-  onPayPress?: (data: Booking) => void;
+  onPayPress?: (data: BookingForm) => void;
   initialValues?: DeepPartial<Booking>; // ← new
   initialStep?: number;
 }
@@ -55,10 +55,13 @@ export const BookSelectionForm = ({ onDismiss, initialValues }: BookSelectionFor
         carTypeName?: string;
         totalAmount?: number;
         currencyCode?: string;
+        bookHours: number;
+        bookMode: BookMode;
+        notes: string;
       }
     | undefined
   >();
-  const methods = useForm<Booking>({
+  const methods = useForm<BookingForm>({
     defaultValues: deepMerge(
       {
         status: 'pending',
@@ -128,6 +131,9 @@ export const BookSelectionForm = ({ onDismiss, initialValues }: BookSelectionFor
       carTypeName: data.bookingBusinessData.carType.name,
       currencyCode: data.bookingBusinessData.totalPrice.currencyCode,
       totalAmount: data.bookingBusinessData.totalPrice.amount,
+      bookHours: data.bookingBusinessData.bookHours,
+      bookMode: data.bookingBusinessData.bookMode,
+      notes: data.note,
     });
   });
 
@@ -143,6 +149,8 @@ export const BookSelectionForm = ({ onDismiss, initialValues }: BookSelectionFor
         currencyCode={finishPayment.currencyCode}
         startDate={finishPayment.startDate}
         totalAmount={finishPayment.totalAmount}
+        bookMode={finishPayment.bookMode}
+        notes={finishPayment.notes}
         onGoHome={() => {
           onDismiss?.();
           setActiveTab('Home');
@@ -151,6 +159,7 @@ export const BookSelectionForm = ({ onDismiss, initialValues }: BookSelectionFor
           onDismiss?.();
           setActiveTab('Trips');
         }}
+        bookHours={finishPayment.bookHours}
       />
     );
   }
@@ -166,7 +175,7 @@ export const BookSelectionForm = ({ onDismiss, initialValues }: BookSelectionFor
         onDismiss={onDismiss}>
         {currentStep === 0 && <TrioBookForm onNext={handleNext} />}
         {currentStep === 1 && <CarCategorySelection onBack={handleBack} onNext={handleNext} />}
-        {currentStep === 2 && <ExtraServicesSelection onBack={handleBack} onNext={handleNext} />}
+        {currentStep === 2 && <ExtraNotes onBack={handleBack} onNext={handleNext} />}
         {currentStep === 3 && <SummaryAndPayment finish={handlePay} onBack={handleBack} />}
       </BookingFlowWrapper>
     </FormProvider>

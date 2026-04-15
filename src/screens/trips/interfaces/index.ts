@@ -7,6 +7,15 @@ export type BookingStatus =
   | 'completed'
   | 'cancelled'
   | 'in_progress';
+
+export type BookingDriverStatus =
+  | 'assigned'
+  | 'en_route'
+  | 'arrived'
+  | 'passenger_on_board'
+  | 'in_progress'
+  | 'completed';
+
 export type TabKey = 'upcoming' | 'past' | 'cancelled' | 'draft';
 
 export interface CarType {
@@ -52,6 +61,7 @@ export interface TripLocation {
   id: string;
   displayName: string;
   formattedAddress: string;
+  types: string[];
 }
 
 export interface TotalPrice {
@@ -82,10 +92,28 @@ export interface BookingBusinessData {
   extraServices: IExtraService[];
 }
 
+export interface BookingForm {
+  id: string;
+  bookingCode: string;
+  status: BookingStatus;
+  startDate: string;
+  endDate: string;
+  createdAt: string;
+  note: string;
+  flightNumber?: string;
+  terminal?: string;
+  flightDestinationNumber?: string;
+  terminalDestination?: string;
+
+  extraNotes?: string;
+  bookingBusinessData: BookingBusinessData;
+}
+
 export interface Booking {
   id: string;
   bookingCode: string;
   status: BookingStatus;
+  driverStatus?: BookingDriverStatus;
   startDate: string;
   endDate: string;
   createdAt: string;

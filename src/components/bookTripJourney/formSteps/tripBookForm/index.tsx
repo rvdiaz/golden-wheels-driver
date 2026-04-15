@@ -9,7 +9,7 @@ import {
   IAddressSuggestion,
 } from '~/components/bookTripJourney/widgets/addressPicker';
 import { DateTimeInputField } from '~/codidge_components/UI/form/inputs/dateTimePicker';
-import { BookMode, Booking } from '~/screens/trips/interfaces';
+import { BookingForm, BookMode } from '~/screens/trips/interfaces';
 import Text from '~/codidge_components/UI/text';
 import { BookingFooter } from '../../widgets/bookFooter';
 import { useCustomerTrips } from '~/screens/trips/hooks/useCustomerTrips';
@@ -30,7 +30,7 @@ export const TrioBookForm = ({ onNext }: { onNext: () => void }) => {
     clearErrors,
     getValues,
     formState: { errors },
-  } = useFormContext<Booking>();
+  } = useFormContext<BookingForm>();
 
   const { handleAddTrip, handleUpdateTrip, loadingTripUpdate, loadingTripCreation } =
     useCustomerTrips({
@@ -50,6 +50,7 @@ export const TrioBookForm = ({ onNext }: { onNext: () => void }) => {
       displayName: address.displayName,
       formattedAddress: address.formattedAddress,
       id: address.id,
+      types: address.types ?? [''],
     });
     clearErrors(field);
     setActivePicker(null);
@@ -58,6 +59,7 @@ export const TrioBookForm = ({ onNext }: { onNext: () => void }) => {
   const handlerBookingDraftCreation = async () => {
     try {
       const values = getValues();
+
       let response = undefined;
       const id = values.id;
       if (id) {
@@ -174,7 +176,15 @@ export const TrioBookForm = ({ onNext }: { onNext: () => void }) => {
           <Controller
             name="startDate"
             control={control}
-            rules={{ required: 'Pickup date is required' }}
+            rules={{
+              required: 'Pickup date is required',
+              validate: (value) => {
+                if (!value) return true;
+                const selected = new Date(value);
+                const minDate = new Date(Date.now() + 2 * 60 * 60 * 1000); // now + 2 hours
+                return selected >= minDate || 'Pickup time must be at least 2 hours from now';
+              },
+            }}
             render={({ field: { onChange, value } }) => (
               <DateTimeInputField
                 value={value ? new Date(value) : undefined}

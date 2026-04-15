@@ -4,7 +4,7 @@ import { CheckCircle, XCircle, Info, AlertTriangle } from 'lucide-react-native';
 import { theme } from '~/theme/theme';
 import Text from '../text';
 
-type BadgeType = 'success' | 'error' | 'warning' | 'info' | 'normal';
+export type BadgeType = 'success' | 'error' | 'warning' | 'info' | 'normal';
 
 interface BadgeProps {
   children: React.ReactNode;

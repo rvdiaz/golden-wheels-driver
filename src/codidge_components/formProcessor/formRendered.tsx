@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
-import * as ImagePicker from 'expo-image-picker';
-import { Camera } from 'lucide-react-native';
 import Text from '~/codidge_components/UI/text';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
@@ -55,59 +53,6 @@ const validatePhone = (phone: string) => {
 };
 
 // ─── File picker field ────────────────────────────────────────────────────────
-
-const FileField = ({
-  value,
-  onChange,
-  label,
-  required,
-}: {
-  value?: string | null;
-  onChange: (uri: string | null) => void;
-  label: string;
-  required?: boolean;
-}) => {
-  const [uploading, setUploading] = useState(false);
-
-  const pick = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission Required', 'We need access to your photo library.');
-      return;
-    }
-    const result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 0.75,
-    });
-    if (!result.canceled && result.assets[0]) {
-      onChange(result.assets[0].uri);
-    }
-  };
-
-  return (
-    <View style={file.wrapper}>
-      <Text style={file.label}>
-        {label}
-        {required && <Text style={{ color: 'red' }}> *</Text>}
-      </Text>
-
-      {value ? (
-        <View style={file.previewWrap}>
-          <Image source={{ uri: value }} style={file.preview} />
-          <TouchableOpacity style={file.removeBtn} onPress={() => onChange(null)}>
-            <Text style={file.removeText}>✕</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <TouchableOpacity style={file.picker} onPress={pick} activeOpacity={0.75}>
-          <Camera size={24} color="#9CA3AF" />
-          <Text style={file.pickerText}>Tap to add image</Text>
-        </TouchableOpacity>
-      )}
-    </View>
-  );
-};
 
 // ─── Main FormRenderer ────────────────────────────────────────────────────────
 

@@ -16,9 +16,9 @@
       }
     },
     "production": {
-      "environment": "production",
       "distribution": "store",
-      "channel": "production",
+      "environment": "production",
+      "developmentClient": false,
       "env": {
         "APP_ENV": "production",
         "COGNITO_USERPOOL_ID": "us-east-2_wT26orWBG",

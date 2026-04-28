@@ -88,6 +88,7 @@ export const QuickBookItem = ({ item }: { item: QuickBookOption }) => {
                 displayName: item.address.displayName,
                 formattedAddress: item.address.formattedAddress,
                 id: item.address.id,
+                types: item.address.types ?? [],
               },
             },
           }}

@@ -31,7 +31,6 @@ const STEPS: StepConfig[] = [
   { key: 'assigned', shortLabel: 'Assigned', icon: '✓' },
   { key: 'en_route', shortLabel: 'En Route', icon: '→' },
   { key: 'arrived', shortLabel: 'Arrived', icon: '📍' },
-  { key: 'passenger_on_board', shortLabel: 'On Board', icon: '🚗' },
   { key: 'in_progress', shortLabel: 'Driving', icon: '⚡' },
   { key: 'completed', shortLabel: 'Done', icon: '✓' },
 ];
@@ -81,15 +80,6 @@ export const STATUS_DISPLAY: Record<BookingDriverStatus, StatusDisplay> = {
     color: GREEN,
     colorBg: GREEN_12,
     colorBorder: GREEN_22,
-    pulse: true,
-  },
-  passenger_on_board: {
-    passengerHeadline: "You're on Board",
-    managerHeadline: 'Passenger Picked Up ✓',
-    subtext: 'Trip has started — enjoy the ride!',
-    color: PURPLE,
-    colorBg: PURPLE_12,
-    colorBorder: PURPLE_35,
     pulse: true,
   },
   in_progress: {

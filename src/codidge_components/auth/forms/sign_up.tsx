@@ -141,8 +141,8 @@ export const SignUpForm = ({
                     onChangeText={onChange}
                     onBlur={onBlur}
                     keyboardType="default"
-                    error={!!errors.email}
-                    errorMessage={errors.email?.message}
+                    error={!!errors.name}
+                    errorMessage={errors.name?.message}
                     autoCapitalize="none"
                   />
                 )}

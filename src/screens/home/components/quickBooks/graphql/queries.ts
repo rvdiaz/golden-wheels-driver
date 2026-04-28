@@ -13,6 +13,7 @@ export const quickBookOptionsQuery = gql`
         id
         formattedAddress
         displayName
+        types
       }
       icon
     }

@@ -82,10 +82,12 @@ export const filterByTab = (bookings: Booking[], tab: TabKey): Booking[] => {
     if (tab === 'upcoming') {
       if (a.status === 'confirmed' && b.status !== 'confirmed') return -1;
       if (a.status !== 'confirmed' && b.status === 'confirmed') return 1;
+
+      return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
     }
 
     // ✅ Sort by startDate
-    return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
+    return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
   });
 
   return filtered;
@@ -95,7 +97,6 @@ const DRIVER_STATUS_BADGE_TYPE: Record<string, BadgeType> = {
   assigned: 'info',
   en_route: 'info',
   arrived: 'warning',
-  passenger_on_board: 'success',
   in_progress: 'success',
   completed: 'normal',
 };

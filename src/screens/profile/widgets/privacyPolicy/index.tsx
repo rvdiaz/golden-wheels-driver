@@ -22,10 +22,10 @@ export const PrivacyPolicyScreen = ({ onBack }: { onBack: () => void }) => {
               <ArrowLeft size={18} color="rgba(255,255,255,0.8)" />
             </TouchableOpacity>
           }
-          title="Terms And Conditions"
+          title="Privacy Policy"
           showBack
         />
-        <WebView source={{ uri: 'https://www.goldenwheelsprivatechauffeur.com/?terms=true' }} />
+        <WebView source={{ uri: 'https://www.goldenwheelsprivatechauffeur.com/?privacy=true' }} />
       </PageSafeContainer>
     </BodyWrapper>
   );

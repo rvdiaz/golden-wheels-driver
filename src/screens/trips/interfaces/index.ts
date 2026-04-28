@@ -8,13 +8,7 @@ export type BookingStatus =
   | 'cancelled'
   | 'in_progress';
 
-export type BookingDriverStatus =
-  | 'assigned'
-  | 'en_route'
-  | 'arrived'
-  | 'passenger_on_board'
-  | 'in_progress'
-  | 'completed';
+export type BookingDriverStatus = 'assigned' | 'en_route' | 'arrived' | 'in_progress' | 'completed';
 
 export type TabKey = 'upcoming' | 'past' | 'cancelled' | 'draft';
 

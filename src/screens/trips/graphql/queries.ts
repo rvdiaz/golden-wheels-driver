@@ -9,6 +9,9 @@ export const getCustomerBookingQuery = gql`
       endDate
       status
       driverStatus
+      paymentStatus
+      paymentFailureCode
+      paymentFailureMessageCustomer
       createdAt
       note
       bookingBusinessData {

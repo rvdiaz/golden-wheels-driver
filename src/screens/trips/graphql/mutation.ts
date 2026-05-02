@@ -244,3 +244,11 @@ export const updateBookingMutation = gql`
     }
   }
 `;
+
+export const cancelPaymentIntentMutation = gql`
+  mutation cancelPaymentIntent($tenant: TenantData!, $bookingId: ID!) {
+    cancelPaymentIntent(tenant: $tenant, bookingId: $bookingId) {
+      success
+    }
+  }
+`;

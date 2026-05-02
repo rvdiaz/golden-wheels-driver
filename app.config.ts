@@ -10,8 +10,8 @@ const BUNDLE_IDENTIFIER = 'com.codidge.goldenwheels';
 const PACKAGE_NAME = 'com.codidge.goldenwheels';
 const ICON = './assets/logo.jpeg';
 const ADAPTIVE_ICON = './assets/logo.jpeg';
-const VERSION = '1.1.8';
-const BUILD_NUMBER = 18;
+const VERSION = '1.1.10';
+const BUILD_NUMBER = 20;
 const MERCHANTID = 'merchant.com.codidge.goldenwheels';
 
 export default (arg: ConfigContext): ExpoConfig => {
@@ -61,6 +61,8 @@ export default (arg: ConfigContext): ExpoConfig => {
       buildNumber: `${BUILD_NUMBER}`,
       infoPlist: {
         // existing
+        NSCameraUsageDescription:
+          'This app may use the camera for uploading photos related to vehicle listings.',
         ITSAppUsesNonExemptEncryption: false,
       },
       icon: icon,

@@ -103,16 +103,34 @@ export interface BookingForm {
   bookingBusinessData: BookingBusinessData;
 }
 
+export enum PaymentStatus {
+  none = 'none',
+  authorized = 'authorized',
+  captured = 'captured',
+  capture_failed = 'capture_failed',
+  cancelled = 'cancelled',
+  refunded = 'refunded',
+  payment_failed = 'payment_failed',
+}
+
 export interface Booking {
   id: string;
   bookingCode: string;
   status: BookingStatus;
   driverStatus?: BookingDriverStatus;
+  paymentStatus: PaymentStatus;
   startDate: string;
   endDate: string;
   createdAt: string;
   note: string;
   bookingBusinessData: BookingBusinessData;
+  paymentFailureCode: string;
+  paymentFailureMessageCustomer: string;
+  externalChargeReference?: {
+    sourceHandler: string;
+    referenceId: string;
+    chargeId: string;
+  };
 }
 
 export interface IExtraService {

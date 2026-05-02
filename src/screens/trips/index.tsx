@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
   // ── List ──
   listContent: {
     paddingHorizontal: theme.spacing.lg,
-    paddingBottom: 70,
+    paddingBottom: 90,
   },
 
   // ── Empty state ──

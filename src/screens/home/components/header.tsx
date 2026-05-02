@@ -17,13 +17,11 @@ export const HeaderCallToAction = ({
   title = 'Discover Your Next Adventure',
   subtitle = 'Curated trips for every traveler',
   buttonLabel = 'Book a Trip',
-  onPress,
 }: {
   imageUri?: string;
   title?: string;
   subtitle?: string;
   buttonLabel?: string;
-  onPress?: () => void;
 }) => {
   const userInfo = useReactiveVar(userData);
   const [bookingIntent, setbookingIntent] = useState(false);
@@ -94,7 +92,7 @@ export const HeaderCallToAction = ({
               size={ButtonSize.XLARGE}
               title={buttonLabel}
               onPress={handlerBookStart}
-              rightWidget={<ChevronRight size={20} />}
+              rightWidget={<ChevronRight  size={20} />}
               style={{ width: '70%' }}
             />
           </View>

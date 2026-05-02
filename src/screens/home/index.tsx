@@ -17,7 +17,6 @@ export const HomeScreen = () => {
           title="Discover Your Next Adventure"
           subtitle="Curated for every traveler"
           buttonLabel="Book a Trip"
-          onPress={() => {}}
         />
         <QuickBook />
         <CarsCategories />

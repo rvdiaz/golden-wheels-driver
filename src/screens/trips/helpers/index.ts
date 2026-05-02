@@ -2,6 +2,7 @@
 
 import { BadgeType } from '~/codidge_components/UI/badge';
 import { Booking, TabKey } from '../interfaces';
+import { formatMiamiTime } from '~/helpers';
 
 // Subtle white glass — bumped up from 0.04/0.05 for a softer frosted feel
 export const GLASS_BG = 'rgba(255,255,255,0.08)';
@@ -22,30 +23,11 @@ export const TABS: { key: TabKey; label: string }[] = [
 
 // ─── Formatters ───────────────────────────────────────────────────────────────
 
-export const formatDate = (iso: string): string => {
-  const d = new Date(iso);
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-};
-
-export const formatTime = (iso: string): string => {
-  const d = new Date(iso);
-  return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-};
-
 export const formatDateTime = (iso?: string | null): string => {
   if (!iso) return '';
-
   const d = new Date(iso);
-
   if (isNaN(d.getTime())) return '';
-
-  return `${d.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  })} ${d.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-  })}`;
+  return formatMiamiTime(d, 'datetime');
 };
 
 export const getInitials = (name: string): string =>

@@ -8,14 +8,12 @@ import {
   WHITE_10,
   WHITE_12,
   WHITE_35,
-  formatDate,
-  formatTime,
   formatCurrency,
   getInitials,
+  formatDateTime,
 } from '../helpers';
 import { theme } from '~/theme/theme';
 import { BookSelectionForm } from '~/components/bookTripJourney';
-import { BookingConfirmationScreen } from '~/components/bookTripJourney/formSteps/confirmationResults';
 import { DriverStatusBar } from './driverStatusBar';
 import { BookingDetailsScreen } from './tripDetails';
 
@@ -238,7 +236,7 @@ export const TripCard = ({ booking, tab }: TripCardProps) => {
           <View style={cardStyles.routeAddresses}>
             <View style={cardStyles.locationBlock}>
               <Text style={[cardStyles.locationLabel, { color: locationLabelColor }]}>
-                Pickup · {formatDate(startDate)} · {formatTime(startDate)}
+                Pickup · {formatDateTime(startDate)}
               </Text>
               <Text
                 style={[cardStyles.locationName, { color: `rgba(255,255,255,${textOpacity})` }]}

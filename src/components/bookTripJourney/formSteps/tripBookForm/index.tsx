@@ -182,7 +182,9 @@ export const TrioBookForm = ({ onNext }: { onNext: () => void }) => {
                 if (!value) return true;
                 const selected = new Date(value);
                 const minDate = new Date(Date.now() + 2 * 60 * 60 * 1000); // now + 2 hours
-                return selected >= minDate || 'Pickup time must be at least 2 hours from now';
+                return (
+                  selected >= minDate || 'Pickup must be at least 2 hours from now (Miami time)'
+                );
               },
             }}
             render={({ field: { onChange, value } }) => (
@@ -200,6 +202,9 @@ export const TrioBookForm = ({ onNext }: { onNext: () => void }) => {
               />
             )}
           />
+          <Text style={{ color: '#fff', fontSize: 11, marginTop: 2 }}>
+            🕐 All times are in Miami time (ET)
+          </Text>
         </View>
 
         {/* Duration — hourly mode only */}

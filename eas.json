@@ -21,12 +21,12 @@
       "developmentClient": false,
       "env": {
         "APP_ENV": "production",
-        "COGNITO_USERPOOL_ID": "us-east-2_wT26orWBG",
-        "COGNITO_CLIENT_ID": "1n7qbm76c1ge9tc2d85p8r7l6t",
+        "COGNITO_USERPOOL_ID": "us-east-1_XMFIk2HmZ",
+        "COGNITO_CLIENT_ID": "57v46pbpfnulbqjoofe9qte8du",
         "AWS_REGION": "us-east-1",
-        "GRAPHQL_ENDPOINT": "https://pj764drd2jbqfezl5arzuecqeq.appsync-api.us-east-2.amazonaws.com/graphql",
-        "GRAPHQL_API_KEY": "da2-hjp3bbdwdrhs3kesagakowpxwm",
-        "TENANTID": "98faecfa-56f1-4bed-97fd-90312f6a27de",
+        "GRAPHQL_ENDPOINT": "https://xutawcxlwzcjzdpskabfaurxwa.appsync-api.us-east-1.amazonaws.com/graphql",
+        "GRAPHQL_API_KEY": "da2-4mutcyox4rczbd4jaiqsed2in4",
+        "TENANTID": "6ac91fcd-e2a7-4375-b42c-678abb4d73a3",
         "TENANT_SOLUTION": "booking",
         "APPLE_APP_ID": "6761308542"
       }

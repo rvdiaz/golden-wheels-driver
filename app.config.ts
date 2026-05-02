@@ -64,9 +64,6 @@ export default (arg: ConfigContext): ExpoConfig => {
         ITSAppUsesNonExemptEncryption: false,
       },
       icon: icon,
-      entitlements: {
-        'com.apple.developer.in-app-payments': [MERCHANTID],
-      },
     },
     updates: {
       url: `https://u.expo.dev/${EAS_PROJECT_ID}`,

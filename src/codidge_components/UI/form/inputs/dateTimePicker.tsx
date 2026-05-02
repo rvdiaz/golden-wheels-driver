@@ -15,6 +15,7 @@ import { Calendar, Clock, ChevronRight, Check } from 'lucide-react-native';
 import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
 import InputField from './inputField';
+import { formatMiamiTime, fromPickerDate, toPickerDate } from '~/helpers';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -263,23 +264,22 @@ export const DateTimeInputField: React.FC<DateInputFieldProps> = ({
 
     if (mode === 'datetime') {
       if (androidStep === 'date') {
-        setAndroidTempDate(new Date(selectedDate));
+        setAndroidTempDate(selectedDate); // ← store raw picker-space, no fromPickerDate yet
         setAndroidStep('time');
-        // Keep showModal true so the time picker appears
       } else {
-        const finalDate = new Date(
+        const combined = new Date(
           androidTempDate.getFullYear(),
           androidTempDate.getMonth(),
           androidTempDate.getDate(),
           selectedDate.getHours(),
           selectedDate.getMinutes()
         );
-        onChangeText?.(finalDate);
+        onChangeText?.(fromPickerDate(combined)); // ← single conversion at the very end
         setShowModal(false);
         setAndroidStep('date');
       }
     } else {
-      onChangeText?.(selectedDate);
+      onChangeText?.(fromPickerDate(selectedDate));
       setShowModal(false);
     }
   };
@@ -289,20 +289,11 @@ export const DateTimeInputField: React.FC<DateInputFieldProps> = ({
     return mode as 'date' | 'time';
   };
 
-  // ── Display value for the trigger field ──────────────────────────────────
-  const inputValue = value
-    ? mode === 'time'
-      ? value.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      : mode === 'datetime'
-        ? value.toLocaleString([], {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-          })
-        : value.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' })
-    : '';
+  const pickerValue =
+    mode === 'datetime' && androidStep === 'time'
+      ? androidTempDate // ← already picker-space, use directly
+      : toPickerDate(safeDate);
+  const inputValue = value ? formatMiamiTime(value, mode) : '';
 
   return (
     <>
@@ -319,7 +310,7 @@ export const DateTimeInputField: React.FC<DateInputFieldProps> = ({
       {/* ── Android: native system picker (no custom styling possible) ── */}
       {Platform.OS === 'android' && showModal && (
         <DateTimePicker
-          value={mode === 'datetime' && androidStep === 'time' ? androidTempDate : safeDate}
+          value={pickerValue}
           mode={getAndroidMode()}
           display={getAndroidMode() === 'date' ? 'calendar' : 'clock'}
           onChange={handleAndroidChange}
@@ -332,9 +323,9 @@ export const DateTimeInputField: React.FC<DateInputFieldProps> = ({
         <IOSDateSheet
           visible={showModal}
           mode={mode}
-          initialDate={safeDate}
+          initialDate={toPickerDate(safeDate)}
           onConfirm={(date) => {
-            onChangeText?.(date);
+            onChangeText?.(fromPickerDate(date));
             setShowModal(false);
           }}
           onCancel={() => setShowModal(false)}

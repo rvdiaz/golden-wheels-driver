@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Modal, Linking } from 'react-native';
 import Text from '~/codidge_components/UI/text';
 import { Booking, PaymentStatus, TabKey } from '../interfaces';
 import {
@@ -19,6 +19,7 @@ import { BookingDetailsScreen } from './tripDetails';
 import { StatusBadge } from './statusBadge';
 import { PaymentUpdate } from './paymentUpdate';
 import { useCustomerTrips } from '../hooks/useCustomerTrips';
+import { Phone } from 'lucide-react-native';
 
 const GOLD = theme.colors.primary;
 const GOLD_30 = theme.colors.primaryAlpha[35];
@@ -232,27 +233,57 @@ export const TripCard = ({ booking, tab }: TripCardProps) => {
 
         {/* Footer */}
         <View style={cardStyles.footer}>
-          <View style={cardStyles.driverPill}>
-            {biz.driver && (
-              <>
-                <View
-                  style={[
-                    cardStyles.driverAvatar,
-                    { backgroundColor: avatarBg, borderColor: avatarBorder },
-                  ]}>
-                  <Text style={[cardStyles.driverInitials, { color: avatarTextColor }]}>
-                    {getInitials(biz.driver?.name)}
-                  </Text>
+          {biz.driver ? (
+            <View style={{ flexDirection: 'column' }}>
+              <View style={cardStyles.driverLabelRow}>
+                <View style={[cardStyles.driverLabelDot, { backgroundColor: avatarTextColor }]} />
+                <Text style={[cardStyles.locationLabel, { color: locationLabelColor }]}>
+                  Your Driver
+                </Text>
+              </View>
+              <View style={cardStyles.driverPill}>
+                <View style={cardStyles.driverRow}>
+                  <View style={cardStyles.driverInfo}>
+                    <Text style={cardStyles.driverName}>{biz.driver.name}</Text>
+                    {biz.driver.phone && (
+                      <Text style={cardStyles.driverPhone}>{biz.driver.phone}</Text>
+                    )}
+                  </View>
+                  {biz.driver.phone && (
+                    <TouchableOpacity
+                      activeOpacity={0.75}
+                      onPress={(e) => {
+                        e.stopPropagation?.();
+                        Linking.openURL(`tel:${biz.driver.phone}`);
+                      }}
+                      style={[
+                        cardStyles.callBtn,
+                        { borderColor: avatarBorder, backgroundColor: avatarBg },
+                      ]}>
+                      <Phone size={12} color={avatarTextColor} />
+                    </TouchableOpacity>
+                  )}
                 </View>
-                <Text style={cardStyles.driverName}>{biz.driver?.name}</Text>
-              </>
-            )}
-          </View>
+              </View>
+            </View>
+          ) : (
+            <View /> // empty — keeps car tag pushed right
+          )}
+
           {biz.car && (
-            <View style={cardStyles.carTag}>
-              <Text style={cardStyles.carTagText} numberOfLines={1}>
-                {biz.car?.brand}
-              </Text>
+            <View
+              style={{
+                flexDirection: 'column',
+              }}>
+              <View style={cardStyles.driverLabelRow}>
+                <View style={[cardStyles.driverLabelDot, { backgroundColor: avatarTextColor }]} />
+                <Text style={[cardStyles.locationLabel, { color: locationLabelColor }]}>Car</Text>
+              </View>
+              <View style={cardStyles.carTag}>
+                <Text style={cardStyles.carTagText} numberOfLines={1}>
+                  {biz.car?.brand}
+                </Text>
+              </View>
             </View>
           )}
         </View>
@@ -457,28 +488,58 @@ const cardStyles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   driverPill: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 7,
   },
-  driverAvatar: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    borderWidth: 0.5,
+  driverLabelRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: 4,
+    marginBottom: 5,
   },
-  driverInitials: {
-    fontSize: 10,
-    fontWeight: '500',
+  driverLabelDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    opacity: 0.6,
+  },
+  driverLabel: {
+    fontSize: 9,
+    fontWeight: '600',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    opacity: 0.6,
+  },
+  driverRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
   },
   driverName: {
     fontSize: 12,
     color: 'rgba(255,255,255,0.45)',
+  },
+  driverInfo: {
+    flexDirection: 'column',
+    gap: 1,
+  },
+  driverPhone: {
+    fontSize: 10,
+    color: 'rgba(255,255,255,0.28)',
+    letterSpacing: 0.3,
+  },
+  callBtn: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 0.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 4,
   },
   carTag: {
     paddingHorizontal: 8,

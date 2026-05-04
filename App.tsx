@@ -9,7 +9,6 @@ import { UserRefresherWrapper } from '~/navigation/userRefresherWrapper';
 import { ENV_Vars } from '~/store/env';
 import { AuthProvider } from '~/codidge_components/auth/context';
 import { AuthenticateScreen } from '~/store/user/authenticateScreen';
-import { StripeWrapper } from '~/store/stripeConfig';
 
 if (ENV_Vars.APP_ENV === 'development') {
   // Adds messages only in a dev environment

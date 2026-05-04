@@ -13,5 +13,8 @@ export const useStripePublishableKey = () => {
     skip: !user, // only fetch when logged in
   });
 
-  return data?.getPaymentPublisCredentials?.publicKey ?? null;
+  return {
+    publicKey: data?.getPaymentPublisCredentials?.publicKey ?? null,
+    stripeAccountId: data?.getPaymentPublisCredentials?.stripeAccountId ?? null, // ← add
+  };
 };

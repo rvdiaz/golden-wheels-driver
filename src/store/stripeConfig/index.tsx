@@ -2,7 +2,12 @@
 import React from 'react';
 import { useStripePublishableKey } from './useStripePublishableKey';
 
-let StripeProvider: React.FC<{ publishableKey: string; children: React.ReactNode }> | null = null;
+let StripeProvider: React.FC<{
+  publishableKey: string;
+  stripeAccountId?: string; // ← add
+  children: React.ReactNode;
+}> | null = null;
+
 try {
   StripeProvider = require('@stripe/stripe-react-native').StripeProvider;
 } catch {
@@ -10,14 +15,17 @@ try {
 }
 
 export const StripeWrapper = ({ children }: { children: React.ReactNode }) => {
-  const publishableKey = useStripePublishableKey();
+  const { publicKey, stripeAccountId } = useStripePublishableKey(); // ← destructure both
 
-  // No Stripe native module — just render children
   if (!StripeProvider) return <>{children}</>;
+  if (!publicKey) return <>{children}</>;
 
-  // Key not yet fetched — render children without Stripe
-  // (payment screen will be unreachable until user is logged in anyway)
-  if (!publishableKey) return <>{children}</>;
-
-  return <StripeProvider publishableKey={publishableKey}>{children}</StripeProvider>;
+  return (
+    <StripeProvider
+      publishableKey={publicKey}
+      {...(stripeAccountId ? { stripeAccountId } : {})} // ← pass only if oauth2
+    >
+      {children}
+    </StripeProvider>
+  );
 };

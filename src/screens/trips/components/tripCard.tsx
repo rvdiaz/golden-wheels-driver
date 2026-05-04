@@ -9,7 +9,6 @@ import {
   WHITE_12,
   WHITE_35,
   formatCurrency,
-  getInitials,
   formatDateTime,
 } from '../helpers';
 import { theme } from '~/theme/theme';

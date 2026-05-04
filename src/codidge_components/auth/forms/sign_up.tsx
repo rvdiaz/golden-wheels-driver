@@ -190,7 +190,7 @@ export const SignUpForm = ({
                     error={!!errors.phone}
                     errorMessage={errors.phone?.message}
                     defaultCountry="US"
-                    disabledSelection={true}
+                    disabledSelection={false}
                   />
                 )}
               />

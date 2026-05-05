@@ -8,8 +8,8 @@
         "COGNITO_USERPOOL_ID": "us-east-2_wT26orWBG",
         "COGNITO_CLIENT_ID": "1n7qbm76c1ge9tc2d85p8r7l6t",
         "AWS_REGION": "us-east-2",
-        "GRAPHQL_ENDPOINT": "https://pj764drd2jbqfezl5arzuecqeq.appsync-api.us-east-2.amazonaws.com/graphql",
-        "GRAPHQL_API_KEY": "da2-hjp3bbdwdrhs3kesagakowpxwm",
+        "GRAPHQL_ENDPOINT": "https://ioojqxmbwfe37lsjdfmoy76zja.appsync-api.us-east-2.amazonaws.com/graphql",
+        "GRAPHQL_API_KEY": "da2-tf3mvo3fkjbtrbvnwjftrpw2h4",
         "TENANTID": "98faecfa-56f1-4bed-97fd-90312f6a27de",
         "TENANT_SOLUTION": "booking",
         "APPLE_APP_ID": "6761308542"
@@ -40,8 +40,8 @@
         "COGNITO_USERPOOL_ID": "us-east-2_wT26orWBG",
         "COGNITO_CLIENT_ID": "1n7qbm76c1ge9tc2d85p8r7l6t",
         "AWS_REGION": "us-east-2",
-        "GRAPHQL_ENDPOINT": "https://pj764drd2jbqfezl5arzuecqeq.appsync-api.us-east-2.amazonaws.com/graphql",
-        "GRAPHQL_API_KEY": "da2-hjp3bbdwdrhs3kesagakowpxwm",
+        "GRAPHQL_ENDPOINT": "https://ioojqxmbwfe37lsjdfmoy76zja.appsync-api.us-east-2.amazonaws.com/graphql",
+        "GRAPHQL_API_KEY": "da2-tf3mvo3fkjbtrbvnwjftrpw2h4",
         "TENANTID": "98faecfa-56f1-4bed-97fd-90312f6a27de",
         "TENANT_SOLUTION": "booking"
       }

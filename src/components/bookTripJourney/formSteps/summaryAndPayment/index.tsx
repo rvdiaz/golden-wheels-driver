@@ -127,14 +127,12 @@ export const SummaryAndPayment = ({ finish }: { onBack: () => void; finish: () =
       // 3. Present sheet
       const { error: presentError } = await presentPaymentSheet();
 
-      if (presentError) {
-        if (presentError.code !== 'Canceled') {
-          // A real error — clear cache so a fresh intent is created next time
+      if (presentError || !presentError === undefined) {
+        if (presentError && presentError.code !== 'Canceled') {
           setCachedIntent(null);
           Alert.alert('Payment error', presentError.message);
         }
-        // Canceled — keep cachedIntent so next tap reuses the same intent
-        return;
+        return; // trip stays draft
       }
 
       await handleUpdateTrip({

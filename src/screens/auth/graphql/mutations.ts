@@ -1,29 +1,14 @@
 import { gql } from '@apollo/client';
 
-export const addCustomerMutation = gql`
-  mutation addCustomer($tenant: TenantData!, $customer: CustomerInput!, $customerID: String) {
-    addCustomer(tenant: $tenant, customer: $customer, customerID: $customerID) {
+export const updateDriverMutation = gql`
+  mutation updateDriver($tenant: TenantData!, $driverId: ID!, $driver: DriverUpdateInput!) {
+    updateDriver(tenant: $tenant, driverId: $driverId, driver: $driver) {
       id
       name
       email
       phone
+      available
+      pushToken
     }
-  }
-`;
-
-export const updateCustomerMutation = gql`
-  mutation updateCustomer($tenant: TenantData!, $customer: CustomerUpdateInput!) {
-    updateCustomer(tenant: $tenant, customer: $customer) {
-      id
-      name
-      email
-      phone
-    }
-  }
-`;
-
-export const deleteUserMutation = gql`
-  mutation deleteUser($tenant: TenantData!, $userId: ID!) {
-    deleteUser(tenant: $tenant, userId: $userId)
   }
 `;

@@ -7,7 +7,7 @@ import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import Text from '~/codidge_components/UI/text';
 import { resetPassword } from 'aws-amplify/auth';
-import { ForcePasswordChange } from './force_password_change';
+import { ResetPasswordWithCode } from './reset_password_with_code';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import { useAuthContext } from '../context';
@@ -105,7 +105,7 @@ export const ResetPassword = () => {
   if (emailSent) {
     return (
       <View style={styles.content}>
-        <ForcePasswordChange username={emailSent} onResendCode={handleResendEmail} />
+        <ResetPasswordWithCode username={emailSent} onResendCode={handleResendEmail} />
       </View>
     );
   }

@@ -80,10 +80,30 @@ export const SignInForm = ({
         return;
       }
 
+      // An invited driver signs in with the temporary password from their
+      // invitation email and has to choose a real one before continuing.
+      if (user.nextStep.signInStep === 'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED') {
+        setTempData({ email: data.email });
+        setCurrentView(IAuthModuleKeys.forcePasswordChange);
+        setloading(false);
+        return;
+      }
+
       if (user.isSignedIn) {
         await onLoginSuccess();
         setloading(false);
+        return;
       }
+
+      // Anything else (MFA, TOTP setup…) isn't handled here. Say so rather than
+      // silently doing nothing, which is indistinguishable from a broken app.
+      console.warn('Unhandled signInStep:', user.nextStep.signInStep);
+      setloading(false);
+      Alert.alert(
+        'Additional step required',
+        'Your account needs an extra verification step that this app cannot complete. Please contact your operator.'
+      );
+      await signOut();
     } catch (error: any) {
       console.log(':::result', error);
       setloading(false);

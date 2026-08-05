@@ -30,7 +30,7 @@ const variantStyles = {
   },
 };
 
-const IconButton = forwardRef<TouchableOpacity, IconButtonProps>(
+const IconButton = forwardRef<React.ElementRef<typeof TouchableOpacity>, IconButtonProps>(
   ({ loading = false, icon, variant = 'secondary', disabled = false, onPress, style }, ref) => {
     const disabledAux = loading || disabled;
 

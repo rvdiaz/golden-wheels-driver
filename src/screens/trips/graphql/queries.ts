@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
-export const getCustomerBookingQuery = gql`
-  query getCustomerBooking($tenant: TenantData!) {
-    getCustomerBooking(tenant: $tenant) {
+export const getDriverBookingsQuery = gql`
+  query getDriverBookings($tenant: TenantData!) {
+    getDriverBookings(tenant: $tenant) {
       id
       bookingCode
       startDate
@@ -10,18 +10,16 @@ export const getCustomerBookingQuery = gql`
       status
       driverStatus
       paymentStatus
-      paymentFailureCode
-      paymentFailureMessageCustomer
       createdAt
       note
+      assignmentMode
+      poolState
+      driverEarnings {
+        amount
+        currencyCode
+      }
       bookingBusinessData {
         customer {
-          id
-          name
-          email
-          phone
-        }
-        driver {
           id
           name
           email
@@ -35,28 +33,11 @@ export const getCustomerBookingQuery = gql`
         carType {
           id
           name
-          supportsHourly
-          hourlyRate
-          supportsDistance
-          pricePerMiles
-          baseFare
-          minimumFare
           maxPassengers
         }
         extraServices {
           id
           name
-          description
-          price {
-            amount
-            currencyCode
-          }
-          createdAt
-          image {
-            alt
-            url
-          }
-          available
         }
         pickupLocation {
           id
@@ -70,9 +51,62 @@ export const getCustomerBookingQuery = gql`
           formattedAddress
           types
         }
-        totalPrice {
-          amount
-          currencyCode
+        bookHours
+        bookMode
+      }
+    }
+  }
+`;
+
+/**
+ * Trips published to the pool that nobody has claimed yet. Same shape as
+ * getDriverBookings so the same card component renders both.
+ */
+export const getOpenTripsQuery = gql`
+  query getOpenTrips($tenant: TenantData!) {
+    getOpenTrips(tenant: $tenant) {
+      id
+      bookingCode
+      startDate
+      endDate
+      status
+      driverStatus
+      paymentStatus
+      createdAt
+      note
+      assignmentMode
+      poolState
+      offeredAt
+      driverEarnings {
+        amount
+        currencyCode
+      }
+      bookingBusinessData {
+        customer {
+          id
+          name
+          phone
+        }
+        carType {
+          id
+          name
+          maxPassengers
+        }
+        extraServices {
+          id
+          name
+        }
+        pickupLocation {
+          id
+          displayName
+          formattedAddress
+          types
+        }
+        dropoffLocation {
+          id
+          displayName
+          formattedAddress
+          types
         }
         bookHours
         bookMode

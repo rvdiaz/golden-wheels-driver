@@ -1,38 +1,15 @@
 import { IImage } from '~/codidge_components/interfaces';
 
-export enum ProductModules {
-  variants = 'variants',
-  pricing = 'pricing',
-  metafields = 'metafields',
-  modifiersGroups = 'modifiersGroups',
-}
-
-export enum StatusUser {
-  invitado,
-  activo,
-  eliminado,
-  bloqueado,
-}
-
-export interface IPermission {
-  slug: string;
-  label: string;
-}
-
-export enum UserRoles {
-  admin = 'ADMIN',
-  manager = 'MANAGER',
-}
-
 export interface IUser {
-  email: string;
-  loading?: boolean;
-  phone: string;
   id: string;
   name: string;
-  status: StatusUser | string;
-  role: UserRoles | 'OWNER';
-  metaData: any;
+  email: string;
+  phone?: string;
+  licenseNumber?: string;
+  available?: boolean;
+  preferenceLanguage?: string[];
+  pushToken?: string;
   image?: IImage;
-  preferenceLanguage?: string;
+  loading?: boolean;
+  loadedFromStorage?: boolean;
 }

@@ -15,11 +15,10 @@ import { CustomTabBar } from './bottomBar';
 import { GetStartedScreen } from '~/screens/welcome_screen';
 import { activeTabVar, setActiveTab } from '~/store/navigationTabs';
 import { usePushNotificationTokenSetup } from '~/screens/auth/hooks/usePushNotificationToken';
-import { StripeWrapper } from '~/store/stripeConfig';
 import { useBookingNotificationListener } from '~/screens/trips/hooks/useTripsNotifictions';
 
 const Stack = createStackNavigator();
-const HAS_LAUNCHED_KEY = 'gw_has_launched9'; // namespaced to your app
+const HAS_LAUNCHED_KEY = 'gw_driver_has_launched1'; // driver app launch key
 
 type TabName = 'Home' | 'Trips' | 'Notifications' | 'Account';
 
@@ -36,11 +35,9 @@ function TabsWithHeader() {
 
   return (
     <BodyWrapper gradientCoverage={1}>
-      <StripeWrapper>
-        <View style={styles.screenContainer}>
-          <ActiveScreen onNavigateHome={() => setActiveTab('Home')} />
-        </View>
-      </StripeWrapper>
+      <View style={styles.screenContainer}>
+        <ActiveScreen onNavigateHome={() => setActiveTab('Home')} />
+      </View>
       <CustomTabBar activeTab={activeTab} onTabPress={setActiveTab} />
     </BodyWrapper>
   );

@@ -10,8 +10,7 @@ import Text from '~/codidge_components/UI/text';
 import { ProfileNavigationSection } from '~/codidge_components/UI/navigationButtons';
 import { PageTransition } from '~/codidge_components/UI/pageTransition';
 import { TermsAndConditions } from './widgets/termsAndConditions';
-import { AccountDeletionScreen } from './widgets/userDeletion';
-import { PersonalInfo } from './widgets/personalInfo';
+import { DriverInfo } from './widgets/driverInfo';
 import { ContactSubmissionsScreen } from './widgets/contact';
 import { PrivacyPolicyScreen } from './widgets/privacyPolicy';
 import { useFocusEffect } from '@react-navigation/native';
@@ -19,9 +18,9 @@ import { useFocusEffect } from '@react-navigation/native';
 // ─── Color tokens ─────────────────────────────────────────────────────────────
 
 const GOLD = theme.colors.primary;
-const GOLD_10 = 'rgba(218,192,114,0.10)';
-const GOLD_18 = 'rgba(218,192,114,0.18)';
-const GOLD_30 = 'rgba(218,192,114,0.30)';
+const GOLD_10 = theme.colors.primaryAlpha[10];
+const GOLD_18 = theme.colors.primaryAlpha[20];
+const GOLD_30 = theme.colors.primaryAlpha[35];
 
 // ─── Avatar ───────────────────────────────────────────────────────────────────
 
@@ -44,7 +43,7 @@ type Props = {
 export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
   const user = useReactiveVar(userData);
   const [screen, setScreen] = useState<
-    'personal-info' | 'privacy-policy' | 'terms' | 'feedback' | 'delete' | null
+    'personal-info' | 'privacy-policy' | 'terms' | 'feedback' | null
   >();
 
   // Reset screen state when component comes into focus
@@ -79,15 +78,6 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
         />
       );
       break;
-    case 'delete':
-      targetComponent = (
-        <AccountDeletionScreen
-          onBack={() => {
-            setScreen(null);
-          }}
-        />
-      );
-      break;
     case 'feedback':
       targetComponent = (
         <ContactSubmissionsScreen
@@ -99,7 +89,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
       break;
     case 'personal-info':
       targetComponent = (
-        <PersonalInfo
+        <DriverInfo
           onBack={() => {
             setScreen(null);
           }}
@@ -139,7 +129,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
                   items: [
                     {
                       id: 'personal-info',
-                      label: 'Personal Info',
+                      label: 'My profile',
                       icon: <User />,
                       onClick: () => {
                         setScreen('personal-info');
@@ -183,14 +173,6 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
                 {
                   title: 'Account',
                   items: [
-                    {
-                      id: 'delete',
-                      label: 'Delete Account',
-                      icon: <LogOut />,
-                      onClick: () => {
-                        setScreen('delete');
-                      },
-                    },
                     {
                       id: 'logout',
                       label: 'Sign Out',

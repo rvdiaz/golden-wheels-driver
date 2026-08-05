@@ -1,20 +1,15 @@
 import { useEffect } from 'react';
-import { useLazyQuery, useReactiveVar } from '@apollo/client';
+import { useMutation, useReactiveVar } from '@apollo/client';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { pushTokenVar, setPushToken } from '~/store/user/pushToken';
-import { userData, updateUser } from '~/store/user';
-import { ENV_Vars } from '~/store/env';
-import { getCustomerQuery } from '../graphql/queries';
-
-const tenantId = ENV_Vars.tenant.tenantId;
+import { userData } from '~/store/user';
+import { CUSTOMER_APP_EAS_PROJECT_ID, ENV_Vars } from '~/store/env';
+import { updateDriverMutation } from '../graphql/mutations';
 
 const getPushNotificationToken = async (): Promise<string> => {
   try {
-    if (!Device.isDevice) {
-      console.log('Must use physical device for Push Notifications');
-      return '';
-    }
+    if (!Device.isDevice) return '';
 
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
@@ -24,25 +19,32 @@ const getPushNotificationToken = async (): Promise<string> => {
       finalStatus = status;
     }
 
-    if (finalStatus !== 'granted') {
-      return '';
-    }
+    if (finalStatus !== 'granted') return '';
 
-    // Use Expo Push Token instead
     const projectId = ENV_Vars.EAS_PROJECT_ID;
-
     if (!projectId) {
       console.error('Project ID not found');
       return '';
     }
 
-    const { data: token } = await Notifications.getExpoPushTokenAsync({
-      projectId,
-    });
+    // A token minted against another Expo project is accepted here and then
+    // silently never delivers — the worst kind of failure to debug. Make it loud.
+    if (projectId === CUSTOMER_APP_EAS_PROJECT_ID) {
+      console.error(
+        '[push] EAS_PROJECT_ID is still the CUSTOMER app project. Push tokens ' +
+          'minted now are unroutable. Run `eas init` in the driver repo and ' +
+          'update EAS_PROJECT_ID in app.config.ts.'
+      );
+      if (__DEV__) {
+        throw new Error('Driver app is using the customer app EAS project id');
+      }
+    }
 
+    const { data: token } = await Notifications.getExpoPushTokenAsync({ projectId });
     return token;
   } catch (error) {
-    throw error;
+    console.error('Error getting push token:', error);
+    return '';
   }
 };
 
@@ -58,36 +60,28 @@ Notifications.setNotificationHandler({
 export const usePushNotificationTokenSetup = () => {
   const pushToken = useReactiveVar(pushTokenVar);
   const userInfo = useReactiveVar(userData);
-  const [getCustomerFn] = useLazyQuery(getCustomerQuery);
+  const [updateDriverFn] = useMutation(updateDriverMutation);
 
   useEffect(() => {
     (async () => {
       if (!pushToken) {
         const token = await getPushNotificationToken();
-        setPushToken(token);
+        if (token) setPushToken(token);
       }
     })();
   }, [pushToken]);
 
   useEffect(() => {
-    if (pushToken && userInfo && userInfo.loadedFromStorage) {
-      const { loadedFromStorage, ...user } = userInfo || {};
-      updateUser(user);
-      getCustomerFn({
+    if (pushToken && userInfo?.id) {
+      updateDriverFn({
         variables: {
-          tenant: {
-            tenantId,
-          },
-          token: pushToken,
+          tenant: ENV_Vars.tenant,
+          driverId: userInfo.id,
+          driver: { pushToken },
         },
-      }).then(() => {
-        console.log('User data updated with push token');
-      });
+      }).catch((err) => console.warn('Failed to save push token:', err));
     }
-  }, [pushToken, userInfo, getCustomerFn]);
+  }, [pushToken, userInfo?.id]);
 
-  return {
-    pushToken,
-    userInfo,
-  };
+  return { pushToken, userInfo };
 };

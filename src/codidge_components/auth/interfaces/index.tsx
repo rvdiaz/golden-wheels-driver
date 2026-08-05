@@ -26,8 +26,10 @@ export interface ResetPasswordFormData {
 }
 
 export interface ChangePasswordFormData {
-  confirmationCode: string;
+  /** Only in the forgot-password flow — the invitation flow has no code. */
+  confirmationCode?: string;
   newPassword: string;
+  confirmPassword?: string;
 }
 
 export interface MfaFormData {

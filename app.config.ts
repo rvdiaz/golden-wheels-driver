@@ -1,18 +1,22 @@
 import { ExpoConfig } from '@expo/config-types';
 import { ConfigContext } from 'expo/config';
 
+// ⚠️ STILL THE CUSTOMER APP'S EAS PROJECT. Run `eas init` in this repo and
+// replace it. It drives updates.url AND getExpoPushTokenAsync({ projectId }),
+// so until it changes every driver push token is minted against the wrong
+// project and silently never delivers. See CUSTOMER_APP_EAS_PROJECT_ID below.
 const EAS_PROJECT_ID = 'bf4ea28e-ea3b-4071-9b5c-b6fba74685dc';
-const PROJECT_SLUG = 'golden-wheels';
+
+const PROJECT_SLUG = 'golden-wheels-driver';
 const OWNER = 'rvdiaz1994';
 // App production config
-const APP_NAME = 'Golden Wheels';
-const BUNDLE_IDENTIFIER = 'com.codidge.goldenwheels';
-const PACKAGE_NAME = 'com.codidge.goldenwheels';
+const APP_NAME = 'Golden Wheels Driver';
+const BUNDLE_IDENTIFIER = 'com.codidge.goldenwheelsdriver';
+const PACKAGE_NAME = 'com.codidge.goldenwheelsdriver';
 const ICON = './assets/logo.jpeg';
 const ADAPTIVE_ICON = './assets/logo.jpeg';
-const VERSION = '1.1.12';
-const BUILD_NUMBER = 22;
-const MERCHANTID = 'merchant.com.codidge.goldenwheels';
+const VERSION = '1.1.1';
+const BUILD_NUMBER = 1;
 
 export default (arg: ConfigContext): ExpoConfig => {
   const { config } = arg;
@@ -30,19 +34,12 @@ export default (arg: ConfigContext): ExpoConfig => {
     version: VERSION, // Automatically bump your project version with `npm version patch`, `npm version minor` or `npm version major`.
     slug: PROJECT_SLUG, // Must be consistent across all environments.
     orientation: 'portrait',
-    userInterfaceStyle: 'dark',
+    userInterfaceStyle: 'light',
     newArchEnabled: true,
     icon: icon,
     owner: OWNER,
     plugins: [
       'expo-notifications',
-      [
-        '@stripe/stripe-react-native',
-        {
-          merchantIdentifier: MERCHANTID,
-          enableGooglePay: false,
-        },
-      ],
       [
         'expo-build-properties',
         {

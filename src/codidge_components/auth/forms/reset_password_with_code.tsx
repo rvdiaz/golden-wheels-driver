@@ -15,28 +15,26 @@ import { ChangePasswordFormData, IAuthModuleKeys } from '../interfaces';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import Text from '~/codidge_components/UI/text';
-import { confirmSignIn } from 'aws-amplify/auth';
+import { confirmResetPassword } from 'aws-amplify/auth';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
 
 /**
- * Completes Cognito's NEW_PASSWORD_REQUIRED challenge — the last step of the
- * driver invitation flow. The account already exists with a temporary password;
- * the driver is mid-sign-in and simply has to choose a real one.
- *
- * This is NOT the forgot-password flow (that's ResetPassword, which emails a
- * code). There is no code here: the session from signIn() is the credential.
+ * Forgot-password step two: the user has an emailed 6-digit code and picks a new
+ * password. Distinct from ForcePasswordChange, which completes Cognito's
+ * NEW_PASSWORD_REQUIRED challenge during an invited driver's first sign-in and
+ * has no code at all.
  */
-export const ForcePasswordChange = ({
+export const ResetPasswordWithCode = ({
   username,
-  onSuccess,
+  onResendCode,
 }: {
   username: string;
-  onSuccess: () => Promise<void> | void;
+  onResendCode?: () => void;
 }) => {
   const { setCurrentView } = useAuthContext();
 
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -47,8 +45,8 @@ export const ForcePasswordChange = ({
     setError,
   } = useForm<ChangePasswordFormData>({
     defaultValues: {
+      confirmationCode: '',
       newPassword: '',
-      confirmPassword: '',
     },
   });
 
@@ -98,35 +96,53 @@ export const ForcePasswordChange = ({
   };
 
   const onSubmit = async (data: ChangePasswordFormData) => {
+    // Validate password requirements
     const validationResult = validatePassword(data.newPassword);
     if (validationResult !== true) {
-      setError('newPassword', { type: 'manual', message: validationResult });
+      setError('newPassword', {
+        type: 'manual',
+        message: validationResult,
+      });
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const result = await confirmSignIn({ challengeResponse: data.newPassword });
+      await confirmResetPassword({
+        username: username,
+        confirmationCode: data.confirmationCode!,
+        newPassword: data.newPassword,
+      });
 
-      if (result.isSignedIn) {
-        // Fully authenticated now — load the driver profile before showing the app.
-        await onSuccess();
-        return;
-      }
-
-      // Any further challenge (MFA, etc.) is not something this screen handles.
-      Alert.alert(
-        'Additional step required',
-        'Please sign in again to finish setting up your account.',
-        [{ text: 'OK', onPress: () => setCurrentView(IAuthModuleKeys.signIn) }]
-      );
+      Alert.alert('Success', 'Password changed successfully!', [
+        {
+          text: 'OK',
+          onPress: () => {
+            setCurrentView(IAuthModuleKeys.signIn);
+          },
+        },
+      ]);
     } catch (error: any) {
-      console.error('confirmSignIn error:', error);
+      console.error('Confirm reset password error:', error);
 
-      let errorMessage = 'Failed to set your password. Please try again.';
+      let errorMessage = 'Failed to change password. Please try again.';
 
       switch (error.name) {
+        case 'CodeMismatchException':
+          errorMessage = 'Invalid verification code. Please check and try again.';
+          setError('confirmationCode', {
+            type: 'manual',
+            message: 'Invalid code',
+          });
+          break;
+        case 'ExpiredCodeException':
+          errorMessage = 'Verification code has expired. Please request a new one.';
+          setError('confirmationCode', {
+            type: 'manual',
+            message: 'Code expired',
+          });
+          break;
         case 'InvalidPasswordException':
           errorMessage = 'Password does not meet requirements.';
           setError('newPassword', {
@@ -134,14 +150,11 @@ export const ForcePasswordChange = ({
             message: error.message || errorMessage,
           });
           break;
-        case 'NotAuthorizedException':
-        case 'InvalidSessionException':
-          // The temporary-password session expired mid-flow.
-          errorMessage = 'Your session expired. Please sign in again.';
-          setCurrentView(IAuthModuleKeys.signIn);
-          break;
         case 'LimitExceededException':
           errorMessage = 'Too many attempts. Please try again later.';
+          break;
+        case 'InvalidParameterException':
+          errorMessage = error.message || 'Invalid input. Please check your information.';
           break;
         default:
           errorMessage = error.message || errorMessage;
@@ -162,15 +175,60 @@ export const ForcePasswordChange = ({
       style={styles.keyboardView}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
-          <Icons.ShieldCheck size={20} color="#6B7280" />
+          <Icons.HelpCircle size={20} color="#6B7280" />
           <Text style={styles.subtitle}>
-            Welcome{username ? `, ${username}` : ''}! Choose a password to finish setting up your
-            driver account.
+            We sent a verification code to {username}. Enter the code and create a new secure
+            password.
           </Text>
         </View>
 
         <View style={styles.formCard}>
           <View style={styles.form}>
+            <View style={styles.inputGroup}>
+              <Controller
+                control={control}
+                name="confirmationCode"
+                rules={{
+                  required: 'Verification code is required',
+                }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    variant="dark"
+                    containerStyle={{
+                      flex: 1,
+                      width: '100%',
+                    }}
+                    label="Verification Code"
+                    placeholder="Enter 6-digit code"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    keyboardType="number-pad"
+                    maxLength={6}
+                    leftIcon={<Icons.Key size={16} color="#6B7280" />}
+                    rightIcon={
+                      <TouchableOpacity
+                        onPress={() => setShowCurrentPassword(!showCurrentPassword)}>
+                        {showCurrentPassword ? (
+                          <Icons.EyeOff size={16} color="#6B7280" />
+                        ) : (
+                          <Icons.Eye size={16} color="#6B7280" />
+                        )}
+                      </TouchableOpacity>
+                    }
+                    error={!!errors.confirmationCode}
+                    errorMessage={errors?.confirmationCode?.message}
+                  />
+                )}
+              />
+
+              {onResendCode && (
+                <TouchableOpacity onPress={onResendCode} style={styles.resendButton}>
+                  <Text style={styles.resendText}>Didn't receive the code? Resend</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
             <View style={styles.inputGroup}>
               <Controller
                 control={control}
@@ -229,43 +287,6 @@ export const ForcePasswordChange = ({
               )}
             </View>
 
-            <View style={styles.inputGroup}>
-              <Controller
-                control={control}
-                name="confirmPassword"
-                rules={{
-                  required: 'Please confirm your password',
-                  validate: (value?: string) =>
-                    value === newPassword || 'Passwords do not match',
-                }}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <InputField
-                    variant="dark"
-                    containerStyle={{ flex: 1, width: '100%' }}
-                    label="Confirm Password"
-                    placeholder="Re-enter your password"
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    secureTextEntry={!showConfirmPassword}
-                    leftIcon={<Icons.Lock size={16} color="#6B7280" />}
-                    rightIcon={
-                      <TouchableOpacity
-                        onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-                        {showConfirmPassword ? (
-                          <Icons.EyeOff size={16} color="#6B7280" />
-                        ) : (
-                          <Icons.Eye size={16} color="#6B7280" />
-                        )}
-                      </TouchableOpacity>
-                    }
-                    error={!!errors.confirmPassword}
-                    errorMessage={errors?.confirmPassword?.message}
-                  />
-                )}
-              />
-            </View>
-
             <View style={styles.requirementsContainer}>
               <Text style={styles.requirementsTitle}>Password Requirements:</Text>
               <View style={styles.requirement}>
@@ -322,7 +343,7 @@ export const ForcePasswordChange = ({
 
             <PrimaryButton
               onPress={handleSubmit(onSubmit)}
-              title="Set password & continue"
+              title="Change Password"
               loading={isLoading}
               size={ButtonSize.LARGE}
               disabled={isLoading}

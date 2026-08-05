@@ -24,3 +24,10 @@ export const ENV_Vars = {
     solutionId: required('TENANT_SOLUTION', extra.TENANT_SOLUTION),
   },
 };
+
+/**
+ * The customer app's Expo project id. The driver app was forked from it, so
+ * until `eas init` is run here EAS_PROJECT_ID still points at the wrong project
+ * and push tokens minted against it are unroutable.
+ */
+export const CUSTOMER_APP_EAS_PROJECT_ID = 'bf4ea28e-ea3b-4071-9b5c-b6fba74685dc';

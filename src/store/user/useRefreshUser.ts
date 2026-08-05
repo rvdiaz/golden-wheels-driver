@@ -4,22 +4,20 @@ import { useUser } from '~/screens/auth/hooks/useUser';
 import { ENV_Vars } from '../env';
 
 export const useRefreshUser = () => {
-  const { getCustomerFn } = useUser();
+  const { getDriverProfileFn } = useUser();
 
-  const refreshUser = async (pushToken?: string) => {
+  const refreshUser = async () => {
     try {
-      const { data } = await getCustomerFn({
-        variables: {
-          tenant: ENV_Vars.tenant,
-        },
-        fetchPolicy: 'network-only', // always hit the network for freshness
+      const { data } = await getDriverProfileFn({
+        variables: { tenant: ENV_Vars.tenant },
+        fetchPolicy: 'network-only',
       });
 
-      if (data?.getCustomer) {
-        await updateUser(data.getCustomer as IUser); // <-- ✅ updates both AsyncStorage + reactive var
+      if (data?.getDriverProfile) {
+        await updateUser(data.getDriverProfile as IUser);
       }
     } catch (error) {
-      console.error('❌ Error refreshing user:', error);
+      console.error('Error refreshing driver profile:', error);
     }
   };
 

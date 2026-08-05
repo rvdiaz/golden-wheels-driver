@@ -1,56 +1,38 @@
 import { useEffect } from 'react';
 import { useApolloClient } from '@apollo/client';
 import * as Notifications from 'expo-notifications';
-import { getCustomerBookingQuery } from '../graphql/queries';
+import { getDriverBookingsQuery } from '../graphql/queries';
 import { Booking } from '../interfaces';
 import { ENV_Vars } from '~/store/env';
 
-// ─── Notification payload shape (sent from your backend) ─────────────────────
-//
-// When your server calls sendPushNotification(), include a `data` field:
-//
-//   sendPushNotification(token, { title: '...', body: '...' }, {
-//     type: 'BOOKING_STATUS_UPDATE',
-//     bookingId: 'abc123',
-//     driverStatus: 'en_route',     // optional
-//     bookingStatus: 'confirmed',   // optional
-//   })
-//
-// Expo push API supports a top-level `data` object alongside title/body.
-
-interface BookingNotificationData {
-  type: any;
-  booking: Booking;
-  newStatus?: string;
+interface DriverNotificationData {
+  type: string;
+  booking: Booking | string; // backend sends stringified JSON
 }
 
-export enum INotifictionTypes {
-  BOOKING_DRIVER_STATUS_UPDATE,
-  DRIVER_ASSIGNED,
-}
-
-// ─── Hook ─────────────────────────────────────────────────────────────────────
+const parseBooking = (raw: Booking | string): Booking | null => {
+  if (typeof raw === 'string') {
+    try {
+      return JSON.parse(raw) as Booking;
+    } catch {
+      return null;
+    }
+  }
+  return raw ?? null;
+};
 
 export const useBookingNotificationListener = () => {
   const client = useApolloClient();
 
   useEffect(() => {
-    // Fires when a notification is received while the app is foregrounded
     const foregroundSub = Notifications.addNotificationReceivedListener((notification: any) => {
-      const data = notification.request.content.data;
-
-      if (data?.booking?.id) {
-        handleNotification(data);
-      }
+      const data: DriverNotificationData = notification.request.content.data;
+      if (data?.booking) handleNotification(data);
     });
 
-    // Fires when the user taps a notification (app was backgrounded/killed)
     const responseSub = Notifications.addNotificationResponseReceivedListener((response: any) => {
-      const data = response.notification.request.content.data;
-
-      if (data?.booking?.id) {
-        handleNotification(data);
-      }
+      const data: DriverNotificationData = response.notification.request.content.data;
+      if (data?.booking) handleNotification(data);
     });
 
     return () => {
@@ -59,31 +41,29 @@ export const useBookingNotificationListener = () => {
     };
   }, []);
 
-  const handleNotification = (data: BookingNotificationData) => {
-    updateBookingInCache(data);
+  const handleNotification = (data: DriverNotificationData) => {
+    const booking = parseBooking(data.booking);
+    if (!booking?.id) return;
+    upsertBookingInCache(booking);
   };
 
-  // Surgically update only the affected booking in the Apollo cache
-  // No network round-trip needed — the notification carries the new state.
-  const updateBookingInCache = (data: BookingNotificationData) => {
-    client.cache.updateQuery<{ getCustomerBooking: Booking[] }>(
+  // Insert the new booking or update an existing one in the driver bookings cache.
+  const upsertBookingInCache = (incoming: Booking) => {
+    client.cache.updateQuery<{ getDriverBookings: Booking[] }>(
       {
-        query: getCustomerBookingQuery,
+        query: getDriverBookingsQuery,
         variables: { tenant: ENV_Vars.tenant },
       },
-      (cached: any) => {
-        if (!cached) return cached;
+      (cached) => {
+        if (!cached) return { getDriverBookings: [incoming] };
 
+        const exists = cached.getDriverBookings.some((b) => b.id === incoming.id);
         return {
-          getCustomerBooking: cached.getCustomerBooking.map((booking: Booking) => {
-            if (booking.id !== data.booking.id) return booking;
-
-            // Merge only the fields the notification actually carries
-            return {
-              ...booking,
-              ...data.booking,
-            };
-          }),
+          getDriverBookings: exists
+            ? cached.getDriverBookings.map((b) =>
+                b.id === incoming.id ? { ...b, ...incoming } : b
+              )
+            : [incoming, ...cached.getDriverBookings],
         };
       }
     );

@@ -1,13 +1,16 @@
 import { gql } from '@apollo/client';
 
-export const getCustomerQuery = gql`
-  query getCustomer($tenant: TenantData!, $token: String, $appInfo: AppInfoInput) {
-    getCustomer(tenant: $tenant, token: $token, appInfo: $appInfo) {
+export const getDriverProfileQuery = gql`
+  query getDriverProfile($tenant: TenantData!) {
+    getDriverProfile(tenant: $tenant) {
       id
       name
       email
       phone
+      licenseNumber
+      available
       preferenceLanguage
+      pushToken
     }
   }
 `;

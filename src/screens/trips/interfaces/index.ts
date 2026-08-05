@@ -12,6 +12,18 @@ export type BookingDriverStatus = 'assigned' | 'en_route' | 'arrived' | 'in_prog
 
 export type TabKey = 'upcoming' | 'past' | 'cancelled' | 'draft';
 
+export type AssignmentMode = 'manual' | 'open_pool';
+export type PoolState = 'open' | 'claimed';
+
+/**
+ * The driver's share of a trip. The only money field the backend returns to a
+ * driver — totalPrice and the operator's commission are stripped server-side.
+ */
+export interface DriverEarnings {
+  amount: number;
+  currencyCode: string;
+}
+
 export interface CarType {
   id: string;
   name: string;
@@ -131,6 +143,13 @@ export interface Booking {
     referenceId: string;
     chargeId: string;
   };
+
+  assignmentMode?: AssignmentMode;
+  poolState?: PoolState;
+  offeredAt?: string;
+  claimedAt?: string;
+  /** What this trip pays the driver. Absent if no commission is configured. */
+  driverEarnings?: DriverEarnings;
 }
 
 export interface IExtraService {

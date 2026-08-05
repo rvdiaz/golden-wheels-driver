@@ -1,14 +1,11 @@
 import React, { ReactNode } from 'react';
 import { ConfirmResetPassword } from '~/codidge_components/auth/forms/confirm_reset_password';
 import { useAuthContext } from '~/codidge_components/auth/context';
-import { useReactiveVar } from '@apollo/client';
 import { updateUser } from '~/store/user';
-import { pushTokenVar } from '~/store/user/pushToken';
 import { signOut } from 'aws-amplify/auth/cognito';
 import { IAuthModuleKeys } from '~/codidge_components/auth/interfaces';
-import { SignUpForm } from '~/codidge_components/auth/forms/sign_up';
 import { ResetPassword } from '~/codidge_components/auth/forms/reset_password';
-import { VerifyEmail } from '~/codidge_components/auth/forms/verify_email';
+import { ForcePasswordChange } from '~/codidge_components/auth/forms/force_password_change';
 import { SignInForm } from '~/codidge_components/auth/forms/sign_in';
 import { AuthFormWrapper } from './authLayout';
 import { StyleSheet } from 'react-native';
@@ -16,122 +13,53 @@ import Text from '~/codidge_components/UI/text';
 import { ENV_Vars } from '~/store/env';
 import { useUser } from './hooks/useUser';
 import { updateAuthenticateStateUser } from '~/store/user/authSessionState';
-import { apiKeyClient } from '~/store/config/apolloClient';
 
 export const AuthWrapper = () => {
-  const { currentView, setCurrentView } = useAuthContext();
-
-  const { getCustomerFn, updateCustomerFn, addCustomerFn } = useUser();
-
-  const pushToken = useReactiveVar(pushTokenVar);
+  const { currentView, tempData } = useAuthContext();
+  const { getDriverProfileFn } = useUser();
 
   const handleLoginSuccess = async () => {
     try {
-      const user = await getCustomerFn({
-        variables: {
-          tenant: ENV_Vars.tenant,
-        },
+      const result = await getDriverProfileFn({
+        variables: { tenant: ENV_Vars.tenant },
       });
 
-      const userData = user.data?.getCustomer;
+      const driverData = result.data?.getDriverProfile;
 
-      if (!userData) {
-        console.error(user.error);
-        throw Error('Error getting user');
+      if (!driverData) {
+        console.error('Driver profile not found — account may not be set up yet.');
+        await signOut();
+        return;
       }
 
-      updateUser(userData);
+      updateUser(driverData);
       updateAuthenticateStateUser(false);
     } catch (error) {
-      console.log('::::error getting user', error);
+      console.log('Error fetching driver profile:', error);
       await signOut();
     }
   };
 
-  const handleRegisterSuccess = async (userId: string, formData: any) => {
-    try {
-      if (!pushToken) {
-        console.log('::::not token creation');
-        //Alert.alert('Not token');
-        //return;
-      }
-      const userData = await addCustomerFn({
-        variables: {
-          tenant: ENV_Vars.tenant,
-          customer: {
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone,
-            notificationToken: pushToken,
-          },
-          customerID: userId,
-        },
-        client: apiKeyClient,
-      });
-
-      if (!userData.data?.addCustomer) {
-        throw Error('Error getting user');
-      }
-    } catch (error) {
-      await signOut();
-      console.log(':::error', error);
-    }
-  };
-
-  const handleVerificationSuccess = async () => {
-    try {
-      const userData = await updateCustomerFn({
-        variables: {
-          tenant: ENV_Vars.tenant,
-          customer: {
-            emailVerified: true,
-          },
-        },
-      });
-
-      const userRes = userData.data?.updateCustomer;
-
-      if (!userRes) {
-        throw Error('Error getting user');
-      }
-
-      updateUser(userRes);
-      updateAuthenticateStateUser(false);
-      setCurrentView(IAuthModuleKeys.signIn);
-    } catch (error) {
-      await signOut();
-      console.log(':::error', error);
-    }
-  };
-
-  const getHeader = (title: string): ReactNode => {
-    return <Text style={[styles.mainTitle]}>{title}</Text>;
-  };
+  const getHeader = (title: string): ReactNode => (
+    <Text style={styles.mainTitle}>{title}</Text>
+  );
 
   switch (currentView) {
-    case IAuthModuleKeys.signIn:
-      return (
-        <AuthFormWrapper header={getHeader('Login')}>
-          <SignInForm
-            onSignUp={async () => {
-              setCurrentView(IAuthModuleKeys.signUp);
-            }}
-            strictView={false}
-            onLoginSuccess={handleLoginSuccess}
-          />
-        </AuthFormWrapper>
-      );
-
+    // Invited driver setting their password for the first time. Distinct from
+    // resetPassword below, which is the emailed-code forgot-password flow.
     case IAuthModuleKeys.forcePasswordChange:
       return (
-        <AuthFormWrapper>
-          <ResetPassword />
+        <AuthFormWrapper header={getHeader('Set Your Password')}>
+          <ForcePasswordChange
+            username={tempData?.email ?? ''}
+            onSuccess={handleLoginSuccess}
+          />
         </AuthFormWrapper>
       );
 
     case IAuthModuleKeys.resetPassword:
       return (
-        <AuthFormWrapper header={getHeader('Reset password')}>
+        <AuthFormWrapper header={getHeader('Reset Password')}>
           <ResetPassword />
         </AuthFormWrapper>
       );
@@ -143,22 +71,14 @@ export const AuthWrapper = () => {
         </AuthFormWrapper>
       );
 
-    case IAuthModuleKeys.verifyEmail:
-      return (
-        <AuthFormWrapper>
-          <VerifyEmail onVerificationSuccess={handleVerificationSuccess} />
-        </AuthFormWrapper>
-      );
-    case IAuthModuleKeys.signUp:
-      return (
-        <AuthFormWrapper header={getHeader('Register')}>
-          <SignUpForm onSignUpSuccess={handleRegisterSuccess} />
-        </AuthFormWrapper>
-      );
     default:
       return (
-        <AuthFormWrapper>
-          <SignUpForm onSignUpSuccess={handleRegisterSuccess} />
+        <AuthFormWrapper header={getHeader('Driver Login')}>
+          <SignInForm
+            onSignUp={() => {}}
+            strictView
+            onLoginSuccess={handleLoginSuccess}
+          />
         </AuthFormWrapper>
       );
   }
@@ -168,7 +88,7 @@ const styles = StyleSheet.create({
   mainTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#111827',
     textAlign: 'center',
     marginVertical: 4,
     letterSpacing: -0.5,

@@ -4,6 +4,10 @@ import { BadgeType } from '~/codidge_components/UI/badge';
 import { Booking, TabKey } from '../interfaces';
 import { formatMiamiTime } from '~/helpers';
 
+// Moved to ~/helpers so every screen can reach it. Re-exported because the
+// trips screen and its cards already import it from here.
+export { formatCurrency } from '~/helpers';
+
 // ─── Tab config ───────────────────────────────────────────────────────────────
 
 export const TABS: { key: TabKey; label: string }[] = [
@@ -29,9 +33,6 @@ export const getInitials = (name: string): string =>
     .join('')
     .toUpperCase()
     .slice(0, 2);
-
-export const formatCurrency = (amount: number, code: string): string =>
-  new Intl.NumberFormat('en-US', { style: 'currency', currency: code }).format(amount);
 
 // ─── Filter ───────────────────────────────────────────────────────────────────
 

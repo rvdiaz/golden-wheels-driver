@@ -35,6 +35,7 @@ import {
 } from '~/screens/trips/graphql/queries';
 import { Booking } from '~/screens/trips/interfaces';
 import { formatDateTime } from '~/screens/trips/helpers';
+import { formatCurrency } from '~/helpers';
 import { TripDetailModal } from '~/screens/trips/components/tripDetailModal';
 import { claimTripMutation } from '~/screens/trips/graphql/mutation';
 import {
@@ -321,8 +322,7 @@ const TripRow = ({
         <View style={styles.tripRowEarnings}>
           <Text style={styles.tripRowEarningsLabel}>{t('trip.youEarn')}</Text>
           <Text style={styles.tripRowEarningsValue}>
-            {earnings.currencyCode === 'USD' ? '$' : ''}
-            {earnings.amount.toFixed(2)}
+            {formatCurrency(earnings.amount, earnings.currencyCode)}
           </Text>
         </View>
       ) : (

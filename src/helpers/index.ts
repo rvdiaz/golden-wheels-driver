@@ -68,3 +68,13 @@ export function formatMiamiTime(date: Date, mode: 'date' | 'time' | 'datetime'):
     day: 'numeric',
   });
 }
+
+/**
+ * Money, formatted the one way the app formats money.
+ *
+ * Lived in screens/trips/helpers, which meant the dashboard hand-rolled its own
+ * `'$' + toFixed(2)` rather than import across screen folders — and that version
+ * silently dropped the symbol for any currency but USD.
+ */
+export const formatCurrency = (amount: number, code: string): string =>
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: code || 'USD' }).format(amount);

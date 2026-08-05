@@ -9,6 +9,8 @@ export const en = {
   // ── Tabs ──
   'tab.dashboard': 'Dashboard',
   'tab.trips': 'Trips',
+  // Kept short — five tabs share the bar and the label must not wrap.
+  'tab.earnings': 'Earnings',
   'tab.alerts': 'Alerts',
   'tab.account': 'Account',
 
@@ -141,6 +143,24 @@ export const en = {
   'account.phone': 'Phone',
   'account.licence': 'Licence number',
   'account.language': 'Language',
+
+  // ── Earnings ──
+  'earnings.title': 'Earnings',
+  'earnings.subtitle': 'What you have earned and been paid',
+  'earnings.balanceLabel': 'Balance owed to you',
+  'earnings.lastActivity': 'Last activity {{date}}',
+  'earnings.totalEarned': 'Total earned',
+  'earnings.totalPaid': 'Total paid',
+  'earnings.historyTitle': 'Activity',
+  'earnings.empty': 'No earnings yet.\nCompleted trips will show up here.',
+  'earnings.typeEarning': 'Trip earnings',
+  'earnings.typePayment': 'Payment received',
+  'earnings.paidVia': 'via {{method}}',
+  'earnings.methodCash': 'cash',
+  'earnings.methodZelle': 'Zelle',
+  'earnings.methodBankTransfer': 'bank transfer',
+  'earnings.methodCheck': 'check',
+  'earnings.methodOther': 'other',
 } as const;
 
 export type TranslationKey = keyof typeof en;
@@ -148,6 +168,7 @@ export type TranslationKey = keyof typeof en;
 export const es: Record<TranslationKey, string> = {
   'tab.dashboard': 'Inicio',
   'tab.trips': 'Viajes',
+  'tab.earnings': 'Ganancias',
   'tab.alerts': 'Alertas',
   'tab.account': 'Cuenta',
 
@@ -268,6 +289,24 @@ export const es: Record<TranslationKey, string> = {
   'account.phone': 'Teléfono',
   'account.licence': 'Número de licencia',
   'account.language': 'Idioma',
+
+  // ── Ganancias ──
+  'earnings.title': 'Ganancias',
+  'earnings.subtitle': 'Lo que has ganado y lo que te han pagado',
+  'earnings.balanceLabel': 'Saldo a tu favor',
+  'earnings.lastActivity': 'Última actividad {{date}}',
+  'earnings.totalEarned': 'Total ganado',
+  'earnings.totalPaid': 'Total pagado',
+  'earnings.historyTitle': 'Actividad',
+  'earnings.empty': 'Aún no hay ganancias.\nLos viajes completados aparecerán aquí.',
+  'earnings.typeEarning': 'Ganancia del viaje',
+  'earnings.typePayment': 'Pago recibido',
+  'earnings.paidVia': 'por {{method}}',
+  'earnings.methodCash': 'efectivo',
+  'earnings.methodZelle': 'Zelle',
+  'earnings.methodBankTransfer': 'transferencia bancaria',
+  'earnings.methodCheck': 'cheque',
+  'earnings.methodOther': 'otro',
 };
 
 export const translations = { en, es };

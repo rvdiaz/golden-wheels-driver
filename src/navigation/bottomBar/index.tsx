@@ -1,15 +1,19 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet, Platform, Dimensions } from 'react-native';
-import { MapPin, Bell, User, LucideIcon, Home } from 'lucide-react-native';
+import { MapPin, Bell, User, LucideIcon, Home, Wallet } from 'lucide-react-native';
 import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
 import { surfaces } from '~/theme/surfaces';
 import { TKey, useTranslation } from '~/i18n';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+// Declared in the store, so the bar, the navigator and activeTabVar cannot
+// disagree about what tabs exist.
+import type { TabName } from '~/store/navigationTabs';
+
+// Re-exported for the modules that already import TabName from here.
+export type { TabName };
 
 const { width } = Dimensions.get('window');
-
-export type TabName = 'Home' | 'Trips' | 'Notifications' | 'Account';
 
 interface ITAB {
   name: TabName;
@@ -17,9 +21,12 @@ interface ITAB {
   labelKey: TKey;
 }
 
+// Earnings sits next to Trips because that is what it is a summary of, and
+// Account stays rightmost where users reach for it.
 const TABS: ITAB[] = [
   { name: 'Home', icon: Home, labelKey: 'tab.dashboard' },
   { name: 'Trips', icon: MapPin, labelKey: 'tab.trips' },
+  { name: 'Earnings', icon: Wallet, labelKey: 'tab.earnings' },
   { name: 'Notifications', icon: Bell, labelKey: 'tab.alerts' },
   { name: 'Account', icon: User, labelKey: 'tab.account' },
 ];
@@ -85,7 +92,9 @@ export const CustomTabBar = ({
                 color={isActive ? theme.colors.primaryDark : theme.colors.menuItemInactive}
                 strokeWidth={isActive ? 2.2 : 1.6}
               />
-              <Text style={[styles.label, isActive ? styles.labelActive : styles.labelInactive]}>
+              <Text
+                numberOfLines={1}
+                style={[styles.label, isActive ? styles.labelActive : styles.labelInactive]}>
                 {t(labelKey)}
               </Text>
             </TouchableOpacity>
@@ -121,13 +130,19 @@ const styles = StyleSheet.create({
   },
   activePill: {
     position: 'absolute',
-    width: 58,
+    // Each tab is BAR_WIDTH/5 wide — about 58px on a 360pt screen but only ~52
+    // on a 320pt one, so the pill has to stay under that or it spills into its
+    // neighbours on small devices.
+    width: 48,
     height: 46,
   },
   label: {
     fontSize: 11,
     fontWeight: '600',
     letterSpacing: 0.2,
+    // Five tabs leave little room; a wrapped label would push the row taller
+    // and shift every icon.
+    textAlign: 'center',
   },
   labelActive: {
     color: theme.colors.primaryDark,

@@ -1,5 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 import Text from '~/codidge_components/UI/text';
+import { theme } from '~/theme/theme';
 
 export const ConfirmResetPassword = () => {
   return (
@@ -14,7 +15,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#f2f2f2',
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },

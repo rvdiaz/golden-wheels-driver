@@ -1,6 +1,7 @@
 import { Flag } from 'lucide-react-native';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import Text from '~/codidge_components/UI/text';
+import { theme } from '~/theme/theme';
 
 // Add this component above your PersonalInformation component
 export const InfoBanner = ({ containerStyles }: { containerStyles?: ViewStyle }) => (
@@ -17,7 +18,7 @@ const infoBannerStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     backgroundColor: '#EFF6FF',
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.sm,
     padding: 12,
     marginBottom: 20,
     borderLeftWidth: 3,

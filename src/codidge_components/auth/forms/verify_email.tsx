@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, StyleSheet, Alert, KeyboardAvoidingView, Platform, TextInput } from 'react-native';
+import { View, StyleSheet, Alert, TextInput } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
 import { confirmSignUp, resendSignUpCode, signIn, signOut } from 'aws-amplify/auth/cognito';
@@ -140,9 +140,7 @@ export const VerifyEmail = ({ onVerificationSuccess }: { onVerificationSuccess: 
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.keyboardView}>
+    <View style={styles.keyboardView}>
       <View style={styles.content}>
         <View>
           <View style={styles.helpContainer}>
@@ -212,7 +210,7 @@ export const VerifyEmail = ({ onVerificationSuccess }: { onVerificationSuccess: 
           </View>
         </View>
       </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 
@@ -231,7 +229,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: 80,
     height: 80,
-    borderRadius: 40,
+    borderRadius: theme.borderRadius.full,
     backgroundColor: '#EEF2FF',
     justifyContent: 'center',
     alignItems: 'center',
@@ -263,7 +261,7 @@ const styles = StyleSheet.create({
     height: 56,
     borderWidth: 2,
     borderColor: theme.colors.primary,
-    borderRadius: 12,
+    borderRadius: theme.borderRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     fontSize: 26,

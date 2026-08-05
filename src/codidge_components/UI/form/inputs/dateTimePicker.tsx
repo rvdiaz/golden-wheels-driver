@@ -379,7 +379,7 @@ const sheet = StyleSheet.create({
   iconWrap: {
     width: 40,
     height: 40,
-    borderRadius: 13,
+    borderRadius: theme.borderRadius.md,
     backgroundColor: 'rgba(212,168,83,0.1)',
     borderWidth: 1,
     borderColor: 'rgba(212,168,83,0.2)',
@@ -413,7 +413,7 @@ const sheet = StyleSheet.create({
   pickerWrap: {
     marginHorizontal: 16,
     marginTop: 8,
-    borderRadius: 16,
+    borderRadius: theme.borderRadius.lg,
     overflow: 'hidden',
     backgroundColor: 'rgba(212,168,83,0.04)',
     borderWidth: 1,
@@ -432,7 +432,7 @@ const sheet = StyleSheet.create({
   cancelBtn: {
     paddingVertical: 14,
     paddingHorizontal: 20,
-    borderRadius: 14,
+    borderRadius: theme.borderRadius.lg,
     backgroundColor: 'rgba(255,255,255,0.06)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
@@ -449,7 +449,7 @@ const sheet = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 14,
-    borderRadius: 14,
+    borderRadius: theme.borderRadius.lg,
     gap: 8,
   },
   confirmLabel: {

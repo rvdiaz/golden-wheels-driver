@@ -4,8 +4,8 @@ import {
   StyleSheet,
   FlatList,
   RefreshControl,
+  ScrollView,
   TouchableOpacity,
-  Linking,
 } from 'react-native';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { ScreenHeader } from '~/codidge_components/UI/screenHeader';
@@ -19,12 +19,9 @@ import { Booking } from './interfaces';
 import { formatCurrency, formatDateTime } from './helpers';
 import { LoadingSpinner } from '~/codidge_components/UI/loading/loadingSpinner';
 import { TripDetailModal } from './components/tripDetailModal';
-import {
-  STATUS_LABEL_KEY,
-  callCustomer,
-  messageCustomer,
-} from './hooks/useTripActions';
+import { STATUS_LABEL_KEY, callCustomer, messageCustomer } from './hooks/useTripActions';
 import { typography } from '~/theme/typography';
+import { surfaces } from '~/theme/surfaces';
 import { TKey, useTranslation } from '~/i18n';
 import {
   MapPin,
@@ -36,6 +33,7 @@ import {
   Phone,
   MessageSquare,
 } from 'lucide-react-native';
+import { TAB_BAR_CLEARANCE } from '~/navigation/bottomBar';
 
 type DriverTabKey = 'upcoming' | 'past' | 'cancelled';
 
@@ -82,31 +80,31 @@ const TabBar = ({
   const { t } = useTranslation();
 
   return (
-    <View style={tabStyles.wrapper}>
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={tabStyles.scroller}
+      contentContainerStyle={tabStyles.wrapper}>
       {TABS.map((tab) => (
         <TouchableOpacity
           key={tab.key}
           onPress={() => onChange(tab.key)}
           style={[tabStyles.tab, active === tab.key && tabStyles.tabActive]}>
           <Text
+            numberOfLines={1}
             style={[tabStyles.label, active === tab.key && tabStyles.labelActive]}>
             {t(tab.labelKey)}
           </Text>
           {counts[tab.key] > 0 && (
-            <View
-              style={[tabStyles.badge, active === tab.key && tabStyles.badgeActive]}>
-              <Text
-                style={[
-                  tabStyles.badgeText,
-                  active === tab.key && tabStyles.badgeTextActive,
-                ]}>
+            <View style={[tabStyles.badge, active === tab.key && tabStyles.badgeActive]}>
+              <Text style={[tabStyles.badgeText, active === tab.key && tabStyles.badgeTextActive]}>
                 {counts[tab.key]}
               </Text>
             </View>
           )}
         </TouchableOpacity>
       ))}
-    </View>
+    </ScrollView>
   );
 };
 
@@ -242,10 +240,7 @@ const DriverTripCard = ({
               {isCompleted ? t('trip.youEarned') : t('trip.youEarn')}
             </Text>
             <Text style={cardStyles.price}>
-              {formatCurrency(
-                booking.driverEarnings.amount,
-                booking.driverEarnings.currencyCode
-              )}
+              {formatCurrency(booking.driverEarnings.amount, booking.driverEarnings.currencyCode)}
             </Text>
           </View>
         )}
@@ -317,7 +312,11 @@ export const TripsScreen = () => {
             <View style={styles.empty}>
               <CircleDot size={28} color={theme.colors.borderNeutralColor} />
               <Text style={styles.emptyText}>
-                {t('trips.empty', { tab: t(`trips.${activeTab === 'past' ? 'completed' : activeTab}` as TKey).toLowerCase() })}
+                {t('trips.empty', {
+                  tab: t(
+                    `trips.${activeTab === 'past' ? 'completed' : activeTab}` as TKey
+                  ).toLowerCase(),
+                })}
               </Text>
             </View>
           }
@@ -350,7 +349,7 @@ const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   list: {
     paddingHorizontal: theme.spacing.lg,
-    paddingBottom: 100,
+    paddingBottom: TAB_BAR_CLEARANCE,
     paddingTop: theme.spacing.md,
   },
   empty: {
@@ -363,51 +362,81 @@ const styles = StyleSheet.create({
   emptyText: { fontSize: 16, color: theme.colors.textColor },
 });
 
+/**
+ * A contained segmented control, matching the dashboard's.
+ *
+ * The previous version was loose pills tinted 10% gold on a grey chip — against
+ * the gold body gradient they read as plain text rather than a control, and the
+ * active label used the brand gold, which is only 2.2:1 on white. A solid track
+ * with a raised white pill makes the selection unmistakable.
+ */
+/**
+ * Individual chips rather than one segmented track.
+ *
+ * The track version read as a single grey block with three labels in it — there
+ * was nothing separating an inactive tab from its neighbour. Each chip now
+ * carries its own surface and border, so they're distinct whether selected or
+ * not.
+ *
+ * The scroller deliberately bleeds past both screen edges (no horizontal
+ * margin; the inset lives on the content instead). When the chips overflow, one
+ * is clipped at the edge, which is what tells the driver the row scrolls.
+ */
 const tabStyles = StyleSheet.create({
+  scroller: {
+    flexGrow: 0,
+    marginBottom: theme.spacing.md,
+  },
   wrapper: {
     flexDirection: 'row',
+    gap: theme.spacing.sm,
     paddingHorizontal: theme.spacing.lg,
-    gap: 6,
-    marginBottom: 4,
   },
   tab: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
+    gap: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
     borderRadius: theme.borderRadius.full,
-    backgroundColor: theme.colors.secondary,
+    borderWidth: 1,
+    borderColor: theme.colors.cardBorder,
+    backgroundColor: theme.colors.cardBackground,
   },
-  tabActive: { backgroundColor: theme.colors.primaryAlpha[10] },
-  label: { fontSize: 14, color: theme.colors.textColor, fontWeight: '500' },
-  labelActive: { color: theme.colors.primary, fontWeight: '600' },
+  tabActive: {
+    backgroundColor: theme.colors.primaryText,
+    borderColor: theme.colors.primaryText,
+  },
+  label: {
+    fontSize: typography.xs,
+    color: theme.colors.secondaryText,
+    fontWeight: '600',
+  },
+  labelActive: { color: '#FFFFFF', fontWeight: '700' },
   badge: {
+    flexShrink: 0,
     minWidth: 18,
-    height: 18,
-    borderRadius: 9,
-    backgroundColor: theme.colors.borderNeutralColor,
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    borderRadius: theme.borderRadius.full,
+    backgroundColor: theme.colors.baseGray,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 4,
   },
-  badgeActive: { backgroundColor: theme.colors.primaryAlpha[20] },
-  badgeText: { fontSize: 11, color: theme.colors.textColor, fontWeight: '700' },
-  badgeTextActive: { color: theme.colors.primary },
+  badgeActive: { backgroundColor: theme.colors.primary },
+  badgeText: {
+    fontSize: typography.xxs - 1,
+    color: theme.colors.textColor,
+    fontWeight: '700',
+  },
+  // Ink on gold — white is 2.2:1, and this is the smallest type in the app.
+  badgeTextActive: { color: theme.colors.primaryText },
 });
 
 const cardStyles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
-    borderRadius: theme.borderRadius.lg,
+    ...surfaces.card,
     padding: theme.spacing.lg,
-    borderWidth: 1,
-    borderColor: theme.colors.borderNeutralColor,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 2,
   },
   cardCancelled: { borderColor: '#FCA5A5', backgroundColor: '#FFF5F5' },
   header: {
@@ -450,7 +479,7 @@ const cardStyles = StyleSheet.create({
   customerAvatar: {
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: theme.borderRadius.lg,
     backgroundColor: theme.colors.primaryAlpha[10],
     alignItems: 'center',
     justifyContent: 'center',
@@ -467,7 +496,7 @@ const cardStyles = StyleSheet.create({
   iconBtn: {
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: theme.borderRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,

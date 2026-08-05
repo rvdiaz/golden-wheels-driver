@@ -10,6 +10,7 @@ import { useUserNotifications } from './hooks/useUserNotifications';
 import { NotificationCard } from './widgets/notificationCard';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
 import { translate, useTranslation } from '~/i18n';
+import { TAB_BAR_CLEARANCE } from '~/navigation/bottomBar';
 
 // ─── Color tokens ─────────────────────────────────────────────────────────────
 
@@ -103,7 +104,7 @@ const styles = StyleSheet.create({
   // ── List ──
   listContent: {
     paddingHorizontal: theme.spacing.lg,
-    paddingBottom: 32,
+    paddingBottom: TAB_BAR_CLEARANCE,
   },
 
   // ── Empty ──
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
   emptyIconWrap: {
     width: 56,
     height: 56,
-    borderRadius: 16,
+    borderRadius: theme.borderRadius.lg,
     backgroundColor: GOLD_10,
     borderWidth: 0.5,
     borderColor: GOLD_18,

@@ -5,8 +5,6 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
@@ -82,9 +80,7 @@ export const MfaAuth = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.keyboardView}>
+    <View style={styles.keyboardView}>
       <View style={styles.content}>
         <View style={styles.header}>
           <View style={styles.logoContainer}>
@@ -164,7 +160,7 @@ export const MfaAuth = () => {
           <Text style={styles.backButtonText}>Back to Sign In</Text>
         </TouchableOpacity>
       </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 
@@ -184,7 +180,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: 80,
     height: 80,
-    borderRadius: 40,
+    borderRadius: theme.borderRadius.full,
     backgroundColor: '#EEF2FF',
     justifyContent: 'center',
     alignItems: 'center',
@@ -219,7 +215,7 @@ const styles = StyleSheet.create({
     height: 56,
     borderWidth: 2,
     borderColor: '#D1D5DB',
-    borderRadius: 12,
+    borderRadius: theme.borderRadius.md,
     fontSize: 26,
     fontWeight: '600',
     color: '#1F2937',
@@ -241,7 +237,7 @@ const styles = StyleSheet.create({
   verifyButton: {
     backgroundColor: '#2563EB',
     paddingVertical: 16,
-    borderRadius: 12,
+    borderRadius: theme.borderRadius.md,
     alignItems: 'center',
     marginBottom: 24,
   },

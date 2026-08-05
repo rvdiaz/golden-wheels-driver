@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Slider from '@react-native-community/slider';
+import { theme } from '~/theme/theme';
 
 interface CustomSliderProps {
   label: string;
@@ -97,7 +98,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F3F4F6',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.sm,
     minWidth: 80,
     alignItems: 'center',
   },

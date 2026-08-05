@@ -7,6 +7,7 @@ import { getUserNotificationsQuery } from '../graphql/queries';
 import { userData } from '~/store/user';
 import Text from '~/codidge_components/UI/text';
 import { getUserNotificationsVariables } from '../helpers';
+import { theme } from '~/theme/theme';
 
 interface NotificationButtonProps {
   navigation: any;
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
     right: -8,
     minWidth: 18,
     height: 18,
-    borderRadius: 9,
+    borderRadius: theme.borderRadius.sm,
     backgroundColor: '#EF4444',
     justifyContent: 'center',
     alignItems: 'center',

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
 import { IAuthModuleKeys, ResetPasswordFormData } from '../interfaces';
@@ -112,9 +112,7 @@ export const ResetPassword = () => {
   }
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.keyboardView}>
+    <View style={styles.keyboardView}>
       <View style={styles.content}>
         <View style={styles.header}>
           <View>
@@ -180,7 +178,7 @@ export const ResetPassword = () => {
           </View>
         </View>
       </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 

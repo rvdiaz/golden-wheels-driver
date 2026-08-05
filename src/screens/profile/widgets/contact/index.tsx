@@ -8,6 +8,7 @@ import { BodyWrapper } from '~/codidge_components/UI/bodyWrapper';
 import Text from '~/codidge_components/UI/text';
 import { ENV_Vars } from '~/store/env';
 import { theme } from '~/theme/theme';
+import { TAB_BAR_CLEARANCE } from '~/navigation/bottomBar';
 import { getTenantConfigQuery } from './graphql/query';
 import { ProcessForm } from '~/codidge_components/formProcessor';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
@@ -112,7 +113,7 @@ export const ContactSubmissionsScreen = ({ onBack }: { onBack: () => void }) => 
                 <LoadingSpinner />
               </View>
             ) : form ? (
-              <ProcessForm form={form} variant="dark" />
+              <ProcessForm form={form} variant="light" />
             ) : (
               <View style={s.loadingWrap}>
                 <Text style={s.unavailableText}>Contact form unavailable.</Text>
@@ -131,7 +132,7 @@ export const ContactSubmissionsScreen = ({ onBack }: { onBack: () => void }) => 
 
 const s = StyleSheet.create({
   scroll: { flex: 1 },
-  content: { padding: 20, gap: 20 },
+  content: { padding: 20, paddingBottom: TAB_BAR_CLEARANCE, gap: 20 },
 
   introWrap: { gap: 6 },
   introTitle: {
@@ -150,7 +151,7 @@ const s = StyleSheet.create({
     backgroundColor: theme.colors.cardBackground,
     borderWidth: 1,
     borderColor: theme.colors.cardBorder,
-    borderRadius: 16,
+    borderRadius: theme.borderRadius.lg,
     overflow: 'hidden',
   },
 
@@ -158,7 +159,7 @@ const s = StyleSheet.create({
     backgroundColor: theme.colors.cardBackground,
     borderWidth: 1,
     borderColor: 'rgba(212,168,83,0.15)',
-    borderRadius: 16,
+    borderRadius: theme.borderRadius.lg,
     padding: 20,
     gap: 20,
   },
@@ -170,7 +171,7 @@ const s = StyleSheet.create({
   formIconWrap: {
     width: 36,
     height: 36,
-    borderRadius: 10,
+    borderRadius: theme.borderRadius.sm,
     backgroundColor: 'rgba(212,168,83,0.1)',
     borderWidth: 1,
     borderColor: 'rgba(212,168,83,0.2)',
@@ -195,7 +196,7 @@ const s = StyleSheet.create({
   iconBtn: {
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: theme.borderRadius.full,
     backgroundColor: theme.colors.baseGray,
     borderWidth: 1,
     borderColor: theme.colors.cardBorder,
@@ -216,7 +217,7 @@ const info = StyleSheet.create({
   iconWrap: {
     width: 34,
     height: 34,
-    borderRadius: 10,
+    borderRadius: theme.borderRadius.sm,
     backgroundColor: 'rgba(212,168,83,0.1)',
     alignItems: 'center',
     justifyContent: 'center',

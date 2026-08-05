@@ -4,8 +4,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -19,6 +17,7 @@ import TextButton from '~/codidge_components/UI/button/TextButton';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import Text from '~/codidge_components/UI/text';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
+import { theme } from '~/theme/theme';
 
 const schema = yup.object({
   email: yup.string().email('Please enter a valid email').required('Email is required'),
@@ -113,9 +112,7 @@ export const SignInForm = ({
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.keyboardView}>
+    <View style={styles.keyboardView}>
       <View style={styles.formCard}>
         <View style={styles.form}>
           <Controller
@@ -210,7 +207,7 @@ export const SignInForm = ({
           </View>
         )}
       </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 
@@ -226,7 +223,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: 80,
     height: 80,
-    borderRadius: 40,
+    borderRadius: theme.borderRadius.full,
     backgroundColor: '#EEF2FF',
     justifyContent: 'center',
     alignItems: 'center',
@@ -285,7 +282,7 @@ const styles = StyleSheet.create({
   loginButton: {
     backgroundColor: '#2563EB',
     paddingVertical: 16,
-    borderRadius: 12,
+    borderRadius: theme.borderRadius.md,
     alignItems: 'center',
   },
   loginButtonDisabled: {
@@ -313,7 +310,7 @@ const styles = StyleSheet.create({
     marginTop: 32,
     padding: 16,
     backgroundColor: '#F3F4F6',
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.sm,
   },
   testTitle: {
     fontSize: 15,

@@ -4,9 +4,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import * as Icons from 'lucide-react-native';
@@ -157,11 +154,8 @@ export const ForcePasswordChange = ({
   const passwordStrength = getPasswordStrength(newPassword);
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 280 : 0}
-      style={styles.keyboardView}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+    <View style={styles.keyboardView}>
+      <View style={styles.scrollContent}>
         <View style={styles.header}>
           <Icons.ShieldCheck size={20} color="#6B7280" />
           <Text style={styles.subtitle}>
@@ -329,8 +323,8 @@ export const ForcePasswordChange = ({
             />
           </View>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </View>
+    </View>
   );
 };
 
@@ -406,7 +400,7 @@ const styles = StyleSheet.create({
   requirementsContainer: {
     backgroundColor: '#F8FAFC',
     padding: 16,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.sm,
     marginBottom: 24,
   },
   requirementsTitle: {

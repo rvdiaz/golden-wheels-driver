@@ -106,7 +106,7 @@ const dk = StyleSheet.create({
     marginBottom: 8,
   },
   gradient: {
-    borderRadius: 12,
+    borderRadius: theme.borderRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(212,168,83,0.2)',
     padding: 14,

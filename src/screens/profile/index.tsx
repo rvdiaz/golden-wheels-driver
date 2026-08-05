@@ -16,6 +16,7 @@ import { ContactSubmissionsScreen } from './widgets/contact';
 import { PrivacyPolicyScreen } from './widgets/privacyPolicy';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from '~/i18n';
+import { TAB_BAR_CLEARANCE } from '~/navigation/bottomBar';
 
 // ─── Color tokens ─────────────────────────────────────────────────────────────
 
@@ -203,7 +204,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 40,
+    paddingBottom: TAB_BAR_CLEARANCE,
   },
 
   // ── Profile header ──
@@ -216,7 +217,7 @@ const styles = StyleSheet.create({
   avatarRing: {
     width: 76,
     height: 76,
-    borderRadius: 38,
+    borderRadius: theme.borderRadius.full,
     borderWidth: 1,
     borderColor: GOLD_30,
     backgroundColor: GOLD_10,
@@ -227,7 +228,7 @@ const styles = StyleSheet.create({
   avatar: {
     width: 64,
     height: 64,
-    borderRadius: 32,
+    borderRadius: theme.borderRadius.full,
     backgroundColor: 'rgba(218,192,114,0.15)',
     borderWidth: 0.5,
     borderColor: GOLD_18,

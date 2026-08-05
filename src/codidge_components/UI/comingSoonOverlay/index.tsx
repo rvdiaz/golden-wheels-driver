@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import * as Icons from 'lucide-react-native';
 import Text from '../text';
+import { theme } from '~/theme/theme';
 
 interface ComingSoonOverlayProps {
   title?: string;
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 80,
     height: 80,
-    borderRadius: 40,
+    borderRadius: theme.borderRadius.full,
     backgroundColor: 'rgba(37, 99, 235, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',

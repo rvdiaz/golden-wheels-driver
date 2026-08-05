@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet, TextStyle } from 'react-native';
 import Text from '../../text';
+import { theme } from '~/theme/theme';
 
 interface Option {
   label: string;
@@ -66,7 +67,7 @@ const styles = StyleSheet.create({
   button: {
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.sm,
     paddingVertical: 12,
     paddingHorizontal: 12,
   },

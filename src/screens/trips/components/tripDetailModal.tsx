@@ -10,7 +10,6 @@ import {
   View,
 } from 'react-native';
 import {
-  CheckCircle2,
   ChevronRight,
   Flag,
   MapPin,
@@ -29,7 +28,7 @@ import { theme } from '~/theme/theme';
 import { typography } from '~/theme/typography';
 import { surfaces } from '~/theme/surfaces';
 import { Booking } from '../interfaces';
-import { formatCurrency, formatDateTime } from '../helpers';
+import { formatDateTime } from '../helpers';
 import {
   NEXT_ACTION_KEY,
   NEXT_STATUS,
@@ -167,18 +166,14 @@ export const TripDetailModal = ({
             <View style={styles.closeBtn} />
           </View>
 
-          <ScrollView
-            contentContainerStyle={styles.content}
-            showsVerticalScrollIndicator={false}>
+          <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
             {!isClaimMode && <TripProgressCard booking={booking} />}
 
             {/* ── Next stop. Hidden once there is nowhere left to go. ── */}
             {leg && !isCancelled && (
               <View style={styles.card}>
                 <View style={styles.legHeader}>
-                  <Text style={styles.cardTitle}>
-                    {t('trip.nextStop', { stop: leg.label })}
-                  </Text>
+                  <Text style={styles.cardTitle}>{t('trip.nextStop', { stop: leg.label })}</Text>
                   {/* Minimal: the full-width navigate button lives in the bar */}
                   <TouchableOpacity
                     style={styles.mapLink}
@@ -264,9 +259,7 @@ export const TripDetailModal = ({
                   key={label}
                   style={styles.stopRow}
                   activeOpacity={0.7}
-                  onPress={() =>
-                    openNavigation(loc?.formattedAddress ?? loc?.displayName, label)
-                  }>
+                  onPress={() => openNavigation(loc?.formattedAddress ?? loc?.displayName, label)}>
                   <Icon size={16} color={tint} />
                   <View style={styles.stopText}>
                     <Text style={styles.stopLabel}>{label}</Text>
@@ -274,11 +267,10 @@ export const TripDetailModal = ({
                       {loc?.displayName ?? '—'}
                     </Text>
                   </View>
-                  <Navigation2 size={16} color={theme.colors.borderStrong} />
+                  <Navigation2 size={16} color={theme.colors.textMuted} />
                 </TouchableOpacity>
               ))}
             </View>
-
           </ScrollView>
 
           {/* ── Every action, pinned. Nothing here requires scrolling. ── */}
@@ -307,11 +299,11 @@ export const TripDetailModal = ({
                 disabled={claiming}
                 onPress={() => onClaim?.(booking)}>
                 {claiming ? (
-                  <ActivityIndicator color="#FFFFFF" />
+                  <ActivityIndicator color={theme.colors.primaryText} />
                 ) : (
                   <>
-                    <Zap size={19} color="#FFFFFF" />
-                    <Text style={styles.primaryCtaText}>{t('pool.claim')}</Text>
+                    <Zap size={19} color={theme.colors.primaryText} />
+                    <Text style={styles.claimCtaText}>{t('pool.claim')}</Text>
                   </>
                 )}
               </TouchableOpacity>
@@ -325,18 +317,13 @@ export const TripDetailModal = ({
                   <ActivityIndicator color="#FFFFFF" />
                 ) : (
                   <>
-                    <Text style={styles.primaryCtaText}>
-                      {t(NEXT_ACTION_KEY[status]!)}
-                    </Text>
+                    <Text style={styles.primaryCtaText}>{t(NEXT_ACTION_KEY[status]!)}</Text>
                     <ChevronRight size={20} color="#FFFFFF" />
                   </>
                 )}
               </TouchableOpacity>
             ) : (
-              <TouchableOpacity
-                style={styles.secondaryCta}
-                activeOpacity={0.85}
-                onPress={onClose}>
+              <TouchableOpacity style={styles.secondaryCta} activeOpacity={0.85} onPress={onClose}>
                 <Text style={styles.secondaryCtaText}>
                   {t(isDone ? 'action.done' : 'action.close')}
                 </Text>
@@ -370,7 +357,6 @@ const styles = StyleSheet.create({
     paddingBottom: theme.spacing.xl,
     gap: theme.spacing.lg,
   },
-
 
   card: { ...surfaces.card, padding: theme.spacing.lg, gap: theme.spacing.md },
   cardTitle: {
@@ -417,7 +403,7 @@ const styles = StyleSheet.create({
   avatar: {
     width: 38,
     height: 38,
-    borderRadius: 19,
+    borderRadius: theme.borderRadius.full,
     backgroundColor: theme.colors.primaryAlpha[10],
     alignItems: 'center',
     justifyContent: 'center',
@@ -432,7 +418,7 @@ const styles = StyleSheet.create({
   iconBtn: {
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: theme.borderRadius.full,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
@@ -515,6 +501,17 @@ const styles = StyleSheet.create({
   primaryCtaDisabled: { opacity: 0.6 },
   primaryCtaText: {
     color: '#FFFFFF',
+    fontSize: typography.lg,
+    fontWeight: '700',
+    letterSpacing: 0.2,
+  },
+  /**
+   * Ink on gold, not white: white on the brand gold is 2.2:1 and washes out in
+   * daylight. Ink is 8:1 and keeps the button just as loud — gold stays the
+   * one accent fill in the app, reserved for claiming a pooled trip.
+   */
+  claimCtaText: {
+    color: theme.colors.primaryText,
     fontSize: typography.lg,
     fontWeight: '700',
     letterSpacing: 0.2,

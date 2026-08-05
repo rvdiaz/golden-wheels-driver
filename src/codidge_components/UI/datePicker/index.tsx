@@ -9,6 +9,7 @@ import {
   TextStyle,
 } from 'react-native';
 import Text from '../text';
+import { theme } from '~/theme/theme';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -200,14 +201,14 @@ const DatePickerWidget: React.FC<DatePickerWidgetProps> = ({
               isSelectedDate(date) && {
                 borderWidth: 1,
                 borderColor: primaryColor,
-                borderRadius: 32,
+                borderRadius: theme.borderRadius.full,
                 paddingVertical: 2,
               },
               isToday(date) &&
                 !isSelectedDate(date) && {
                   borderColor: primaryColor,
                   borderWidth: 1,
-                  borderRadius: 24,
+                  borderRadius: theme.borderRadius.xxl,
                 },
             ]}
             onPress={() => handleDatePress(date)}>
@@ -386,7 +387,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 65,
     marginHorizontal: 2.5,
-    borderRadius: 12,
+    borderRadius: theme.borderRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'transparent',
@@ -420,7 +421,7 @@ const styles = StyleSheet.create({
   weekDayItem: {
     width: 45,
     height: 70,
-    borderRadius: 12,
+    borderRadius: theme.borderRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'transparent',
@@ -480,7 +481,7 @@ const styles = StyleSheet.create({
   monthDayItem: {
     width: (screenWidth - 32) / 7 - 4,
     height: 40,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'transparent',

@@ -4,7 +4,12 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
 import { typography } from '~/theme/typography';
-import { LANGUAGES, LANGUAGE_SHORT, useTranslation } from '~/i18n';
+import {
+  LANGUAGES,
+  LANGUAGE_FLAG,
+  LANGUAGE_SHORT,
+  useTranslation,
+} from '~/i18n';
 
 /**
  * EN / ES segmented toggle for the header's top-right slot.
@@ -30,6 +35,7 @@ export const LanguageSwitcher = () => {
             accessibilityRole="button"
             accessibilityState={{ selected: active }}
             style={[styles.segment, active && styles.segmentActive]}>
+            <Text style={styles.flag}>{LANGUAGE_FLAG[lng]}</Text>
             <Text style={[styles.label, active && styles.labelActive]}>
               {LANGUAGE_SHORT[lng]}
             </Text>
@@ -50,10 +56,14 @@ const styles = StyleSheet.create({
     padding: 2,
   },
   segment: {
-    paddingHorizontal: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 9,
     paddingVertical: 5,
     borderRadius: theme.borderRadius.full,
   },
+  flag: { fontSize: typography.xxs },
   segmentActive: { backgroundColor: theme.colors.primaryText },
   label: {
     fontSize: typography.xxs,

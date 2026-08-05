@@ -51,7 +51,7 @@ export const TabHeader: React.FC<TabHeaderProps> = ({
               <View
                 style={{
                   padding: 2,
-                  borderRadius: 20,
+                  borderRadius: theme.borderRadius.xl,
                   backgroundColor: theme.colors.primary,
                   height: 20,
                   width: 20,
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
   },
   verticalCard: {
     backgroundColor: '#F8F9FA',
-    borderRadius: 12,
+    borderRadius: theme.borderRadius.md,
     padding: 16,
     borderWidth: 1,
     borderColor: 'transparent',
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#E5E7EB',
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 12,
+    borderRadius: theme.borderRadius.md,
     minWidth: 28,
     alignItems: 'center',
   },
@@ -385,7 +385,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 20,
     backgroundColor: '#F1F5F9',
-    borderRadius: 20,
+    borderRadius: theme.borderRadius.xl,
     gap: 6,
     minWidth: 100,
   },
@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
   scrollableBadge: {
     paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: 10,
+    borderRadius: theme.borderRadius.sm,
     minWidth: 20,
     alignItems: 'center',
   },
@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
   compactTabContainer: {
     flexDirection: 'row',
     backgroundColor: '#F8F9FA',
-    borderRadius: 16,
+    borderRadius: theme.borderRadius.lg,
     padding: 4,
   },
   compactTab: {
@@ -436,7 +436,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 12,
     paddingHorizontal: 8,
-    borderRadius: 12,
+    borderRadius: theme.borderRadius.md,
     gap: 4,
   },
   compactActiveTab: {
@@ -463,7 +463,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.primary,
     paddingHorizontal: 4,
     paddingVertical: 1,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.sm,
     minWidth: 16,
     alignItems: 'center',
   },

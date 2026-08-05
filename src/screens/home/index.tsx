@@ -10,13 +10,14 @@ import {
 } from 'react-native';
 import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import {
-  Car,
+  CalendarClock,
   ChevronRight,
   Clock,
   Flag,
   MapPin,
   Navigation2,
   Phone,
+  RefreshCw,
   Zap,
 } from 'lucide-react-native';
 
@@ -37,13 +38,13 @@ import { formatDateTime } from '~/screens/trips/helpers';
 import { TripDetailModal } from '~/screens/trips/components/tripDetailModal';
 import { claimTripMutation } from '~/screens/trips/graphql/mutation';
 import {
-  NEXT_ACTION_KEY,
   STATUS_LABEL_KEY,
   callCustomer,
   openNavigation,
 } from '~/screens/trips/hooks/useTripActions';
 import { AvailabilityCard } from './components/availabilityCard';
 import { useTranslation } from '~/i18n';
+import { TAB_BAR_CLEARANCE } from '~/navigation/bottomBar';
 
 const GOLD = theme.colors.primary;
 
@@ -60,6 +61,7 @@ export const HomeScreen = () => {
   const [openTrip, setOpenTrip] = useState<Booking | null>(null);
   const [claimTarget, setClaimTarget] = useState<Booking | null>(null);
   const [claimingId, setClaimingId] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const { data, loading, refetch } = useQuery<{ getDriverBookings: Booking[] }>(
     getDriverBookingsQuery,
@@ -84,6 +86,17 @@ export const HomeScreen = () => {
       { query: getDriverBookingsQuery, variables: { tenant: ENV_Vars.tenant } },
     ],
   });
+
+  // Both lists, not just the driver's own trips — a pull on the pool tab has to
+  // actually go and look for new ones.
+  const refreshAll = async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([refetch(), refetchPool()]);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const handleClaim = async (booking: Booking) => {
     setClaimingId(booking.id);
@@ -142,8 +155,8 @@ export const HomeScreen = () => {
         contentContainerStyle={styles.scrollContent}
         refreshControl={
           <RefreshControl
-            refreshing={loading}
-            onRefresh={refetch}
+            refreshing={refreshing}
+            onRefresh={refreshAll}
             tintColor={GOLD}
           />
         }>
@@ -171,7 +184,7 @@ export const HomeScreen = () => {
             </>
           ) : (
             <View style={styles.noActiveCard}>
-              <Car size={34} color={theme.colors.borderStrong} />
+              <CalendarClock size={34} color={theme.colors.textMuted} />
               <Text style={styles.noActiveText}>{t('dashboard.noActive')}</Text>
               <Text style={styles.noActiveSubtext}>
                 {t('dashboard.noActiveHint')}
@@ -189,9 +202,17 @@ export const HomeScreen = () => {
           ))
         ) : (
           <View style={styles.noActiveCard}>
-            <Zap size={30} color={theme.colors.borderStrong} />
+            <Zap size={30} color={theme.colors.textMuted} />
             <Text style={styles.noActiveText}>{t('pool.emptyTitle')}</Text>
             <Text style={styles.noActiveSubtext}>{t('pool.emptyBody')}</Text>
+            <TouchableOpacity
+              style={styles.refreshBtn}
+              activeOpacity={0.8}
+              disabled={refreshing}
+              onPress={refreshAll}>
+              <RefreshCw size={15} color={theme.colors.secondaryText} />
+              <Text style={styles.refreshText}>{t('pool.refresh')}</Text>
+            </TouchableOpacity>
           </View>
         )}
 
@@ -244,7 +265,11 @@ const SegmentedTabs = ({
             style={[styles.segment, active && styles.segmentActive]}
             activeOpacity={0.8}
             onPress={() => onChange(item.key)}>
-            <Text style={[styles.segmentText, active && styles.segmentTextActive]}>
+            <Text
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.8}
+              style={[styles.segmentText, active && styles.segmentTextActive]}>
               {item.label}
             </Text>
             {item.count > 0 && (
@@ -301,7 +326,7 @@ const TripRow = ({
           </Text>
         </View>
       ) : (
-        <ChevronRight size={18} color={theme.colors.borderStrong} />
+        <ChevronRight size={18} color={theme.colors.textMuted} />
       )}
     </TouchableOpacity>
   );
@@ -390,9 +415,16 @@ const ActiveTripCard = ({
 
       <View style={styles.openRow}>
         <Text style={styles.openText}>
-          {NEXT_ACTION_KEY[status]
-            ? t(NEXT_ACTION_KEY[status]!)
-            : t('dashboard.openTrip')}
+          {/*
+            Deliberately NOT the advance label. This button opens the trip; the
+            status is only ever changed from inside the modal, where the driver
+            can see what they're confirming.
+          */}
+          {status === 'completed'
+            ? t('trip.view')
+            : underway
+              ? t('trip.continue')
+              : t('trip.start')}
         </Text>
         <ChevronRight size={20} color="#FFFFFF" />
       </View>
@@ -405,49 +437,72 @@ const styles = StyleSheet.create({
   page: { flex: 1 },
   scrollContent: {
     paddingHorizontal: theme.spacing.lg,
-    paddingBottom: 120,
+    paddingBottom: TAB_BAR_CLEARANCE,
     gap: theme.spacing.lg,
   },
 
 
   loadingBox: { paddingVertical: 48, alignItems: 'center' },
 
+  /**
+   * Chips, not a segmented track — each carries its own surface and border so
+   * inactive tabs stay visually separate from one another.
+   */
   segmentWrap: {
     flexDirection: 'row',
-    gap: 6,
-    backgroundColor: theme.colors.baseGray,
-    borderRadius: theme.borderRadius.md,
-    borderWidth: 1,
-    borderColor: theme.colors.cardBorder,
-    padding: 4,
+    gap: theme.spacing.sm,
   },
+  // Two tabs fit any phone, so they split the width rather than scrolling —
+  // the trips screen has three and keeps its scroller.
   segment: {
     flex: 1,
+    justifyContent: 'center',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     gap: 6,
-    paddingVertical: 9,
-    borderRadius: theme.borderRadius.sm,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: theme.borderRadius.full,
+    borderWidth: 1,
+    borderColor: theme.colors.cardBorder,
+    backgroundColor: theme.colors.cardBackground,
   },
-  segmentActive: { backgroundColor: theme.colors.cardBackground },
+  segmentActive: {
+    backgroundColor: theme.colors.primaryText,
+    borderColor: theme.colors.primaryText,
+  },
   segmentText: {
-    fontSize: typography.sm,
+    flexShrink: 1,
+    fontSize: typography.xs,
     fontWeight: '600',
-    color: theme.colors.textColor,
+    color: theme.colors.secondaryText,
   },
-  segmentTextActive: { color: theme.colors.primaryText, fontWeight: '700' },
+  segmentTextActive: { color: '#FFFFFF', fontWeight: '700' },
   badge: {
-    minWidth: 20,
-    paddingHorizontal: 6,
+    flexShrink: 0,
+    minWidth: 18,
+    paddingHorizontal: 5,
     paddingVertical: 1,
     borderRadius: theme.borderRadius.full,
-    backgroundColor: theme.colors.borderStrong,
+    backgroundColor: theme.colors.baseGray,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   badgeActive: { backgroundColor: theme.colors.primary },
-  badgeText: { fontSize: typography.xxs, fontWeight: '700', color: '#FFFFFF' },
-  badgeTextActive: { color: '#FFFFFF' },
+  badgeText: {
+    fontSize: typography.xxs - 1,
+    fontWeight: '700',
+    color: theme.colors.textColor,
+  },
+  // Ink on gold — white is 2.2:1, and this is the smallest type in the app.
+  badgeTextActive: { color: theme.colors.primaryText },
+
+  /**
+   * Horizontal scroller rather than a fixed split: "Viajes disponibles" plus a
+   * count badge doesn't fit half a narrow screen. `flexGrow` on the content
+   * keeps the tabs filling the width whenever they do fit, so it only scrolls
+   * when it has to.
+   */
 
   tripRow: {
     ...surfaces.card,
@@ -460,7 +515,7 @@ const styles = StyleSheet.create({
   tripRowIcon: {
     width: 34,
     height: 34,
-    borderRadius: 17,
+    borderRadius: theme.borderRadius.lg,
     backgroundColor: theme.colors.primaryAlpha[10],
     alignItems: 'center',
     justifyContent: 'center',
@@ -580,6 +635,24 @@ const styles = StyleSheet.create({
     fontSize: typography.sm,
     color: theme.colors.textColor,
     textAlign: 'center',
+  },
+  // Pull-to-refresh is invisible on an empty list, so the empty pool says so.
+  refreshBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    marginTop: theme.spacing.md,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: theme.borderRadius.full,
+    borderWidth: 1,
+    borderColor: theme.colors.cardBorder,
+    backgroundColor: theme.colors.baseGray,
+  },
+  refreshText: {
+    fontSize: typography.sm,
+    fontWeight: '600',
+    color: theme.colors.secondaryText,
   },
 
 });

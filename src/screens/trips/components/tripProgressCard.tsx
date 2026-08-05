@@ -173,17 +173,6 @@ export const TripProgressCard = ({ booking }: { booking: Booking }) => {
           ) : null}
         </>
       )}
-
-      {booking.driverEarnings?.amount != null && !isCancelled && (
-        <View style={styles.earningsRow}>
-          <Text style={styles.earningsLabel}>
-            {t(isDone ? 'trip.youEarned' : 'trip.youEarn')}
-          </Text>
-          <Text style={styles.earningsValue}>
-            {formatCurrency(booking.driverEarnings.amount, booking.driverEarnings.currencyCode)}
-          </Text>
-        </View>
-      )}
     </View>
   );
 };
@@ -247,7 +236,7 @@ const styles = StyleSheet.create({
     borderRadius: DOT / 2,
     backgroundColor: theme.colors.cardBackground,
     borderWidth: 2,
-    borderColor: theme.colors.cardBorder,
+    borderColor: theme.colors.borderStrong,
   },
   dotDone: {
     backgroundColor: theme.colors.primary,
@@ -260,7 +249,7 @@ const styles = StyleSheet.create({
   },
   stepLabel: {
     fontSize: typography.xxs,
-    color: theme.colors.borderStrong,
+    color: theme.colors.textMuted,
     fontWeight: '600',
   },
   stepLabelDone: { color: theme.colors.textColor },

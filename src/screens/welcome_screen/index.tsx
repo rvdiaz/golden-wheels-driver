@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   dividerDot: {
     width: 5,
     height: 5,
-    borderRadius: 99,
+    borderRadius: theme.borderRadius.full,
     backgroundColor: theme.colors.primary,
   },
   headline: {

@@ -142,7 +142,7 @@ export default function HtmlViewer({
 const styles = StyleSheet.create({
   sectionCard: {
     backgroundColor: 'white',
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.sm,
   },
   sectionTitle: {
     fontWeight: 'bold',

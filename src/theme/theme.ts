@@ -51,6 +51,13 @@ export const theme = {
      * background. cardBorder alone is too faint on white-on-white.
      */
     borderStrong: '#CBD2DB',
+    /**
+     * Foreground for inactive/pending state — steps not reached yet, empty-state
+     * icons, trailing chevrons. borderStrong was being used for this and sits at
+     * 1.5:1 on white, which reads as absent rather than pending. This clears 3:1
+     * while staying clearly subordinate to textColor (5.8:1).
+     */
+    textMuted: '#7A8494',
     shadowColor: '#0B1220',
   },
   spacing: {
@@ -60,10 +67,23 @@ export const theme = {
     lg: 16,
     xl: 24,
   },
+  /**
+   * One ladder, by role — the app had drifted to 21 distinct radii with only a
+   * third going through this scale.
+   *
+   *   sm    icon tiles, small chips inside a card
+   *   md    buttons, inputs, anything a finger presses
+   *   lg    cards and list rows
+   *   xl    modals and sheets
+   *   full  pills — tabs, badges, avatars, round icon buttons
+   *
+   * `md` sits below `lg` on purpose: a control nested in a card should look
+   * tighter than the card holding it, or the corners fight each other.
+   */
   borderRadius: {
-    sm: 6,
-    md: 8,
-    lg: 14,
+    sm: 8,
+    md: 12,
+    lg: 16,
     xl: 20,
     xxl: 24,
     full: 9999,

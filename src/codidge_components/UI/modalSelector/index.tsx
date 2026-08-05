@@ -5,6 +5,7 @@ import { ChevronDown } from 'lucide-react-native';
 import { PageSafeContainer } from '../pageSafeContainer';
 import Text from '../text';
 import InputField from '../form/inputs/inputField';
+import { theme } from '~/theme/theme';
 
 interface DropdownItem {
   label: string;
@@ -158,7 +159,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 12,
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.sm,
     borderColor: '#ccc',
   },
   inputContent: {
@@ -227,7 +228,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.sm,
     borderWidth: 1,
     borderColor: '#e5e7eb',
   },

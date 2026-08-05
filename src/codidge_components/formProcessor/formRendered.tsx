@@ -283,7 +283,7 @@ const s = StyleSheet.create({
   confirmation: {
     marginTop: 12,
     padding: 14,
-    borderRadius: 10,
+    borderRadius: theme.borderRadius.md,
     backgroundColor: theme.colors.primary,
     alignItems: 'center',
   },
@@ -297,7 +297,7 @@ const file = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#E0E0E0',
     borderStyle: 'dashed',
-    borderRadius: 10,
+    borderRadius: theme.borderRadius.md,
     padding: 24,
     alignItems: 'center',
     justifyContent: 'center',
@@ -307,13 +307,13 @@ const file = StyleSheet.create({
   pickerText: { fontSize: 14, color: '#9CA3AF' },
   previewWrap: {
     position: 'relative',
-    borderRadius: 10,
+    borderRadius: theme.borderRadius.md,
     overflow: 'hidden',
   },
   preview: {
     width: '100%',
     height: 180,
-    borderRadius: 10,
+    borderRadius: theme.borderRadius.md,
     resizeMode: 'cover',
   },
   removeBtn: {
@@ -321,7 +321,7 @@ const file = StyleSheet.create({
     top: 8,
     right: 8,
     backgroundColor: 'rgba(0,0,0,0.6)',
-    borderRadius: 14,
+    borderRadius: theme.borderRadius.full,
     width: 28,
     height: 28,
     alignItems: 'center',

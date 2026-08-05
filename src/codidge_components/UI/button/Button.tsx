@@ -1,6 +1,7 @@
 import { forwardRef } from 'react';
 import { StyleSheet, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
 import Text from '../text';
+import { theme } from '~/theme/theme';
 
 type ButtonProps = {
   title?: string;
@@ -20,7 +21,7 @@ const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
     backgroundColor: '#6366F1',
-    borderRadius: 24,
+    borderRadius: theme.borderRadius.xxl,
     elevation: 5,
     flexDirection: 'row',
     justifyContent: 'center',

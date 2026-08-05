@@ -62,7 +62,7 @@ const TextButton: React.FC<TextButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.sm,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

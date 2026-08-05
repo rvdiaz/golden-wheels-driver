@@ -337,7 +337,7 @@ const dark = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 14,
     paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: theme.borderRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(212,168,83,0.2)',
     gap: 10,
@@ -348,7 +348,7 @@ const dark = StyleSheet.create({
   iconWrap: {
     width: 25,
     height: 25,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },

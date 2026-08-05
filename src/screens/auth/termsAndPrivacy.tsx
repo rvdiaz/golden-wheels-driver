@@ -2,6 +2,7 @@ import React from 'react';
 import { Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Text from '~/codidge_components/UI/text';
+import { theme } from '~/theme/theme';
 
 // Modal Component for Terms and Privacy
 const InfoModal = ({ visible, onClose, title, content }: any) => (
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
   closeButton: {
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: theme.borderRadius.lg,
     backgroundColor: '#E5E5E5',
     alignItems: 'center',
     justifyContent: 'center',

@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
   iconWrap: {
     width: 36,
     height: 36,
-    borderRadius: 10,
+    borderRadius: theme.borderRadius.sm,
     borderWidth: 0.5,
     alignItems: 'center',
     justifyContent: 'center',

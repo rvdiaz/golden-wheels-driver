@@ -22,6 +22,13 @@ export const LANGUAGE_LABEL: Record<Language, string> = {
 /** Two-letter chip for the switcher. */
 export const LANGUAGE_SHORT: Record<Language, string> = { en: 'EN', es: 'ES' };
 
+/**
+ * Shown alongside the code, never instead of it — flag glyphs don't render on
+ * every Android build, and a driver stuck in the wrong language needs the
+ * switcher to stay readable.
+ */
+export const LANGUAGE_FLAG: Record<Language, string> = { en: '🇺🇸', es: '🇪🇸' };
+
 const STORAGE_KEY = 'gw_driver_language';
 
 /**

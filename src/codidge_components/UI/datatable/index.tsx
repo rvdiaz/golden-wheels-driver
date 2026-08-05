@@ -21,6 +21,7 @@ import type { FilterFn } from '@tanstack/react-table';
 
 import { IMobileTableConfig, ITableRow, DataTableType, IColumnConfig } from './interfaces';
 import { Search } from 'lucide-react-native';
+import { theme } from '~/theme/theme';
 
 const fuzzyFilter: FilterFn<unknown> = (row, columnId, value) => {
   const cellValue = row.getValue(columnId);
@@ -283,7 +284,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
+    borderRadius: theme.borderRadius.md,
     borderWidth: 1,
     borderColor: '#E5E7EB',
     overflow: 'hidden',

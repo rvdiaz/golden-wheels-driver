@@ -14,8 +14,7 @@ export const en = {
 
   // ── Welcome ──
   'welcome.headline': 'Welcome to\nGolden Wheels',
-  'welcome.subtitle':
-    'Your trips, your earnings, your schedule —\nall in one place.',
+  'welcome.subtitle': 'Your trips, your earnings, your schedule —\nall in one place.',
   'welcome.cta': 'Get started',
 
   // ── Dashboard ──
@@ -28,6 +27,10 @@ export const en = {
   'dashboard.nextTrip': 'Next trip',
   'dashboard.inProgress': 'In progress',
   'dashboard.openTrip': 'Open trip',
+  // Card CTAs — these navigate into the trip, they don't advance its status.
+  'trip.start': 'Start trip',
+  'trip.continue': 'Continue trip',
+  'trip.view': 'View trip',
 
   // ── Availability ──
   'availability.online': "You're online",
@@ -43,11 +46,12 @@ export const en = {
   'pool.available_other': '{{count}} trips available',
   'pool.firstToClaim': 'First to claim gets it',
   'pool.claim': 'Claim this trip',
+  'pool.refresh': 'Check for new trips',
   'pool.emptyTitle': 'No open trips right now',
   'pool.emptyBody':
     'When your operator publishes a trip to the pool, it shows up here and the first driver to claim it gets it.',
   'pool.claimedTitle': 'Trip claimed',
-  'pool.claimedBody': "It's yours. You'll find it under Trips.",
+  'pool.claimedBody': 'Trip confirmed.',
   'pool.takenTitle': 'Trip unavailable',
   'pool.takenBody': 'This trip has already been taken by another driver.',
 
@@ -160,6 +164,9 @@ export const es: Record<TranslationKey, string> = {
   'dashboard.nextTrip': 'Próximo viaje',
   'dashboard.inProgress': 'En curso',
   'dashboard.openTrip': 'Abrir viaje',
+  'trip.start': 'Iniciar viaje',
+  'trip.continue': 'Continuar viaje',
+  'trip.view': 'Ver viaje',
 
   'availability.online': 'Estás en línea',
   'availability.offline': 'Estás desconectado',
@@ -173,11 +180,12 @@ export const es: Record<TranslationKey, string> = {
   'pool.available_other': '{{count}} viajes disponibles',
   'pool.firstToClaim': 'El primero en tomarlo se lo queda',
   'pool.claim': 'Tomar este viaje',
+  'pool.refresh': 'Buscar viajes nuevos',
   'pool.emptyTitle': 'No hay viajes disponibles',
   'pool.emptyBody':
     'Cuando tu operador publique un viaje, aparecerá aquí y el primer conductor en tomarlo se lo queda.',
   'pool.claimedTitle': 'Viaje tomado',
-  'pool.claimedBody': 'Es tuyo. Lo encontrarás en Viajes.',
+  'pool.claimedBody': 'Viaje confirmado.',
   'pool.takenTitle': 'Viaje no disponible',
   'pool.takenBody': 'Otro conductor ya tomó este viaje.',
 

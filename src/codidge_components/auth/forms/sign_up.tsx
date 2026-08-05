@@ -15,6 +15,7 @@ import Text from '~/codidge_components/UI/text';
 import { parsePhoneNumber, validatePhoneNumber } from '~/codidge_components/helpers';
 import PhoneInput from '~/codidge_components/UI/form/inputs/phoneNumberInput';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
+import { theme } from '~/theme/theme';
 
 const schema = yup.object({
   email: yup.string().email('Please enter a valid email').required('Email is required'),
@@ -122,9 +123,7 @@ export const SignUpForm = ({
         enableOnAndroid={true}
         extraScrollHeight={Platform.OS === 'ios' ? 0 : 80}
         keyboardShouldPersistTaps="handled">
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}>
+        <View style={styles.scrollContent}>
           <View style={styles.formCard}>
             <View style={styles.form}>
               <Controller
@@ -287,7 +286,7 @@ export const SignUpForm = ({
               </View>
             )}
           </View>
-        </ScrollView>
+        </View>
       </KeyboardAwareScrollView>
     </View>
   );
@@ -370,7 +369,7 @@ const styles = StyleSheet.create({
   registerButton: {
     backgroundColor: '#2563EB',
     paddingVertical: 16,
-    borderRadius: 12,
+    borderRadius: theme.borderRadius.md,
     alignItems: 'center',
   },
   registerButtonDisabled: {

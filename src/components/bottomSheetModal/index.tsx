@@ -202,7 +202,7 @@ const sheet = StyleSheet.create({
   closeBtn: {
     width: 34,
     height: 34,
-    borderRadius: 17,
+    borderRadius: theme.borderRadius.full,
     backgroundColor: 'rgba(255,255,255,0.08)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',

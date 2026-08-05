@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "android": "expo run:android",
+    "androiddevice": "expo run:android --device",
     "ios": "expo run:ios",
     "iosdevice": "expo run:ios --device",
     "start": "expo start",

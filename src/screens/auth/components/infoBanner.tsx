@@ -29,7 +29,7 @@ const infoBannerStyles = StyleSheet.create({
   },
   text: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 15,
     color: '#1E40AF',
     lineHeight: 20,
   },

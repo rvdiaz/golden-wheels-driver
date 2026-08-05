@@ -1,14 +1,15 @@
 import { FlatList, StyleSheet, View } from 'react-native';
-import { Bell, CheckCheck } from 'lucide-react-native';
+import { Bell } from 'lucide-react-native';
 import { RefreshControl } from 'react-native-gesture-handler';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import { ScreenHeader } from '~/codidge_components/UI/screenHeader';
 import Text from '~/codidge_components/UI/text';
 import { useState, useCallback } from 'react';
 import { theme } from '~/theme/theme';
 import { useUserNotifications } from './hooks/useUserNotifications';
 import { NotificationCard } from './widgets/notificationCard';
-import { Header } from '~/codidge_components/UI/header';
 import { PageLoading } from '~/codidge_components/UI/loading/loadingPage';
+import { translate, useTranslation } from '~/i18n';
 
 // ─── Color tokens ─────────────────────────────────────────────────────────────
 
@@ -24,25 +25,18 @@ const EmptyState = () => (
     <View style={styles.emptyIconWrap}>
       <Bell size={28} color={GOLD} strokeWidth={1.5} />
     </View>
-    <Text style={styles.emptyTitle}>All caught up</Text>
-    <Text style={styles.emptyMessage}>No notifications to show right now.</Text>
+    <Text style={styles.emptyTitle}>{translate('alerts.allCaughtUp')}</Text>
+    <Text style={styles.emptyMessage}>{translate('alerts.emptyBody')}</Text>
   </View>
 );
 
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
 export const NotificationsScreen = () => {
+  const { t } = useTranslation();
   const { notifications, loadingNotifications, refetchNotifications } = useUserNotifications();
 
   const [refreshing, setRefreshing] = useState(false);
-
-  // Mark all unread as read after a short delay (simulates screen focus)
-  const markAllRead = useCallback(() => {
-    const timer = setTimeout(() => {
-      //setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-    }, 1200);
-    return () => clearTimeout(timer);
-  }, []);
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -53,24 +47,18 @@ export const NotificationsScreen = () => {
     }, 800);
   }, []);
 
+  const unread = notifications?.filter((n) => !n.read).length ?? 0;
+
   const header = (
-    <Header
-      contentContainerStyle={{
-        backgroundColor: 'transparent',
-      }}
-      contentStyle={{
-        paddingVertical: 0,
-      }}
-      titleStyles={{
-        color: '#FFF',
-      }}
-      leftWidget={
-        <View style={styles.screenHeader}>
-          <Text style={styles.screenTitle}>Notifications</Text>
-        </View>
+    <ScreenHeader
+      title={t('alerts.title')}
+      subtitle={
+        notifications.length === 0
+          ? undefined
+          : unread > 0
+            ? t('alerts.summary', { unread, total: notifications.length })
+            : t('alerts.allCaughtUp')
       }
-      title={''}
-      showBack
     />
   );
 
@@ -83,30 +71,10 @@ export const NotificationsScreen = () => {
     );
   }
 
-  const unreadCount = notifications?.filter((n) => !n.read).length;
 
   return (
     <PageSafeContainer style={styles.container}>
       {header}
-      {/* Subtitle row */}
-      {notifications.length > 0 && (
-        <View style={styles.subtitleRow}>
-          {unreadCount > 0 ? (
-            <>
-              <View style={styles.unreadBadge}>
-                <Text style={styles.unreadBadgeText}>{unreadCount} new</Text>
-              </View>
-              <Text style={styles.subtitleText}>{notifications.length} total</Text>
-            </>
-          ) : (
-            <View style={styles.allReadRow}>
-              <CheckCheck size={13} color="rgba(218,192,114,0.5)" strokeWidth={1.8} />
-              <Text style={styles.allReadText}>All caught up</Text>
-            </View>
-          )}
-        </View>
-      )}
-
       <FlatList
         data={notifications}
         renderItem={({ item }) => <NotificationCard item={item} />}
@@ -126,57 +94,11 @@ export const NotificationsScreen = () => {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  screenHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.sm,
-    paddingBottom: theme.spacing.md,
-  },
-
-  screenTitle: {
-    fontSize: 22,
-    fontWeight: '600',
-    color: GOLD,
-    letterSpacing: 0.4,
-  },
   container: {
     flex: 1,
   },
 
   // ── Subtitle row ──
-  subtitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: theme.spacing.lg,
-    paddingBottom: theme.spacing.md,
-  },
-  unreadBadge: {
-    backgroundColor: GOLD_10,
-    borderWidth: 0.5,
-    borderColor: GOLD_30,
-    borderRadius: 20,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-  },
-  unreadBadgeText: {
-    fontSize: 11,
-    color: GOLD,
-    fontWeight: '500',
-  },
-  subtitleText: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.25)',
-  },
-  allReadRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-  },
-  allReadText: {
-    fontSize: 12,
-    color: 'rgba(218,192,114,0.45)',
-  },
 
   // ── List ──
   listContent: {
@@ -203,13 +125,13 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   emptyTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '500',
-    color: 'rgba(255,255,255,0.45)',
+    color: theme.colors.secondaryText,
   },
   emptyMessage: {
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.22)',
+    fontSize: 14,
+    color: theme.colors.textColor,
     textAlign: 'center',
     paddingHorizontal: 40,
   },

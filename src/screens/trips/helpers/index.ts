@@ -4,14 +4,6 @@ import { BadgeType } from '~/codidge_components/UI/badge';
 import { Booking, TabKey } from '../interfaces';
 import { formatMiamiTime } from '~/helpers';
 
-// Subtle white glass — bumped up from 0.04/0.05 for a softer frosted feel
-export const GLASS_BG = 'rgba(255,255,255,0.08)';
-
-export const WHITE_08 = 'rgba(255,255,255,0.08)';
-export const WHITE_10 = 'rgba(255,255,255,0.10)';
-export const WHITE_12 = 'rgba(255,255,255,0.12)';
-export const WHITE_35 = 'rgba(255,255,255,0.35)';
-
 // ─── Tab config ───────────────────────────────────────────────────────────────
 
 export const TABS: { key: TabKey; label: string }[] = [

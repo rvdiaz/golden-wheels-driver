@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
   },
   title: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: '600',
   },
   rightButton: {
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   rightButtonText: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
     color: theme.colors.primary,
   },

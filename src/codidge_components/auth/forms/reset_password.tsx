@@ -11,6 +11,7 @@ import { ResetPasswordWithCode } from './reset_password_with_code';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
 import TextButton from '~/codidge_components/UI/button/TextButton';
 import { useAuthContext } from '../context';
+import { theme } from '~/theme/theme';
 
 export const ResetPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -139,7 +140,7 @@ export const ResetPassword = () => {
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <InputField
-                  variant="dark"
+                  variant="light"
                   containerStyle={{
                     marginBottom: 16,
                   }}
@@ -197,14 +198,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: theme.colors.primaryText,
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 14,
-    color: '#FFFFFF',
+    fontSize: 15,
+    color: theme.colors.primaryText,
     textAlign: 'center',
   },
   formCard: {

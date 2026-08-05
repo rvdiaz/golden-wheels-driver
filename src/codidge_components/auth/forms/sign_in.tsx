@@ -11,7 +11,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import * as Icons from 'lucide-react-native';
-import { fetchUserAttributes, signIn, signOut } from 'aws-amplify/auth/cognito';
+import { signIn, signOut } from 'aws-amplify/auth/cognito';
 import { useAuthContext } from '../context';
 import { IAuthModuleKeys, LoginFormData } from '../interfaces';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
@@ -123,7 +123,7 @@ export const SignInForm = ({
             name="email"
             render={({ field: { onChange, onBlur, value } }) => (
               <InputField
-                variant="dark"
+                variant="light"
                 leftIcon={<Icons.Mail size={16} color="#6B7280" />}
                 label="Email"
                 placeholder="Enter your email"
@@ -144,7 +144,7 @@ export const SignInForm = ({
             name="password"
             render={({ field: { onChange, onBlur, value } }) => (
               <InputField
-                variant="dark"
+                variant="light"
                 leftIcon={<Icons.Lock size={16} color="#6B7280" />}
                 label="Password"
                 placeholder="Enter your password"
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 17,
     color: '#6B7280',
     textAlign: 'center',
   },
@@ -275,11 +275,11 @@ const styles = StyleSheet.create({
     borderColor: '#2563EB',
   },
   checkboxLabel: {
-    fontSize: 14,
+    fontSize: 15,
     color: '#374151',
   },
   forgotPassword: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '600',
   },
   loginButton: {
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
   },
   loginButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
   },
   footer: {
@@ -303,11 +303,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   footerText: {
-    fontSize: 16,
+    fontSize: 17,
     color: '#6B7280',
   },
   signUpLink: {
-    fontSize: 16,
+    fontSize: 17,
   },
   testCredentials: {
     marginTop: 32,
@@ -316,13 +316,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   testTitle: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '600',
     color: '#374151',
     marginBottom: 8,
   },
   testText: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#6B7280',
     marginBottom: 4,
   },

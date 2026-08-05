@@ -6,15 +6,15 @@ import { INotification } from '../interfaces';
 import { formatDateTime } from '~/screens/trips/helpers';
 
 const GOLD = theme.colors.primary;
-const GOLD_10 = 'rgba(218,192,114,0.10)';
-const GOLD_18 = 'rgba(218,192,114,0.18)';
-const GOLD_30 = 'rgba(218,192,114,0.30)';
-const GLASS_BG = 'rgba(255,255,255,0.07)';
-const GLASS_UNREAD_BG = 'rgba(218,192,114,0.07)';
-const WHITE_28 = 'rgba(255,255,255,0.28)';
-const WHITE_45 = 'rgba(255,255,255,0.45)';
-const WHITE_70 = 'rgba(255,255,255,0.70)';
-const WHITE_88 = 'rgba(255,255,255,0.88)';
+const GOLD_10 = theme.colors.primaryAlpha[10];
+const GOLD_30 = theme.colors.primaryAlpha[35];
+// Read cards are plain white; unread get a warm tint so they still stand out.
+const CARD_BG = theme.colors.cardBackground;
+const CARD_UNREAD_BG = theme.colors.primaryBodyBackground;
+const WHITE_28 = theme.colors.textColor;
+const WHITE_45 = theme.colors.textColor;
+const WHITE_70 = theme.colors.secondaryText;
+const WHITE_88 = theme.colors.primaryText;
 
 // ─── Notification Card ────────────────────────────────────────────────────────
 
@@ -25,19 +25,16 @@ export const NotificationCard = ({ item }: { item: INotification }) => {
     <View
       style={[
         styles.card,
-        { backgroundColor: isUnread ? GLASS_UNREAD_BG : GLASS_BG },
-        { borderColor: isUnread ? GOLD_18 : 'rgba(255,255,255,0.09)' },
+        { backgroundColor: 'white' },
+        { borderColor: isUnread ? GOLD_30 : theme.colors.cardBorder },
       ]}>
       {/* Top shimmer */}
       <View
         style={[
           styles.cardShimmer,
-          { backgroundColor: isUnread ? 'rgba(218,192,114,0.32)' : 'rgba(255,255,255,0.12)' },
+          { backgroundColor: isUnread ? theme.colors.primaryAlpha[35] : theme.colors.cardBorder },
         ]}
       />
-
-      {/* Glass highlight */}
-      <View style={styles.glassHighlight} />
 
       {/* Left accent bar */}
       {isUnread && <View style={styles.accentBar} />}
@@ -48,11 +45,11 @@ export const NotificationCard = ({ item }: { item: INotification }) => {
           style={[
             styles.iconWrap,
             {
-              backgroundColor: isUnread ? GOLD_10 : 'rgba(255,255,255,0.06)',
-              borderColor: isUnread ? GOLD_30 : 'rgba(255,255,255,0.1)',
+              backgroundColor: isUnread ? GOLD_10 : theme.colors.baseGray,
+              borderColor: isUnread ? GOLD_30 : theme.colors.cardBorder,
             },
           ]}>
-          <Bell size={16} color={isUnread ? GOLD : 'rgba(255,255,255,0.35)'} strokeWidth={1.8} />
+          <Bell size={16} color={isUnread ? GOLD : theme.colors.textColor} strokeWidth={1.8} />
         </View>
 
         {/* Content */}
@@ -67,7 +64,7 @@ export const NotificationCard = ({ item }: { item: INotification }) => {
               {isUnread && <View style={styles.unreadDot} />}
             </View>
             <View style={styles.timeWrap}>
-              <Clock size={10} color="rgba(255,255,255,0.45)" strokeWidth={1.5} />
+              <Clock size={10} color={theme.colors.textColor} strokeWidth={1.5} />
               <Text style={styles.timestamp}>{formatDateTime(item.createdAt)}</Text>
             </View>
           </View>
@@ -87,6 +84,11 @@ const styles = StyleSheet.create({
     borderRadius: theme.borderRadius.lg,
     borderWidth: 0.5,
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 1,
   },
   cardShimmer: {
     position: 'absolute',
@@ -95,16 +97,6 @@ const styles = StyleSheet.create({
     right: '10%',
     height: 1,
     borderRadius: 1,
-  },
-  glassHighlight: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 44,
-    backgroundColor: 'rgba(255,255,255,0.035)',
-    borderTopLeftRadius: theme.borderRadius.lg,
-    borderTopRightRadius: theme.borderRadius.lg,
   },
   accentBar: {
     position: 'absolute',
@@ -148,7 +140,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   title: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '500',
     flex: 1,
   },
@@ -166,11 +158,11 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   timestamp: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.55)',
+    fontSize: 13,
+    color: theme.colors.textColor,
   },
   body: {
-    fontSize: 13,
+    fontSize: 14,
     lineHeight: 18,
   },
 });

@@ -4,67 +4,78 @@ import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import Text from '~/codidge_components/UI/text';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '~/theme/theme';
+import { typography } from '~/theme/typography';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
+import { useTranslation } from '~/i18n';
 
 interface GetStartedScreenProps {
   onGetStarted: () => void;
 }
 
 export const GetStartedScreen = ({ onGetStarted }: GetStartedScreenProps) => {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.container}>
+      {/* Light bar: the top of the frame is dark behind the logo now */}
       <StatusBar barStyle="light-content" />
 
-      {/* Full-screen background image */}
       <ImageBackground
         source={require('/assets/get_started.jpg')}
         style={styles.backgroundImage}
-        resizeMode="cover"
-        imageStyle={styles.backgroundImageStyle}>
-        {/* Top-to-mid overlay for logo readability */}
+        resizeMode="cover">
+        {/*
+          The photo is blown out at the top by windscreen glare, so a light logo
+          disappears into it. This dark wash gives the logo something to sit on,
+          and clears by a third of the way down so the driver and the car
+          interior stay visible.
+        */}
         <LinearGradient
-          colors={['rgba(0,0,0,0.25)', 'rgba(0,0,0,0.0)', 'rgba(0,0,0,0.85)', 'rgba(0,0,0,0.97)']}
-          locations={[0, 0.45, 0.65, 1]}
-          style={StyleSheet.absoluteFill}
+          colors={['rgba(11,18,32,0.82)', 'rgba(11,18,32,0.35)', 'transparent']}
+          locations={[0, 0.16, 0.34]}
+          style={styles.topScrim}
+          pointerEvents="none"
         />
 
-        {/* ← NEW: bottom edge fade so image blends into #0a0a0a background */}
+        {/*
+          The lower half fades into the app's own background so the headline and
+          button sit on a clean surface and the photo doesn't end in a hard edge.
+        */}
         <LinearGradient
-          colors={['transparent', '#0a0a0a']}
-          locations={[0.55, 0]} // starts fading at 55% of the image height
-          style={styles.bottomEdgeFade}
+          colors={[
+            'transparent',
+            'rgba(253,248,238,0.75)',
+            theme.colors.primaryBodyBackground,
+            theme.colors.bodyBackground,
+          ]}
+          locations={[0.34, 0.58, 0.76, 1]}
+          style={styles.bottomScrim}
+          pointerEvents="none"
         />
 
         <PageSafeContainer style={styles.safeArea}>
-          {/* Top: Logo */}
           <View style={styles.logoContainer}>
             <Image
-              source={require('/assets/logo_welcome.png')}
+              source={require('/assets/logoSingle1.png')}
               style={styles.logo}
               resizeMode="contain"
             />
           </View>
 
-          {/* Bottom: Content overlay */}
           <View style={styles.bottomContent}>
-            {/* Gold divider line */}
             <View style={styles.dividerRow}>
               <View style={styles.dividerLine} />
               <View style={styles.dividerDot} />
               <View style={styles.dividerLine} />
             </View>
 
-            <Text style={styles.headline}>Welcome to{'\n'}Golden Wheels</Text>
-
-            <Text style={styles.subtitle}>
-              Private chauffeur services across South Florida.{'\n'}
-              Premium Vehicles & Exceptional Experience.
-            </Text>
+            <Text style={styles.headline}>{t('welcome.headline')}</Text>
+            <Text style={styles.subtitle}>{t('welcome.subtitle')}</Text>
 
             <PrimaryButton
               onPress={onGetStarted}
-              title="Get Started"
+              title={t('welcome.cta')}
               size={ButtonSize.LARGE}
               style={styles.ctaButton}
             />
@@ -78,31 +89,47 @@ export const GetStartedScreen = ({ onGetStarted }: GetStartedScreenProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
+    backgroundColor: theme.colors.bodyBackground,
   },
+  /**
+   * The source is portrait, so `cover` fills the device edge to edge with no
+   * letterboxing. It previously carried height: '70%' and top: 50, which is
+   * what stopped it reaching the bottom of the screen.
+   */
   backgroundImage: {
     flex: 1,
-  },
-  backgroundImageStyle: {
-    resizeMode: 'cover',
     width: '100%',
-    height: '70%', // ← image only occupies top 70% of screen height
-    top: 50,
+    height: '100%',
   },
-  bottomEdgeFade: {
+  /**
+   * Both scrims are decorative. `pointerEvents` must be set in the STYLE, not as
+   * a prop — under the New Architecture the prop is deprecated and the
+   * full-screen scrim silently swallowed taps on the Get started button.
+   */
+  topScrim: {
     position: 'absolute',
+    top: 0,
     left: 0,
     right: 0,
-    top: 0,
-    height: '75%', // matches backgroundImageStyle height (70%) + a bit extra
+    height: '45%',
+    pointerEvents: 'none',
+    zIndex: 0,
+  },
+  bottomScrim: {
+    ...StyleSheet.absoluteFillObject,
+    pointerEvents: 'none',
+    zIndex: 0,
   },
   safeArea: {
     flex: 1,
     justifyContent: 'space-between',
+    // Above the scrims, so touches always reach the button.
+    zIndex: 1,
   },
   logoContainer: {
     alignItems: 'center',
     paddingHorizontal: 24,
+    paddingTop: 8,
   },
   logo: {
     width: 210,
@@ -132,17 +159,17 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.primary,
   },
   headline: {
-    fontSize: 48,
+    fontSize: 46,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: theme.colors.primaryText,
     letterSpacing: 0.5,
-    lineHeight: 44,
+    lineHeight: 48,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 15,
-    color: 'rgba(255,255,255,0.6)',
-    lineHeight: 22,
+    fontSize: typography.md,
+    color: theme.colors.textColor,
+    lineHeight: 24,
     marginBottom: 4,
     textAlign: 'center',
   },

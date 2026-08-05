@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
   },
 });

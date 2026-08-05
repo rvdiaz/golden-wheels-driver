@@ -8,7 +8,6 @@ import { Navigation } from '~/navigation';
 import { UserRefresherWrapper } from '~/navigation/userRefresherWrapper';
 import { ENV_Vars } from '~/store/env';
 import { AuthProvider } from '~/codidge_components/auth/context';
-import { AuthenticateScreen } from '~/store/user/authenticateScreen';
 
 if (ENV_Vars.APP_ENV === 'development') {
   // Adds messages only in a dev environment
@@ -77,7 +76,6 @@ export default function App() {
           <UserRefresherWrapper>
             <Navigation />
           </UserRefresherWrapper>
-          <AuthenticateScreen />
         </AuthProvider>
       </SafeAreaProvider>
     </ApolloProvider>

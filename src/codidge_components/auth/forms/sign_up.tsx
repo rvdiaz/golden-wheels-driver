@@ -132,7 +132,7 @@ export const SignUpForm = ({
                 name="name"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
-                    variant="dark"
+                    variant="light"
                     icon={<Icons.User size={16} color="#6B7280" />}
                     label="Name"
                     required={true}
@@ -152,7 +152,7 @@ export const SignUpForm = ({
                 name="email"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
-                    variant="dark"
+                    variant="light"
                     icon={<Icons.Mail size={16} color="#6B7280" />}
                     label="Email"
                     required={true}
@@ -181,7 +181,7 @@ export const SignUpForm = ({
                 }}
                 render={({ field: { onChange, value } }) => (
                   <PhoneInput
-                    variant="dark"
+                    variant="light"
                     value={value}
                     onChangeValue={onChange}
                     label="Phone Number"
@@ -200,7 +200,7 @@ export const SignUpForm = ({
                 name="password"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
-                    variant="dark"
+                    variant="light"
                     icon={<Icons.Lock size={16} color="#6B7280" />}
                     label="Password"
                     required={true}
@@ -236,7 +236,7 @@ export const SignUpForm = ({
                 name="confirmPassword"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
-                    variant="dark"
+                    variant="light"
                     icon={<Icons.Lock size={16} color="#6B7280" />}
                     label="Confirm Password"
                     placeholder="Confirm your password"
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 17,
     color: '#6B7280',
     textAlign: 'center',
   },
@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
     borderColor: '#EF4444',
   },
   errorText: {
-    fontSize: 14,
+    fontSize: 15,
     color: '#EF4444',
     marginTop: 4,
   },
@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
     borderColor: '#2563EB',
   },
   termsText: {
-    fontSize: 14,
+    fontSize: 15,
     color: '#374151',
     justifyContent: 'center',
     alignItems: 'flex-end',
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
   },
   registerButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
   },
   footer: {
@@ -388,11 +388,11 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   footerText: {
-    fontSize: 16,
+    fontSize: 17,
     color: '#6B7280',
   },
   signInLink: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
   },
 });

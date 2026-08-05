@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F9FA',
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#333',
   },
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   closeButtonText: {
-    fontSize: 16,
+    fontSize: 17,
     color: '#666',
     fontWeight: 'bold',
   },
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   modalText: {
-    fontSize: 14,
+    fontSize: 15,
     lineHeight: 22,
     color: '#333',
     paddingBottom: 40,

@@ -1,64 +1,65 @@
 import React, { useState } from 'react';
 import {
-  View,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
   ActivityIndicator,
+  Alert,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
+import {
+  Car,
+  ChevronRight,
+  Clock,
+  Flag,
+  MapPin,
+  Navigation2,
+  Phone,
+  Zap,
+} from 'lucide-react-native';
+
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import { ScreenHeader } from '~/codidge_components/UI/screenHeader';
 import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
+import { typography } from '~/theme/typography';
+import { surfaces } from '~/theme/surfaces';
 import { userData } from '~/store/user';
 import { ENV_Vars } from '~/store/env';
-import { getDriverBookingsQuery } from '~/screens/trips/graphql/queries';
-import { updateDriverStatusMutation } from '~/screens/trips/graphql/mutation';
-import { updateDriverMutation } from '~/screens/auth/graphql/mutations';
+import {
+  getDriverBookingsQuery,
+  getOpenTripsQuery,
+} from '~/screens/trips/graphql/queries';
 import { Booking } from '~/screens/trips/interfaces';
 import { formatDateTime } from '~/screens/trips/helpers';
+import { TripDetailModal } from '~/screens/trips/components/tripDetailModal';
+import { claimTripMutation } from '~/screens/trips/graphql/mutation';
 import {
-  MapPin,
-  Clock,
-  User,
-  Car,
-  CheckCircle,
-  Navigation,
-  CircleDot,
-  Flag,
-} from 'lucide-react-native';
-import { setActiveTab } from '~/store/navigationTabs';
-import { PageTransition } from '~/codidge_components/UI/pageTransition';
-import { PoolScreen } from '~/screens/pool';
-import { getOpenTripsQuery } from '~/screens/trips/graphql/queries';
-import { Zap, ChevronRight } from 'lucide-react-native';
+  NEXT_ACTION_KEY,
+  STATUS_LABEL_KEY,
+  callCustomer,
+  openNavigation,
+} from '~/screens/trips/hooks/useTripActions';
+import { AvailabilityCard } from './components/availabilityCard';
+import { useTranslation } from '~/i18n';
 
 const GOLD = theme.colors.primary;
 
-const STATUS_STEPS: { key: Booking['driverStatus']; label: string; icon: any }[] = [
-  { key: 'assigned', label: 'Assigned', icon: CheckCircle },
-  { key: 'en_route', label: 'En Route', icon: Navigation },
-  { key: 'arrived', label: 'Arrived', icon: CircleDot },
-  { key: 'in_progress', label: 'In Progress', icon: Car },
-  { key: 'completed', label: 'Completed', icon: Flag },
-];
-
-const NEXT_STATUS: Record<string, Booking['driverStatus']> = {
-  assigned: 'en_route',
-  en_route: 'arrived',
-  arrived: 'in_progress',
-  in_progress: 'completed',
-};
-
-const NEXT_LABEL: Record<string, string> = {
-  assigned: 'Start driving',
-  en_route: 'Mark arrived',
-  arrived: 'Begin trip',
-  in_progress: 'Complete trip',
-};
+/** Underway reads as "happening now"; assigned-but-not-started reads as "next". */
+const isUnderway = (b: Booking) =>
+  b.driverStatus === 'en_route' ||
+  b.driverStatus === 'arrived' ||
+  b.driverStatus === 'in_progress';
 
 export const HomeScreen = () => {
+  const { t } = useTranslation();
   const userInfo = useReactiveVar(userData);
+  const [tab, setTab] = useState<'upcoming' | 'pool'>('upcoming');
+  const [openTrip, setOpenTrip] = useState<Booking | null>(null);
+  const [claimTarget, setClaimTarget] = useState<Booking | null>(null);
+  const [claimingId, setClaimingId] = useState<string | null>(null);
 
   const { data, loading, refetch } = useQuery<{ getDriverBookings: Booking[] }>(
     getDriverBookingsQuery,
@@ -69,436 +70,516 @@ export const HomeScreen = () => {
     }
   );
 
-  const [updateStatus, { loading: updatingStatus }] = useMutation(updateDriverStatusMutation);
-  const [updateDriver, { loading: updatingAvailability }] = useMutation(updateDriverMutation);
-
-  const bookings = data?.getDriverBookings ?? [];
-  const active = bookings.find(
-    (b) => b.status === 'confirmed' && b.driverStatus !== 'completed'
-  );
-  const upcoming = bookings.filter(
-    (b) => b.status === 'confirmed' && b.driverStatus === 'assigned' && b.id !== active?.id
-  );
-
-  const handleStatusUpdate = async (bookingId: string, newStatus: Booking['driverStatus']) => {
-    if (!newStatus) return;
-    try {
-      await updateStatus({
-        variables: {
-          tenant: ENV_Vars.tenant,
-          bookingId,
-          driverStatus: newStatus,
-        },
-      });
-      refetch();
-    } catch (err) {
-      console.error('Status update failed:', err);
-    }
-  };
-
-  const toggleAvailability = async () => {
-    if (!userInfo?.id) return;
-    try {
-      await updateDriver({
-        variables: {
-          tenant: ENV_Vars.tenant,
-          driverId: userInfo.id,
-          driver: { available: !userInfo.available },
-        },
-      });
-    } catch (err) {
-      console.error('Availability toggle failed:', err);
-    }
-  };
-
-  const isAvailable = userInfo?.available ?? false;
-
-  const [showPool, setShowPool] = useState(false);
-
-  // Only tenants running an open pool get anything back here, so the section
-  // simply never renders for the rest.
-  const { data: poolData } = useQuery<{ getOpenTrips: Booking[] }>(getOpenTripsQuery, {
+  const { data: poolData, refetch: refetchPool } = useQuery<{
+    getOpenTrips: Booking[];
+  }>(getOpenTripsQuery, {
     variables: { tenant: ENV_Vars.tenant },
     fetchPolicy: 'cache-and-network',
   });
-  const openTripCount = poolData?.getOpenTrips?.length ?? 0;
+  const poolTrips = poolData?.getOpenTrips ?? [];
+
+  const [claimTripFn] = useMutation(claimTripMutation, {
+    refetchQueries: [
+      { query: getOpenTripsQuery, variables: { tenant: ENV_Vars.tenant } },
+      { query: getDriverBookingsQuery, variables: { tenant: ENV_Vars.tenant } },
+    ],
+  });
+
+  const handleClaim = async (booking: Booking) => {
+    setClaimingId(booking.id);
+    try {
+      await claimTripFn({
+        variables: { tenant: ENV_Vars.tenant, bookingId: booking.id },
+      });
+      setClaimTarget(null);
+      setTab('upcoming');
+      Alert.alert(t('pool.claimedTitle'), t('pool.claimedBody'));
+    } catch (error: any) {
+      // Losing the race is normal — the backend guarantees one winner.
+      Alert.alert(t('pool.takenTitle'), error?.message ?? t('pool.takenBody'));
+      await refetchPool();
+    } finally {
+      setClaimingId(null);
+    }
+  };
+
+  const bookings = data?.getDriverBookings ?? [];
+  const live = bookings.filter(
+    (b) =>
+      b.status === 'confirmed' ||
+      b.status === 'in_progress' ||
+      // Assigned but not yet confirmed by the operator — still the driver's job.
+      (b.status === 'pending' && !!b.bookingBusinessData?.driver?.id)
+  );
+
+  // A trip actually underway wins the hero slot; otherwise the soonest assigned.
+  const active =
+    live.find(isUnderway) ??
+    live
+      .filter((b) => b.driverStatus === 'assigned')
+      .sort(
+        (a, b) =>
+          new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+      )[0];
+
+  const upcoming = live
+    .filter((b) => b.id !== active?.id)
+    .sort(
+      (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+    );
+
+  // Re-read the open trip from fresh data so advancing a status updates the
+  // sheet the driver is currently looking at.
+  const openTripLive = openTrip
+    ? (bookings.find((b) => b.id === openTrip.id) ?? openTrip)
+    : null;
 
   return (
     <PageSafeContainer style={styles.page}>
+      <ScreenHeader eyebrow={t('dashboard.greeting')} title={userInfo?.name ?? t('dashboard.driver')} />
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>Good day,</Text>
-            <Text style={styles.driverName}>{userInfo?.name ?? 'Driver'}</Text>
-          </View>
-          <TouchableOpacity
-            onPress={toggleAvailability}
-            disabled={updatingAvailability}
-            style={[
-              styles.availabilityBadge,
-              isAvailable ? styles.availableOn : styles.availableOff,
-            ]}>
-            {updatingAvailability ? (
-              <ActivityIndicator size="small" color={isAvailable ? '#fff' : GOLD} />
-            ) : (
-              <Text
-                style={[
-                  styles.availabilityText,
-                  isAvailable ? styles.availableTextOn : styles.availableTextOff,
-                ]}>
-                {isAvailable ? 'Available' : 'Off Duty'}
-              </Text>
-            )}
-          </TouchableOpacity>
-        </View>
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={refetch}
+            tintColor={GOLD}
+          />
+        }>
+        {/* Always visible — a driver must never wonder whether they're on duty */}
+        <AvailabilityCard />
 
-        {/* Open pool — only when there is something to claim */}
-        {openTripCount > 0 && (
-          <TouchableOpacity style={styles.poolBanner} onPress={() => setShowPool(true)}>
-            <View style={styles.poolIcon}>
-              <Zap size={16} color={GOLD} />
-            </View>
-            <View style={styles.poolTextWrap}>
-              <Text style={styles.poolTitle}>
-                {openTripCount} trip{openTripCount === 1 ? '' : 's'} available
-              </Text>
-              <Text style={styles.poolSubtitle}>First to claim gets it</Text>
-            </View>
-            <ChevronRight size={18} color={theme.colors.textColor} />
-          </TouchableOpacity>
-        )}
+        <SegmentedTabs
+          tab={tab}
+          onChange={setTab}
+          upcomingCount={upcoming.length}
+          poolCount={poolTrips.length}
+        />
 
-        {/* Active trip */}
-        {loading ? (
-          <View style={styles.loadingBox}>
-            <ActivityIndicator color={GOLD} />
-          </View>
-        ) : active ? (
-          <View style={styles.activeCard}>
-            <View style={styles.activeCardHeader}>
-              <View style={styles.activePulseDot} />
-              <Text style={styles.activeCardTitle}>Active Trip</Text>
-              <Text style={styles.activeCode}>{active.bookingCode}</Text>
+        {tab === 'upcoming' ? (
+          loading && !bookings.length ? (
+            <View style={styles.loadingBox}>
+              <ActivityIndicator color={GOLD} />
             </View>
-
-            {/* Progress stepper */}
-            <View style={styles.stepper}>
-              {STATUS_STEPS.map((step, idx) => {
-                const stepIndex = STATUS_STEPS.findIndex((s) => s.key === active.driverStatus);
-                const isDone = idx < stepIndex;
-                const isCurrent = idx === stepIndex;
-                const IconComp = step.icon;
-                return (
-                  <React.Fragment key={String(step.key)}>
-                    <View style={styles.stepItem}>
-                      <View
-                        style={[
-                          styles.stepDot,
-                          isDone && styles.stepDotDone,
-                          isCurrent && styles.stepDotCurrent,
-                        ]}>
-                        <IconComp
-                          size={12}
-                          color={isCurrent ? '#fff' : isDone ? GOLD : '#CBD5E1'}
-                          strokeWidth={2}
-                        />
-                      </View>
-                      <Text style={[styles.stepLabel, isCurrent && styles.stepLabelActive]}>
-                        {step.label}
-                      </Text>
-                    </View>
-                    {idx < STATUS_STEPS.length - 1 && (
-                      <View style={[styles.stepLine, isDone && styles.stepLineDone]} />
-                    )}
-                  </React.Fragment>
-                );
-              })}
-            </View>
-
-            {/* Route */}
-            <View style={styles.routeSection}>
-              <View style={styles.routeRow}>
-                <MapPin size={14} color={GOLD} />
-                <View style={styles.routeTextBlock}>
-                  <Text style={styles.routeLabel}>Pickup</Text>
-                  <Text style={styles.routeAddress} numberOfLines={1}>
-                    {active.bookingBusinessData.pickupLocation.displayName}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.routeRow}>
-                <Flag size={14} color={theme.colors.accent} />
-                <View style={styles.routeTextBlock}>
-                  <Text style={styles.routeLabel}>Drop-off</Text>
-                  <Text style={styles.routeAddress} numberOfLines={1}>
-                    {active.bookingBusinessData.dropoffLocation.displayName}
-                  </Text>
-                </View>
-              </View>
-            </View>
-
-            {/* Customer */}
-            <View style={styles.customerRow}>
-              <User size={14} color={theme.colors.textColor} />
-              <Text style={styles.customerName}>
-                {active.bookingBusinessData.customer?.name ?? '—'}
+          ) : active ? (
+            <>
+              <ActiveTripCard booking={active} onOpen={() => setOpenTrip(active)} />
+              {upcoming.map((b) => (
+                <TripRow key={b.id} booking={b} onPress={() => setOpenTrip(b)} />
+              ))}
+            </>
+          ) : (
+            <View style={styles.noActiveCard}>
+              <Car size={34} color={theme.colors.borderStrong} />
+              <Text style={styles.noActiveText}>{t('dashboard.noActive')}</Text>
+              <Text style={styles.noActiveSubtext}>
+                {t('dashboard.noActiveHint')}
               </Text>
             </View>
-
-            {/* CTA */}
-            {active.driverStatus && NEXT_STATUS[active.driverStatus] && (
-              <TouchableOpacity
-                onPress={() =>
-                  handleStatusUpdate(active.id, NEXT_STATUS[active.driverStatus!])
-                }
-                disabled={updatingStatus}
-                style={styles.ctaButton}>
-                {updatingStatus ? (
-                  <ActivityIndicator color="#fff" size="small" />
-                ) : (
-                  <Text style={styles.ctaButtonText}>{NEXT_LABEL[active.driverStatus]}</Text>
-                )}
-              </TouchableOpacity>
-            )}
-          </View>
+          )
+        ) : poolTrips.length ? (
+          poolTrips.map((b) => (
+            <TripRow
+              key={b.id}
+              booking={b}
+              highlight
+              onPress={() => setClaimTarget(b)}
+            />
+          ))
         ) : (
           <View style={styles.noActiveCard}>
-            <Car size={32} color={theme.colors.borderNeutralColor} />
-            <Text style={styles.noActiveText}>No active trip</Text>
-            <Text style={styles.noActiveSubtext}>
-              You'll be notified when a trip is assigned to you.
-            </Text>
+            <Zap size={30} color={theme.colors.borderStrong} />
+            <Text style={styles.noActiveText}>{t('pool.emptyTitle')}</Text>
+            <Text style={styles.noActiveSubtext}>{t('pool.emptyBody')}</Text>
           </View>
         )}
 
-        {/* Upcoming trips */}
-        {upcoming.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Upcoming</Text>
-            {upcoming.slice(0, 3).map((b) => (
-              <View key={b.id} style={styles.upcomingCard}>
-                <View style={styles.upcomingLeft}>
-                  <Clock size={14} color={GOLD} />
-                  <View style={styles.upcomingText}>
-                    <Text style={styles.upcomingDate}>{formatDateTime(b.startDate)}</Text>
-                    <Text style={styles.upcomingPickup} numberOfLines={1}>
-                      {b.bookingBusinessData.pickupLocation.displayName}
-                    </Text>
-                  </View>
-                </View>
-                <Text style={styles.upcomingCode}>{b.bookingCode}</Text>
-              </View>
-            ))}
-            {upcoming.length > 3 && (
-              <TouchableOpacity onPress={() => setActiveTab('Trips')}>
-                <Text style={styles.seeAllLink}>See all trips →</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        )}
       </ScrollView>
-      <PageTransition isVisible={showPool}>
-        {showPool ? <PoolScreen onBack={() => setShowPool(false)} /> : null}
-      </PageTransition>
+
+      <TripDetailModal
+        booking={openTripLive}
+        visible={!!openTrip}
+        onClose={() => setOpenTrip(null)}
+        onChanged={refetch}
+      />
+
+      <TripDetailModal
+        mode="claim"
+        booking={claimTarget}
+        visible={!!claimTarget}
+        onClose={() => setClaimTarget(null)}
+        onClaim={handleClaim}
+        claiming={!!claimingId}
+      />
     </PageSafeContainer>
   );
 };
 
+/** Upcoming vs the open pool, with live counts. */
+const SegmentedTabs = ({
+  tab,
+  onChange,
+  upcomingCount,
+  poolCount,
+}: {
+  tab: 'upcoming' | 'pool';
+  onChange: (t: 'upcoming' | 'pool') => void;
+  upcomingCount: number;
+  poolCount: number;
+}) => {
+  const { t } = useTranslation();
+  const items = [
+    { key: 'upcoming' as const, label: t('trips.upcoming'), count: upcomingCount },
+    { key: 'pool' as const, label: t('pool.title'), count: poolCount },
+  ];
+
+  return (
+    <View style={styles.segmentWrap}>
+      {items.map((item) => {
+        const active = tab === item.key;
+        return (
+          <TouchableOpacity
+            key={item.key}
+            style={[styles.segment, active && styles.segmentActive]}
+            activeOpacity={0.8}
+            onPress={() => onChange(item.key)}>
+            <Text style={[styles.segmentText, active && styles.segmentTextActive]}>
+              {item.label}
+            </Text>
+            {item.count > 0 && (
+              <View style={[styles.badge, active && styles.badgeActive]}>
+                <Text style={[styles.badgeText, active && styles.badgeTextActive]}>
+                  {item.count}
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+};
+
+/** One compact row, used by both tabs so the two lists read alike. */
+const TripRow = ({
+  booking,
+  onPress,
+  highlight,
+}: {
+  booking: Booking;
+  onPress: () => void;
+  highlight?: boolean;
+}) => {
+  const { t } = useTranslation();
+  const earnings = booking.driverEarnings;
+
+  return (
+    <TouchableOpacity
+      style={[styles.tripRow, highlight && styles.tripRowHighlight]}
+      activeOpacity={0.8}
+      onPress={onPress}>
+      <View style={[styles.tripRowIcon, highlight && styles.tripRowIconHighlight]}>
+        {highlight ? (
+          <Zap size={16} color={GOLD} />
+        ) : (
+          <Clock size={16} color={GOLD} />
+        )}
+      </View>
+      <View style={styles.tripRowText}>
+        <Text style={styles.tripRowDate}>{formatDateTime(booking.startDate)}</Text>
+        <Text style={styles.tripRowPickup} numberOfLines={1}>
+          {booking.bookingBusinessData?.pickupLocation?.displayName ?? '—'}
+        </Text>
+      </View>
+      {earnings?.amount != null ? (
+        <View style={styles.tripRowEarnings}>
+          <Text style={styles.tripRowEarningsLabel}>{t('trip.youEarn')}</Text>
+          <Text style={styles.tripRowEarningsValue}>
+            {earnings.currencyCode === 'USD' ? '$' : ''}
+            {earnings.amount.toFixed(2)}
+          </Text>
+        </View>
+      ) : (
+        <ChevronRight size={18} color={theme.colors.borderStrong} />
+      )}
+    </TouchableOpacity>
+  );
+};
+
+/**
+ * The hero card. Deliberately shallow — status, where to go next, and the two
+ * actions a driver reaches for without opening anything. Detail lives in the
+ * modal so this stays glanceable at arm's length.
+ */
+const ActiveTripCard = ({
+  booking,
+  onOpen,
+}: {
+  booking: Booking;
+  onOpen: () => void;
+}) => {
+  const { t } = useTranslation();
+  const status = booking.driverStatus ?? 'assigned';
+  const underway = isUnderway(booking);
+  const biz = booking.bookingBusinessData;
+
+  const heading =
+    status === 'in_progress'
+      ? {
+          label: t('trip.dropoff'),
+          loc: biz?.dropoffLocation,
+          Icon: Flag,
+          tint: theme.colors.accent,
+        }
+      : { label: t('trip.pickup'), loc: biz?.pickupLocation, Icon: MapPin, tint: GOLD };
+
+  const HeadingIcon = heading.Icon;
+
+  return (
+    <TouchableOpacity style={styles.activeCard} activeOpacity={0.9} onPress={onOpen}>
+      <View style={styles.activeTop}>
+        <View style={styles.activeBadge}>
+          <View
+            style={[
+              styles.activeDot,
+              { backgroundColor: underway ? theme.colors.success : GOLD },
+            ]}
+          />
+          <Text style={styles.activeBadgeText}>
+            {underway ? t('dashboard.inProgress') : t('dashboard.nextTrip')}
+          </Text>
+        </View>
+        <Text style={styles.activeCode}>#{booking.bookingCode}</Text>
+      </View>
+
+      <Text style={styles.activeStatus}>{t(STATUS_LABEL_KEY[status])}</Text>
+      <Text style={styles.activeTime}>{formatDateTime(booking.startDate)}</Text>
+
+      <View style={styles.headingRow}>
+        <HeadingIcon size={16} color={heading.tint} />
+        <View style={styles.headingText}>
+          <Text style={styles.headingLabel}>{heading.label}</Text>
+          <Text style={styles.headingName} numberOfLines={1}>
+            {heading.loc?.displayName ?? '—'}
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.quickRow}>
+        <TouchableOpacity
+          style={styles.quickBtn}
+          activeOpacity={0.75}
+          onPress={() =>
+            openNavigation(
+              heading.loc?.formattedAddress ?? heading.loc?.displayName,
+              heading.label
+            )
+          }>
+          <Navigation2 size={16} color={theme.colors.secondaryText} />
+          <Text style={styles.quickText}>{t('action.navigate')}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.quickBtn}
+          activeOpacity={0.75}
+          onPress={() => callCustomer(biz?.customer?.phone)}>
+          <Phone size={16} color={theme.colors.secondaryText} />
+          <Text style={styles.quickText}>{t('action.call')}</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.openRow}>
+        <Text style={styles.openText}>
+          {NEXT_ACTION_KEY[status]
+            ? t(NEXT_ACTION_KEY[status]!)
+            : t('dashboard.openTrip')}
+        </Text>
+        <ChevronRight size={20} color="#FFFFFF" />
+      </View>
+    </TouchableOpacity>
+  );
+};
+
 const styles = StyleSheet.create({
-  poolBanner: {
+  // Transparent so BodyWrapper's gradient shows through.
+  page: { flex: 1 },
+  scrollContent: {
+    paddingHorizontal: theme.spacing.lg,
+    paddingBottom: 120,
+    gap: theme.spacing.lg,
+  },
+
+
+  loadingBox: { paddingVertical: 48, alignItems: 'center' },
+
+  segmentWrap: {
+    flexDirection: 'row',
+    gap: 6,
+    backgroundColor: theme.colors.baseGray,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    borderColor: theme.colors.cardBorder,
+    padding: 4,
+  },
+  segment: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    backgroundColor: theme.colors.primaryAlpha[10],
-    borderWidth: 1,
-    borderColor: theme.colors.primaryAlpha[35],
-    borderRadius: 14,
-    padding: 14,
-    marginBottom: 16,
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 9,
+    borderRadius: theme.borderRadius.sm,
   },
-  poolIcon: {
+  segmentActive: { backgroundColor: theme.colors.cardBackground },
+  segmentText: {
+    fontSize: typography.sm,
+    fontWeight: '600',
+    color: theme.colors.textColor,
+  },
+  segmentTextActive: { color: theme.colors.primaryText, fontWeight: '700' },
+  badge: {
+    minWidth: 20,
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+    borderRadius: theme.borderRadius.full,
+    backgroundColor: theme.colors.borderStrong,
+    alignItems: 'center',
+  },
+  badgeActive: { backgroundColor: theme.colors.primary },
+  badgeText: { fontSize: typography.xxs, fontWeight: '700', color: '#FFFFFF' },
+  badgeTextActive: { color: '#FFFFFF' },
+
+  tripRow: {
+    ...surfaces.card,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  tripRowHighlight: { borderColor: theme.colors.primaryAlpha[35] },
+  tripRowIcon: {
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: theme.colors.cardBackground,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  poolTextWrap: { flex: 1 },
-  poolTitle: { fontSize: 15, fontWeight: '700', color: theme.colors.primaryText },
-  poolSubtitle: { fontSize: 12, color: theme.colors.textColor, marginTop: 1 },
-  page: {
-    flex: 1,
-    backgroundColor: theme.colors.bodyBackground,
-  },
-  scrollContent: {
-    padding: theme.spacing.lg,
-    paddingBottom: 100,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: theme.spacing.xl,
-    marginTop: theme.spacing.sm,
-  },
-  greeting: {
-    fontSize: 13,
-    color: theme.colors.textColor,
-  },
-  driverName: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: theme.colors.primaryText,
-    marginTop: 2,
-  },
-  availabilityBadge: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: theme.borderRadius.full,
-    minWidth: 90,
-    alignItems: 'center',
-  },
-  availableOn: { backgroundColor: theme.colors.success },
-  availableOff: {
-    backgroundColor: theme.colors.secondary,
-    borderWidth: 1,
-    borderColor: theme.colors.borderNeutralColor,
-  },
-  availabilityText: { fontSize: 12, fontWeight: '600' },
-  availableTextOn: { color: '#fff' },
-  availableTextOff: { color: theme.colors.textColor },
-  loadingBox: { height: 180, alignItems: 'center', justifyContent: 'center' },
-  activeCard: {
-    backgroundColor: '#fff',
-    borderRadius: theme.borderRadius.xl,
-    padding: theme.spacing.lg,
-    borderWidth: 1,
-    borderColor: theme.colors.primaryAlpha[20],
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 3,
-    marginBottom: theme.spacing.xl,
-  },
-  activeCardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: theme.spacing.lg,
-  },
-  activePulseDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: theme.colors.success,
-  },
-  activeCardTitle: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: theme.colors.success,
-    flex: 1,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  activeCode: { fontSize: 11, color: theme.colors.textColor, letterSpacing: 0.8 },
-  stepper: { flexDirection: 'row', alignItems: 'center', marginBottom: theme.spacing.lg },
-  stepItem: { alignItems: 'center', gap: 4 },
-  stepDot: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: theme.colors.secondary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: theme.colors.borderNeutralColor,
-  },
-  stepDotDone: {
     backgroundColor: theme.colors.primaryAlpha[10],
-    borderColor: theme.colors.primaryAlpha[35],
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  stepDotCurrent: { backgroundColor: GOLD, borderColor: GOLD },
-  stepLabel: { fontSize: 8, color: theme.colors.textColor, textAlign: 'center' },
-  stepLabelActive: { color: GOLD, fontWeight: '600' },
-  stepLine: { flex: 1, height: 1, backgroundColor: theme.colors.borderNeutralColor, marginBottom: 16 },
-  stepLineDone: { backgroundColor: theme.colors.primaryAlpha[35] },
-  routeSection: { gap: 10, marginBottom: theme.spacing.md },
-  routeRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
-  routeTextBlock: { flex: 1 },
-  routeLabel: {
-    fontSize: 10,
-    color: theme.colors.textColor,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  routeAddress: {
-    fontSize: 13,
+  tripRowIconHighlight: { backgroundColor: theme.colors.primaryAlpha[20] },
+  tripRowText: { flex: 1 },
+  tripRowDate: {
+    fontSize: typography.sm,
+    fontWeight: '600',
     color: theme.colors.primaryText,
-    fontWeight: '500',
+  },
+  tripRowPickup: {
+    fontSize: typography.xs,
+    color: theme.colors.textColor,
     marginTop: 1,
   },
-  customerRow: {
+  tripRowEarnings: { alignItems: 'flex-end' },
+  tripRowEarningsLabel: { fontSize: typography.xxs, color: theme.colors.textColor },
+  tripRowEarningsValue: {
+    fontSize: typography.md,
+    fontWeight: '700',
+    color: theme.colors.primaryTextAccent,
+  },
+
+  activeCard: { ...surfaces.card, padding: theme.spacing.lg, gap: 6 },
+  activeTop: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    marginBottom: theme.spacing.lg,
-    paddingTop: theme.spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.borderNeutralColor,
+    justifyContent: 'space-between',
   },
-  customerName: { fontSize: 13, color: theme.colors.secondaryText },
-  ctaButton: {
-    backgroundColor: GOLD,
-    borderRadius: theme.borderRadius.lg,
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
-  ctaButtonText: { color: '#fff', fontSize: 15, fontWeight: '700', letterSpacing: 0.3 },
-  noActiveCard: {
-    backgroundColor: '#fff',
-    borderRadius: theme.borderRadius.xl,
-    padding: theme.spacing.xl,
-    alignItems: 'center',
-    gap: 8,
-    borderWidth: 1,
-    borderColor: theme.colors.borderNeutralColor,
-    marginBottom: theme.spacing.xl,
-  },
-  noActiveText: { fontSize: 16, fontWeight: '600', color: theme.colors.primaryText },
-  noActiveSubtext: {
-    fontSize: 13,
-    color: theme.colors.textColor,
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-  section: { gap: theme.spacing.sm },
-  sectionTitle: {
-    fontSize: 13,
+  activeBadge: { flexDirection: 'row', alignItems: 'center', gap: 7 },
+  activeDot: { width: 9, height: 9, borderRadius: 5 },
+  activeBadgeText: {
+    fontSize: typography.xs,
     fontWeight: '700',
-    color: theme.colors.secondaryText,
+    color: theme.colors.textColor,
     textTransform: 'uppercase',
     letterSpacing: 0.6,
-    marginBottom: 4,
   },
-  upcomingCard: {
-    backgroundColor: '#fff',
-    borderRadius: theme.borderRadius.lg,
-    padding: theme.spacing.md,
+  activeCode: { fontSize: typography.xs, color: theme.colors.textColor },
+  activeStatus: {
+    fontSize: typography.xxl,
+    fontWeight: '700',
+    color: theme.colors.primaryText,
+    letterSpacing: -0.3,
+    marginTop: 2,
+  },
+  activeTime: { fontSize: typography.sm, color: theme.colors.textColor },
+
+  headingRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: theme.colors.borderNeutralColor,
+    gap: theme.spacing.md,
+    marginTop: theme.spacing.md,
+    paddingTop: theme.spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.cardBorder,
   },
-  upcomingLeft: { flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 },
-  upcomingText: { flex: 1 },
-  upcomingDate: { fontSize: 11, color: GOLD, fontWeight: '600' },
-  upcomingPickup: { fontSize: 13, color: theme.colors.primaryText, marginTop: 1 },
-  upcomingCode: { fontSize: 10, color: theme.colors.textColor, letterSpacing: 0.8 },
-  seeAllLink: { fontSize: 13, color: GOLD, fontWeight: '600', textAlign: 'right', paddingTop: 4 },
+  headingText: { flex: 1 },
+  headingLabel: { fontSize: typography.xs, color: theme.colors.textColor },
+  headingName: {
+    fontSize: typography.md,
+    fontWeight: '600',
+    color: theme.colors.primaryText,
+    marginTop: 1,
+  },
+
+  quickRow: {
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    marginTop: theme.spacing.md,
+  },
+  quickBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 12,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    borderColor: theme.colors.cardBorder,
+    backgroundColor: theme.colors.baseGray,
+  },
+  quickText: {
+    fontSize: typography.sm,
+    fontWeight: '600',
+    color: theme.colors.secondaryText,
+  },
+
+  openRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginTop: theme.spacing.md,
+    backgroundColor: theme.colors.primaryText,
+    borderRadius: theme.borderRadius.md,
+    paddingVertical: 16,
+  },
+  openText: { color: '#FFFFFF', fontSize: typography.md, fontWeight: '700' },
+
+  noActiveCard: {
+    ...surfaces.card,
+    alignItems: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: theme.spacing.lg,
+    gap: 6,
+  },
+  noActiveText: {
+    fontSize: typography.lg,
+    fontWeight: '600',
+    color: theme.colors.secondaryText,
+    marginTop: 6,
+  },
+  noActiveSubtext: {
+    fontSize: typography.sm,
+    color: theme.colors.textColor,
+    textAlign: 'center',
+  },
+
 });

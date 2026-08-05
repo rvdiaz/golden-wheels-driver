@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderRadius: theme.borderRadius.lg,
+    borderRadius: theme.borderRadius.md,
     paddingVertical: 10,
     paddingHorizontal: 16,
     fontSize: 16,

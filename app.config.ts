@@ -5,7 +5,7 @@ import { ConfigContext } from 'expo/config';
 // replace it. It drives updates.url AND getExpoPushTokenAsync({ projectId }),
 // so until it changes every driver push token is minted against the wrong
 // project and silently never delivers. See CUSTOMER_APP_EAS_PROJECT_ID below.
-const EAS_PROJECT_ID = 'bf4ea28e-ea3b-4071-9b5c-b6fba74685dc';
+const EAS_PROJECT_ID = '906f0570-999c-4ab9-8ff3-23a02e9e2538';
 
 const PROJECT_SLUG = 'golden-wheels-driver';
 const OWNER = 'rvdiaz1994';
@@ -13,8 +13,8 @@ const OWNER = 'rvdiaz1994';
 const APP_NAME = 'Golden Wheels Driver';
 const BUNDLE_IDENTIFIER = 'com.codidge.goldenwheelsdriver';
 const PACKAGE_NAME = 'com.codidge.goldenwheelsdriver';
-const ICON = './assets/logo.jpeg';
-const ADAPTIVE_ICON = './assets/logo.jpeg';
+const ICON = './assets/logo512.jpeg';
+const ADAPTIVE_ICON = './assets/logo512.jpg';
 const VERSION = '1.1.1';
 const BUILD_NUMBER = 1;
 

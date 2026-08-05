@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
 import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
+import { surfaces } from '~/theme/surfaces';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -25,8 +26,8 @@ export interface INavigationSection {
 const GOLD = theme.colors.primary;
 const GOLD_10 = theme.colors.primaryAlpha[10];
 const GOLD_18 = theme.colors.primaryAlpha[20];
-const GLASS_BG = 'rgba(255,255,255,0.07)';
-const WHITE_10 = 'rgba(255,255,255,0.10)';
+// Was white-on-white glass from the dark theme — invisible on the light surface.
+const DIVIDER = theme.colors.cardBorder;
 
 // ─── Navigation Item ──────────────────────────────────────────────────────────
 
@@ -128,21 +129,18 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   sectionTitle: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '700',
     letterSpacing: 1.2,
     textTransform: 'uppercase',
-    color: GOLD,
+    color: theme.colors.primaryTextAccent,
     marginBottom: 10,
     marginTop: 10,
   },
 
   // ── Card group ──
   card: {
-    backgroundColor: GLASS_BG,
-    borderRadius: theme.borderRadius.lg,
-    borderWidth: 0.5,
-    borderColor: 'rgba(255,255,255,0.09)',
+    ...surfaces.card,
     overflow: 'hidden',
   },
   cardShimmer: {
@@ -151,7 +149,7 @@ const styles = StyleSheet.create({
     left: '15%',
     right: '15%',
     height: 1,
-    backgroundColor: 'rgba(218,192,114,0.22)',
+    backgroundColor: theme.colors.primaryAlpha[35],
     borderRadius: 1,
   },
 
@@ -175,12 +173,12 @@ const styles = StyleSheet.create({
   },
   itemLabel: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '400',
-    color: 'rgba(255,255,255,0.78)',
+    color: theme.colors.primaryText,
   },
   itemLabelDanger: {
-    color: '#f87171',
+    color: theme.colors.danger,
   },
   divider: {
     position: 'absolute',
@@ -188,6 +186,6 @@ const styles = StyleSheet.create({
     left: 60,
     right: 0,
     height: 0.5,
-    backgroundColor: WHITE_10,
+    backgroundColor: DIVIDER,
   },
 });

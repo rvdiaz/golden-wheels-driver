@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { ButtonSize, sizeStyles } from './types';
 import Text from '../text';
+import { theme } from '~/theme/theme';
 
 interface TextButtonProps {
   loading?: boolean;
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   text: {
-    color: '#FFFFFF', // gray-500
+    color: theme.colors.secondaryText,
     fontWeight: '500',
   },
 });

@@ -12,7 +12,7 @@ import { StyleSheet } from 'react-native';
 import Text from '~/codidge_components/UI/text';
 import { ENV_Vars } from '~/store/env';
 import { useUser } from './hooks/useUser';
-import { updateAuthenticateStateUser } from '~/store/user/authSessionState';
+import { applyDriverLanguagePreference } from '~/i18n';
 
 export const AuthWrapper = () => {
   const { currentView, tempData } = useAuthContext();
@@ -32,17 +32,20 @@ export const AuthWrapper = () => {
         return;
       }
 
+      // Honour the language on the driver's record — unless they've already
+      // picked one in the app, which applyDriverLanguagePreference respects.
+      applyDriverLanguagePreference(driverData.preferenceLanguage);
+
+      // Setting the driver is what dismisses the gate — the navigator reads
+      // userData directly, so there is no separate "close the modal" step.
       updateUser(driverData);
-      updateAuthenticateStateUser(false);
     } catch (error) {
       console.log('Error fetching driver profile:', error);
       await signOut();
     }
   };
 
-  const getHeader = (title: string): ReactNode => (
-    <Text style={styles.mainTitle}>{title}</Text>
-  );
+  const getHeader = (title: string): ReactNode => <Text style={styles.mainTitle}>{title}</Text>;
 
   switch (currentView) {
     // Invited driver setting their password for the first time. Distinct from
@@ -50,10 +53,7 @@ export const AuthWrapper = () => {
     case IAuthModuleKeys.forcePasswordChange:
       return (
         <AuthFormWrapper header={getHeader('Set Your Password')}>
-          <ForcePasswordChange
-            username={tempData?.email ?? ''}
-            onSuccess={handleLoginSuccess}
-          />
+          <ForcePasswordChange username={tempData?.email ?? ''} onSuccess={handleLoginSuccess} />
         </AuthFormWrapper>
       );
 
@@ -74,11 +74,7 @@ export const AuthWrapper = () => {
     default:
       return (
         <AuthFormWrapper header={getHeader('Driver Login')}>
-          <SignInForm
-            onSignUp={() => {}}
-            strictView
-            onLoginSuccess={handleLoginSuccess}
-          />
+          <SignInForm onSignUp={() => {}} strictView onLoginSuccess={handleLoginSuccess} />
         </AuthFormWrapper>
       );
   }
@@ -86,7 +82,7 @@ export const AuthWrapper = () => {
 
 const styles = StyleSheet.create({
   mainTitle: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '700',
     color: '#111827',
     textAlign: 'center',

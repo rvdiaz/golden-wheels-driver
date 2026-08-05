@@ -238,14 +238,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
     color: '#1F2937',
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 17,
     color: '#6B7280',
     textAlign: 'center',
   },
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '600',
     color: '#1F2937',
     backgroundColor: 'white',
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#EEF2FF',
   },
   errorText: {
-    fontSize: 14,
+    fontSize: 15,
     color: '#EF4444',
     textAlign: 'center',
     marginBottom: 16,
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
 
   verifyButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
   },
   resendContainer: {
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   countdownText: {
-    fontSize: 16,
+    fontSize: 17,
     color: '#6B7280',
   },
   helpContainer: {
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     borderColor: '#2563EB',
   },
   codeInputText: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '600',
     color: '#1F2937',
     textAlign: 'center',

@@ -4,6 +4,7 @@
   "scripts": {
     "android": "expo run:android",
     "ios": "expo run:ios",
+    "iosdevice": "expo run:ios --device",
     "start": "expo start",
     "lint": "eslint \"**/*.{js,jsx,ts,tsx}\" && prettier -c \"**/*.{js,jsx,ts,tsx,json}\"",
     "format": "eslint \"**/*.{js,jsx,ts,tsx}\" --fix && prettier \"**/*.{js,jsx,ts,tsx,json}\" --write",

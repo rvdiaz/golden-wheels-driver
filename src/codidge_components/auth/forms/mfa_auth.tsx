@@ -15,6 +15,7 @@ import { IAuthModuleKeys, MfaFormData } from '../interfaces';
 import { Card } from '~/codidge_components/UI/card';
 import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import Text from '~/codidge_components/UI/text';
+import { theme } from '~/theme/theme';
 
 export const MfaAuth = () => {
   const { setCurrentView } = useAuthContext();
@@ -102,7 +103,7 @@ export const MfaAuth = () => {
                 <View style={styles.codeContainer}>
                   {[0, 1, 2, 3, 4, 5].map((index) => (
                     <InputField
-                      variant="dark"
+                      variant="light"
                       key={index}
                       ref={(ref) => {
                         if (ref) inputRefs.current[index] = ref;
@@ -190,15 +191,15 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: theme.colors.primaryText,
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
-    color: '#FFFFFF',
+    fontSize: 17,
+    color: theme.colors.primaryText,
     textAlign: 'center',
     lineHeight: 24,
   },
@@ -219,7 +220,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#D1D5DB',
     borderRadius: 12,
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '600',
     color: '#1F2937',
     backgroundColor: 'white',
@@ -232,7 +233,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#EEF2FF',
   },
   errorText: {
-    fontSize: 14,
+    fontSize: 15,
     color: '#EF4444',
     textAlign: 'center',
     marginBottom: 16,
@@ -249,19 +250,19 @@ const styles = StyleSheet.create({
   },
   verifyButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
   },
   resendContainer: {
     alignItems: 'center',
   },
   resendText: {
-    fontSize: 16,
+    fontSize: 17,
     color: '#2563EB',
     fontWeight: '600',
   },
   countdownText: {
-    fontSize: 16,
+    fontSize: 17,
     color: '#6B7280',
   },
   helpContainer: {
@@ -271,7 +272,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   helpText: {
-    fontSize: 14,
+    fontSize: 15,
     color: '#6B7280',
     marginLeft: 8,
   },
@@ -282,7 +283,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   backButtonText: {
-    fontSize: 16,
+    fontSize: 17,
     color: '#6B7280',
     marginLeft: 8,
   },

@@ -5,6 +5,7 @@ import WebView from 'react-native-webview';
 import { BodyWrapper } from '~/codidge_components/UI/bodyWrapper';
 import { Header } from '~/codidge_components/UI/header';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import { theme } from '~/theme/theme';
 
 export const TermsAndConditions = ({ onBack }: { onBack: () => void }) => {
   return (
@@ -15,7 +16,7 @@ export const TermsAndConditions = ({ onBack }: { onBack: () => void }) => {
             backgroundColor: 'transparent',
           }}
           titleStyles={{
-            color: '#FFF',
+            color: theme.colors.primaryText,
           }}
           leftWidget={
             <TouchableOpacity onPress={onBack} style={styles.iconBtn} activeOpacity={0.7}>
@@ -36,9 +37,9 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: theme.colors.cardBackground,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: theme.colors.cardBorder,
     alignItems: 'center',
     justifyContent: 'center',
   },

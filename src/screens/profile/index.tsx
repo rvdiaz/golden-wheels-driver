@@ -6,6 +6,7 @@ import { userData } from '~/store/user';
 import { LogoutButton } from '~/codidge_components/auth/widgets/logoutButton';
 import { theme } from '~/theme/theme';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
+import { ScreenHeader } from '~/codidge_components/UI/screenHeader';
 import Text from '~/codidge_components/UI/text';
 import { ProfileNavigationSection } from '~/codidge_components/UI/navigationButtons';
 import { PageTransition } from '~/codidge_components/UI/pageTransition';
@@ -14,6 +15,7 @@ import { DriverInfo } from './widgets/driverInfo';
 import { ContactSubmissionsScreen } from './widgets/contact';
 import { PrivacyPolicyScreen } from './widgets/privacyPolicy';
 import { useFocusEffect } from '@react-navigation/native';
+import { useTranslation } from '~/i18n';
 
 // ─── Color tokens ─────────────────────────────────────────────────────────────
 
@@ -41,6 +43,7 @@ type Props = {
 };
 
 export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
+  const { t } = useTranslation();
   const user = useReactiveVar(userData);
   const [screen, setScreen] = useState<
     'personal-info' | 'privacy-policy' | 'terms' | 'feedback' | null
@@ -105,6 +108,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
   return (
     <>
       <PageSafeContainer>
+        <ScreenHeader title={t('account.title')} />
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
@@ -116,7 +120,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
                 <Text style={styles.avatarInitials}>{getInitials(user?.name)}</Text>
               </View>
             </View>
-            <Text style={styles.profileName}>{user?.name ?? 'Your Profile'}</Text>
+            <Text style={styles.profileName}>{user?.name ?? 'Driver'}</Text>
             {user?.email ? <Text style={styles.profileEmail}>{user.email}</Text> : null}
           </View>
 
@@ -125,11 +129,11 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
             <ProfileNavigationSection
               sections={[
                 {
-                  title: 'Personal',
+                  title: t('account.personal'),
                   items: [
                     {
                       id: 'personal-info',
-                      label: 'My profile',
+                      label: t('account.myProfile'),
                       icon: <User />,
                       onClick: () => {
                         setScreen('personal-info');
@@ -138,7 +142,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
                     },
                     {
                       id: 'Terms And Conditions',
-                      label: 'Terms And Conditions',
+                      label: t('account.terms'),
                       icon: <BookText />,
                       onClick: () => {
                         setScreen('terms');
@@ -147,7 +151,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
                     },
                     {
                       id: 'privacy-policy',
-                      label: 'Privacy Policy',
+                      label: t('account.privacy'),
                       icon: <Shield />,
                       onClick: () => {
                         setScreen('privacy-policy');
@@ -156,11 +160,11 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
                   ],
                 },
                 {
-                  title: 'Support',
+                  title: t('account.support'),
                   items: [
                     {
                       id: 'feedback',
-                      label: 'Send Feedback',
+                      label: t('account.feedback'),
                       icon: <MessageCircleQuestion />,
                       onClick: () => {
                         setScreen('feedback');
@@ -205,7 +209,7 @@ const styles = StyleSheet.create({
   // ── Profile header ──
   profileHeader: {
     alignItems: 'center',
-    paddingTop: theme.spacing.xl,
+    paddingTop: theme.spacing.md,
     paddingBottom: theme.spacing.xl,
     gap: 6,
   },
@@ -231,20 +235,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   avatarInitials: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: '500',
-    color: GOLD,
+    color: theme.colors.primaryTextAccent,
     letterSpacing: 0.5,
   },
   profileName: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '600',
-    color: 'rgba(255,255,255,0.88)',
+    color: theme.colors.primaryText,
     letterSpacing: 0.2,
   },
   profileEmail: {
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.35)',
+    fontSize: 14,
+    color: theme.colors.textColor,
   },
 
   // ── Sections ──

@@ -64,10 +64,10 @@ export const ContactSubmissionsScreen = ({ onBack }: { onBack: () => void }) => 
           title="Contact Us"
           leftWidget={
             <TouchableOpacity onPress={onBack} style={s.iconBtn} activeOpacity={0.7}>
-              <ArrowLeft size={18} color="rgba(255,255,255,0.8)" />
+              <ArrowLeft size={18} color={theme.colors.secondaryText} />
             </TouchableOpacity>
           }
-          titleStyles={{ color: '#FFF' }}
+          titleStyles={{ color: theme.colors.primaryText }}
           onBack={onBack}
         />
 
@@ -135,27 +135,27 @@ const s = StyleSheet.create({
 
   introWrap: { gap: 6 },
   introTitle: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: '700',
-    color: GOLD,
+    color: theme.colors.primaryTextAccent,
     letterSpacing: -0.3,
   },
   introSub: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.5)',
+    fontSize: 15,
+    color: theme.colors.textColor,
     lineHeight: 20,
   },
 
   infoCard: {
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: theme.colors.cardBackground,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: theme.colors.cardBorder,
     borderRadius: 16,
     overflow: 'hidden',
   },
 
   formCard: {
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: theme.colors.cardBackground,
     borderWidth: 1,
     borderColor: 'rgba(212,168,83,0.15)',
     borderRadius: 16,
@@ -178,9 +178,9 @@ const s = StyleSheet.create({
     justifyContent: 'center',
   },
   formTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '700',
-    color: '#ffffff',
+    color: theme.colors.primaryText,
     letterSpacing: -0.2,
   },
 
@@ -189,16 +189,16 @@ const s = StyleSheet.create({
     alignItems: 'center',
   },
   unavailableText: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.35)',
+    fontSize: 15,
+    color: theme.colors.textColor,
   },
   iconBtn: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: theme.colors.baseGray,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: theme.colors.cardBorder,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -211,7 +211,7 @@ const info = StyleSheet.create({
     padding: 16,
     gap: 14,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: 'rgba(255,255,255,0.06)',
+    borderBottomColor: theme.colors.cardBorder,
   },
   iconWrap: {
     width: 34,
@@ -223,15 +223,15 @@ const info = StyleSheet.create({
   },
   content: { flex: 1, gap: 2 },
   label: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '600',
     letterSpacing: 0.8,
     textTransform: 'uppercase',
-    color: 'rgba(255,255,255,0.4)',
+    color: theme.colors.textColor,
   },
   value: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '500',
-    color: 'rgba(255,255,255,0.85)',
+    color: theme.colors.primaryText,
   },
 });

@@ -17,6 +17,7 @@ import InputField from '~/codidge_components/UI/form/inputs/inputField';
 import Text from '~/codidge_components/UI/text';
 import { confirmSignIn } from 'aws-amplify/auth';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
+import { theme } from '~/theme/theme';
 
 /**
  * Completes Cognito's NEW_PASSWORD_REQUIRED challenge — the last step of the
@@ -181,7 +182,7 @@ export const ForcePasswordChange = ({
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
-                    variant="dark"
+                    variant="light"
                     containerStyle={{
                       flex: 1,
                       width: '100%',
@@ -235,12 +236,11 @@ export const ForcePasswordChange = ({
                 name="confirmPassword"
                 rules={{
                   required: 'Please confirm your password',
-                  validate: (value?: string) =>
-                    value === newPassword || 'Passwords do not match',
+                  validate: (value?: string) => value === newPassword || 'Passwords do not match',
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
-                    variant="dark"
+                    variant="light"
                     containerStyle={{ flex: 1, width: '100%' }}
                     label="Confirm Password"
                     placeholder="Re-enter your password"
@@ -350,8 +350,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   subtitle: {
-    fontSize: 14,
-    color: '#FFFFFF',
+    fontSize: 15,
+    color: theme.colors.primaryText,
     textAlign: 'center',
   },
   formCard: {
@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   label: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
     color: '#374151',
     marginBottom: 8,
@@ -377,12 +377,12 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   resendText: {
-    fontSize: 14,
+    fontSize: 15,
     color: '#4F46E5',
     fontWeight: '500',
   },
   errorText: {
-    fontSize: 14,
+    fontSize: 15,
     color: '#EF4444',
     marginTop: 4,
   },
@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   strengthText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
   },
   requirementsContainer: {
@@ -410,7 +410,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   requirementsTitle: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '600',
     color: '#374151',
     marginBottom: 12,
@@ -421,7 +421,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   requirementText: {
-    fontSize: 14,
+    fontSize: 15,
     color: '#6B7280',
     marginLeft: 8,
   },

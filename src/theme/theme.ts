@@ -1,6 +1,6 @@
 export const theme = {
   colors: {
-    primary: '#D4A843', // gold — fills, borders, icons, active states
+    primary: '#dac072', // gold — fills, borders, icons, active states
     /**
      * Gold for TEXT. The brand gold is only 2.2:1 on white, so anything set in
      * `primary` reads as washed out and half-disabled. This is the darkest
@@ -58,6 +58,13 @@ export const theme = {
      * while staying clearly subordinate to textColor (5.8:1).
      */
     textMuted: '#7A8494',
+    /**
+     * The one hue charts plot in. Brand gold is 2.2:1 on a white card, below
+     * the 3:1 floor a graphical mark needs to be readable; this is the darkest
+     * on-brand gold that clears it. One series, one colour — bars are never
+     * shaded by their own value.
+     */
+    chartSeries: '#22C55E',
     shadowColor: '#0B1220',
   },
   spacing: {

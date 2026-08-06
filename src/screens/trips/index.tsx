@@ -17,7 +17,7 @@ import { ENV_Vars } from '~/store/env';
 import { getDriverBookingsQuery } from './graphql/queries';
 import { Booking } from './interfaces';
 import { formatCurrency, formatDateTime } from './helpers';
-import { LoadingSpinner } from '~/codidge_components/UI/loading/loadingSpinner';
+import { TripListSkeleton } from '~/components/loadingSkeletons';
 import { TripDetailModal } from './components/tripDetailModal';
 import { STATUS_LABEL_KEY, callCustomer, messageCustomer } from './hooks/useTripActions';
 import { typography } from '~/theme/typography';
@@ -268,6 +268,9 @@ export const TripsScreen = () => {
   );
 
   const bookings = data?.getDriverBookings ?? [];
+  // While the user hydrates from storage the query is skipped and Apollo
+  // reports loading:false, which flashed "no trips" before the first request.
+  const showSkeleton = !userInfo?.id || (loading && !refreshing);
   const counts: Record<DriverTabKey, number> = {
     upcoming: filterDriverBookings(bookings, 'upcoming').length,
     past: filterDriverBookings(bookings, 'past').length,
@@ -296,9 +299,9 @@ export const TripsScreen = () => {
 
       <TabBar active={activeTab} counts={counts} onChange={setActiveTab} />
 
-      {loading && !refreshing ? (
-        <View style={styles.center}>
-          <LoadingSpinner />
+      {showSkeleton ? (
+        <View style={styles.skeleton}>
+          <TripListSkeleton />
         </View>
       ) : (
         <FlatList
@@ -347,6 +350,7 @@ const styles = StyleSheet.create({
   // Transparent so BodyWrapper's gradient shows through.
   page: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  skeleton: { paddingHorizontal: theme.spacing.lg, paddingTop: theme.spacing.md },
   list: {
     paddingHorizontal: theme.spacing.lg,
     paddingBottom: TAB_BAR_CLEARANCE,
@@ -384,19 +388,37 @@ const styles = StyleSheet.create({
  */
 const tabStyles = StyleSheet.create({
   scroller: {
+    // flexGrow: 0 stops the row expanding; flexShrink: 0 stops it being
+    // compressed. Both are needed. The screen is a flex column - header, this
+    // row, then the trip list - and the list creates enough pressure to squash
+    // this scroller vertically, which clipped the chips and cut their labels.
+    // Removing the list made the symptom vanish, which is what pinned it here.
     flexGrow: 0,
+    flexShrink: 0,
     marginBottom: theme.spacing.md,
   },
   wrapper: {
     flexDirection: 'row',
+    // Required now the chip sets its own height. A ScrollView's content
+    // container defaults to alignItems: 'stretch', and on a horizontal
+    // scroller the cross axis is vertical - so it stretches each chip to the
+    // container's height while the container's height is itself derived from
+    // the chips. Centring opts the chips out of that and lets height: 42 hold.
+    alignItems: 'center',
     gap: theme.spacing.sm,
     paddingHorizontal: theme.spacing.lg,
   },
   tab: {
+    // Never let a chip be compressed to fit the viewport. Without this the row
+    // squeezes every chip once the three no longer fit - which is why selecting
+    // Completed, the longest label, cut all three at once - and the label ends
+    // up clipped inside a chip narrower than its own text. The scroller is what
+    // handles overflow; the chips keep their natural width.
+    flexShrink: 0,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    paddingVertical: 8,
+    paddingVertical: 12,
     paddingHorizontal: 14,
     borderRadius: theme.borderRadius.full,
     borderWidth: 1,
@@ -408,9 +430,12 @@ const tabStyles = StyleSheet.create({
     borderColor: theme.colors.primaryText,
   },
   label: {
+    // Matches the badge's flexShrink: 0. The chip is sized by its contents, so
+    // anything here that can shrink is a way for the text to be cut.
+    flexShrink: 0,
     fontSize: typography.xs,
     color: theme.colors.secondaryText,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   labelActive: { color: '#FFFFFF', fontWeight: '700' },
   badge: {

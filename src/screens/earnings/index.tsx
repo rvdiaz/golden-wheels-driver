@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, FlatList, RefreshControl } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { View, StyleSheet, FlatList, RefreshControl, TouchableOpacity } from 'react-native';
 import { useQuery, useReactiveVar } from '@apollo/client';
+import { useFocusEffect } from '@react-navigation/native';
 import { Wallet, ArrowDownLeft, ArrowUpRight, Receipt } from 'lucide-react-native';
 
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
@@ -16,10 +17,21 @@ import { ENV_Vars } from '~/store/env';
 import { formatCurrency, formatMiamiTime } from '~/helpers';
 import { TAB_BAR_CLEARANCE } from '~/navigation/bottomBar';
 
+import { BalanceCardSkeleton, LedgerListSkeleton } from '~/components/loadingSkeletons';
+
 import { getDriverBalanceQuery, getDriverLedgerQuery } from './graphql/queries';
 import { DriverBalance, DriverLedgerPage, LedgerEntry } from './interfaces';
+import { LedgerDetailModal } from './components/ledgerDetailModal';
+import { EarningsChart } from './components/earningsChart';
 
 const PAGE_SIZE = 25;
+/**
+ * The chart's own window. It reads its own page rather than the list's because
+ * the list pages 25 at a time — a driver with a busy month would have every
+ * earlier month render as a false zero until they happened to scroll far
+ * enough. One wider read keeps the six months honest regardless of scrolling.
+ */
+const CHART_WINDOW = 200;
 
 const PAYMENT_METHOD_KEY: Record<string, TKey> = {
   cash: 'earnings.methodCash',
@@ -79,7 +91,20 @@ const BalanceCard = ({ balance }: { balance?: DriverBalance }) => {
 
 // ─── Ledger row ───────────────────────────────────────────────────────────────
 
-const LedgerRow = ({ entry }: { entry: LedgerEntry }) => {
+const LedgerRow = ({
+  entry,
+  first,
+  last,
+  balanceAfter,
+  onPress,
+}: {
+  entry: LedgerEntry;
+  first: boolean;
+  last: boolean;
+  /** Running balance the moment this entry landed. */
+  balanceAfter?: number;
+  onPress: () => void;
+}) => {
   const { t } = useTranslation();
 
   // Keyed off the sign rather than the type string, so an entry type this build
@@ -97,7 +122,10 @@ const LedgerRow = ({ entry }: { entry: LedgerEntry }) => {
   const subtitle = !isCredit && methodKey ? t('earnings.paidVia', { method: t(methodKey) }) : null;
 
   return (
-    <View style={rowStyles.row}>
+    <TouchableOpacity
+      style={[rowStyles.row, first && rowStyles.rowFirst, last && rowStyles.rowLast]}
+      activeOpacity={0.6}
+      onPress={onPress}>
       <View style={[rowStyles.iconWrap, { backgroundColor: accent + '14' }]}>
         <Icon size={15} color={accent} />
       </View>
@@ -110,18 +138,22 @@ const LedgerRow = ({ entry }: { entry: LedgerEntry }) => {
           {formatDay(entry.occurredAt)}
           {subtitle ? ` · ${subtitle}` : ''}
         </Text>
-        {!!entry.paymentReference && (
-          <Text style={rowStyles.reference} numberOfLines={1}>
-            {entry.paymentReference}
+      </View>
+
+      <View style={rowStyles.amounts}>
+        <Text style={[rowStyles.amount, { color: accent }]}>
+          {isCredit ? '+' : '−'}
+          {formatCurrency(Math.abs(entry.amount), entry.currencyCode)}
+        </Text>
+        {balanceAfter !== undefined && (
+          <Text style={rowStyles.running} numberOfLines={1}>
+            {t('earnings.runningBalance', {
+              amount: formatCurrency(balanceAfter, entry.currencyCode),
+            })}
           </Text>
         )}
       </View>
-
-      <Text style={[rowStyles.amount, { color: accent }]}>
-        {isCredit ? '+' : '−'}
-        {formatCurrency(Math.abs(entry.amount), entry.currencyCode)}
-      </Text>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -156,14 +188,63 @@ export const EarningsScreen = () => {
     skip,
   });
 
+  const { data: chartData, refetch: refetchChart } = useQuery<{
+    getDriverLedger: DriverLedgerPage;
+  }>(getDriverLedgerQuery, {
+    variables: { tenant: ENV_Vars.tenant, limit: CHART_WINDOW },
+    // Cached months render instantly; the network pass corrects them behind it.
+    fetchPolicy: 'cache-and-network',
+    skip,
+  });
+
   const balance = balanceData?.getDriverBalance;
   const entries = ledgerData?.getDriverLedger?.items ?? [];
   const nextToken = ledgerData?.getDriverLedger?.nextToken;
 
+  const [selected, setSelected] = useState<LedgerEntry | null>(null);
+
+  /**
+   * Balance the moment each entry landed, so the driver can follow the total
+   * accumulating down the list rather than only seeing today's figure.
+   *
+   * Derived rather than stored: the ledger SK is `TXN#{createdAt}#{entryId}`
+   * read with ScanIndexForward:false, so entries are strictly newest-first and
+   * the newest one's "after" balance *is* the current balance. Walking down and
+   * subtracting each amount recovers every earlier balance exactly, and the
+   * chain continues correctly across pages because they append in order.
+   */
+  const balanceAfterById = useMemo(() => {
+    const map: Record<string, number> = {};
+    if (balance?.balance === undefined) return map;
+
+    let running = balance.balance;
+    for (const entry of entries) {
+      map[entry.entryId] = running;
+      running -= entry.amount;
+    }
+    return map;
+  }, [entries, balance?.balance]);
+
+  /**
+   * Payments are recorded by the owner in the admin panel, so the driver's
+   * money can change while this screen is mounted with nothing to tell it.
+   * The tab navigator keeps screens mounted, so network-only alone only ever
+   * fetches once — refetching on focus is what makes a payment show up without
+   * the driver knowing to pull down.
+   */
+  useFocusEffect(
+    useCallback(() => {
+      if (skip) return;
+      refetchBalance();
+      refetchLedger();
+      refetchChart();
+    }, [skip, refetchBalance, refetchLedger, refetchChart])
+  );
+
   const onRefresh = async () => {
     setRefreshing(true);
     try {
-      await Promise.all([refetchBalance(), refetchLedger()]);
+      await Promise.all([refetchBalance(), refetchLedger(), refetchChart()]);
     } finally {
       setRefreshing(false);
     }
@@ -191,15 +272,19 @@ export const EarningsScreen = () => {
     });
   };
 
-  const showInitialSpinner = loading && !refreshing && entries.length === 0;
+  // `skip` is included on purpose: while the user is still hydrating from
+  // storage Apollo reports loading:false, which used to flash the "no earnings
+  // yet" empty state before the first request had even been sent.
+  const showSkeleton = skip || (loading && !refreshing && entries.length === 0);
 
   return (
     <PageSafeContainer style={styles.page}>
       <ScreenHeader title={t('earnings.title')} subtitle={t('earnings.subtitle')} />
 
-      {showInitialSpinner ? (
-        <View style={styles.center}>
-          <LoadingSpinner />
+      {showSkeleton ? (
+        <View style={styles.skeleton}>
+          <BalanceCardSkeleton />
+          <LedgerListSkeleton />
         </View>
       ) : (
         <FlatList
@@ -210,13 +295,29 @@ export const EarningsScreen = () => {
           ListHeaderComponent={
             <View style={styles.header}>
               <BalanceCard balance={balance} />
+              <EarningsChart
+                entries={chartData?.getDriverLedger?.items ?? []}
+                currencyCode={balance?.currencyCode ?? 'USD'}
+              />
               {entries.length > 0 && (
                 <Text style={styles.sectionTitle}>{t('earnings.historyTitle')}</Text>
               )}
             </View>
           }
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
-          renderItem={({ item }) => <LedgerRow entry={item} />}
+          ItemSeparatorComponent={() => (
+            <View style={styles.separator}>
+              <View style={styles.separatorLine} />
+            </View>
+          )}
+          renderItem={({ item, index }) => (
+            <LedgerRow
+              entry={item}
+              first={index === 0}
+              last={index === entries.length - 1}
+              balanceAfter={balanceAfterById[item.entryId]}
+              onPress={() => setSelected(item)}
+            />
+          )}
           ListEmptyComponent={
             <View style={styles.empty}>
               <Receipt size={28} color={theme.colors.borderNeutralColor} />
@@ -242,6 +343,12 @@ export const EarningsScreen = () => {
           }
         />
       )}
+
+      <LedgerDetailModal
+        entry={selected}
+        balanceAfter={selected ? balanceAfterById[selected.entryId] : undefined}
+        onClose={() => setSelected(null)}
+      />
     </PageSafeContainer>
   );
 };
@@ -251,6 +358,11 @@ export const EarningsScreen = () => {
 const styles = StyleSheet.create({
   page: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  skeleton: {
+    paddingHorizontal: theme.spacing.lg,
+    paddingTop: theme.spacing.md,
+    gap: theme.spacing.xl,
+  },
   list: {
     paddingHorizontal: theme.spacing.lg,
     paddingBottom: TAB_BAR_CLEARANCE,
@@ -264,12 +376,29 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     color: theme.colors.textColor,
   },
-  separator: { height: 1, backgroundColor: theme.colors.cardBorder },
+  /**
+   * The divider between two rows *inside* the ledger card, so it carries the
+   * card's fill and side borders too — otherwise the gradient shows through the
+   * seam and the card looks sliced apart.
+   */
+  separator: {
+    backgroundColor: theme.colors.cardBackground,
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderColor: theme.colors.cardBorder,
+  },
+  // Inset past the icon so it aligns with the text, the usual list treatment.
+  separatorLine: {
+    height: 1,
+    backgroundColor: theme.colors.cardBorder,
+    marginLeft: 32 + theme.spacing.md + theme.spacing.lg,
+  },
   empty: {
+    ...surfaces.card,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
-    paddingTop: 40,
+    paddingVertical: 40,
   },
   emptyText: {
     fontSize: typography.md,
@@ -281,7 +410,7 @@ const styles = StyleSheet.create({
 
 const heroStyles = StyleSheet.create({
   card: {
-    ...surfaces.floating,
+    ...surfaces.card,
     borderRadius: theme.borderRadius.lg,
     padding: theme.spacing.lg,
   },
@@ -322,11 +451,32 @@ const heroStyles = StyleSheet.create({
 });
 
 const rowStyles = StyleSheet.create({
+  /**
+   * The rows collectively *are* the card — one continuous fill with only the
+   * two ends rounded, rather than a card per row. A ledger is one record, not N
+   * independent objects, and 25 separately-shadowed views would both read as
+   * noise and cost 25 elevation layers on Android.
+   */
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: theme.spacing.md,
     paddingVertical: theme.spacing.md,
+    paddingHorizontal: theme.spacing.lg,
+    backgroundColor: theme.colors.cardBackground,
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderColor: theme.colors.cardBorder,
+  },
+  rowFirst: {
+    borderTopWidth: 1,
+    borderTopLeftRadius: theme.borderRadius.lg,
+    borderTopRightRadius: theme.borderRadius.lg,
+  },
+  rowLast: {
+    borderBottomWidth: 1,
+    borderBottomLeftRadius: theme.borderRadius.lg,
+    borderBottomRightRadius: theme.borderRadius.lg,
   },
   iconWrap: {
     width: 32,
@@ -343,5 +493,8 @@ const rowStyles = StyleSheet.create({
   },
   date: { fontSize: typography.xs, color: theme.colors.textColor },
   reference: { fontSize: typography.xs, color: theme.colors.secondaryText },
+  amounts: { alignItems: 'flex-end', gap: 2 },
   amount: { fontSize: 15, fontWeight: '700' },
+  // Subordinate to the entry's own amount — it is context, not the headline.
+  running: { fontSize: typography.xxs, color: theme.colors.textMuted },
 });

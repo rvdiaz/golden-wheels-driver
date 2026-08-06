@@ -1,10 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -153,7 +148,11 @@ export const SignInForm = ({
                 errorMessage={errors.password?.message}
                 autoComplete="password"
                 rightIcon={
-                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                  <TouchableOpacity
+                    style={{
+                      paddingRight: 12,
+                    }}
+                    onPress={() => setShowPassword(!showPassword)}>
                     {showPassword ? (
                       <Icons.EyeOff size={16} color="#6B7280" />
                     ) : (

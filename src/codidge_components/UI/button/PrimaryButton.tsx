@@ -69,7 +69,8 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
       />
 
       {loading ? (
-        <LoadingSpinner />
+        // Ink, not the default: this button carries the gold gradient fill.
+        <LoadingSpinner color={theme.colors.primaryText} />
       ) : (
         <View
           style={[

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  ActivityIndicator,
   Alert,
   RefreshControl,
   ScrollView,
@@ -29,13 +28,11 @@ import { typography } from '~/theme/typography';
 import { surfaces } from '~/theme/surfaces';
 import { userData } from '~/store/user';
 import { ENV_Vars } from '~/store/env';
-import {
-  getDriverBookingsQuery,
-  getOpenTripsQuery,
-} from '~/screens/trips/graphql/queries';
+import { getDriverBookingsQuery, getOpenTripsQuery } from '~/screens/trips/graphql/queries';
 import { Booking } from '~/screens/trips/interfaces';
 import { formatDateTime } from '~/screens/trips/helpers';
 import { formatCurrency } from '~/helpers';
+import { TripRowListSkeleton } from '~/components/loadingSkeletons';
 import { TripDetailModal } from '~/screens/trips/components/tripDetailModal';
 import { claimTripMutation } from '~/screens/trips/graphql/mutation';
 import {
@@ -51,9 +48,7 @@ const GOLD = theme.colors.primary;
 
 /** Underway reads as "happening now"; assigned-but-not-started reads as "next". */
 const isUnderway = (b: Booking) =>
-  b.driverStatus === 'en_route' ||
-  b.driverStatus === 'arrived' ||
-  b.driverStatus === 'in_progress';
+  b.driverStatus === 'en_route' || b.driverStatus === 'arrived' || b.driverStatus === 'in_progress';
 
 export const HomeScreen = () => {
   const { t } = useTranslation();
@@ -73,11 +68,16 @@ export const HomeScreen = () => {
     }
   );
 
-  const { data: poolData, refetch: refetchPool } = useQuery<{
+  const {
+    data: poolData,
+    loading: loadingPool,
+    refetch: refetchPool,
+  } = useQuery<{
     getOpenTrips: Booking[];
   }>(getOpenTripsQuery, {
     variables: { tenant: ENV_Vars.tenant },
     fetchPolicy: 'cache-and-network',
+    skip: !userInfo?.id,
   });
   const poolTrips = poolData?.getOpenTrips ?? [];
 
@@ -118,6 +118,15 @@ export const HomeScreen = () => {
   };
 
   const bookings = data?.getDriverBookings ?? [];
+
+  /**
+   * While the user hydrates from storage both queries are skipped and Apollo
+   * reports loading:false — without this the dashboard rendered its "no active
+   * trip" and "pool is empty" cards before either request had been sent.
+   */
+  const hydrating = !userInfo?.id;
+  const showUpcomingSkeleton = hydrating || (loading && !bookings.length);
+  const showPoolSkeleton = hydrating || (loadingPool && !poolTrips.length);
   const live = bookings.filter(
     (b) =>
       b.status === 'confirmed' ||
@@ -131,35 +140,27 @@ export const HomeScreen = () => {
     live.find(isUnderway) ??
     live
       .filter((b) => b.driverStatus === 'assigned')
-      .sort(
-        (a, b) =>
-          new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-      )[0];
+      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())[0];
 
   const upcoming = live
     .filter((b) => b.id !== active?.id)
-    .sort(
-      (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-    );
+    .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
 
   // Re-read the open trip from fresh data so advancing a status updates the
   // sheet the driver is currently looking at.
-  const openTripLive = openTrip
-    ? (bookings.find((b) => b.id === openTrip.id) ?? openTrip)
-    : null;
+  const openTripLive = openTrip ? (bookings.find((b) => b.id === openTrip.id) ?? openTrip) : null;
 
   return (
     <PageSafeContainer style={styles.page}>
-      <ScreenHeader eyebrow={t('dashboard.greeting')} title={userInfo?.name ?? t('dashboard.driver')} />
+      <ScreenHeader
+        eyebrow={t('dashboard.greeting')}
+        title={userInfo?.name ?? t('dashboard.driver')}
+      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={refreshAll}
-            tintColor={GOLD}
-          />
+          <RefreshControl refreshing={refreshing} onRefresh={refreshAll} tintColor={GOLD} />
         }>
         {/* Always visible — a driver must never wonder whether they're on duty */}
         <AvailabilityCard />
@@ -172,10 +173,8 @@ export const HomeScreen = () => {
         />
 
         {tab === 'upcoming' ? (
-          loading && !bookings.length ? (
-            <View style={styles.loadingBox}>
-              <ActivityIndicator color={GOLD} />
-            </View>
+          showUpcomingSkeleton ? (
+            <TripRowListSkeleton />
           ) : active ? (
             <>
               <ActiveTripCard booking={active} onOpen={() => setOpenTrip(active)} />
@@ -187,19 +186,14 @@ export const HomeScreen = () => {
             <View style={styles.noActiveCard}>
               <CalendarClock size={34} color={theme.colors.textMuted} />
               <Text style={styles.noActiveText}>{t('dashboard.noActive')}</Text>
-              <Text style={styles.noActiveSubtext}>
-                {t('dashboard.noActiveHint')}
-              </Text>
+              <Text style={styles.noActiveSubtext}>{t('dashboard.noActiveHint')}</Text>
             </View>
           )
+        ) : showPoolSkeleton ? (
+          <TripRowListSkeleton />
         ) : poolTrips.length ? (
           poolTrips.map((b) => (
-            <TripRow
-              key={b.id}
-              booking={b}
-              highlight
-              onPress={() => setClaimTarget(b)}
-            />
+            <TripRow key={b.id} booking={b} highlight onPress={() => setClaimTarget(b)} />
           ))
         ) : (
           <View style={styles.noActiveCard}>
@@ -216,7 +210,6 @@ export const HomeScreen = () => {
             </TouchableOpacity>
           </View>
         )}
-
       </ScrollView>
 
       <TripDetailModal
@@ -306,11 +299,7 @@ const TripRow = ({
       activeOpacity={0.8}
       onPress={onPress}>
       <View style={[styles.tripRowIcon, highlight && styles.tripRowIconHighlight]}>
-        {highlight ? (
-          <Zap size={16} color={GOLD} />
-        ) : (
-          <Clock size={16} color={GOLD} />
-        )}
+        {highlight ? <Zap size={16} color={GOLD} /> : <Clock size={16} color={GOLD} />}
       </View>
       <View style={styles.tripRowText}>
         <Text style={styles.tripRowDate}>{formatDateTime(booking.startDate)}</Text>
@@ -337,13 +326,7 @@ const TripRow = ({
  * actions a driver reaches for without opening anything. Detail lives in the
  * modal so this stays glanceable at arm's length.
  */
-const ActiveTripCard = ({
-  booking,
-  onOpen,
-}: {
-  booking: Booking;
-  onOpen: () => void;
-}) => {
+const ActiveTripCard = ({ booking, onOpen }: { booking: Booking; onOpen: () => void }) => {
   const { t } = useTranslation();
   const status = booking.driverStatus ?? 'assigned';
   const underway = isUnderway(booking);
@@ -366,10 +349,7 @@ const ActiveTripCard = ({
       <View style={styles.activeTop}>
         <View style={styles.activeBadge}>
           <View
-            style={[
-              styles.activeDot,
-              { backgroundColor: underway ? theme.colors.success : GOLD },
-            ]}
+            style={[styles.activeDot, { backgroundColor: underway ? theme.colors.success : GOLD }]}
           />
           <Text style={styles.activeBadgeText}>
             {underway ? t('dashboard.inProgress') : t('dashboard.nextTrip')}
@@ -396,10 +376,7 @@ const ActiveTripCard = ({
           style={styles.quickBtn}
           activeOpacity={0.75}
           onPress={() =>
-            openNavigation(
-              heading.loc?.formattedAddress ?? heading.loc?.displayName,
-              heading.label
-            )
+            openNavigation(heading.loc?.formattedAddress ?? heading.loc?.displayName, heading.label)
           }>
           <Navigation2 size={16} color={theme.colors.secondaryText} />
           <Text style={styles.quickText}>{t('action.navigate')}</Text>
@@ -440,9 +417,6 @@ const styles = StyleSheet.create({
     paddingBottom: TAB_BAR_CLEARANCE,
     gap: theme.spacing.lg,
   },
-
-
-  loadingBox: { paddingVertical: 48, alignItems: 'center' },
 
   /**
    * Chips, not a segmented track — each carries its own surface and border so
@@ -654,5 +628,4 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: theme.colors.secondaryText,
   },
-
 });

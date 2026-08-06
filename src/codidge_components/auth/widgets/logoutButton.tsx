@@ -7,8 +7,10 @@ import { updateUser } from '~/store/user';
 import { theme } from '~/theme/theme';
 import { apiKeyClient } from '~/store/config/apolloClient';
 import TextButton from '~/codidge_components/UI/button/TextButton';
+import { useTranslation } from '~/i18n';
 
 export const LogoutButton = ({ onSuccessLogout }: { onSuccessLogout?: () => void }) => {
+  const { t } = useTranslation();
   const [loadingLogout, setloadingLogout] = useState(false);
   const client = useApolloClient();
 
@@ -32,7 +34,7 @@ export const LogoutButton = ({ onSuccessLogout }: { onSuccessLogout?: () => void
     <TextButton
       onPress={handleSignOut}
       leftWidget={<Icons.LogOut color={theme.colors.danger} size={24} />}
-      title="Sign Out"
+      title={t('account.signOut')}
       style={{
         paddingVertical: 16,
       }}

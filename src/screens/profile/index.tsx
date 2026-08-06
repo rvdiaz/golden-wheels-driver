@@ -180,7 +180,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
                   items: [
                     {
                       id: 'logout',
-                      label: 'Sign Out',
+                      label: t('account.signOut'),
                       replacementWidget: <LogoutButton onSuccessLogout={onNavigateHome} />,
                       icon: <LogOut />,
                       onClick: () => {},

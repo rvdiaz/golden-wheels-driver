@@ -2,6 +2,7 @@ import { StyleSheet, View } from 'react-native';
 import { Bell, Clock } from 'lucide-react-native';
 import Text from '~/codidge_components/UI/text';
 import { theme } from '~/theme/theme';
+import { surfaces } from '~/theme/surfaces';
 import { INotification } from '../interfaces';
 import { formatDateTime } from '~/screens/trips/helpers';
 
@@ -81,14 +82,9 @@ export const NotificationCard = ({ item }: { item: INotification }) => {
 const styles = StyleSheet.create({
   // ── Card ──
   card: {
-    borderRadius: theme.borderRadius.lg,
-    borderWidth: 0.5,
+    ...surfaces.card,
+    // Clips the shimmer sweep to the card's corners.
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 1,
   },
   cardShimmer: {
     position: 'absolute',

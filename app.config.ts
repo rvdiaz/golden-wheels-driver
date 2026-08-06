@@ -1,10 +1,10 @@
 import { ExpoConfig } from '@expo/config-types';
 import { ConfigContext } from 'expo/config';
 
-// ⚠️ STILL THE CUSTOMER APP'S EAS PROJECT. Run `eas init` in this repo and
-// replace it. It drives updates.url AND getExpoPushTokenAsync({ projectId }),
-// so until it changes every driver push token is minted against the wrong
-// project and silently never delivers. See CUSTOMER_APP_EAS_PROJECT_ID below.
+// Driver app's own EAS project, under the `rvdiaz1994` account. Distinct from
+// the customer app's project (bf4ea28e-ea3b-4071-9b5c-b6fba74685dc). Drives
+// updates.url AND getExpoPushTokenAsync({ projectId }), so it must stay in sync
+// with the account you are logged into as `eas whoami`.
 const EAS_PROJECT_ID = '906f0570-999c-4ab9-8ff3-23a02e9e2538';
 
 const PROJECT_SLUG = 'golden-wheels-driver';
@@ -40,6 +40,7 @@ export default (arg: ConfigContext): ExpoConfig => {
     owner: OWNER,
     plugins: [
       'expo-notifications',
+      'expo-font',
       [
         'expo-build-properties',
         {

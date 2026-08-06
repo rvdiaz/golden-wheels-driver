@@ -1,10 +1,10 @@
 {
   "build": {
     "preview": {
-      "distribution": "internal",
-      "channel": "preview",
+      "distribution": "store",
+      "developmentClient": false,
       "env": {
-        "APP_ENV": "development",
+        "APP_ENV": "production",
         "COGNITO_USERPOOL_ID": "us-east-2_wT26orWBG",
         "COGNITO_CLIENT_ID": "1n7qbm76c1ge9tc2d85p8r7l6t",
         "AWS_REGION": "us-east-2",

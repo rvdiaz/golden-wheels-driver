@@ -19,8 +19,15 @@ import { TAB_BAR_CLEARANCE } from '~/navigation/bottomBar';
 
 import { BalanceCardSkeleton, LedgerListSkeleton } from '~/components/loadingSkeletons';
 
-import { getDriverBalanceQuery, getDriverLedgerQuery } from './graphql/queries';
-import { DriverBalance, DriverLedgerPage, LedgerEntry } from './interfaces';
+import {
+  getDriverBalanceQuery,
+  getDriverLedgerQuery,
+  toDriverBalance,
+  toLedgerItems,
+  RawDriverBalance,
+  RawDriverLedgerPage,
+} from './graphql/queries';
+import { DriverBalance, LedgerEntry } from './interfaces';
 import { LedgerDetailModal } from './components/ledgerDetailModal';
 import { EarningsChart } from './components/earningsChart';
 
@@ -167,9 +174,9 @@ export const EarningsScreen = () => {
   const skip = !userInfo?.id;
 
   const { data: balanceData, refetch: refetchBalance } = useQuery<{
-    getDriverBalance: DriverBalance;
+    getDriverBalance: RawDriverBalance;
   }>(getDriverBalanceQuery, {
-    variables: { tenant: ENV_Vars.tenant },
+    variables: { tenantID: ENV_Vars.TENANT_ID },
     fetchPolicy: 'network-only',
     skip,
   });
@@ -179,8 +186,8 @@ export const EarningsScreen = () => {
     loading,
     refetch: refetchLedger,
     fetchMore,
-  } = useQuery<{ getDriverLedger: DriverLedgerPage }>(getDriverLedgerQuery, {
-    variables: { tenant: ENV_Vars.tenant, limit: PAGE_SIZE },
+  } = useQuery<{ getDriverLedger: RawDriverLedgerPage }>(getDriverLedgerQuery, {
+    variables: { tenantID: ENV_Vars.TENANT_ID, limit: PAGE_SIZE },
     fetchPolicy: 'network-only',
     // Without this, `loading` stays false during fetchMore and the footer
     // spinner never appears.
@@ -189,16 +196,22 @@ export const EarningsScreen = () => {
   });
 
   const { data: chartData, refetch: refetchChart } = useQuery<{
-    getDriverLedger: DriverLedgerPage;
+    getDriverLedger: RawDriverLedgerPage;
   }>(getDriverLedgerQuery, {
-    variables: { tenant: ENV_Vars.tenant, limit: CHART_WINDOW },
+    variables: { tenantID: ENV_Vars.TENANT_ID, limit: CHART_WINDOW },
     // Cached months render instantly; the network pass corrects them behind it.
     fetchPolicy: 'cache-and-network',
     skip,
   });
 
-  const balance = balanceData?.getDriverBalance;
-  const entries = ledgerData?.getDriverLedger?.items ?? [];
+  // Codidge returns `Prices` objects; the cards and rows below read flat numbers.
+  // Reconciled once, at the boundary — see the normalizers in ./graphql/queries.
+  const balance = useMemo(
+    () => toDriverBalance(balanceData?.getDriverBalance),
+    [balanceData]
+  );
+  const entries = useMemo(() => toLedgerItems(ledgerData?.getDriverLedger), [ledgerData]);
+  const chartEntries = useMemo(() => toLedgerItems(chartData?.getDriverLedger), [chartData]);
   const nextToken = ledgerData?.getDriverLedger?.nextToken;
 
   const [selected, setSelected] = useState<LedgerEntry | null>(null);
@@ -254,7 +267,7 @@ export const EarningsScreen = () => {
     if (!nextToken || loading) return;
 
     await fetchMore({
-      variables: { tenant: ENV_Vars.tenant, limit: PAGE_SIZE, nextToken },
+      variables: { tenantID: ENV_Vars.TENANT_ID, limit: PAGE_SIZE, nextToken },
       // Pages are appended by hand: the default would replace the list, and the
       // cache cannot merge them itself because the page type carries no id.
       updateQuery: (previous, { fetchMoreResult }) => {
@@ -296,7 +309,7 @@ export const EarningsScreen = () => {
             <View style={styles.header}>
               <BalanceCard balance={balance} />
               <EarningsChart
-                entries={chartData?.getDriverLedger?.items ?? []}
+                entries={chartEntries}
                 currencyCode={balance?.currencyCode ?? 'USD'}
               />
               {entries.length > 0 && (

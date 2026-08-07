@@ -9,6 +9,7 @@ export const theme = {
      */
     primaryTextAccent: '#8A6716',
     primaryDark: '#9A7322',
+    primaryLight: '#d1971f',
     primaryAlpha: {
       5: 'rgba(212,168,67,0.05)',
       10: 'rgba(212,168,67,0.10)',

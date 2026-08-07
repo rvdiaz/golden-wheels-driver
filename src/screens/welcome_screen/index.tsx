@@ -1,5 +1,5 @@
-import React from 'react';
-import { Image, ImageBackground, StyleSheet, View, StatusBar } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { Animated, Image, ImageBackground, StyleSheet, View, StatusBar } from 'react-native';
 import PrimaryButton from '~/codidge_components/UI/button/PrimaryButton';
 import Text from '~/codidge_components/UI/text';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -8,6 +8,9 @@ import { typography } from '~/theme/typography';
 import { PageSafeContainer } from '~/codidge_components/UI/pageSafeContainer';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
 import { useTranslation } from '~/i18n';
+import { FadeTransition } from '~/codidge_components/UI/transitions/fadeIn';
+
+const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
 
 interface GetStartedScreenProps {
   onGetStarted: () => void;
@@ -15,15 +18,29 @@ interface GetStartedScreenProps {
 
 export const GetStartedScreen = ({ onGetStarted }: GetStartedScreenProps) => {
   const { t } = useTranslation();
+  const zoom = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.timing(zoom, {
+      toValue: 1.12,
+      duration: 9000,
+      useNativeDriver: true,
+    }).start();
+  }, [zoom]);
 
   return (
     <View style={styles.container}>
       {/* Light bar: the top of the frame is dark behind the logo now */}
       <StatusBar barStyle="light-content" />
 
-      <ImageBackground
+      {/*
+        The background is absolute-positioned so the slow Ken Burns zoom only
+        scales the photo and its scrims — the content sits outside as a sibling
+        and stays put.
+      */}
+      <AnimatedImageBackground
         source={require('/assets/get_started.jpg')}
-        style={styles.backgroundImage}
+        style={[styles.backgroundImage, { transform: [{ scale: zoom }] }]}
         resizeMode="cover">
         {/*
           The photo is blown out at the top by windscreen glare, so a light logo
@@ -53,17 +70,19 @@ export const GetStartedScreen = ({ onGetStarted }: GetStartedScreenProps) => {
           style={styles.bottomScrim}
           pointerEvents="none"
         />
+      </AnimatedImageBackground>
 
-        <PageSafeContainer style={styles.safeArea}>
-          <View style={styles.logoContainer}>
-            <Image
-              source={require('/assets/logoSingle1.png')}
-              style={styles.logo}
-              resizeMode="contain"
-            />
-          </View>
+      <PageSafeContainer style={styles.safeArea}>
+        <View style={styles.logoContainer}>
+          <Image
+            source={require('/assets/logoSingle1.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </View>
 
-          <View style={styles.bottomContent}>
+        <View style={styles.bottomContent}>
+          <FadeTransition isVisible duration={700} style={styles.textBlock}>
             <View style={styles.dividerRow}>
               <View style={styles.dividerLine} />
               <View style={styles.dividerDot} />
@@ -72,16 +91,18 @@ export const GetStartedScreen = ({ onGetStarted }: GetStartedScreenProps) => {
 
             <Text style={styles.headline}>{t('welcome.headline')}</Text>
             <Text style={styles.subtitle}>{t('welcome.subtitle')}</Text>
+          </FadeTransition>
 
+          <FadeTransition isVisible duration={800}>
             <PrimaryButton
               onPress={onGetStarted}
               title={t('welcome.cta')}
               size={ButtonSize.LARGE}
               style={styles.ctaButton}
             />
-          </View>
-        </PageSafeContainer>
-      </ImageBackground>
+          </FadeTransition>
+        </View>
+      </PageSafeContainer>
     </View>
   );
 };
@@ -93,13 +114,11 @@ const styles = StyleSheet.create({
   },
   /**
    * The source is portrait, so `cover` fills the device edge to edge with no
-   * letterboxing. It previously carried height: '70%' and top: 50, which is
-   * what stopped it reaching the bottom of the screen.
+   * letterboxing. Absolute-fill keeps it behind the content while the zoom
+   * transform runs.
    */
   backgroundImage: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
+    ...StyleSheet.absoluteFillObject,
   },
   /**
    * Both scrims are decorative. `pointerEvents` must be set in the STYLE, not as
@@ -140,6 +159,14 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     gap: 16,
   },
+  /**
+   * The divider, headline and subtitle used to be direct children of
+   * bottomContent, whose gap spaced them. Inside the fade wrapper that gap no
+   * longer reaches them, so it's restated here.
+   */
+  textBlock: {
+    gap: 16,
+  },
   dividerRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -149,14 +176,14 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: theme.colors.primary,
+    backgroundColor: theme.colors.primaryLight,
     opacity: 0.5,
   },
   dividerDot: {
     width: 5,
     height: 5,
     borderRadius: theme.borderRadius.full,
-    backgroundColor: theme.colors.primary,
+    backgroundColor: theme.colors.primaryLight,
   },
   headline: {
     fontSize: 46,

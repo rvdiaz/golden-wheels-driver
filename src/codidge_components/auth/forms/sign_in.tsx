@@ -133,7 +133,7 @@ export const SignInForm = ({
           />
 
           <Text style={styles.passwordlessHint}>
-            We'll email you a one-time code to sign in. There's no password to remember.
+            We'll email you a one-time code to sign in.
           </Text>
 
           <PrimaryButton

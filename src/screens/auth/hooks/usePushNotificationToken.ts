@@ -1,11 +1,10 @@
 import { useEffect } from 'react';
-import { useMutation, useReactiveVar } from '@apollo/client';
+import { useReactiveVar } from '@apollo/client';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { pushTokenVar, setPushToken } from '~/store/user/pushToken';
 import { userData } from '~/store/user';
 import { CUSTOMER_APP_EAS_PROJECT_ID, ENV_Vars } from '~/store/env';
-import { updateDriverMutation } from '../graphql/mutations';
 
 const getPushNotificationToken = async (): Promise<string> => {
   try {

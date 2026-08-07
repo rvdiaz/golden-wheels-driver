@@ -71,9 +71,9 @@ export const AvailabilityCard = () => {
     try {
       await updateDriver({
         variables: {
-          tenant: ENV_Vars.tenant,
-          driverId: userInfo.id,
-          driver: { available: next },
+          tenantID: ENV_Vars.TENANT_ID,
+          driverID: userInfo.id,
+          input: { available: next },
         },
       });
     } catch {

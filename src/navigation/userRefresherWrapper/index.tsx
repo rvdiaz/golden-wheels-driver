@@ -64,7 +64,7 @@ export const UserRefresherWrapper: React.FC<Props> = ({ children }) => {
     try {
       const { data } = await client.query({
         query: getDriverProfileQuery,
-        variables: { tenant: ENV_Vars.tenant },
+        variables: { tenantID: ENV_Vars.TENANT_ID },
         fetchPolicy: 'network-only',
         errorPolicy: 'none',
       });

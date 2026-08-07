@@ -1,6 +1,14 @@
 export enum IAuthModuleKeys {
   signIn = 'SignIn',
   signUp = 'SignUp',
+  /**
+   * The one-time code emailed by Cognito when the driver signs in.
+   *
+   * Drivers on Codidge are passwordless: there is no password to set and none to forget, so
+   * `forcePasswordChange` no longer occurs on this path. It is kept because the same auth
+   * module is shared with other apps whose pools still use passwords.
+   */
+  emailOtp = 'EmailOtp',
   forcePasswordChange = 'ForcePasswordChange',
   confirmResetPassword = 'ConfirmResetPassword',
   resetPassword = 'ResetPassword',
@@ -10,7 +18,8 @@ export enum IAuthModuleKeys {
 
 export interface LoginFormData {
   email: string;
-  password: string;
+  /** Unused on the passwordless driver path; still required by password-based pools. */
+  password?: string;
 }
 
 export interface RegisterFormData {

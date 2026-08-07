@@ -91,10 +91,11 @@ export default (arg: ConfigContext): ExpoConfig => {
       COGNITO_CLIENT_ID: process.env.COGNITO_CLIENT_ID,
       COGNITO_USERPOOL_ID: process.env.COGNITO_USERPOOL_ID,
       GRAPHQL_ENDPOINT: process.env.GRAPHQL_ENDPOINT,
-      //GRAPHQL_ENDPOINT: 'http://localhost:4001/graphql',
       GRAPHQL_API_KEY: process.env.GRAPHQL_API_KEY,
       TENANTID: process.env.TENANTID,
-      TENANT_SOLUTION: process.env.TENANT_SOLUTION,
+      // Codidge scopes by organization + location. TENANT_SOLUTION was Rentra-only and no
+      // longer exists — see src/store/env for the deprecated `tenant` shape it fed.
+      ORGANIZATION_ID: process.env.ORGANIZATION_ID,
       eas: {
         projectId: EAS_PROJECT_ID,
       },

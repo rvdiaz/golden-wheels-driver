@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -14,12 +14,10 @@ import Text from '~/codidge_components/UI/text';
 import { ButtonSize } from '~/codidge_components/UI/button/types';
 import { theme } from '~/theme/theme';
 
+// Passwordless: the driver proves who they are with a code emailed at sign-in time, so the
+// only thing this form collects is the address to send it to.
 const schema = yup.object({
   email: yup.string().email('Please enter a valid email').required('Email is required'),
-  password: yup
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .required('Password is required'),
 });
 
 export const SignInForm = ({
@@ -36,49 +34,47 @@ export const SignInForm = ({
   const { setCurrentView, setTempData } = useAuthContext();
 
   const [loading, setloading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormData>({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(schema) as any,
     defaultValues: {
       email: '',
-      password: '',
     },
   });
 
   const onSubmit = async (data: LoginFormData) => {
     try {
       setloading(true);
+
+      // USER_AUTH is Cognito's choice-based flow. The participant pool allows PASSWORD and
+      // EMAIL_OTP as first factors; an invited driver has no password, so Cognito answers with
+      // the email-code challenge directly. Asking for it explicitly means a driver who *does*
+      // have a password (they're also a customer) still gets the code rather than a password
+      // prompt they'd have to remember.
       const user = await signIn({
         username: data.email,
-        password: data.password,
         options: {
-          authFlowType: 'USER_PASSWORD_AUTH',
+          authFlowType: 'USER_AUTH',
+          preferredChallenge: 'EMAIL_OTP',
         },
       });
 
-      const needsVerification = user.nextStep.signInStep === 'CONFIRM_SIGN_UP';
-
-      if (needsVerification) {
-        setTempData({
-          email: data.email,
-          password: data.password,
-        });
-
-        setCurrentView(IAuthModuleKeys.verifyEmail);
+      // Cognito emailed a code. Hand off to the code screen — the Amplify session is held
+      // internally, so nothing sensitive needs carrying between the two views.
+      if (user.nextStep.signInStep === 'CONFIRM_SIGN_IN_WITH_EMAIL_CODE') {
+        setTempData({ email: data.email });
+        setCurrentView(IAuthModuleKeys.emailOtp);
         setloading(false);
         return;
       }
 
-      // An invited driver signs in with the temporary password from their
-      // invitation email and has to choose a real one before continuing.
-      if (user.nextStep.signInStep === 'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED') {
+      if (user.nextStep.signInStep === 'CONFIRM_SIGN_UP') {
         setTempData({ email: data.email });
-        setCurrentView(IAuthModuleKeys.forcePasswordChange);
+        setCurrentView(IAuthModuleKeys.verifyEmail);
         setloading(false);
         return;
       }
@@ -89,8 +85,8 @@ export const SignInForm = ({
         return;
       }
 
-      // Anything else (MFA, TOTP setup…) isn't handled here. Say so rather than
-      // silently doing nothing, which is indistinguishable from a broken app.
+      // Anything else (a password challenge, TOTP setup…) isn't handled here. Say so rather
+      // than silently doing nothing, which is indistinguishable from a broken app.
       console.warn('Unhandled signInStep:', user.nextStep.signInStep);
       setloading(false);
       Alert.alert(
@@ -99,10 +95,15 @@ export const SignInForm = ({
       );
       await signOut();
     } catch (error: any) {
-      console.log(':::result', error);
+      console.log(':::signIn error', error);
       setloading(false);
-      Alert.alert('Login Failed', 'Invalid email or password');
-      await signOut();
+      // Deliberately vague: the pool has PreventUserExistenceErrors enabled, and saying
+      // "no such driver" here would undo that by letting anyone probe for addresses.
+      Alert.alert(
+        'Could not sign in',
+        "We couldn't start sign-in for that address. Check it and try again."
+      );
+      await signOut().catch(() => undefined);
     }
   };
 
@@ -131,53 +132,13 @@ export const SignInForm = ({
             )}
           />
 
-          <Controller
-            control={control}
-            name="password"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <InputField
-                variant="light"
-                leftIcon={<Icons.Lock size={16} color="#6B7280" />}
-                label="Password"
-                placeholder="Enter your password"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                secureTextEntry={!showPassword}
-                error={!!errors.password}
-                errorMessage={errors.password?.message}
-                autoComplete="password"
-                rightIcon={
-                  <TouchableOpacity
-                    style={{
-                      paddingRight: 12,
-                    }}
-                    onPress={() => setShowPassword(!showPassword)}>
-                    {showPassword ? (
-                      <Icons.EyeOff size={16} color="#6B7280" />
-                    ) : (
-                      <Icons.Eye size={16} color="#6B7280" />
-                    )}
-                  </TouchableOpacity>
-                }
-              />
-            )}
-          />
-          {!strictView && (
-            <View style={styles.optionsRow}>
-              <TextButton
-                size={ButtonSize.LARGE}
-                title="Forgot Password?"
-                onPress={() => {
-                  setCurrentView(IAuthModuleKeys.forcePasswordChange);
-                }}
-              />
-            </View>
-          )}
+          <Text style={styles.passwordlessHint}>
+            We'll email you a one-time code to sign in. There's no password to remember.
+          </Text>
 
           <PrimaryButton
             onPress={handleSubmit(onSubmit)}
-            title="Sign In"
+            title="Send me a code"
             loading={loading}
             size={ButtonSize.XLARGE}
           />
@@ -297,6 +258,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 10,
+  },
+  passwordlessHint: {
+    fontSize: 14,
+    color: '#6B7280',
+    lineHeight: 20,
+    marginTop: 4,
+    marginBottom: 12,
   },
   footerText: {
     fontSize: 17,

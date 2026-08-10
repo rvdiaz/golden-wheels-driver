@@ -2,11 +2,11 @@ import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useReactiveVar } from '@apollo/client';
-import { GetUserNotificationsResponse } from '../interfaces';
-import { getUserNotificationsQuery } from '../graphql/queries';
+import { GetMyUnreadCountResponse } from '../interfaces';
+import { getMyUnreadCountQuery } from '../graphql/queries';
 import { userData } from '~/store/user';
 import Text from '~/codidge_components/UI/text';
-import { getUserNotificationsVariables } from '../helpers';
+import { getMyUnreadCountVariables } from '../helpers';
 import { theme } from '~/theme/theme';
 
 interface NotificationButtonProps {
@@ -25,14 +25,15 @@ export const NotificationButton: React.FC<NotificationButtonProps> = ({
 }) => {
   const user = useReactiveVar(userData);
 
-  // Don't show badge if count is 0 or showBadge is false
-  const { data } = useQuery<GetUserNotificationsResponse>(getUserNotificationsQuery, {
-    variables: getUserNotificationsVariables(user?.id),
+  // Counted server-side across the whole mailbox rather than derived from the first page, so
+  // the badge doesn't under-report once there are more notifications than one page holds.
+  const { data } = useQuery<GetMyUnreadCountResponse>(getMyUnreadCountQuery, {
+    variables: getMyUnreadCountVariables(),
+    skip: !user?.id,
     fetchPolicy: 'cache-and-network', // Keep badge updated
   });
 
-  // Count only UNREAD notifications
-  const unreadCount = data?.getUserNotifications?.items?.filter((n) => !n.read).length ?? 0;
+  const unreadCount = data?.getMyUnreadCount ?? 0;
 
   const shouldShowBadge = showBadge && unreadCount > 0;
   const badgeText = unreadCount > 99 ? '99+' : unreadCount.toString();

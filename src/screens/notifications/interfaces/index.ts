@@ -1,29 +1,30 @@
 export interface INotification {
-  notificationId: string;
+  notificationID: string;
+  /** A NotificationType value, e.g. "booking.openForClaim" — the push payload carries the same. */
+  type: string;
   title: string;
   body: string;
-  createdAt: string;
+  /** AWSJSON, so it arrives as a string. Routing payload; shape varies per type. */
+  data?: string | null;
   read: boolean;
+  createdAt: string;
 }
 
-export interface GetUserNotificationsResponse {
-  getUserNotifications: {
+export interface ListMyNotificationsResponse {
+  listMyNotifications: {
     items: INotification[];
+    nextBefore?: string | null;
   };
 }
 
-export interface OnNotificationPublishedData {
-  onNotificationPublished: {
-    tenantId: string;
-    userId: string;
-    sent: boolean;
-    showOnApp: boolean;
-    userNotification: INotification;
-  };
+export interface GetMyUnreadCountResponse {
+  getMyUnreadCount: number;
 }
 
-export interface MarkNotificationsReadedResponse {
-  updated: number;
-  total: number;
-  notificationIds: string[];
+export interface MarkNotificationsReadResponse {
+  markNotificationsRead: {
+    updated: number;
+    total: number;
+    notificationIDs: string[];
+  };
 }

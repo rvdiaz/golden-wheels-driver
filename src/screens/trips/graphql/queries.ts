@@ -1,116 +1,85 @@
 import { gql } from '@apollo/client';
 
-export const getDriverBookingsQuery = gql`
-  query getDriverBookings($tenant: TenantData!) {
-    getDriverBookings(tenant: $tenant) {
-      id
+// Codidge shape — flat, no TenantData/bookingBusinessData wrapper. Field names differ enough
+// from Rentra's that consumers go through mapCodidgeBooking.ts rather than reading this
+// directly; see that file for the field-by-field reasoning.
+const bookingFields = `
+      tenantID
+      bookingID
       bookingCode
-      startDate
-      endDate
       status
       driverStatus
       paymentStatus
+      openForClaim
+      startDate
+      endDate
       createdAt
       note
-      assignmentMode
-      poolState
-      driverEarnings {
+      bookHours
+      bookMode
+      customer {
+        customerID
+        name
+        email
+        phone
+      }
+      driver {
+        driverID
+        name
+        email
+        phone
+      }
+      car {
+        carID
+        brand
+        model
+      }
+      carType {
+        carTypeID
+        name
+      }
+      pickupLocation {
+        placeId
+        displayName
+        address
+      }
+      dropoffLocation {
+        placeId
+        displayName
+        address
+      }
+      totalPrice {
         amount
         currencyCode
       }
-      bookingBusinessData {
-        customer {
-          id
-          name
-          email
-          phone
+      revenueSplit {
+        commissionPercentage
+        driverAmount {
+          amount
+          currencyCode
         }
-        car {
-          id
-          brand
-          model
-        }
-        carType {
-          id
-          name
-          maxPassengers
-        }
-        extraServices {
-          id
-          name
-        }
-        pickupLocation {
-          id
-          displayName
-          formattedAddress
-          types
-        }
-        dropoffLocation {
-          id
-          displayName
-          formattedAddress
-          types
-        }
-        bookHours
-        bookMode
       }
+      paymentFailureCode
+      paymentFailureMessageCustomer
+`;
+
+// The caller's own assigned/claimed trips — resolved from the verified token, no driverID arg.
+export const getDriverBookingsQuery = gql`
+  query getDriverBookings($tenantID: ID!) {
+    getDriverBookings(tenantID: $tenantID) {
+${bookingFields}
     }
   }
 `;
 
 /**
  * Trips published to the pool that nobody has claimed yet. Same shape as
- * getDriverBookings so the same card component renders both.
+ * getDriverBookings so the same mapper and card components render both.
  */
 export const getOpenTripsQuery = gql`
-  query getOpenTrips($tenant: TenantData!) {
-    getOpenTrips(tenant: $tenant) {
-      id
-      bookingCode
-      startDate
-      endDate
-      status
-      driverStatus
-      paymentStatus
-      createdAt
-      note
-      assignmentMode
-      poolState
-      offeredAt
-      driverEarnings {
-        amount
-        currencyCode
-      }
-      bookingBusinessData {
-        customer {
-          id
-          name
-          phone
-        }
-        carType {
-          id
-          name
-          maxPassengers
-        }
-        extraServices {
-          id
-          name
-        }
-        pickupLocation {
-          id
-          displayName
-          formattedAddress
-          types
-        }
-        dropoffLocation {
-          id
-          displayName
-          formattedAddress
-          types
-        }
-        bookHours
-        bookMode
-      }
+  query getOpenBookings($tenantID: ID!) {
+    getOpenBookings(tenantID: $tenantID) {
+${bookingFields}
     }
   }
 `;

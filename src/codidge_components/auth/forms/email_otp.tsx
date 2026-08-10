@@ -175,8 +175,19 @@ export const EmailOtpForm = ({
 };
 
 const styles = StyleSheet.create({
-  keyboardView: { flex: 1, paddingVertical: 20 },
-  formCard: { marginBottom: 24, flex: 1 },
+  // Deliberately NOT flex: 1 — these sit inside AuthFormWrapper's ScrollView.
+  //
+  // A flex: 1 child pins the content to exactly the viewport height, so the ScrollView never
+  // has anything to scroll: content that does not fit is simply clipped. With the keyboard up
+  // the viewport is roughly half as tall, which is how the code input ended up off-screen and
+  // unreachable on iOS — you could not scroll to it, because as far as the ScrollView was
+  // concerned the content already fitted.
+  //
+  // Left over from when each form carried its own KeyboardAvoidingView (hence the name).
+  // AuthFormWrapper owns keyboard avoidance now; these are plain content views and must size
+  // to their content so the scroll view can do its job.
+  keyboardView: { paddingVertical: 20 },
+  formCard: { marginBottom: 24 },
   form: { gap: 8 },
   intro: { fontSize: 15, color: '#4B5563', lineHeight: 22, marginBottom: 16 },
   email: { fontWeight: '600', color: '#111827' },

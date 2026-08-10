@@ -28,19 +28,22 @@ export interface CarType {
   id: string;
   name: string;
   description?: string;
-  maxPassengers: number;
-  image: IImage;
-  features: {
+  // The rest is only ever populated from Rentra's richer carType payload — Codidge's booking
+  // snapshot carries just carTypeID/name (see mapCodidgeBooking.ts), and nothing in this app's
+  // trip screens reads beyond `name` today, so these stay optional rather than faked.
+  maxPassengers?: number;
+  image?: IImage;
+  features?: {
     label: string;
     value: string;
   }[];
-  supportsHourly: boolean;
-  supportsDistance: boolean;
-  hourlyRate: number;
-  pricePerMiles: number;
-  baseFare: number;
-  minimumFare: number;
-  tripQuotePrice: number;
+  supportsHourly?: boolean;
+  supportsDistance?: boolean;
+  hourlyRate?: number;
+  pricePerMiles?: number;
+  baseFare?: number;
+  minimumFare?: number;
+  tripQuotePrice?: number;
 }
 
 export interface ICar {
@@ -91,9 +94,11 @@ export interface BookingBusinessData {
   car: ICar;
   carType: CarType;
   customer: Customer;
-  driver: Driver;
+  // Absent until an admin (or the driver, via claimBooking) actually assigns someone —
+  // Codidge has no placeholder driver row, unlike Rentra which always sent one.
+  driver?: Driver;
   pickupLocation: TripLocation;
-  dropoffLocation: TripLocation;
+  dropoffLocation?: TripLocation;
   totalPrice: TotalPrice;
   extraServices: IExtraService[];
 }

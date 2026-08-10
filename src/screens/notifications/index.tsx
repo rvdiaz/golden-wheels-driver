@@ -79,7 +79,7 @@ export const NotificationsScreen = () => {
       <FlatList
         data={notifications}
         renderItem={({ item }) => <NotificationCard item={item} />}
-        keyExtractor={(item) => item.notificationId}
+        keyExtractor={(item) => item.notificationID}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={<EmptyState />}

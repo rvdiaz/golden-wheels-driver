@@ -14,8 +14,13 @@ import { LedgerEntry } from '../interfaces';
 
 const MONTHS = 6;
 /** Cap, not a fill: the band's leftover is deliberate air. */
-const MAX_BAR_WIDTH = 24;
-const CHART_HEIGHT = 132;
+const MAX_BAR_WIDTH = 22;
+/**
+ * Deliberately short. This is a glance-level trend above a scrollable ledger, not the subject
+ * of the screen — the balance card above it owns the headline number. A taller plot pushed the
+ * Activity list below the fold on smaller phones for no extra information.
+ */
+const CHART_HEIGHT = 96;
 const BAR_RADIUS = 4;
 
 interface Bucket {
@@ -93,9 +98,11 @@ export const EarningsChart = ({
 
   if (max <= 0) {
     return (
-      <View style={styles.card}>
-        <Text style={styles.title}>{t('earnings.chartTitle')}</Text>
-        <Text style={styles.empty}>{t('earnings.chartEmpty')}</Text>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{t('earnings.chartTitle')}</Text>
+        <View style={styles.card}>
+          <Text style={styles.empty}>{t('earnings.chartEmpty')}</Text>
+        </View>
       </View>
     );
   }
@@ -104,12 +111,17 @@ export const EarningsChart = ({
   const barWidth = Math.min(MAX_BAR_WIDTH, band * 0.56);
 
   return (
-    <View style={styles.card}>
-      <Text style={styles.title}>{t('earnings.chartTitle')}</Text>
-      <Text style={styles.subtitle}>{t('earnings.chartSubtitle')}</Text>
+    /**
+     * Title sits *outside* the card, matching the "Activity" section below — previously it was
+     * the only block on this screen that carried its heading inside its own surface, which made
+     * it read as a floating widget rather than one of the screen's sections.
+     */
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>{t('earnings.chartTitle')}</Text>
 
-      {/* The read-out carries the value, which is why no bar needs a label. */}
-      <View style={styles.readout}>
+      <View style={styles.card}>
+        {/* The read-out carries the value, which is why no bar needs a label. */}
+        <View style={styles.readout}>
         <Text style={styles.readoutAmount}>{formatCurrency(shown?.amount ?? 0, currencyCode)}</Text>
         <Text style={styles.readoutLabel}>
           {selected === null ? t('earnings.thisMonth') : (shown?.label ?? '')}
@@ -195,43 +207,47 @@ export const EarningsChart = ({
         </View>
       </View>
 
-      <View style={styles.axis}>
-        {buckets.map((b, i) => (
-          <Text key={b.key} style={[styles.axisLabel, selected === i && styles.axisLabelActive]}>
-            {b.label}
-          </Text>
-        ))}
+        <View style={styles.axis}>
+          {buckets.map((b, i) => (
+            <Text
+              key={b.key}
+              style={[styles.axisLabel, selected === i && styles.axisLabelActive]}>
+              {b.label}
+            </Text>
+          ))}
+        </View>
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  card: {
-    ...surfaces.card,
-    padding: theme.spacing.lg,
-  },
-  title: {
+  /** Title + card, so the block matches the "Activity" section's structure exactly. */
+  section: { gap: theme.spacing.sm },
+  /** Deliberately identical to the screen's own sectionTitle (see ../index.tsx). */
+  sectionTitle: {
     fontSize: typography.xs,
     fontWeight: '700',
     letterSpacing: 0.6,
     textTransform: 'uppercase',
     color: theme.colors.textColor,
   },
-  subtitle: {
-    fontSize: typography.xs,
-    color: theme.colors.textMuted,
-    marginTop: 2,
+  card: {
+    ...surfaces.card,
+    // md rather than lg: the plot is short now, and lg padding around it left the card mostly
+    // empty space.
+    padding: theme.spacing.md,
   },
   empty: {
     fontSize: typography.sm,
     color: theme.colors.textColor,
-    marginTop: theme.spacing.sm,
   },
 
-  readout: { marginTop: theme.spacing.md },
+  readout: {},
   readoutAmount: {
-    fontSize: 26,
+    // Subordinate to the balance card's 34pt headline — this is a per-month read-out, not the
+    // screen's primary number.
+    fontSize: 22,
     fontWeight: '700',
     color: theme.colors.primaryText,
   },

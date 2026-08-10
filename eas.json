@@ -11,7 +11,6 @@
         "GRAPHQL_ENDPOINT": "https://qwtkyxoxunes5bhuqhdt23pmfy.appsync-api.us-east-2.amazonaws.com/graphql",
         "GRAPHQL_API_KEY": "da2-2fudfgxcvbbhfodnnv6bgze2ke",
         "TENANTID": "98faecfa-56f1-4bed-97fd-90312f6a27de",
-        "TENANT_SOLUTION": "booking",
         "APPLE_APP_ID": "6798084164"
       }
     },
@@ -27,7 +26,6 @@
         "GRAPHQL_ENDPOINT": "https://xutawcxlwzcjzdpskabfaurxwa.appsync-api.us-east-1.amazonaws.com/graphql",
         "GRAPHQL_API_KEY": "da2-4mutcyox4rczbd4jaiqsed2in4",
         "TENANTID": "6ac91fcd-e2a7-4375-b42c-678abb4d73a3",
-        "TENANT_SOLUTION": "booking",
         "APPLE_APP_ID": "6798084164"
       }
     },
@@ -43,7 +41,6 @@
         "GRAPHQL_ENDPOINT": "https://qwtkyxoxunes5bhuqhdt23pmfy.appsync-api.us-east-2.amazonaws.com/graphql",
         "GRAPHQL_API_KEY": "da2-2fudfgxcvbbhfodnnv6bgze2ke",
         "TENANTID": "98faecfa-56f1-4bed-97fd-90312f6a27de",
-        "TENANT_SOLUTION": "booking"
       }
     }
   },

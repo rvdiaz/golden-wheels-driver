@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import { getDriverBookingsQuery } from '../graphql/queries';
 import { updateDriverStatusMutation } from '../graphql/mutation';
-import { Booking } from '../interfaces';
+import { mapCodidgeBookings, ICodidgeBooking } from '../graphql/mapCodidgeBooking';
 import { ENV_Vars } from '~/store/env';
 import { userData } from '~/store/user';
 
@@ -14,15 +14,15 @@ export const useCustomerTrips = ({ skipQueries }: { skipQueries?: boolean } = {}
     data: driverBookings,
     loading: loadingTrips,
     refetch: refetchTripList,
-  } = useQuery<{ getDriverBookings: Booking[] }>(getDriverBookingsQuery, {
-    variables: { tenant: ENV_Vars.tenant },
+  } = useQuery<{ getDriverBookings: ICodidgeBooking[] }>(getDriverBookingsQuery, {
+    variables: { tenantID: ENV_Vars.TENANT_ID },
     fetchPolicy: 'network-only',
     skip: skipQueries || !user?.id,
   });
 
   const [updateStatusFn, { loading: loadingTripUpdate }] = useMutation(updateDriverStatusMutation);
 
-  const tripLists = driverBookings?.getDriverBookings ?? [];
+  const tripLists = mapCodidgeBookings(driverBookings?.getDriverBookings);
 
   // Stubs for customer-only operations not available in driver app
   const handleAddTrip = async () => undefined;

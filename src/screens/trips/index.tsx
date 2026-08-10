@@ -16,6 +16,7 @@ import { userData } from '~/store/user';
 import { ENV_Vars } from '~/store/env';
 import { getDriverBookingsQuery } from './graphql/queries';
 import { Booking } from './interfaces';
+import { mapCodidgeBookings, ICodidgeBooking } from './graphql/mapCodidgeBooking';
 import { formatCurrency, formatDateTime } from './helpers';
 import { TripListSkeleton } from '~/components/loadingSkeletons';
 import { TripDetailModal } from './components/tripDetailModal';
@@ -185,7 +186,7 @@ const DriverTripCard = ({
         <View style={cardStyles.routeRow}>
           <Flag size={13} color={theme.colors.accent} />
           <Text style={cardStyles.routeText} numberOfLines={1}>
-            {biz.dropoffLocation.displayName}
+            {biz.dropoffLocation?.displayName ?? '—'}
           </Text>
         </View>
       </View>
@@ -258,16 +259,16 @@ export const TripsScreen = () => {
   const [openTrip, setOpenTrip] = useState<Booking | null>(null);
   const userInfo = useReactiveVar(userData);
 
-  const { data, loading, refetch } = useQuery<{ getDriverBookings: Booking[] }>(
+  const { data, loading, refetch } = useQuery<{ getDriverBookings: ICodidgeBooking[] }>(
     getDriverBookingsQuery,
     {
-      variables: { tenant: ENV_Vars.tenant },
+      variables: { tenantID: ENV_Vars.TENANT_ID },
       fetchPolicy: 'network-only',
       skip: !userInfo?.id,
     }
   );
 
-  const bookings = data?.getDriverBookings ?? [];
+  const bookings = mapCodidgeBookings(data?.getDriverBookings);
   // While the user hydrates from storage the query is skipped and Apollo
   // reports loading:false, which flashed "no trips" before the first request.
   const showSkeleton = !userInfo?.id || (loading && !refreshing);

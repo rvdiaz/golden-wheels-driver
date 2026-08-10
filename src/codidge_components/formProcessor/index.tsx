@@ -8,16 +8,13 @@ import { FormRenderer } from './formRendered';
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export const ProcessForm = ({ form, variant }: { form: any; variant?: 'light' | 'dark' }) => {
-  const user = useReactiveVar(userData);
   const [submitContact] = useMutation(contactSubmissionMutation);
 
   const handleSubmit = async (values: Record<string, any>) => {
     try {
-      console.log(':::form', form);
-
       const { data } = await submitContact({
         variables: {
-          tenant: ENV_Vars.tenant,
+          tenant: ENV_Vars.TENANT_ID,
           formData: {
             formId: form.formId,
             fields: JSON.stringify(values),

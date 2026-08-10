@@ -9,7 +9,7 @@ export const useRefreshUser = () => {
   const refreshUser = async () => {
     try {
       const { data } = await getDriverProfileFn({
-        variables: { tenant: ENV_Vars.tenant },
+        variables: { tenant: ENV_Vars.TENANT_ID },
         fetchPolicy: 'network-only',
       });
 

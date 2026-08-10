@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.primaryLight,
   },
   headline: {
-    fontSize: 46,
+    fontSize: 42,
     fontWeight: '700',
     color: theme.colors.primaryText,
     letterSpacing: 0.5,

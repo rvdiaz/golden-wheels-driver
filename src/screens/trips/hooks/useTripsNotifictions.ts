@@ -1,71 +1,65 @@
 import { useEffect } from 'react';
 import { useApolloClient } from '@apollo/client';
 import * as Notifications from 'expo-notifications';
-import { getDriverBookingsQuery } from '../graphql/queries';
-import { Booking } from '../interfaces';
-import { ENV_Vars } from '~/store/env';
+import { getDriverBookingsQuery, getOpenTripsQuery } from '../graphql/queries';
 
-interface DriverNotificationData {
-  type: string;
-  booking: Booking | string; // backend sends stringified JSON
-}
+/**
+ * Keeps the driver's trip lists current when a push arrives.
+ *
+ * ─── What the payload actually looks like ────────────────────────────────────
+ *
+ * Codidge templates put a small routing object in `push.data`, never a booking:
+ *
+ *   { type: 'booking.openForClaim', bookingID: 'booking_abc', bookingCode: 'GW-1234' }
+ *
+ * The previous version read `data.booking` and upserted it into the Apollo cache. No template
+ * has ever sent a booking object, so that path could never run — and the driver app was not
+ * registered for push at all, so nothing arrived to run it. Refetching is also the honest
+ * approach: the payload carries an identifier, not the new state, so only the server knows
+ * what actually changed.
+ */
 
-const parseBooking = (raw: Booking | string): Booking | null => {
-  if (typeof raw === 'string') {
-    try {
-      return JSON.parse(raw) as Booking;
-    } catch {
-      return null;
-    }
-  }
-  return raw ?? null;
-};
+/** Driver-addressed types, from the backend's NotificationType enum. */
+const ASSIGNED = 'booking.driverAssigned';
+const UNASSIGNED = 'booking.driverUnassigned';
+const OPEN_FOR_CLAIM = 'booking.openForClaim';
 
 export const useBookingNotificationListener = () => {
   const client = useApolloClient();
 
   useEffect(() => {
-    const foregroundSub = Notifications.addNotificationReceivedListener((notification: any) => {
-      const data: DriverNotificationData = notification.request.content.data;
-      if (data?.booking) handleNotification(data);
-    });
+    const handle = (notification: any) => {
+      const type = notification?.request?.content?.data?.type;
+      if (typeof type !== 'string') return;
 
-    const responseSub = Notifications.addNotificationResponseReceivedListener((response: any) => {
-      const data: DriverNotificationData = response.notification.request.content.data;
-      if (data?.booking) handleNotification(data);
-    });
+      // Gaining or losing a trip changes both lists: it leaves the pool as it joins "my trips",
+      // and returns to the pool when taken away. Refreshing only one would leave the other
+      // showing a trip that is no longer there.
+      const queries =
+        type === ASSIGNED || type === UNASSIGNED
+          ? [getDriverBookingsQuery, getOpenTripsQuery]
+          : type === OPEN_FOR_CLAIM
+            ? [getOpenTripsQuery]
+            : null;
+
+      if (!queries) return;
+
+      client
+        .refetchQueries({ include: queries })
+        .catch((error) => console.warn('⚠️ Could not refresh trips after push:', error));
+    };
+
+    // Arrives while the app is foregrounded.
+    const foregroundSub = Notifications.addNotificationReceivedListener(handle);
+
+    // The driver tapped it (app was backgrounded or killed).
+    const responseSub = Notifications.addNotificationResponseReceivedListener((response: any) =>
+      handle(response?.notification)
+    );
 
     return () => {
       foregroundSub.remove();
       responseSub.remove();
     };
-  }, []);
-
-  const handleNotification = (data: DriverNotificationData) => {
-    const booking = parseBooking(data.booking);
-    if (!booking?.id) return;
-    upsertBookingInCache(booking);
-  };
-
-  // Insert the new booking or update an existing one in the driver bookings cache.
-  const upsertBookingInCache = (incoming: Booking) => {
-    client.cache.updateQuery<{ getDriverBookings: Booking[] }>(
-      {
-        query: getDriverBookingsQuery,
-        variables: { tenant: ENV_Vars.tenant },
-      },
-      (cached) => {
-        if (!cached) return { getDriverBookings: [incoming] };
-
-        const exists = cached.getDriverBookings.some((b) => b.id === incoming.id);
-        return {
-          getDriverBookings: exists
-            ? cached.getDriverBookings.map((b) =>
-                b.id === incoming.id ? { ...b, ...incoming } : b
-              )
-            : [incoming, ...cached.getDriverBookings],
-        };
-      }
-    );
-  };
+  }, [client]);
 };

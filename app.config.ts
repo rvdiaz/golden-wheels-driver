@@ -93,8 +93,6 @@ export default (arg: ConfigContext): ExpoConfig => {
       GRAPHQL_ENDPOINT: process.env.GRAPHQL_ENDPOINT,
       GRAPHQL_API_KEY: process.env.GRAPHQL_API_KEY,
       TENANTID: process.env.TENANTID,
-      // Codidge scopes by organization + location. TENANT_SOLUTION was Rentra-only and no
-      // longer exists — see src/store/env for the deprecated `tenant` shape it fed.
       ORGANIZATION_ID: process.env.ORGANIZATION_ID,
       eas: {
         projectId: EAS_PROJECT_ID,

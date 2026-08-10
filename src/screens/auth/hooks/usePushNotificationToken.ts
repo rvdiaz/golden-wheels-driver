@@ -1,10 +1,12 @@
-import { useEffect } from 'react';
-import { useReactiveVar } from '@apollo/client';
+import { useEffect, useRef } from 'react';
+import { Platform } from 'react-native';
+import { useMutation, useReactiveVar } from '@apollo/client';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { pushTokenVar, setPushToken } from '~/store/user/pushToken';
 import { userData } from '~/store/user';
 import { CUSTOMER_APP_EAS_PROJECT_ID, ENV_Vars } from '~/store/env';
+import { registerDeviceTokenCodidgeMutation } from '../graphql/mutations.notifications';
 
 const getPushNotificationToken = async (): Promise<string> => {
   try {
@@ -59,7 +61,9 @@ Notifications.setNotificationHandler({
 export const usePushNotificationTokenSetup = () => {
   const pushToken = useReactiveVar(pushTokenVar);
   const userInfo = useReactiveVar(userData);
-  const [updateDriverFn] = useMutation(updateDriverMutation);
+  const [registerDeviceTokenFn] = useMutation(registerDeviceTokenCodidgeMutation);
+  // Which (account, token) pair we have already registered this session.
+  const registeredRef = useRef<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -70,17 +74,38 @@ export const usePushNotificationTokenSetup = () => {
     })();
   }, [pushToken]);
 
+  /**
+   * Registration needs a signed-in caller: the resolver derives the recipient key from the
+   * verified Cognito token and refuses anything else, so there is nothing to send until the
+   * driver has a session.
+   *
+   * `userInfo.id` is the generated `driverID`, not the Cognito sub — that is fine, because it
+   * is never transmitted. It serves only as "we have a session" and as the dedupe key.
+   */
   useEffect(() => {
-    if (pushToken && userInfo?.id) {
-      updateDriverFn({
-        variables: {
-          tenant: ENV_Vars.tenant,
-          driverId: userInfo.id,
-          driver: { pushToken },
-        },
-      }).catch((err) => console.warn('Failed to save push token:', err));
-    }
-  }, [pushToken, userInfo?.id]);
+    const driverID = userInfo?.id;
+    if (!pushToken || !driverID) return;
+
+    const registration = `${driverID}:${pushToken}`;
+    if (registeredRef.current === registration) return;
+    // Claimed before the request so a second render cannot fire a duplicate in flight. The
+    // backend upsert is idempotent either way; this just avoids the round trip.
+    registeredRef.current = registration;
+
+    registerDeviceTokenFn({
+      variables: {
+        organizationID: ENV_Vars.ORGANIZATION_ID,
+        token: pushToken,
+        platform: Platform.OS,
+        deviceName: Device.deviceName ?? undefined,
+      },
+    }).catch((error) => {
+      // Released so the next mount retries — a driver whose device stays unregistered never
+      // hears about an available trip, which is worse than an extra call.
+      registeredRef.current = null;
+      console.error('❌ Could not register device for push notifications:', error);
+    });
+  }, [pushToken, userInfo?.id, registerDeviceTokenFn]);
 
   return { pushToken, userInfo };
 };

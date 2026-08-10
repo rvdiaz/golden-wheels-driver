@@ -126,8 +126,8 @@ export const useTripActions = (onChanged?: () => void) => {
 
   const [updateStatus] = useMutation(updateDriverStatusMutation, {
     refetchQueries: [
-      { query: getDriverBookingsQuery, variables: { tenant: ENV_Vars.tenant } },
-      { query: getOpenTripsQuery, variables: { tenant: ENV_Vars.tenant } },
+      { query: getDriverBookingsQuery, variables: { tenantID: ENV_Vars.TENANT_ID } },
+      { query: getOpenTripsQuery, variables: { tenantID: ENV_Vars.TENANT_ID } },
     ],
   });
 
@@ -142,8 +142,11 @@ export const useTripActions = (onChanged?: () => void) => {
         try {
           await updateStatus({
             variables: {
-              tenant: ENV_Vars.tenant,
-              bookingId: booking.id,
+              // Required since each step notifies the customer, and a participant is addressed
+              // per organization — see the field's comment in the rental schema.
+              organizationID: ENV_Vars.ORGANIZATION_ID,
+              tenantID: ENV_Vars.TENANT_ID,
+              bookingID: booking.id,
               driverStatus: next,
             },
           });

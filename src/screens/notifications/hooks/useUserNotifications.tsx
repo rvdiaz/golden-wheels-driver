@@ -1,9 +1,8 @@
 import { useQuery, useReactiveVar } from '@apollo/client';
-import React from 'react';
-import { getUserNotificationsQuery } from '../graphql/queries';
+import { listMyNotificationsQuery } from '../graphql/queries';
 import { ENV_Vars } from '~/store/env';
 import { userData } from '~/store/user';
-import { INotification } from '../interfaces';
+import { ListMyNotificationsResponse } from '../interfaces';
 
 export const useUserNotifications = () => {
   const userInfo = useReactiveVar(userData);
@@ -12,22 +11,20 @@ export const useUserNotifications = () => {
     data,
     loading: loadingNotifications,
     refetch: refetchNotifications,
-  } = useQuery<{
-    getUserNotifications: {
-      items: INotification[];
-    };
-  }>(getUserNotificationsQuery, {
+  } = useQuery<ListMyNotificationsResponse>(listMyNotificationsQuery, {
+    // No driver id in the variables: the server reads the mailbox off the verified token, and
+    // `userInfo.id` is a generated driverID rather than the Cognito sub anyway. This only gates
+    // on a session existing at all.
     variables: {
-      userId: userInfo?.id,
-      tenant: ENV_Vars.tenant,
+      organizationID: ENV_Vars.ORGANIZATION_ID,
+      limit: 30,
     },
     skip: !userInfo?.id,
+    fetchPolicy: 'cache-and-network',
   });
 
-  const notificationList = data?.getUserNotifications?.items ?? [];
-
   return {
-    notifications: notificationList,
+    notifications: data?.listMyNotifications?.items ?? [],
     loadingNotifications,
     refetchNotifications,
   };

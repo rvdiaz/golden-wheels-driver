@@ -351,9 +351,11 @@ export const ResetPasswordWithCode = ({
 };
 
 const styles = StyleSheet.create({
-  keyboardView: {
-    flex: 1,
-  },
+  // Deliberately NOT flex: 1 — these sit inside AuthFormWrapper's ScrollView. A flex: 1 child
+  // pins content to the viewport height, so the ScrollView has nothing to scroll and anything
+  // that does not fit is clipped — which with the keyboard up put inputs out of reach on iOS.
+  // Left over from when each form had its own KeyboardAvoidingView; the wrapper owns that now.
+  keyboardView: {},
   header: {
     alignItems: 'center',
     justifyContent: 'center',

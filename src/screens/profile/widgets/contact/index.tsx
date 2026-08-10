@@ -40,7 +40,7 @@ const ContactRow = ({
 
 export const ContactSubmissionsScreen = ({ onBack }: { onBack: () => void }) => {
   const { data: tenantConfig, loading } = useQuery(getTenantConfigQuery, {
-    variables: { id: ENV_Vars.tenant.tenantId },
+    variables: { id: ENV_Vars.TENANT_ID },
   });
 
   // Mirror the web logic to extract form config from tenant modules

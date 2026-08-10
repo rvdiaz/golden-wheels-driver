@@ -30,6 +30,7 @@ import { userData } from '~/store/user';
 import { ENV_Vars } from '~/store/env';
 import { getDriverBookingsQuery, getOpenTripsQuery } from '~/screens/trips/graphql/queries';
 import { Booking } from '~/screens/trips/interfaces';
+import { mapCodidgeBookings, ICodidgeBooking } from '~/screens/trips/graphql/mapCodidgeBooking';
 import { formatDateTime } from '~/screens/trips/helpers';
 import { formatCurrency } from '~/helpers';
 import { TripRowListSkeleton } from '~/components/loadingSkeletons';
@@ -59,10 +60,10 @@ export const HomeScreen = () => {
   const [claimingId, setClaimingId] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  const { data, loading, refetch } = useQuery<{ getDriverBookings: Booking[] }>(
+  const { data, loading, refetch } = useQuery<{ getDriverBookings: ICodidgeBooking[] }>(
     getDriverBookingsQuery,
     {
-      variables: { tenant: ENV_Vars.tenant },
+      variables: { tenantID: ENV_Vars.TENANT_ID },
       fetchPolicy: 'network-only',
       skip: !userInfo?.id,
     }
@@ -73,18 +74,18 @@ export const HomeScreen = () => {
     loading: loadingPool,
     refetch: refetchPool,
   } = useQuery<{
-    getOpenTrips: Booking[];
+    getOpenBookings: ICodidgeBooking[];
   }>(getOpenTripsQuery, {
-    variables: { tenant: ENV_Vars.tenant },
+    variables: { tenantID: ENV_Vars.TENANT_ID },
     fetchPolicy: 'cache-and-network',
     skip: !userInfo?.id,
   });
-  const poolTrips = poolData?.getOpenTrips ?? [];
+  const poolTrips = mapCodidgeBookings(poolData?.getOpenBookings);
 
   const [claimTripFn] = useMutation(claimTripMutation, {
     refetchQueries: [
-      { query: getOpenTripsQuery, variables: { tenant: ENV_Vars.tenant } },
-      { query: getDriverBookingsQuery, variables: { tenant: ENV_Vars.tenant } },
+      { query: getOpenTripsQuery, variables: { tenantID: ENV_Vars.TENANT_ID } },
+      { query: getDriverBookingsQuery, variables: { tenantID: ENV_Vars.TENANT_ID } },
     ],
   });
 
@@ -103,7 +104,13 @@ export const HomeScreen = () => {
     setClaimingId(booking.id);
     try {
       await claimTripFn({
-        variables: { tenant: ENV_Vars.tenant, bookingId: booking.id },
+        variables: {
+          // Claiming captures the customer's card server-side, and the payment provider is
+          // resolved per organization — the booking record carries no organizationID.
+          organizationID: ENV_Vars.ORGANIZATION_ID,
+          tenantID: ENV_Vars.TENANT_ID,
+          bookingID: booking.id,
+        },
       });
       setClaimTarget(null);
       setTab('upcoming');
@@ -117,7 +124,7 @@ export const HomeScreen = () => {
     }
   };
 
-  const bookings = data?.getDriverBookings ?? [];
+  const bookings = mapCodidgeBookings(data?.getDriverBookings);
 
   /**
    * While the user hydrates from storage both queries are skipped and Apollo
@@ -139,7 +146,11 @@ export const HomeScreen = () => {
   const active =
     live.find(isUnderway) ??
     live
-      .filter((b) => b.driverStatus === 'assigned')
+      // `?? 'assigned'` matches how every other screen reads this field: a trip handed to a
+      // driver but not yet touched has no driverStatus of its own, and that absence means
+      // "assigned", not "no status". Comparing the raw field left those trips out of the hero
+      // slot entirely.
+      .filter((b) => (b.driverStatus ?? 'assigned') === 'assigned')
       .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())[0];
 
   const upcoming = live
@@ -175,9 +186,17 @@ export const HomeScreen = () => {
         {tab === 'upcoming' ? (
           showUpcomingSkeleton ? (
             <TripRowListSkeleton />
-          ) : active ? (
+          ) : active || upcoming.length ? (
+            /**
+             * The hero card and the list are independent: a driver can have work queued with
+             * nothing underway yet. Gating the whole branch on `active` used to hide those rows
+             * behind the "no active trip" card while the tab badge still counted them — the
+             * driver was told they had a trip and shown an empty screen.
+             */
             <>
-              <ActiveTripCard booking={active} onOpen={() => setOpenTrip(active)} />
+              {active && (
+                <ActiveTripCard booking={active} onOpen={() => setOpenTrip(active)} />
+              )}
               {upcoming.map((b) => (
                 <TripRow key={b.id} booking={b} onPress={() => setOpenTrip(b)} />
               ))}

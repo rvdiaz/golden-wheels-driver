@@ -15,7 +15,7 @@ export const en = {
   'tab.account': 'Account',
 
   // ── Welcome ──
-  'welcome.headline': 'Welcome to\nGolden Wheels',
+  'welcome.headline': 'Drive with\nGolden Wheels',
   'welcome.subtitle': 'Your trips, your earnings, your schedule —\nall in one place.',
   'welcome.cta': 'Get started',
 
@@ -192,7 +192,7 @@ export const es: Record<TranslationKey, string> = {
   'tab.alerts': 'Alertas',
   'tab.account': 'Cuenta',
 
-  'welcome.headline': 'Bienvenido a\nGolden Wheels',
+  'welcome.headline': 'Conduce con\nGolden Wheels',
   'welcome.subtitle': 'Tus viajes, tus ganancias, tu horario —\ntodo en un solo lugar.',
   'welcome.cta': 'Comenzar',
 

@@ -1,8 +1,10 @@
 {
   "build": {
     "preview": {
-      "distribution": "store",
-      "channel": "preview"
+      "distribution": "internal",
+      "channel": "preview",
+      "environment": "preview",
+      "developmentClient": false
     },
     "production": {
       "distribution": "store",
@@ -12,7 +14,8 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "channel": "development"
+      "channel": "development",
+      "environment": "development"
     }
   },
   "submit": {

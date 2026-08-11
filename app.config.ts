@@ -20,8 +20,8 @@ const PACKAGE_NAME = 'com.codidge.goldenwheelsdriver';
 const ICON = './assets/icon-ios.png';
 const ADAPTIVE_ICON = './assets/icon-android-foreground.png';
 const MONOCHROME_ICON = './assets/icon-android-monochrome.png';
-const VERSION = '1.1.5';
-const BUILD_NUMBER = 5;
+const VERSION = '1.1.6';
+const BUILD_NUMBER = 6;
 
 export default (arg: ConfigContext): ExpoConfig => {
   const { config } = arg;
@@ -52,7 +52,6 @@ export default (arg: ConfigContext): ExpoConfig => {
           android: {
             compileSdkVersion: 36,
             targetSdkVersion: 36,
-            kotlinVersion: '2.0.21',
           },
         },
       ],
@@ -83,9 +82,6 @@ export default (arg: ConfigContext): ExpoConfig => {
         foregroundImage: adaptiveIcon,
         monochromeImage: MONOCHROME_ICON,
         backgroundColor: '#000000',
-      },
-      buildProperties: {
-        kotlinVersion: '2.0.21',
       },
       googleServicesFile: process.env.GOOGLE_SERVICES_JSON || './google-services.json',
     },
@@ -121,11 +117,16 @@ export const getDynamicAppConfig = (environment: 'development' | 'preview' | 'pr
     };
   }
 
+  // Preview ships to the SAME store records as production (this is the profile the
+  // released builds are cut from), so it must keep the production identifiers — a
+  // store record's bundle id is permanent. Only the backend env vars and the display
+  // name differ. The Android package must match too: google-services.json contains
+  // only `com.codidge.goldenwheelsdriver`.
   if (environment === 'preview') {
     return {
       name: `${APP_NAME} Preview`,
-      bundleIdentifier: `${BUNDLE_IDENTIFIER}.preview`,
-      packageName: `${PACKAGE_NAME}.preview`,
+      bundleIdentifier: BUNDLE_IDENTIFIER,
+      packageName: PACKAGE_NAME,
       icon: ICON,
       adaptiveIcon: ADAPTIVE_ICON,
     };

@@ -20,8 +20,8 @@ const PACKAGE_NAME = 'com.codidge.goldenwheelsdriver';
 const ICON = './assets/icon-ios.png';
 const ADAPTIVE_ICON = './assets/icon-android-foreground.png';
 const MONOCHROME_ICON = './assets/icon-android-monochrome.png';
-const VERSION = '1.1.2';
-const BUILD_NUMBER = 2;
+const VERSION = '1.1.3';
+const BUILD_NUMBER = 4;
 
 export default (arg: ConfigContext): ExpoConfig => {
   const { config } = arg;
@@ -124,7 +124,7 @@ export const getDynamicAppConfig = (environment: 'development' | 'preview' | 'pr
   if (environment === 'preview') {
     return {
       name: `${APP_NAME} Preview`,
-      bundleIdentifier: `${BUNDLE_IDENTIFIER}.preview`,
+      bundleIdentifier: `${BUNDLE_IDENTIFIER}`,
       packageName: `${PACKAGE_NAME}.preview`,
       icon: ICON,
       adaptiveIcon: ADAPTIVE_ICON,

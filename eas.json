@@ -1,8 +1,8 @@
 {
   "build": {
     "preview": {
-      "distribution": "internal",
-      "developmentClient": false,
+      "distribution": "store",
+      "channel": "preview",
       "env": {
         "APP_ENV": "development",
         "COGNITO_USERPOOL_ID": "us-east-2_hJaBtnRVe",
@@ -48,6 +48,12 @@
   },
   "submit": {
     "production": {
+      "ios": {
+        "appleId": "info@codidge.com",
+        "ascAppId": "6798084164"
+      }
+    },
+    "preview": {
       "ios": {
         "appleId": "info@codidge.com",
         "ascAppId": "6798084164"

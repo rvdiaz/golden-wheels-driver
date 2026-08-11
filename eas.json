@@ -2,7 +2,8 @@
   "build": {
     "preview": {
       "distribution": "store",
-      "channel": "preview",
+      "environment": "production",
+      "developmentClient": false,
       "env": {
         "APP_ENV": "production",
         "COGNITO_USERPOOL_ID": "us-east-2_hJaBtnRVe",

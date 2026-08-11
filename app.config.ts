@@ -13,8 +13,13 @@ const OWNER = 'rvdiaz1994';
 const APP_NAME = 'Golden Wheels Driver';
 const BUNDLE_IDENTIFIER = 'com.codidge.goldenwheelsdriver';
 const PACKAGE_NAME = 'com.codidge.goldenwheelsdriver';
-const ICON = './assets/logo512.jpg';
-const ADAPTIVE_ICON = './assets/logo512.jpg';
+// Both derived from assets/logo.png. iOS takes the lockup full-bleed and opaque at 1024
+// (Apple's required size — the old logo512.jpg was only 512). Android adaptive icons crop
+// the outer 18dp of a 108dp canvas, so the foreground is a transparent PNG with the lockup
+// scaled into the center 52%.
+const ICON = './assets/icon-ios.png';
+const ADAPTIVE_ICON = './assets/icon-android-foreground.png';
+const MONOCHROME_ICON = './assets/icon-android-monochrome.png';
 const VERSION = '1.1.1';
 const BUILD_NUMBER = 1;
 
@@ -76,7 +81,8 @@ export default (arg: ConfigContext): ExpoConfig => {
       versionCode: BUILD_NUMBER,
       adaptiveIcon: {
         foregroundImage: adaptiveIcon,
-        backgroundColor: '#ffffff',
+        monochromeImage: MONOCHROME_ICON,
+        backgroundColor: '#000000',
       },
       buildProperties: {
         kotlinVersion: '2.0.21',
@@ -121,7 +127,7 @@ export const getDynamicAppConfig = (environment: 'development' | 'preview' | 'pr
       bundleIdentifier: `${BUNDLE_IDENTIFIER}.preview`,
       packageName: `${PACKAGE_NAME}.preview`,
       icon: ICON,
-      adaptiveIcon: ICON,
+      adaptiveIcon: ADAPTIVE_ICON,
     };
   }
 
@@ -130,6 +136,6 @@ export const getDynamicAppConfig = (environment: 'development' | 'preview' | 'pr
     bundleIdentifier: `${BUNDLE_IDENTIFIER}.dev`,
     packageName: `${PACKAGE_NAME}`,
     icon: ICON,
-    adaptiveIcon: ICON,
+    adaptiveIcon: ADAPTIVE_ICON,
   };
 };

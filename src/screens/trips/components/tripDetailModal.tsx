@@ -47,11 +47,30 @@ import { useTranslation } from '~/i18n';
  * Returns null once the trip is over — there is nowhere left to go, and
  * showing a destination on a finished trip is actively confusing.
  */
+/**
+ * Whether this trip actually goes anywhere.
+ *
+ * An hourly booking has no destination, and the record says so by CONTENT rather than by
+ * absence — it is written with `dropoffLocation: { placeId: "", address: "", displayName: "" }`.
+ * That object is truthy, so anything testing for the object alone treated an hourly hire as a
+ * point-to-point trip: an empty "Drop-off" row, an empty NEXT STOP card, and a "Navigate to
+ * drop-off" button that opened maps with nothing in it.
+ */
+export const hasDropoff = (booking: Booking): boolean => {
+  const loc = booking.bookingBusinessData?.dropoffLocation;
+  return !!(loc?.displayName?.trim() || loc?.formattedAddress?.trim());
+};
+
 const activeLeg = (booking: Booking, t: (k: any, v?: any) => string) => {
   const status = booking.driverStatus ?? 'assigned';
   if (status === 'completed') return null;
 
   const biz = booking.bookingBusinessData;
+
+  // Driving an hourly hire: the customer is aboard and there is no destination to head for.
+  // No next stop is the honest answer — better than a card pointing at nothing.
+  if (status === 'in_progress' && !hasDropoff(booking)) return null;
+
   return status === 'in_progress'
     ? {
         label: t('trip.dropoff'),
@@ -248,12 +267,19 @@ export const TripDetailModal = ({
                   tint: theme.colors.primary,
                   Icon: MapPin,
                 },
-                {
-                  label: t('trip.dropoff'),
-                  loc: biz?.dropoffLocation,
-                  tint: theme.colors.accent,
-                  Icon: Flag,
-                },
+                // Only when there is somewhere to go. On an hourly hire this row used to render
+                // as "Drop-off — —" with a live navigate arrow beside it, which reads as missing
+                // data rather than as "this trip has no destination by design".
+                ...(hasDropoff(booking)
+                  ? [
+                      {
+                        label: t('trip.dropoff'),
+                        loc: biz?.dropoffLocation,
+                        tint: theme.colors.accent,
+                        Icon: Flag,
+                      },
+                    ]
+                  : []),
               ].map(({ label, loc, tint, Icon }) => (
                 <TouchableOpacity
                   key={label}

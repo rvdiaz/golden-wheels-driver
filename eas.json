@@ -1,16 +1,17 @@
 {
   "build": {
     "preview": {
-      "distribution": "store",
+      "distribution": "internal",
       "developmentClient": false,
       "env": {
-        "APP_ENV": "production",
-        "COGNITO_USERPOOL_ID": "us-east-2_wT26orWBG",
-        "COGNITO_CLIENT_ID": "1n7qbm76c1ge9tc2d85p8r7l6t",
+        "APP_ENV": "development",
+        "COGNITO_USERPOOL_ID": "us-east-2_hJaBtnRVe",
+        "COGNITO_CLIENT_ID": "2pgbg6rpcj8k23k303hpbhokjq",
         "AWS_REGION": "us-east-2",
-        "GRAPHQL_ENDPOINT": "https://qwtkyxoxunes5bhuqhdt23pmfy.appsync-api.us-east-2.amazonaws.com/graphql",
-        "GRAPHQL_API_KEY": "da2-2fudfgxcvbbhfodnnv6bgze2ke",
-        "TENANTID": "98faecfa-56f1-4bed-97fd-90312f6a27de",
+        "GRAPHQL_ENDPOINT": "https://keuhwas7gfghzimrgog2zrnera.appsync-api.us-east-2.amazonaws.com/graphql",
+        "GRAPHQL_API_KEY": "da2-7oxhrgnayzhi3jqwz3shkcns2y",
+        "TENANTID": "6ac91fcd-e2a7-4375-b42c-678abb4d73a3",
+        "ORGANIZATION_ID": "organization_d9466bfc-748f-4e41-b8b1-5b78c089da09",
         "APPLE_APP_ID": "6798084164"
       }
     },
@@ -35,12 +36,13 @@
       "channel": "development",
       "env": {
         "APP_ENV": "development",
-        "COGNITO_USERPOOL_ID": "us-east-2_wT26orWBG",
-        "COGNITO_CLIENT_ID": "1n7qbm76c1ge9tc2d85p8r7l6t",
+        "COGNITO_USERPOOL_ID": "us-east-2_hJaBtnRVe",
+        "COGNITO_CLIENT_ID": "2pgbg6rpcj8k23k303hpbhokjq",
         "AWS_REGION": "us-east-2",
-        "GRAPHQL_ENDPOINT": "https://qwtkyxoxunes5bhuqhdt23pmfy.appsync-api.us-east-2.amazonaws.com/graphql",
-        "GRAPHQL_API_KEY": "da2-2fudfgxcvbbhfodnnv6bgze2ke",
-        "TENANTID": "98faecfa-56f1-4bed-97fd-90312f6a27de",
+        "GRAPHQL_ENDPOINT": "https://keuhwas7gfghzimrgog2zrnera.appsync-api.us-east-2.amazonaws.com/graphql",
+        "GRAPHQL_API_KEY": "da2-7oxhrgnayzhi3jqwz3shkcns2y",
+        "TENANTID": "6ac91fcd-e2a7-4375-b42c-678abb4d73a3",
+        "ORGANIZATION_ID": "organization_d9466bfc-748f-4e41-b8b1-5b78c089da09"
       }
     }
   },

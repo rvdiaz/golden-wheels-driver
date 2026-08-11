@@ -182,13 +182,22 @@ const DriverTripCard = ({
             {biz.pickupLocation.displayName}
           </Text>
         </View>
-        <View style={cardStyles.routeConnector} />
-        <View style={cardStyles.routeRow}>
-          <Flag size={13} color={theme.colors.accent} />
-          <Text style={cardStyles.routeText} numberOfLines={1}>
-            {biz.dropoffLocation?.displayName ?? '—'}
-          </Text>
-        </View>
+        {/*
+          Hourly hires have no destination. The record still carries a dropoffLocation object
+          with empty strings, so `?? '—'` never fired and the row rendered a bare dash under a
+          connector line — indistinguishable from missing data.
+        */}
+        {biz.dropoffLocation?.displayName?.trim() ? (
+          <>
+            <View style={cardStyles.routeConnector} />
+            <View style={cardStyles.routeRow}>
+              <Flag size={13} color={theme.colors.accent} />
+              <Text style={cardStyles.routeText} numberOfLines={1}>
+                {biz.dropoffLocation.displayName}
+              </Text>
+            </View>
+          </>
+        ) : null}
       </View>
 
       {/* Divider */}

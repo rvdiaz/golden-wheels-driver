@@ -351,15 +351,21 @@ const ActiveTripCard = ({ booking, onOpen }: { booking: Booking; onOpen: () => v
   const underway = isUnderway(booking);
   const biz = booking.bookingBusinessData;
 
-  const heading =
-    status === 'in_progress'
-      ? {
-          label: t('trip.dropoff'),
-          loc: biz?.dropoffLocation,
-          Icon: Flag,
-          tint: theme.colors.accent,
-        }
-      : { label: t('trip.pickup'), loc: biz?.pickupLocation, Icon: MapPin, tint: GOLD };
+  // Once driving, the heading becomes where the trip is going — unless it is an hourly hire,
+  // which has nowhere to go. Its dropoffLocation is an object of empty strings rather than
+  // absent, so this used to flip to a blank heading the moment the driver started the trip.
+  // Staying on the pickup is the truthful answer: that is where the hire is based.
+  const drivingToADestination =
+    status === 'in_progress' && !!biz?.dropoffLocation?.displayName?.trim();
+
+  const heading = drivingToADestination
+    ? {
+        label: t('trip.dropoff'),
+        loc: biz?.dropoffLocation,
+        Icon: Flag,
+        tint: theme.colors.accent,
+      }
+    : { label: t('trip.pickup'), loc: biz?.pickupLocation, Icon: MapPin, tint: GOLD };
 
   const HeadingIcon = heading.Icon;
 

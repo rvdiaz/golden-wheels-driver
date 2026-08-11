@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useCallback, useEffect } from 'react';
 import { ConfirmResetPassword } from '~/codidge_components/auth/forms/confirm_reset_password';
 import { useAuthContext } from '~/codidge_components/auth/context';
 import { updateUser } from '~/store/user';
@@ -15,8 +15,21 @@ import { ENV_Vars } from '~/store/env';
 import { useUser } from './hooks/useUser';
 
 export const AuthWrapper = () => {
-  const { currentView, tempData } = useAuthContext();
+  const { currentView, setCurrentView, tempData, setTempData } = useAuthContext();
   const { getDriverProfileFn } = useUser();
+
+  // The provider sits at the app root, so currentView outlives the session. Without this a
+  // sign-out drops the driver back on the code screen of the login they just ended. This
+  // component only mounts when there is no driver, so a mount is always a fresh attempt.
+  const resetToEmailStep = useCallback(() => {
+    setCurrentView(IAuthModuleKeys.signIn);
+    setTempData({ email: '' });
+  }, [setCurrentView, setTempData]);
+
+  useEffect(() => {
+    resetToEmailStep();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleLoginSuccess = async () => {
     try {
@@ -34,6 +47,8 @@ export const AuthWrapper = () => {
         // is nothing for them here.
         console.error('Driver profile not found — this account is not a driver at this location.');
         await signOut();
+        // Already mounted here, so no remount resets us: send them back to the email step by hand.
+        resetToEmailStep();
         return;
       }
 
@@ -46,6 +61,7 @@ export const AuthWrapper = () => {
     } catch (error) {
       console.log('Error fetching driver profile:', error);
       await signOut();
+      resetToEmailStep();
     }
   };
 

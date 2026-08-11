@@ -2,6 +2,10 @@ import { useEffect } from 'react';
 import { useApolloClient } from '@apollo/client';
 import * as Notifications from 'expo-notifications';
 import { getDriverBookingsQuery, getOpenTripsQuery } from '../graphql/queries';
+import {
+  getDriverBalanceQuery,
+  getDriverLedgerQuery,
+} from '~/screens/earnings/graphql/queries';
 
 /**
  * Keeps the driver's trip lists current when a push arrives.
@@ -23,6 +27,7 @@ import { getDriverBookingsQuery, getOpenTripsQuery } from '../graphql/queries';
 const ASSIGNED = 'booking.driverAssigned';
 const UNASSIGNED = 'booking.driverUnassigned';
 const OPEN_FOR_CLAIM = 'booking.openForClaim';
+const PAYMENT_RECORDED = 'driver.paymentRecorded';
 
 export const useBookingNotificationListener = () => {
   const client = useApolloClient();
@@ -40,7 +45,11 @@ export const useBookingNotificationListener = () => {
           ? [getDriverBookingsQuery, getOpenTripsQuery]
           : type === OPEN_FOR_CLAIM
             ? [getOpenTripsQuery]
-            : null;
+            : // A payment settles the balance and adds a ledger entry, so the earnings screen
+              // is stale the moment this arrives.
+              type === PAYMENT_RECORDED
+              ? [getDriverBalanceQuery, getDriverLedgerQuery]
+              : null;
 
       if (!queries) return;
 

@@ -4,7 +4,7 @@
       "distribution": "store",
       "channel": "preview",
       "env": {
-        "APP_ENV": "development",
+        "APP_ENV": "production",
         "COGNITO_USERPOOL_ID": "us-east-2_hJaBtnRVe",
         "COGNITO_CLIENT_ID": "2pgbg6rpcj8k23k303hpbhokjq",
         "AWS_REGION": "us-east-2",

@@ -8,6 +8,7 @@
     },
     "production": {
       "distribution": "store",
+      "channel": "production",
       "environment": "production",
       "developmentClient": false
     },
@@ -16,6 +17,13 @@
       "distribution": "internal",
       "channel": "development",
       "environment": "development"
+    },
+    "preview-apk": {
+      "extends": "preview",
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
     }
   },
   "submit": {

@@ -1,0 +1,18 @@
+name: Build preview Android APK
+
+# Manual only. Produces a directly installable APK on the `preview` channel,
+# so it receives the same OTA updates as the iOS TestFlight build.
+#
+# Deliberately no submit job — download the APK from the build page and take
+# it from there. Play Store submission would need an AAB and a Google service
+# account key, neither of which this project has configured.
+on:
+  workflow_dispatch: {}
+
+jobs:
+  build_android:
+    name: Build Android APK
+    type: build
+    params:
+      platform: android
+      profile: preview-apk

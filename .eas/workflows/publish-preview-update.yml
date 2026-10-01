@@ -1,0 +1,26 @@
+name: Publish preview update
+
+# Manual only. Publishes an OTA update to the `preview` branch, which the
+# `preview` channel points at — that is where TestFlight test builds live.
+# Safe to run freely: no App Store user is ever on this channel.
+#
+# Bundled with the `preview` EAS environment, the same one the `preview` build
+# profile uses, so the update talks to the same backend as the binary it lands
+# on. APP_ENV must be defined in that environment: app.config.ts falls back to
+# `development` when it is missing, which would stamp the Development name and
+# the `.dev` bundle id into the update manifest.
+#
+# This runs on EAS servers and bundles the code from GitHub, NOT from anyone's
+# laptop. Choose which git branch to publish when you press "Run workflow".
+on:
+  workflow_dispatch: {}
+
+jobs:
+  publish_preview_update:
+    name: Publish preview update
+    type: update
+    environment: preview
+    params:
+      branch: preview
+      platform: all
+      message: Manual preview publish

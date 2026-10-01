@@ -1,0 +1,60 @@
+name: Build production release
+
+# The real store release. Builds the `production` profile — which compiles
+# channel `production` into the binary — and submits iOS to App Store Connect.
+#
+# The `platform` input picks what gets built. `all` builds both platforms;
+# pick `ios` or `android` to re-cut just one, which is the common case when a
+# single store rejects a build and the other is already live. A skipped
+# platform costs no build minutes.
+#
+# ALWAYS run this against the git ref you mean to release.
+#
+# Before running, make sure app.config.ts has a BUILD_NUMBER that App Store
+# Connect has not seen before (it is also the Android versionCode). VERSION is
+# the runtime version: bump it only for a genuine release, never for an
+# OTA-only change.
+#
+# Android has no submit job — Play Store submission needs a Google service
+# account key, which this project does not have configured. Download the AAB
+# from the build page and upload it to Play Console by hand.
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Which platform to release
+        type: choice
+        options:
+          - all
+          - ios
+          - android
+        default: all
+        required: true
+
+jobs:
+  build_ios:
+    name: Build iOS production
+    # `submit_ios` needs this job, so it skips with it — the submit can never
+    # fire against a build this run did not produce.
+    if: ${{ inputs.platform == 'all' || inputs.platform == 'ios' }}
+    type: build
+    params:
+      platform: ios
+      profile: production
+
+  submit_ios:
+    name: Submit iOS to App Store Connect
+    needs: [build_ios]
+    if: ${{ inputs.platform == 'all' || inputs.platform == 'ios' }}
+    type: submit
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+      profile: production
+
+  build_android:
+    name: Build Android production
+    if: ${{ inputs.platform == 'all' || inputs.platform == 'android' }}
+    type: build
+    params:
+      platform: android
+      profile: production

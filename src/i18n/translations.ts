@@ -143,6 +143,30 @@ export const en = {
   'account.phone': 'Phone',
   'account.licence': 'Licence number',
   'account.language': 'Language',
+  'account.deleteAccount': 'Delete account',
+  'account.deleteIntro':
+    'Deleting your account removes your access to this driver app. It cannot be undone from the app: to drive here again, the operator has to send you a new invitation.',
+  'account.deleteRemovedTitle': 'What is removed',
+  'account.deleteRemovedAccess': 'Your access to the driver app for this operator.',
+  'account.deleteRemovedTrips': 'Your trips, earnings and notifications in this app.',
+  'account.deleteRemovedDevices': 'Trip alerts on every phone you signed in on.',
+  'account.deleteKeptTitle': 'What is kept',
+  'account.deleteKeptRecord':
+    'The operator keeps your driver record (name, email, phone, licence number, photo) and your trip and payment history, which they need for their accounts.',
+  'account.deleteKeptBalance':
+    'Any balance owed to you. Deleting your account does not cancel it — the operator still pays you directly.',
+  'account.deleteKeptLogin':
+    'Your sign-in. If you also use it as a customer or drive for another operator, those keep working.',
+  'account.deleteBalanceNote':
+    'This is still owed to you after you delete your account. The operator settles it with you directly.',
+  'account.deleteConfirmTitle': 'Delete your account?',
+  'account.deleteConfirmBody':
+    'You will be signed out and lose access to the driver app. To come back, the operator has to invite you again.',
+  'account.deleteConfirm': 'Delete account',
+  'account.deleteCancel': 'Cancel',
+  'account.deleteFailedTitle': 'Could not delete your account',
+  'account.deleteLiveTrip':
+    'You have a trip in progress. Complete it, then delete your account.',
 
   // ── Earnings ──
   'earnings.title': 'Earnings',
@@ -309,6 +333,30 @@ export const es: Record<TranslationKey, string> = {
   'account.phone': 'Teléfono',
   'account.licence': 'Número de licencia',
   'account.language': 'Idioma',
+  'account.deleteAccount': 'Eliminar cuenta',
+  'account.deleteIntro':
+    'Al eliminar tu cuenta pierdes el acceso a esta app de conductor. No se puede deshacer desde la app: para volver a conducir aquí, el operador tiene que enviarte una nueva invitación.',
+  'account.deleteRemovedTitle': 'Qué se elimina',
+  'account.deleteRemovedAccess': 'Tu acceso a la app de conductor de este operador.',
+  'account.deleteRemovedTrips': 'Tus viajes, ganancias y notificaciones en esta app.',
+  'account.deleteRemovedDevices':
+    'Las alertas de viajes en todos los teléfonos donde iniciaste sesión.',
+  'account.deleteKeptTitle': 'Qué se conserva',
+  'account.deleteKeptRecord':
+    'El operador conserva tu ficha de conductor (nombre, correo, teléfono, número de licencia, foto) y tu historial de viajes y pagos, que necesita para su contabilidad.',
+  'account.deleteKeptBalance':
+    'Cualquier saldo que se te deba. Eliminar tu cuenta no lo cancela: el operador te lo paga directamente.',
+  'account.deleteKeptLogin':
+    'Tu inicio de sesión. Si también lo usas como cliente o conduces para otro operador, eso sigue funcionando.',
+  'account.deleteBalanceNote':
+    'Este saldo se te sigue debiendo después de eliminar tu cuenta. El operador lo liquida contigo directamente.',
+  'account.deleteConfirmTitle': '¿Eliminar tu cuenta?',
+  'account.deleteConfirmBody':
+    'Se cerrará tu sesión y perderás el acceso a la app de conductor. Para volver, el operador tiene que invitarte de nuevo.',
+  'account.deleteConfirm': 'Eliminar cuenta',
+  'account.deleteCancel': 'Cancelar',
+  'account.deleteFailedTitle': 'No se pudo eliminar tu cuenta',
+  'account.deleteLiveTrip': 'Tienes un viaje en curso. Complétalo y luego elimina tu cuenta.',
 
   // ── Ganancias ──
   'earnings.title': 'Ganancias',

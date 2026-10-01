@@ -1,6 +1,13 @@
 import React, { useCallback, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { User, MessageCircleQuestion, LogOut, Shield, BookText } from 'lucide-react-native';
+import {
+  User,
+  MessageCircleQuestion,
+  LogOut,
+  Shield,
+  BookText,
+  Trash2,
+} from 'lucide-react-native';
 import { useReactiveVar } from '@apollo/client';
 import { userData } from '~/store/user';
 import { LogoutButton } from '~/codidge_components/auth/widgets/logoutButton';
@@ -14,6 +21,7 @@ import { TermsAndConditions } from './widgets/termsAndConditions';
 import { DriverInfo } from './widgets/driverInfo';
 import { ContactSubmissionsScreen } from './widgets/contact';
 import { PrivacyPolicyScreen } from './widgets/privacyPolicy';
+import { AccountDeletionScreen } from './widgets/accountDeletion';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from '~/i18n';
 import { TAB_BAR_CLEARANCE } from '~/navigation/bottomBar';
@@ -47,7 +55,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
   const { t } = useTranslation();
   const user = useReactiveVar(userData);
   const [screen, setScreen] = useState<
-    'personal-info' | 'privacy-policy' | 'terms' | 'feedback' | null
+    'personal-info' | 'privacy-policy' | 'terms' | 'feedback' | 'delete-account' | null
   >();
 
   // Reset screen state when component comes into focus
@@ -97,6 +105,16 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
           onBack={() => {
             setScreen(null);
           }}
+        />
+      );
+      break;
+    case 'delete-account':
+      targetComponent = (
+        <AccountDeletionScreen
+          onBack={() => {
+            setScreen(null);
+          }}
+          onDeleted={onNavigateHome}
         />
       );
       break;
@@ -176,8 +194,17 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigateHome }) => {
                   ],
                 },
                 {
-                  title: 'Account',
+                  title: t('account.title'),
                   items: [
+                    {
+                      id: 'delete-account',
+                      label: t('account.deleteAccount'),
+                      icon: <Trash2 />,
+                      danger: true,
+                      onClick: () => {
+                        setScreen('delete-account');
+                      },
+                    },
                     {
                       id: 'logout',
                       label: t('account.signOut'),

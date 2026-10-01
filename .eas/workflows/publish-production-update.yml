@@ -1,0 +1,29 @@
+name: Publish production update
+
+# Manual only. Publishes an OTA update to the EAS branch `production`, which
+# the `production` channel points at. A push trigger here would put every
+# merged commit in front of App Store users with no review gate.
+#
+# `production` below is an EAS branch, NOT a git branch — no git branch by
+# that name exists, which is the point: the two can never be confused.
+# Which *code* ships is the git ref you pick in the "Run workflow" dialog.
+#
+# This runs on EAS servers and bundles the code from GitHub, NOT from anyone's
+# laptop.
+#
+# APP_ENV comes from the `production` EAS environment and must be defined
+# there: app.config.ts falls back to `development` when it is missing, which
+# would stamp the Development name and the `.dev` bundle id into the update
+# manifest.
+on:
+  workflow_dispatch: {}
+
+jobs:
+  publish_production_update:
+    name: Publish production update
+    type: update
+    environment: production
+    params:
+      branch: production
+      platform: all
+      message: Manual production publish

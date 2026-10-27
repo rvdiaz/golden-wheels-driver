@@ -10,7 +10,11 @@ export const useUser = () => {
 
   const [getDriverProfileFn, { loading: loadingLoadUser }] = useLazyQuery<{
     getDriverProfile: IUser;
-  }>(getDriverProfileQuery);
+  }>(getDriverProfileQuery, {
+    // The answer depends on who signed in (the token), not on the variables, so a cached
+    // result belongs to whoever was signed in before — including a null from a failed login.
+    fetchPolicy: 'network-only',
+  });
 
   return {
     updateDriverFn,

@@ -20,8 +20,8 @@ const PACKAGE_NAME = 'com.codidge.goldenwheelsdriver';
 const ICON = './assets/icon-ios.png';
 const ADAPTIVE_ICON = './assets/icon-android-foreground.png';
 const MONOCHROME_ICON = './assets/icon-android-monochrome.png';
-const VERSION = '1.1.8';
-const BUILD_NUMBER = 8;
+const VERSION = '1.1.9';
+const BUILD_NUMBER = 9;
 
 export default (arg: ConfigContext): ExpoConfig => {
   const { config } = arg;
